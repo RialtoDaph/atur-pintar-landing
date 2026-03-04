@@ -19,7 +19,7 @@ export default function Layout({ children, currentPageName }) {
       `}</style>
 
       {/* Desktop sidebar */}
-      <div className="hidden sm:flex fixed left-0 top-0 h-full w-60 bg-[#1B2559] flex-col px-5 py-8 z-40">
+      <div className="hidden sm:flex fixed left-0 top-0 h-full w-60 bg-[#0A0A0A] flex-col px-5 py-8 z-40">
         <div className="mb-10 px-2">
           <p className="text-xl font-bold text-white tracking-tight">SaveWise</p>
           <p className="text-xs text-[#8FA4C8] mt-0.5">Your personal finance app</p>
