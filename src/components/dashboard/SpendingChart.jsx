@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { base44 } from "@/api/base44Client";
 
-const CATEGORY_CONFIG = {
+const DEFAULT_CONFIG = {
   housing: { label: "Housing", color: "#4F7CFF", emoji: "🏠" },
   food: { label: "Food", color: "#00C9A7", emoji: "🍔" },
   transport: { label: "Transport", color: "#F5A623", emoji: "🚗" },
@@ -15,8 +17,18 @@ const CATEGORY_CONFIG = {
 };
 
 export default function SpendingChart({ transactions, loading }) {
-  const expenses = transactions.filter(t => t.type === "expense");
+  const [customCats, setCustomCats] = useState([]);
 
+  useEffect(() => {
+    base44.entities.CustomCategory.list().then(setCustomCats);
+  }, []);
+
+  const categoryConfig = { ...DEFAULT_CONFIG };
+  customCats.forEach(c => {
+    categoryConfig[`custom_${c.id}`] = { label: c.name, color: c.color || "#888", emoji: c.emoji };
+  });
+
+  const expenses = transactions.filter(t => t.type === "expense");
   const byCategory = {};
   expenses.forEach(t => {
     const cat = t.category || "other";
@@ -24,7 +36,10 @@ export default function SpendingChart({ transactions, loading }) {
   });
 
   const data = Object.entries(byCategory)
-    .map(([key, value]) => ({ key, value, ...CATEGORY_CONFIG[key] }))
+    .map(([key, value]) => {
+      const config = categoryConfig[key] || { label: key, color: "#95A5A6", emoji: "📦" };
+      return { key, value, ...config };
+    })
     .sort((a, b) => b.value - a.value);
 
   const total = data.reduce((s, d) => s + d.value, 0);
@@ -34,7 +49,7 @@ export default function SpendingChart({ transactions, loading }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5">
-      <h2 className="font-bold text-[#1B2559] text-base mb-4">Spending by Category</h2>
+      <h2 className="font-bold text-[#1A1A1A] text-base mb-4">Spending by Category</h2>
       <div className="flex items-center gap-4">
         <div className="w-28 h-28 flex-shrink-0">
           <ResponsiveContainer width="100%" height="100%">
@@ -56,7 +71,7 @@ export default function SpendingChart({ transactions, loading }) {
                 <span className="text-xs text-[#4A5568]">{d.emoji} {d.label}</span>
               </div>
               <div className="text-right">
-                <span className="text-xs font-semibold text-[#1B2559]">${d.value.toFixed(0)}</span>
+                <span className="text-xs font-semibold text-[#1A1A1A]">${d.value.toFixed(0)}</span>
                 <span className="text-[10px] text-[#8FA4C8] ml-1">{total > 0 ? ((d.value / total) * 100).toFixed(0) : 0}%</span>
               </div>
             </div>
