@@ -46,7 +46,7 @@ export default function RecentTransactions({ transactions, loading }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-[#1B2559] truncate">{tx.note || (tx.category ? tx.category.charAt(0).toUpperCase() + tx.category.slice(1) : "Transaction")}</p>
-              <p className="text-xs text-[#8FA4C8]">{new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+              <p className="text-xs text-[#8FA4C8]">{new Date(tx.date).toLocaleDateString("id-ID", { month: "short", day: "numeric" })}</p>
             </div>
             <span
               className="text-sm font-bold flex-shrink-0"
