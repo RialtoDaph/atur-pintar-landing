@@ -1,6 +1,6 @@
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Moon, Sun, Settings, MoreHorizontal, Bell } from "lucide-react";
+import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Moon, Sun, Settings, MoreHorizontal, Bell, DollarSign } from "lucide-react";
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import NanaFloatingChat from "@/components/nana/NanaFloatingChat";
@@ -34,6 +34,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
     { name: "Alerts", label: "Alerts", icon: Bell, page: "Alerts" },
     { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
+    { name: "Pricing", label: "Premium", icon: DollarSign, page: "Pricing" },
     { name: "Settings", label: "Pengaturan", icon: Settings, page: "Settings" },
   ];
 
@@ -50,6 +51,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Budget", label: "Anggaran", icon: PiggyBank, page: "Budget" },
     { name: "Debts", label: "Utang", icon: CreditCard, page: "Debts" },
     { name: "Alerts", label: "Alerts", icon: Bell, page: "Alerts" },
+    { name: "Pricing", label: "Premium", icon: DollarSign, page: "Pricing" },
     { name: "Settings", label: "Setting", icon: Settings, page: "Settings" },
     { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
   ];
