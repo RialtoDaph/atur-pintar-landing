@@ -120,7 +120,7 @@ export default function NanaFloatingChat() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 bg-[#F8F9FB]">
+          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 bg-[#1A1A1A]">
             {loading ? (
               <div className="flex justify-center pt-10">
                 <div className="w-5 h-5 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
