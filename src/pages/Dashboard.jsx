@@ -46,6 +46,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
+      <RecurringManager />
       {/* Top Header */}
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
         <div className="max-w-2xl mx-auto">
