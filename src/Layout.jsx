@@ -7,6 +7,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard", label: "Home", icon: LayoutDashboard, page: "Dashboard" },
     { name: "Transactions", label: "Transactions", icon: ArrowLeftRight, page: "Transactions" },
     { name: "Goals", label: "Goals", icon: Target, page: "Goals" },
+    { name: "Analytics", label: "Analytics", icon: BarChart2, page: "Analytics" },
   ];
 
   return (
