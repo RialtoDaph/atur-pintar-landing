@@ -50,8 +50,8 @@ export default function Dashboard() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[#9B9B9B] text-sm font-medium">Good day 👋</p>
-              <h1 className="text-[#0A0A0A] text-2xl font-bold mt-0.5">Your Finances</h1>
+              <p className="text-[#8FA4C8] text-sm font-medium">Good day 👋</p>
+              <h1 className="text-white text-2xl font-bold mt-0.5">Your Finances</h1>
             </div>
             <button
               onClick={() => setShowAddTx(true)}
