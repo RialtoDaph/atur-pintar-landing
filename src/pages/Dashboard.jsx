@@ -2,114 +2,110 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, Target, Wallet, ArrowRight } from "lucide-react";
-import GoalCard from "@/components/goals/GoalCard";
-import StatCard from "@/components/dashboard/StatCard";
+import { Plus, TrendingUp, TrendingDown, Wallet, ArrowRight, ChevronRight } from "lucide-react";
 import AddGoalModal from "@/components/goals/AddGoalModal";
+import AddTransactionModal from "@/components/transactions/AddTransactionModal";
+import BalanceCard from "@/components/dashboard/BalanceCard";
+import SpendingChart from "@/components/dashboard/SpendingChart";
+import RecentTransactions from "@/components/dashboard/RecentTransactions";
+import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
 
 export default function Dashboard() {
   const [goals, setGoals] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddGoal, setShowAddGoal] = useState(false);
+  const [showAddTx, setShowAddTx] = useState(false);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   async function loadData() {
     setLoading(true);
     const [g, t] = await Promise.all([
       base44.entities.SavingsGoal.list("-created_date"),
-      base44.entities.Transaction.list("-created_date", 100),
+      base44.entities.Transaction.list("-date", 100),
     ]);
     setGoals(g);
     setTransactions(t);
     setLoading(false);
   }
 
+  const now = new Date();
+  const thisMonthTx = transactions.filter(t => {
+    const d = new Date(t.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+
+  const monthIncome = thisMonthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const monthExpense = thisMonthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
   const totalSaved = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
-  const totalTarget = goals.reduce((s, g) => s + (g.target_amount || 0), 0);
-  const completedGoals = goals.filter((g) => g.status === "completed").length;
-  const overallProgress = totalTarget > 0 ? (totalSaved / totalTarget) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-[#F7F6F3] px-4 py-8 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <p className="text-xs font-semibold tracking-widest text-[#9B9B9B] uppercase mb-1">Overview</p>
-          <h1 className="text-3xl font-bold text-[#1A1A1A] tracking-tight">My Savings</h1>
+    <div className="min-h-screen bg-[#F2F4F7] pb-8">
+      {/* Top Header */}
+      <div className="bg-[#1B2559] px-5 pt-10 pb-20">
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-[#8FA4C8] text-sm font-medium">Good day 👋</p>
+              <h1 className="text-white text-2xl font-bold mt-0.5">Your Finances</h1>
+            </div>
+            <button
+              onClick={() => setShowAddTx(true)}
+              className="w-10 h-10 rounded-full bg-[#00C9A7] flex items-center justify-center shadow-lg hover:bg-[#00b596] transition-colors"
+            >
+              <Plus className="w-5 h-5 text-white" />
+            </button>
+          </div>
+
+          {/* Balance Card */}
+          <BalanceCard
+            income={monthIncome}
+            expense={monthExpense}
+            savings={totalSaved}
+            loading={loading}
+          />
         </div>
-        <button
-          onClick={() => setShowAddGoal(true)}
-          className="flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-[#333] transition-colors shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          New Goal
-        </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-        <StatCard
-          label="Total Saved"
-          value={`$${totalSaved.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-          icon={<Wallet className="w-5 h-5" />}
-          accent="#4F7CFF"
-        />
-        <StatCard
-          label="Overall Progress"
-          value={`${overallProgress.toFixed(1)}%`}
-          icon={<TrendingUp className="w-5 h-5" />}
-          accent="#34C87A"
-        />
-        <StatCard
-          label="Goals Completed"
-          value={`${completedGoals} / ${goals.length}`}
-          icon={<Target className="w-5 h-5" />}
-          accent="#F5A623"
-        />
-      </div>
+      <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-4">
 
-      {/* Goals */}
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-semibold text-[#1A1A1A]">Your Goals</h2>
-        {goals.length > 0 && (
-          <Link
-            to={createPageUrl("Goals")}
-            className="flex items-center gap-1 text-sm text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors"
-          >
-            View all <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        )}
-      </div>
+        {/* Spending breakdown */}
+        <SpendingChart transactions={thisMonthTx} loading={loading} />
 
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-48 rounded-2xl bg-[#EFEFED] animate-pulse" />
-          ))}
+        {/* Recent transactions */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <h2 className="font-bold text-[#1B2559] text-base">Recent Transactions</h2>
+            <Link to={createPageUrl("Transactions")} className="text-xs text-[#00C9A7] font-semibold flex items-center gap-0.5">
+              See all <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <RecentTransactions transactions={transactions.slice(0, 5)} loading={loading} onRefresh={loadData} />
         </div>
-      ) : goals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-full bg-[#EFEFED] flex items-center justify-center mb-4 text-2xl">💰</div>
-          <p className="text-[#1A1A1A] font-semibold text-lg mb-1">No goals yet</p>
-          <p className="text-[#9B9B9B] text-sm mb-6">Create your first savings goal to get started</p>
-          <button
-            onClick={() => setShowAddGoal(true)}
-            className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-[#333] transition-colors"
-          >
-            Create a Goal
-          </button>
+
+        {/* Savings Goals */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 pt-5 pb-3">
+            <h2 className="font-bold text-[#1B2559] text-base">Savings Goals</h2>
+            <button
+              onClick={() => setShowAddGoal(true)}
+              className="text-xs text-[#00C9A7] font-semibold flex items-center gap-0.5"
+            >
+              + Add goal
+            </button>
+          </div>
+          <GoalsMiniList goals={goals} loading={loading} />
+          {goals.length > 0 && (
+            <div className="px-5 pb-4">
+              <Link to={createPageUrl("Goals")} className="text-xs text-[#8FA4C8] flex items-center gap-0.5 hover:text-[#1B2559]">
+                View all goals <ChevronRight className="w-3 h-3" />
+              </Link>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {goals.slice(0, 4).map((goal) => (
-            <GoalCard key={goal.id} goal={goal} onUpdate={loadData} transactions={transactions.filter(t => t.goal_id === goal.id)} />
-          ))}
-        </div>
-      )}
+
+      </div>
 
       {showAddGoal && (
         <AddGoalModal
@@ -117,6 +113,17 @@ export default function Dashboard() {
           onSave={async (data) => {
             await base44.entities.SavingsGoal.create(data);
             setShowAddGoal(false);
+            loadData();
+          }}
+        />
+      )}
+
+      {showAddTx && (
+        <AddTransactionModal
+          onClose={() => setShowAddTx(false)}
+          onSave={async (data) => {
+            await base44.entities.Transaction.create(data);
+            setShowAddTx(false);
             loadData();
           }}
         />
