@@ -77,7 +77,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
             <h2 className="font-bold text-[#1B2559] text-base">Recent Transactions</h2>
-            <Link to={createPageUrl("Transactions")} className="text-xs text-[#00C9A7] font-semibold flex items-center gap-0.5">
+            <Link to={createPageUrl("Transactions")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
               See all <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
