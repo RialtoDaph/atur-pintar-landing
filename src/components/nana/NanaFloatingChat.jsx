@@ -107,7 +107,7 @@ export default function NanaFloatingChat() {
           {/* Header */}
           <div className="bg-[#0A0A0A] px-4 py-3 flex items-center gap-3 flex-shrink-0">
             <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/166a055ec_IMG_8610.jpg" 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/f91470034_generated_image.png" 
               alt="Nana" 
               className="w-8 h-8 rounded-full object-cover"
             />
