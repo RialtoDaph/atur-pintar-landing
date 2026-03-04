@@ -99,9 +99,9 @@ export default function Analytics() {
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={trendData} barCategoryGap="30%">
               <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => `$${v >= 1000 ? (v/1000).toFixed(0)+"k" : v}`} />
+              <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(0)}jt` : v >= 1000 ? `${(v/1000).toFixed(0)}rb` : v} />
               <Tooltip
-                formatter={(value) => [`$${value.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, undefined]}
+                formatter={(value) => [formatRupiah(value), undefined]}
                 contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
               />
               <Bar dataKey="Income" fill="#FF6A00" radius={[6, 6, 0, 0]} />
@@ -140,7 +140,7 @@ export default function Analytics() {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => [`$${value.toLocaleString("en-US", { minimumFractionDigits: 2 })}`, undefined]}
+                   formatter={(value) => [formatRupiah(value), undefined]}
                     contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
                   />
                 </PieChart>
@@ -160,8 +160,8 @@ export default function Analytics() {
                           style={{ width: `${(item.value / totalExpenses) * 100}%`, backgroundColor: item.color }}
                         />
                       </div>
-                      <span className="text-sm font-semibold text-[#0A0A0A] w-16 text-right">
-                        ${item.value.toLocaleString("en-US", { minimumFractionDigits: 0 })}
+                      <span className="text-sm font-semibold text-[#0A0A0A] w-24 text-right">
+                        {formatRupiah(item.value)}
                       </span>
                       <span className="text-xs text-[#8FA4C8] w-10 text-right">
                         {((item.value / totalExpenses) * 100).toFixed(0)}%
