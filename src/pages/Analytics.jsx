@@ -244,32 +244,34 @@ export default function AnalyticsPage() {
 
         {/* Current month by category */}
         {pieData.length > 0 && (
-          <Card className="dm-card">
-            <CardHeader>
-              <CardTitle>Pengeluaran Bulan Ini Berdasarkan Kategori</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-5 border border-gray-100 dark:border-gray-800">
+            <h2 className="font-bold text-[#1A1A1A] dark:text-white text-base mb-3">Pengeluaran per Kategori</h2>
+            <div className="w-full h-36">
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: ${formatRupiah(value)}`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
+                  <Pie data={pieData} dataKey="value" cx="50%" cy="50%" innerRadius={38} outerRadius={65} strokeWidth={0} paddingAngle={2}>
                     {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={index} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => formatRupiah(value)} />
+                  <Tooltip formatter={(v) => formatRupiah(v)} contentStyle={{ borderRadius: 10, border: "none", boxShadow: "0 2px 12px rgba(0,0,0,0.1)", fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="mt-3 space-y-2">
+              {pieData.slice(0, 5).map((d) => {
+                const total = pieData.reduce((s, item) => s + item.value, 0);
+                return (
+                  <div key={d.name} className="flex items-center gap-2 min-w-0">
+                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: d.color }} />
+                    <span className="text-xs text-gray-600 dark:text-gray-400 flex-1 min-w-0 truncate">{d.name}</span>
+                    <span className="text-xs font-semibold text-gray-900 dark:text-white flex-shrink-0 whitespace-nowrap">{formatRupiah(d.value)}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-500 flex-shrink-0 w-8 text-right whitespace-nowrap">{total > 0 ? ((d.value / total) * 100).toFixed(0) : 0}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
 
         {/* Budget allocation vs spending */}
