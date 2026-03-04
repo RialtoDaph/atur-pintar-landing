@@ -59,7 +59,7 @@ export default function Layout({ children, currentPageName }) {
               key={item.page}
               to={createPageUrl(item.page)}
               className={`flex-1 flex flex-col items-center py-3 gap-1 text-xs font-medium transition-colors ${
-                active ? "text-[#00C9A7]" : "text-[#8FA4C8]"
+                active ? "text-[#FF6A00]" : "text-[#888]"
               }`}
             >
               <item.icon className="w-5 h-5" />
