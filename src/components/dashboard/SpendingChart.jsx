@@ -50,34 +50,28 @@ export default function SpendingChart({ transactions, loading }) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5">
-      <h2 className="font-bold text-[#1A1A1A] text-base mb-4">Spending by Category</h2>
-      <div className="flex items-center gap-4">
-        <div className="w-28 h-28 flex-shrink-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={28} outerRadius={52} strokeWidth={0}>
-                {data.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(v) => formatRupiah(v)} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="flex-1 space-y-2">
-          {data.slice(0, 5).map((d) => (
-            <div key={d.key} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: d.color }} />
-                <span className="text-xs text-[#4A5568]">{d.emoji} {d.label}</span>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-semibold text-[#1A1A1A]">{formatRupiah(d.value)}</span>
-                <span className="text-[10px] text-[#8FA4C8] ml-1">{total > 0 ? ((d.value / total) * 100).toFixed(0) : 0}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
+      <h2 className="font-bold text-[#1A1A1A] text-base mb-3">Pengeluaran per Kategori</h2>
+      <div className="w-full h-36">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={data} dataKey="value" cx="50%" cy="50%" innerRadius={38} outerRadius={65} strokeWidth={0} paddingAngle={2}>
+              {data.map((entry, i) => (
+                <Cell key={i} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(v) => formatRupiah(v)} contentStyle={{ borderRadius: 10, border: "none", boxShadow: "0 2px 12px rgba(0,0,0,0.1)", fontSize: 12 }} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="mt-3 space-y-2">
+        {data.slice(0, 5).map((d) => (
+          <div key={d.key} className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: d.color }} />
+            <span className="text-xs text-[#4A5568] flex-1 truncate">{d.emoji} {d.label}</span>
+            <span className="text-xs font-semibold text-[#1A1A1A] flex-shrink-0">{formatRupiah(d.value)}</span>
+            <span className="text-[10px] text-[#8FA4C8] w-7 text-right flex-shrink-0">{total > 0 ? ((d.value / total) * 100).toFixed(0) : 0}%</span>
+          </div>
+        ))}
       </div>
     </div>
   );
