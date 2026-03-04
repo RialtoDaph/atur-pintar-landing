@@ -129,9 +129,9 @@ export default function NanaFloatingChat() {
               <div className="flex flex-col items-center justify-center h-full text-center gap-2 pt-4">
                <div className="w-12 h-12 rounded-full overflow-hidden">
                   <img 
-                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/f91470034_generated_image.png" 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/83b9f64b6_generated_image.png" 
                     alt="Nana" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full"
                   />
                 </div>
                 <p className="text-[#0A0A0A] font-bold text-sm">Halo! Aku Nana 👋</p>
