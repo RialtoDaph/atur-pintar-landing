@@ -1,6 +1,6 @@
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Moon, Sun, Settings, MoreHorizontal, Bell } from "lucide-react";
+import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Moon, Sun, Settings, MoreHorizontal, Bell, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 
@@ -39,7 +39,7 @@ export default function Layout({ children, currentPageName }) {
   const mobileMainNav = [
     { name: "Dashboard", label: "Home", icon: LayoutDashboard, page: "Dashboard" },
     { name: "Transactions", label: "Transaksi", icon: ArrowLeftRight, page: "Transactions" },
-    { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
+    { name: "Nana", label: "Nana AI", icon: Sparkles, page: "Nana" },
     { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
   ];
 
