@@ -10,37 +10,37 @@ export default function BalanceCard({ income, expense, savings, loading }) {
   }
 
   return (
-    <div className="bg-[#0A0A0A] rounded-2xl p-5 border border-[#222]">
-      <p className="text-[#8FA4C8] text-xs font-semibold uppercase tracking-widest mb-1">This Month</p>
-      <p className="text-white text-4xl font-bold mb-5">
+    <div className="bg-[#161616] rounded-2xl p-4 border border-[#222]">
+      <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase tracking-widest mb-0.5">Bulan Ini</p>
+      <p className="text-white text-3xl font-bold mb-3">
         {balance >= 0 ? "+" : ""}${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </p>
-      <div className="grid grid-cols-3 gap-3">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-[#FF6A00]/20 flex items-center justify-center">
-            <TrendingUp className="w-3.5 h-3.5 text-[#FF6A00]" />
+      <div className="grid grid-cols-3 gap-2">
+        <div className="flex items-center gap-1.5">
+          <div className="w-6 h-6 rounded-full bg-[#FF6A00]/20 flex items-center justify-center flex-shrink-0">
+            <TrendingUp className="w-3 h-3 text-[#FF6A00]" />
           </div>
           <div>
-            <p className="text-[#8FA4C8] text-[10px]">Income</p>
-            <p className="text-white text-sm font-semibold">${income.toLocaleString("en-US", { minimumFractionDigits: 0 })}</p>
+            <p className="text-[#8FA4C8] text-[9px]">Pemasukan</p>
+            <p className="text-white text-xs font-semibold">${income.toLocaleString("en-US", { minimumFractionDigits: 0 })}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-[#FF6B6B]/20 flex items-center justify-center">
-            <TrendingDown className="w-3.5 h-3.5 text-[#FF6B6B]" />
+        <div className="flex items-center gap-1.5">
+          <div className="w-6 h-6 rounded-full bg-[#FF6B6B]/20 flex items-center justify-center flex-shrink-0">
+            <TrendingDown className="w-3 h-3 text-[#FF6B6B]" />
           </div>
           <div>
-            <p className="text-[#8FA4C8] text-[10px]">Expenses</p>
-            <p className="text-white text-sm font-semibold">${expense.toLocaleString("en-US", { minimumFractionDigits: 0 })}</p>
+            <p className="text-[#8FA4C8] text-[9px]">Pengeluaran</p>
+            <p className="text-white text-xs font-semibold">${expense.toLocaleString("en-US", { minimumFractionDigits: 0 })}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-[#4F7CFF]/20 flex items-center justify-center">
-            <PiggyBank className="w-3.5 h-3.5 text-[#4F7CFF]" />
+        <div className="flex items-center gap-1.5">
+          <div className="w-6 h-6 rounded-full bg-[#4F7CFF]/20 flex items-center justify-center flex-shrink-0">
+            <PiggyBank className="w-3 h-3 text-[#4F7CFF]" />
           </div>
           <div>
-            <p className="text-[#8FA4C8] text-[10px]">Saved</p>
-            <p className="text-white text-sm font-semibold">${savings.toLocaleString("en-US", { minimumFractionDigits: 0 })}</p>
+            <p className="text-[#8FA4C8] text-[9px]">Tabungan</p>
+            <p className="text-white text-xs font-semibold">${savings.toLocaleString("en-US", { minimumFractionDigits: 0 })}</p>
           </div>
         </div>
       </div>
