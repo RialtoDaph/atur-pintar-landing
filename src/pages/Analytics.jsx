@@ -356,7 +356,7 @@ export default function Analytics() {
                   return (
                     <div key={i} className="flex items-center justify-between pb-3 border-b border-[#F2F4F7] last:border-0">
                       <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }}></div>
+                        <span className="text-lg">{cat.emoji || "📦"}</span>
                         <p className="text-[#1A1A1A] font-medium text-sm">{cat.name}</p>
                       </div>
                       <div className="text-right">
