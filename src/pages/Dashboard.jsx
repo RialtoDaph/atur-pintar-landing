@@ -14,6 +14,12 @@ import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
 import RecurringManager from "@/components/transactions/RecurringManager";
 
+function getWidgets() {
+  const saved = localStorage.getItem("widgets");
+  if (saved) return JSON.parse(saved);
+  return { smartAlerts: true, cashflowForecast: true, subscriptionDetector: true, spendingChart: true, recentTransactions: true, savingsGoals: true };
+}
+
 export default function Dashboard() {
   const [goals, setGoals] = useState([]);
   const [transactions, setTransactions] = useState([]);
