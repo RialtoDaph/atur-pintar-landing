@@ -3,10 +3,8 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-// Midtrans configuration
-const MIDTRANS_CLIENT_KEY = process.env.REACT_APP_MIDTRANS_CLIENT_KEY || "YOUR_MIDTRANS_CLIENT_KEY";
-const MIDTRANS_URL_SANDBOX = "https://app.sandbox.midtrans.com/snap/snap.js";
-const MIDTRANS_URL_PRODUCTION = "https://app.midtrans.com/snap/snap.js";
+// Xendit configuration
+const XENDIT_PAYMENT_LINK = process.env.REACT_APP_XENDIT_PAYMENT_LINK || "";
 const SUBSCRIPTION_PRICE = 39000; // IDR 39,000
 
 export default function CheckoutButton({ user }) {
@@ -18,75 +16,25 @@ export default function CheckoutButton({ user }) {
       return;
     }
 
+    if (!XENDIT_PAYMENT_LINK) {
+      alert("Payment configuration belum diatur. Hubungi admin.");
+      return;
+    }
+
     setLoading(true);
     try {
-      // Create Midtrans transaction
-      const transactionDetails = {
-        order_id: `order-${user.id}-${Date.now()}`,
-        gross_amount: SUBSCRIPTION_PRICE,
-      };
+      // Build Xendit payment link with user data
+      const paymentUrl = new URL(XENDIT_PAYMENT_LINK);
+      paymentUrl.searchParams.append("customer_email", user.email);
+      paymentUrl.searchParams.append("customer_name", user.full_name);
+      paymentUrl.searchParams.append("user_id", user.id);
+      paymentUrl.searchParams.append("amount", SUBSCRIPTION_PRICE.toString());
 
-      const customerDetails = {
-        first_name: user.full_name,
-        email: user.email,
-      };
-
-      // Request snap token from server
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Generate a Midtrans Snap token for a subscription payment.
-        
-Payment Details:
-- Order ID: ${transactionDetails.order_id}
-- Amount: IDR ${transactionDetails.gross_amount} (monthly subscription)
-- Customer Name: ${customerDetails.first_name}
-- Customer Email: ${customerDetails.email}
-
-Return a JSON with: {"snap_token": "...token..."}`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            snap_token: { type: "string" },
-          },
-        },
-      });
-
-      if (response.snap_token) {
-        // Load Snap.js dynamically
-        const script = document.createElement("script");
-        script.src = MIDTRANS_URL_SANDBOX;
-        script.async = true;
-        script.onload = () => {
-          window.snap.pay(response.snap_token, {
-            onSuccess: (result) => {
-              // Payment success - update user subscription
-              base44.auth.updateMe({
-                subscription_status: "premium",
-                subscription_end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-                  .toISOString()
-                  .split("T")[0],
-                midtrans_customer_id: result.customer_id || user.id,
-                midtrans_subscription_id: result.order_id,
-              });
-              window.location.href = "/dashboard?payment=success";
-            },
-            onPending: () => {
-              alert("Pembayaran sedang diproses");
-            },
-            onError: (result) => {
-              console.error("Payment error:", result);
-              alert("Pembayaran gagal. Silakan coba lagi.");
-            },
-            onClose: () => {
-              alert("Anda menutup Snap. Silakan coba lagi.");
-            },
-          });
-        };
-        document.head.appendChild(script);
-      }
+      // Redirect to Xendit payment
+      window.location.href = paymentUrl.toString();
     } catch (error) {
       console.error("Checkout error:", error);
       alert("Gagal memproses checkout. Silakan coba lagi.");
-    } finally {
       setLoading(false);
     }
   }
