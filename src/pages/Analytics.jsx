@@ -5,12 +5,12 @@ import { Calendar, TrendingUp, TrendingDown, DollarSign, Filter, ChevronDown, X 
 import { formatRupiah } from "@/components/utils/formatRupiah";
 
 const DEFAULT_CATEGORIES = {
-  makanan: { label: "Makanan", emoji: "🍔", color: "#FF6B6B" },
+  makanan: { label: "Makanan", emoji: "🍽️", color: "#FF6B6B" },
   transportasi: { label: "Transportasi", emoji: "🚗", color: "#4ECDC4" },
-  hiburan: { label: "Hiburan", emoji: "🎬", color: "#FFE66D" },
+  hiburan: { label: "Hiburan", emoji: "🎮", color: "#FFE66D" },
   belanja: { label: "Belanja", emoji: "🛍️", color: "#95E1D3" },
-  tagihan: { label: "Tagihan", emoji: "📄", color: "#FF6348" },
-  kesehatan: { label: "Kesehatan", emoji: "🏥", color: "#A29BFE" },
+  tagihan: { label: "Tagihan", emoji: "💳", color: "#FF6348" },
+  kesehatan: { label: "Kesehatan", emoji: "⚕️", color: "#A29BFE" },
 };
 
 export default function Analytics() {
@@ -110,13 +110,23 @@ export default function Analytics() {
       catMap[catKey] += txn.amount;
     });
 
-    return Object.entries(catMap).map(([key, amount]) => ({
-      name: categories[key]?.label || key,
-      emoji: categories[key]?.emoji || "📦",
-      value: amount,
-      color: categories[key]?.color || "#888",
-      key: key,
-    })).sort((a, b) => b.value - a.value);
+    return Object.entries(catMap).map(([key, amount]) => {
+      const colorMap = {
+        makanan: "#FF6B6B",
+        transportasi: "#4ECDC4",
+        hiburan: "#FFE66D",
+        belanja: "#95E1D3",
+        tagihan: "#FF6348",
+        kesehatan: "#A29BFE",
+      };
+      return {
+        name: categories[key]?.label || key,
+        emoji: categories[key]?.emoji || "📦",
+        value: amount,
+        color: categories[key]?.color || colorMap[key] || "#FF6A00",
+        key: key,
+      };
+    }).sort((a, b) => b.value - a.value);
   };
 
   // Summary stats
@@ -354,16 +364,17 @@ export default function Analytics() {
                     data={categoryData}
                     cx="50%"
                     cy="50%"
-                    labelLine={false}
-                    label={({ emoji, name, percent }) => `${emoji} ${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={90}
+                    labelLine={true}
+                    label={({ emoji, name, percent }) => `${emoji} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={95}
+                    innerRadius={0}
                     fill="#8884d8"
                     dataKey="value"
                     onClick={(entry) => setDrillDownCategory(entry.key)}
                     style={{ cursor: "pointer" }}
                   >
                     {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#fff" strokeWidth={2} />
                     ))}
                   </Pie>
                   <Tooltip content={<CategoryTooltip />} />
