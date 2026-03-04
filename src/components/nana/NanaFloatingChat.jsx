@@ -159,7 +159,7 @@ export default function NanaFloatingChat() {
                     msg.role === "user" ? "bg-[#FF6A00] text-white" : "bg-[#2D2D2D] border border-[#3D3D3D] text-white"
                   }`}>
                     {msg.role === "assistant" ? (
-                      <ReactMarkdown className="prose prose-xs max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 text-[#1A1A1A]">
+                      <ReactMarkdown className="prose prose-xs max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 text-white">
                         {msg.content}
                       </ReactMarkdown>
                     ) : <p>{msg.content}</p>}
