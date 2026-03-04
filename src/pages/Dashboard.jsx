@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 import { Plus, TrendingUp, TrendingDown, Wallet, ArrowRight, ChevronRight } from "lucide-react";
 import AddGoalModal from "@/components/goals/AddGoalModal";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
-import BalanceCard from "@/components/dashboard/BalanceCard";
-import SpendingChart from "@/components/dashboard/SpendingChart";
-import RecentTransactions from "@/components/dashboard/RecentTransactions";
-import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
+import BalanceCard from "@/components/dashboard/BalanceCard.jsx";
+import SpendingChart from "@/components/dashboard/SpendingChart.jsx";
+import RecentTransactions from "@/components/dashboard/RecentTransactions.jsx";
+import GoalsMiniList from "@/components/dashboard/GoalsMiniList.jsx";
 
 export default function Dashboard() {
   const [goals, setGoals] = useState([]);
