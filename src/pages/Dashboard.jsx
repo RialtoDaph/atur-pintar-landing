@@ -14,6 +14,7 @@ import SmartAlerts from "@/components/dashboard/SmartAlerts";
 import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
 import RecurringManager from "@/components/transactions/RecurringManager";
+import ReminderWidget from "@/components/reminders/ReminderWidget";
 
 function getWidgets() {
   const saved = localStorage.getItem("widgets");
@@ -89,6 +90,9 @@ export default function Dashboard() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 -mt-8 space-y-3">
+
+        {/* Reminder Widget */}
+        <ReminderWidget />
 
         {/* Smart Alerts */}
         {widgets.smartAlerts && <SmartAlerts transactions={transactions} loading={loading} />}

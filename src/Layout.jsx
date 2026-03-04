@@ -1,6 +1,6 @@
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Moon, Sun, Settings, User, MoreHorizontal } from "lucide-react";
+import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Moon, Sun, Settings, MoreHorizontal, Bell } from "lucide-react";
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 
@@ -31,6 +31,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Debts", label: "Utang", icon: CreditCard, page: "Debts" },
     { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
     { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
+    { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
     { name: "Settings", label: "Pengaturan", icon: Settings, page: "Settings" },
   ];
 
@@ -47,6 +48,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Budget", label: "Anggaran", icon: PiggyBank, page: "Budget" },
     { name: "Debts", label: "Utang", icon: CreditCard, page: "Debts" },
     { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
+    { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
   ];
 
   const initials = user?.full_name ? user.full_name.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase() : "U";
