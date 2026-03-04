@@ -102,13 +102,15 @@ export default function NanaFloatingChat() {
           
           {/* Header */}
           <div className="bg-[#0A0A0A] px-4 py-3 flex items-center gap-3 flex-shrink-0">
-            <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/83b9f64b6_generated_image.png" 
-              alt="Nana" 
-              className="w-8 h-8 rounded-full"
-            />
+            <div className="w-8 h-8 rounded-full bg-black border-2 border-[#2D2D2D] overflow-hidden flex-shrink-0">
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/83b9f64b6_generated_image.png" 
+                alt="Nana" 
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div className="flex-1">
-              <p className="text-white font-bold text-sm">Nana</p>
+              <p className="text-white font-bold text-sm">Nana AI</p>
               <p className="text-[#8FA4C8] text-[10px]">Asisten Keuangan AI</p>
             </div>
             <button onClick={newConversation} className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" title="Obrolan baru">
