@@ -10,7 +10,7 @@ export default function BalanceCard({ income, expense, savings, loading }) {
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+    <div className="bg-[#0A0A0A] rounded-2xl p-5 border border-[#222]">
       <p className="text-[#8FA4C8] text-xs font-semibold uppercase tracking-widest mb-1">This Month</p>
       <p className="text-white text-4xl font-bold mb-5">
         {balance >= 0 ? "+" : ""}${balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
