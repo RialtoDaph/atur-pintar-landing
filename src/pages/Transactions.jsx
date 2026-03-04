@@ -42,6 +42,12 @@ export default function Transactions() {
     loadData();
   }
 
+  async function handleEdit(id, data) {
+    await base44.entities.Transaction.update(id, data);
+    setEditingTx(null);
+    loadData();
+  }
+
   const filtered = filter === "all" ? transactions : transactions.filter(t => t.type === filter);
 
   // Group by month
