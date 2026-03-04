@@ -32,7 +32,6 @@ export default function Layout({ children, currentPageName }) {
     { name: "Debts", label: "Utang", icon: CreditCard, page: "Debts" },
     { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
     { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
-    { name: "Nana", label: "Nana AI ✨", icon: Sparkles, page: "Nana" },
     { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
     { name: "Settings", label: "Pengaturan", icon: Settings, page: "Settings" },
   ];
