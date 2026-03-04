@@ -17,18 +17,32 @@ export default function CheckoutButton({ user }) {
 
     setLoading(true);
     try {
-      // Create checkout session
+      const success_url = window.location.origin + "/dashboard?session_id={CHECKOUT_SESSION_ID}";
+      const cancel_url = window.location.origin + "/pricing";
+
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a Stripe checkout session for premium subscription. 
+        prompt: `Create a Stripe checkout session for Indonesian premium subscription.
         User email: ${user.email}
-        Price: IDR 39,000/month
-        Return the Stripe checkout URL.`,
+        Payment for: Premium subscription IDR 39,000/month
+        Success URL: ${success_url}
+        Cancel URL: ${cancel_url}
+        
+        Return a JSON object with the format: {"checkout_url": "https://checkout.stripe.com/...", "session_id": "cs_..."}`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            checkout_url: { type: "string" },
+            session_id: { type: "string" },
+          },
+        },
       });
 
-      // For now, show a placeholder - in production, you'd use Stripe.js
-      window.open("https://stripe.com", "_blank");
+      if (response.checkout_url) {
+        window.location.href = response.checkout_url;
+      }
     } catch (error) {
       console.error("Checkout error:", error);
+      alert("Gagal membuat sesi checkout. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
