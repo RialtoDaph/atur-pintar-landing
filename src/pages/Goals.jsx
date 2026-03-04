@@ -231,36 +231,102 @@ export default function Goals() {
 
   // All goals list view
   return (
-    <div className="min-h-screen bg-[#F7F6F3] max-w-lg mx-auto px-4 py-8">
-      <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-8 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Back
-      </Link>
-      <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6">All Goals</h1>
-      <div className="space-y-3">
-        {goals.map((g) => {
+  <div className="min-h-screen bg-[#F2F4F7] pb-8">
+    <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
+      <div className="max-w-2xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <p className="text-[#8FA4C8] text-sm font-medium">Rencana</p>
+            <h1 className="text-white text-2xl font-bold mt-0.5">Tujuan Finansial</h1>
+          </div>
+          <button
+            onClick={() => setShowAddGoal(true)}
+            className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+          >
+            <Plus className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        <div className="bg-white/10 rounded-2xl p-5">
+          <p className="text-white/60 text-sm mb-1">Total Target</p>
+          <p className="text-white font-bold text-3xl mb-2">Rp {goals.reduce((s, g) => s + g.target_amount, 0).toLocaleString("id-ID")}</p>
+          <p className="text-white/40 text-xs">{goals.filter(g => g.status === "active").length} tujuan aktif</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
+      {loading ? (
+        [...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-24 animate-pulse" />)
+      ) : goals.length === 0 ? (
+        <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
+          <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
+          <p className="text-[#4A5568] font-semibold">Belum ada tujuan finansial</p>
+          <p className="text-[#8FA4C8] text-sm mt-1">Tap + untuk membuat tujuan tabungan pertama Anda</p>
+        </div>
+      ) : (
+        goals.map((g) => {
           const color = COLORS[g.color] || COLORS.blue;
-          const progress = g.target_amount > 0 ? Math.min((g.current_amount / g.target_amount) * 100, 100) : 0;
+          const progress = g.target_amount > 0 ? Math.min((g.current_amount || 0 / g.target_amount) * 100, 100) : 0;
+          const daysLeft = calculateDaysRemaining(g.deadline);
+          const suggestedMonthly = calculateSuggestedMonthly(g);
+          const isUrgent = daysLeft && daysLeft < 30;
+
           return (
             <Link
               key={g.id}
               to={createPageUrl(`Goals?id=${g.id}`)}
-              className="block bg-white rounded-2xl p-4 shadow-sm border border-[#EFEFED] hover:shadow-md transition-all"
+              className="block bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-xl">{g.icon || "💰"}</span>
-                <div className="flex-1">
-                  <p className="font-semibold text-[#1A1A1A] text-sm">{g.name}</p>
-                  <p className="text-xs text-[#9B9B9B]">${(g.current_amount || 0).toLocaleString()} of ${g.target_amount.toLocaleString()}</p>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl" style={{ backgroundColor: `${color}20` }}>
+                    {g.icon || "💰"}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[#1A1A1A] text-sm">{g.name}</p>
+                    {g.description && <p className="text-xs text-[#8FA4C8] mt-0.5">{g.description}</p>}
+                  </div>
                 </div>
-                <span className="text-sm font-bold" style={{ color }}>{progress.toFixed(0)}%</span>
+                {g.status === "completed" && <CheckCircle className="w-5 h-5 text-[#00C9A7]" />}
               </div>
-              <div className="h-1.5 bg-[#F0F0EE] rounded-full overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${progress}%`, backgroundColor: color }} />
+
+              <div className="mb-3">
+                <div className="flex justify-between text-xs mb-1.5">
+                  <span className="text-[#4A5568] font-medium">Rp {(g.current_amount || 0).toLocaleString("id-ID")} dari Rp {g.target_amount.toLocaleString("id-ID")}</span>
+                  <span className="font-bold" style={{ color }}>{progress.toFixed(0)}%</span>
+                </div>
+                <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: color }} />
+                </div>
+              </div>
+
+              <div className="flex gap-3 text-xs">
+                {g.deadline && (
+                  <div className="flex items-center gap-1 text-[#8FA4C8]">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {daysLeft >= 0 ? `${daysLeft} hari` : "Kadaluarsa"}
+                  </div>
+                )}
+                {suggestedMonthly && (
+                  <div className={`flex items-center gap-1 ${isUrgent ? "text-[#FF6B6B]" : "text-[#8FA4C8]"}`}>
+                    <Zap className="w-3.5 h-3.5" />
+                    Rp {suggestedMonthly.toLocaleString("id-ID")}/bln
+                  </div>
+                )}
               </div>
             </Link>
           );
-        })}
-      </div>
+        })
+      )}
     </div>
+
+    {showAddGoal && (
+      <AddGoalModal
+        onClose={() => setShowAddGoal(false)}
+        onSave={handleAddGoal}
+      />
+    )}
+  </div>
   );
-}
+  }
