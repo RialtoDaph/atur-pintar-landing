@@ -148,25 +148,21 @@ export default function Analytics() {
 
               <div className="space-y-2.5 mt-2">
                 {pieData.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">{item.emoji}</span>
-                      <span className="text-sm font-medium text-[#0A0A0A]">{item.name}</span>
+                  <div key={i} className="flex items-center gap-2 min-w-0">
+                    <span className="text-base flex-shrink-0">{item.emoji}</span>
+                    <span className="text-sm font-medium text-[#0A0A0A] flex-1 min-w-0 truncate">{item.name}</span>
+                    <div className="w-16 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden flex-shrink-0 hidden sm:block">
+                      <div
+                        className="h-full rounded-full"
+                        style={{ width: `${(item.value / totalExpenses) * 100}%`, backgroundColor: item.color }}
+                      />
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-20 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${(item.value / totalExpenses) * 100}%`, backgroundColor: item.color }}
-                        />
-                      </div>
-                      <span className="text-sm font-semibold text-[#0A0A0A] w-24 text-right">
-                        {formatRupiah(item.value)}
-                      </span>
-                      <span className="text-xs text-[#8FA4C8] w-10 text-right">
-                        {((item.value / totalExpenses) * 100).toFixed(0)}%
-                      </span>
-                    </div>
+                    <span className="text-xs sm:text-sm font-semibold text-[#0A0A0A] flex-shrink-0 whitespace-nowrap">
+                      {formatRupiah(item.value)}
+                    </span>
+                    <span className="text-[10px] text-[#8FA4C8] flex-shrink-0 w-8 text-right whitespace-nowrap">
+                      {((item.value / totalExpenses) * 100).toFixed(0)}%
+                    </span>
                   </div>
                 ))}
               </div>
