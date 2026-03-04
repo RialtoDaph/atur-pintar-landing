@@ -2,9 +2,10 @@ import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
 
-const STRIPE_PRICE_ID = "price_1P8z8eL3VzLEzNQwHn8vQkOx"; // Replace with your actual Stripe price ID
-const MONTHLY_PRICE = 3900; // Rp 39,000 in cents for Stripe
+const STRIPE_KEY = "pk_live_YOUR_STRIPE_PUBLIC_KEY"; // Replace with your public key
+const STRIPE_PRICE_ID = "price_1P8z8eL3VzLEzNQwHn8vQkOx";
 
 export default function CheckoutButton({ user }) {
   const [loading, setLoading] = useState(false);
@@ -17,32 +18,29 @@ export default function CheckoutButton({ user }) {
 
     setLoading(true);
     try {
-      const success_url = window.location.origin + "/dashboard?session_id={CHECKOUT_SESSION_ID}";
-      const cancel_url = window.location.origin + "/pricing";
+      const stripe = await loadStripe(STRIPE_KEY);
 
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a Stripe checkout session for Indonesian premium subscription.
-        User email: ${user.email}
-        Payment for: Premium subscription IDR 39,000/month
-        Success URL: ${success_url}
-        Cancel URL: ${cancel_url}
-        
-        Return a JSON object with the format: {"checkout_url": "https://checkout.stripe.com/...", "session_id": "cs_..."}`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            checkout_url: { type: "string" },
-            session_id: { type: "string" },
+      const { error } = await stripe.redirectToCheckout({
+        lineItems: [
+          {
+            price: STRIPE_PRICE_ID,
+            quantity: 1,
           },
-        },
+        ],
+        mode: "subscription",
+        successUrl: `${window.location.origin}/dashboard?payment=success`,
+        cancelUrl: `${window.location.origin}/pricing?payment=cancelled`,
+        customerEmail: user.email,
+        locale: "id",
       });
 
-      if (response.checkout_url) {
-        window.location.href = response.checkout_url;
+      if (error) {
+        console.error("Stripe error:", error);
+        alert("Gagal membuka Stripe checkout. Silakan coba lagi.");
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      alert("Gagal membuat sesi checkout. Silakan coba lagi.");
+      alert("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
