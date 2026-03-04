@@ -72,6 +72,28 @@ export default function Goals() {
     window.location.href = createPageUrl("Dashboard");
   }
 
+  async function handleAddGoal(data) {
+    await base44.entities.SavingsGoal.create(data);
+    setShowAddGoal(false);
+    loadData();
+  }
+
+  function calculateSuggestedMonthly(goal) {
+    if (!goal.deadline) return null;
+    const today = new Date();
+    const deadline = new Date(goal.deadline);
+    const remaining = Math.max(goal.target_amount - (goal.current_amount || 0), 0);
+    const months = Math.max((deadline - today) / (1000 * 60 * 60 * 24 * 30), 0.5);
+    return months > 0 ? Math.ceil(remaining / months) : remaining;
+  }
+
+  function calculateDaysRemaining(deadline) {
+    if (!deadline) return null;
+    const today = new Date();
+    const days = Math.ceil((new Date(deadline) - today) / (1000 * 60 * 60 * 24));
+    return Math.max(days, 0);
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F7F6F3] flex items-center justify-center">
