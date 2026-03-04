@@ -5,7 +5,7 @@ export default function BalanceCard({ income, expense, savings, loading }) {
 
   if (loading) {
     return (
-      <div className="bg-white/10 rounded-2xl p-5 animate-pulse h-36" />
+      <div className="bg-[#0A0A0A] rounded-2xl p-5 animate-pulse h-36" />
     );
   }
 
