@@ -46,7 +46,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
       {/* Top Header */}
-      <div className="bg-white px-5 pt-10 pb-20 border-b border-[#EFEFED]">
+      <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
