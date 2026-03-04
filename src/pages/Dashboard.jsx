@@ -14,6 +14,9 @@ import SmartAlerts from "@/components/dashboard/SmartAlerts";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
 import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
+import BudgetOverspendAlert from "@/components/dashboard/BudgetOverspendAlert";
+import GoalAchievementNotice from "@/components/dashboard/GoalAchievementNotice";
+import CategorySpendingTrend from "@/components/dashboard/CategorySpendingTrend";
 import RecurringManager from "@/components/transactions/RecurringManager";
 import ReminderWidget from "@/components/reminders/ReminderWidget";
 
@@ -26,6 +29,7 @@ function getWidgets() {
 export default function Dashboard() {
   const [goals, setGoals] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddTx, setShowAddTx] = useState(false);
@@ -42,12 +46,14 @@ export default function Dashboard() {
 
   async function loadData() {
     setLoading(true);
-    const [g, t] = await Promise.all([
+    const [g, t, b] = await Promise.all([
       base44.entities.SavingsGoal.list("-created_date"),
       base44.entities.Transaction.list("-date", 100),
+      base44.entities.Budget.list("-created_date"),
     ]);
     setGoals(g);
     setTransactions(t);
+    setBudgets(b);
     setLoading(false);
   }
 
@@ -98,9 +104,12 @@ export default function Dashboard() {
       {/* Main Content Area */}
       <div className="max-w-2xl mx-auto px-5 py-6 space-y-4 pb-20">
 
-        {/* Alerts Section - Priority High */}
+        {/* Alerts & Achievements Section - Priority High */}
         <SmartAlertsPanel />
+        <GoalAchievementNotice goals={goals} transactions={transactions} loading={loading} />
         {widgets.smartAlerts && <SmartAlerts transactions={transactions} loading={loading} />}
+        <BudgetOverspendAlert transactions={transactions} budgets={budgets} loading={loading} />
+        <CategorySpendingTrend transactions={transactions} loading={loading} />
 
         {/* Quick Reminders */}
         <ReminderWidget />
