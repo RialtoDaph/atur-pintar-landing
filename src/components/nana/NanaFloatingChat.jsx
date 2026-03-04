@@ -154,7 +154,7 @@ export default function NanaFloatingChat() {
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} gap-2`}>
                   {msg.role === "assistant" && (
                      <img 
-                       src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/166a055ec_IMG_8610.jpg" 
+                       src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/f91470034_generated_image.png" 
                        alt="Nana" 
                        className="w-6 h-6 rounded-full object-cover flex-shrink-0 mt-0.5"
                      />
