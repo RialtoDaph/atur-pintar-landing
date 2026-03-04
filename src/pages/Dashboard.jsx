@@ -28,6 +28,7 @@ export default function Dashboard() {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddTx, setShowAddTx] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem("onboarding_done"));
 
   useEffect(() => {
     const onStorage = () => setWidgets(getWidgets());
