@@ -52,7 +52,7 @@ export default function Dashboard() {
             </div>
             <button
               onClick={() => setShowAddTx(true)}
-              className="w-10 h-10 rounded-full bg-[#00C9A7] flex items-center justify-center shadow-lg hover:bg-[#00b596] transition-colors"
+              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
             >
               <Plus className="w-5 h-5 text-white" />
             </button>
