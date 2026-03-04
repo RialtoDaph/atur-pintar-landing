@@ -11,6 +11,7 @@ import SpendingChart from "@/components/dashboard/SpendingChart";
 import RecentTransactions from "@/components/dashboard/RecentTransactions";
 import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
 import SmartAlerts from "@/components/dashboard/SmartAlerts";
+import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
 import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
 import RecurringManager from "@/components/transactions/RecurringManager";
