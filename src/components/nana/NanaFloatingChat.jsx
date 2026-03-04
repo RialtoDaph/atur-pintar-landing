@@ -169,8 +169,12 @@ export default function NanaFloatingChat() {
               ))
             )}
             {sending && (
-              <div className="flex justify-start gap-2">
-                <div className="w-6 h-6 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0">N</div>
+               <div className="flex justify-start gap-2">
+                 <img 
+                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/166a055ec_IMG_8610.jpg" 
+                   alt="Nana" 
+                   className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+                 />
                 <div className="bg-white border border-[#E2E8F0] rounded-2xl px-3 py-2 flex gap-1 items-center">
                   {[0,1,2].map(i => (
                     <div key={i} className="w-1.5 h-1.5 bg-[#8FA4C8] rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
