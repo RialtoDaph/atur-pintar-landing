@@ -94,7 +94,7 @@ export default function Analytics() {
 
         {/* Monthly Trend Bar Chart */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h2 className="font-bold text-[#1B2559] text-base mb-4">Income vs Expenses (6 months)</h2>
+          <h2 className="font-bold text-[#0A0A0A] text-base mb-4">Income vs Expenses (6 months)</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={trendData} barCategoryGap="30%">
               <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
@@ -115,7 +115,7 @@ export default function Analytics() {
 
         {/* Category Breakdown */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h2 className="font-bold text-[#1B2559] text-base mb-1">Spending by Category</h2>
+          <h2 className="font-bold text-[#0A0A0A] text-base mb-1">Spending by Category</h2>
           <p className="text-xs text-[#8FA4C8] mb-4">This month</p>
 
           {pieData.length === 0 ? (
@@ -150,7 +150,7 @@ export default function Analytics() {
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-base">{item.emoji}</span>
-                      <span className="text-sm font-medium text-[#1B2559]">{item.name}</span>
+                      <span className="text-sm font-medium text-[#0A0A0A]">{item.name}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-20 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
@@ -159,7 +159,7 @@ export default function Analytics() {
                           style={{ width: `${(item.value / totalExpenses) * 100}%`, backgroundColor: item.color }}
                         />
                       </div>
-                      <span className="text-sm font-semibold text-[#1B2559] w-16 text-right">
+                      <span className="text-sm font-semibold text-[#0A0A0A] w-16 text-right">
                         ${item.value.toLocaleString("en-US", { minimumFractionDigits: 0 })}
                       </span>
                       <span className="text-xs text-[#8FA4C8] w-10 text-right">
