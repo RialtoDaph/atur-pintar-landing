@@ -99,24 +99,33 @@ export default function Layout({ children, currentPageName }) {
           <p className="text-xs text-[#8FA4C8] mt-0.5">Kelola keuanganmu</p>
         </div>
 
-        <nav className="flex flex-col gap-1 flex-1">
-          {navItems.map((item) => {
-            const active = currentPageName === item.page;
-            return (
-              <Link
-                key={item.page}
-                to={createPageUrl(item.page)}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-[#FF6A00] text-white shadow-sm"
-                    : "text-[#888] hover:text-white hover:bg-white/10"
-                }`}
-              >
-                <item.icon className="w-4 h-4" />
-                {item.label}
-              </Link>
-            );
-          })}
+        <nav className="flex flex-col gap-6 flex-1 overflow-y-auto">
+          {navSections.map((section, idx) => (
+            <div key={idx}>
+              <p className="text-[#8FA4C8] text-[11px] font-bold uppercase tracking-wider px-4 mb-2">
+                {section.label}
+              </p>
+              <div className="flex flex-col gap-1">
+                {section.items.map((item) => {
+                  const active = currentPageName === item.page;
+                  return (
+                    <Link
+                      key={item.page}
+                      to={createPageUrl(item.page)}
+                      className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        active
+                          ? "bg-[#FF6A00] text-white shadow-md"
+                          : "text-[#888] hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      <item.icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* Dark mode + Profile */}
