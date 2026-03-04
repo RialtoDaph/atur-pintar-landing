@@ -3,9 +3,9 @@ import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 import { Plus, TrendingUp, Target, Wallet, ArrowRight } from "lucide-react";
-import GoalCard from "../components/goals/GoalCard";
-import StatCard from "../components/dashboard/StatCard";
-import AddGoalModal from "../components/goals/AddGoalModal";
+import GoalCard from "@/components/goals/GoalCard";
+import StatCard from "@/components/dashboard/StatCard";
+import AddGoalModal from "@/components/goals/AddGoalModal";
 
 export default function Dashboard() {
   const [goals, setGoals] = useState([]);

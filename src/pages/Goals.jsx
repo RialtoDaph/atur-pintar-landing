@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { ArrowLeft, Plus, Minus, Trash2, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import AddTransactionModal from "../components/goals/AddTransactionModal";
+import AddTransactionModal from "@/components/goals/AddTransactionModal";
 
 const COLORS = {
   blue: "#4F7CFF",
