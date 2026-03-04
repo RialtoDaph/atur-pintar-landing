@@ -41,12 +41,7 @@ export default function Layout({ children, currentPageName }) {
         { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
       ]
     },
-    {
-      label: "Insights",
-      items: [
-        { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
-      ]
-    },
+
     {
       label: "Akun",
       items: [
@@ -60,7 +55,7 @@ export default function Layout({ children, currentPageName }) {
   const mobileMainNav = [
     { name: "Dashboard", label: "Home", icon: LayoutDashboard, page: "Dashboard" },
     { name: "Transactions", label: "Transaksi", icon: ArrowLeftRight, page: "Transactions" },
-    { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
+
     { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
   ];
 
