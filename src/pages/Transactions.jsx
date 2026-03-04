@@ -25,6 +25,7 @@ export default function Transactions() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
   const [showAddTx, setShowAddTx] = useState(false);
+  const [editingTx, setEditingTx] = useState(null);
 
   useEffect(() => { loadData(); }, []);
 
