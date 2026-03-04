@@ -51,7 +51,7 @@ export default function Layout({ children, currentPageName }) {
       </div>
 
       {/* Mobile bottom nav */}
-      <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#1B2559] flex z-40 border-t border-white/10">
+      <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-40 border-t border-white/10">
         {navItems.map((item) => {
           const active = currentPageName === item.page;
           return (
