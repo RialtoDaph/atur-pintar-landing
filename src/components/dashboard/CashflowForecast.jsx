@@ -56,8 +56,8 @@ export default function CashflowForecast({ transactions, loading }) {
       {/* Prediction */}
       <div className={`rounded-xl px-4 py-3 mb-3 ${isPositive ? "bg-green-50 border border-green-100" : "bg-red-50 border border-red-100"}`}>
         <p className="text-xs text-[#9B9B9B] mb-0.5">Prediksi saldo akhir bulan</p>
-        <p className={`text-2xl font-bold ${isPositive ? "text-green-600" : "text-red-500"}`}>
-          {isPositive ? "+" : ""}${projectedBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+        <p className={`text-xl font-bold ${isPositive ? "text-green-600" : "text-red-500"}`}>
+          {isPositive ? "+" : "-"}{formatRupiah(Math.abs(projectedBalance))}
         </p>
         <p className="text-xs text-[#9B9B9B] mt-0.5">
           {isPositive ? "Keuanganmu aman bulan ini 🎉" : "Pengeluaran melebihi pemasukan ⚠️"}
@@ -70,14 +70,14 @@ export default function CashflowForecast({ transactions, loading }) {
             <TrendingUp className="w-3.5 h-3.5 text-green-500" />
             <p className="text-xs text-[#9B9B9B]">Estimasi Pemasukan</p>
           </div>
-          <p className="text-sm font-bold text-[#1A1A1A]">${projectedTotalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+          <p className="text-sm font-bold text-[#1A1A1A]">{formatRupiah(projectedTotalIncome)}</p>
         </div>
         <div className="bg-[#F9F9F9] rounded-xl p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingDown className="w-3.5 h-3.5 text-red-400" />
             <p className="text-xs text-[#9B9B9B]">Estimasi Pengeluaran</p>
           </div>
-          <p className="text-sm font-bold text-[#1A1A1A]">${projectedTotalExpense.toLocaleString("en-US", { minimumFractionDigits: 2 })}</p>
+          <p className="text-sm font-bold text-[#1A1A1A]">{formatRupiah(projectedTotalExpense)}</p>
         </div>
       </div>
     </div>
