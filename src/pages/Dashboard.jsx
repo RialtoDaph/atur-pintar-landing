@@ -152,6 +152,13 @@ export default function Dashboard() {
         />
       )}
 
+      {showOnboarding && (
+        <OnboardingModal onClose={() => {
+          setShowOnboarding(false);
+          localStorage.setItem("onboarding_done", "true");
+        }} />
+      )}
+
       {showAddTx && (
         <AddTransactionModal
           onClose={() => setShowAddTx(false)}
