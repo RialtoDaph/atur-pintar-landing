@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/components/utils/formatRupiah";
+import FinancialCalendar from "@/components/analytics/FinancialCalendar";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, LineChart, Line, Area, AreaChart, CartesianGrid
@@ -27,6 +28,7 @@ export default function Analytics() {
   const [goals, setGoals] = useState([]);
   const [budgets, setBudgets] = useState([]);
   const [investments, setInvestments] = useState([]);
+  const [debts, setDebts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,12 +36,14 @@ export default function Analytics() {
       base44.entities.Transaction.list("-date", 500),
       base44.entities.SavingsGoal.list("-created_date"),
       base44.entities.Budget.list(),
-      base44.entities.Investment.list()
-    ]).then(([t, g, b, i]) => {
+      base44.entities.Investment.list(),
+      base44.entities.Debt.list()
+    ]).then(([t, g, b, i, d]) => {
       setTransactions(t);
       setGoals(g);
       setBudgets(b);
       setInvestments(i);
+      setDebts(d);
       setLoading(false);
     });
   }, []);
@@ -143,6 +147,9 @@ export default function Analytics() {
       </div>
 
       <div className="max-w-2xl mx-auto px-5 mt-6 space-y-5">
+
+        {/* Financial Calendar */}
+        <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
 
         {/* 12 Month Spending Trend */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">

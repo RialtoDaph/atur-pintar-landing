@@ -48,30 +48,30 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Alerts from './pages/Alerts';
-import Analytics from './pages/Analytics';
+import Nana from './pages/Nana';
+import Reminders from './pages/Reminders';
 import Budget from './pages/Budget';
-import Dashboard from './pages/Dashboard';
 import Debts from './pages/Debts';
 import Goals from './pages/Goals';
 import Investments from './pages/Investments';
-import Nana from './pages/Nana';
-import Reminders from './pages/Reminders';
 import Settings from './pages/Settings';
+import Dashboard from './pages/Dashboard';
+import Analytics from './pages/Analytics';
 import Transactions from './pages/Transactions';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Alerts": Alerts,
-    "Analytics": Analytics,
+    "Nana": Nana,
+    "Reminders": Reminders,
     "Budget": Budget,
-    "Dashboard": Dashboard,
     "Debts": Debts,
     "Goals": Goals,
     "Investments": Investments,
-    "Nana": Nana,
-    "Reminders": Reminders,
     "Settings": Settings,
+    "Dashboard": Dashboard,
+    "Analytics": Analytics,
     "Transactions": Transactions,
 }
 
