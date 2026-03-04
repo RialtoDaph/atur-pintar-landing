@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Moon, Sun, DollarSign, Globe, LayoutDashboard, Bell, User, LogOut, ChevronRight, Check } from "lucide-react";
+import { Moon, Sun, DollarSign, Globe, LayoutDashboard, Bell, User, LogOut, ChevronRight, Check, AlertCircle, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import NanaPreferencesSettings from "@/components/settings/NanaPreferencesSettings";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
 
@@ -156,6 +158,39 @@ export default function Settings() {
               {currency === cur.code && <Check className="w-4 h-4 text-[#FF6A00]" />}
             </button>
           ))}
+        </div>
+
+        {/* Notifications & Reminders */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-5 pt-4 pb-2">
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Notifikasi & Pengingat</p>
+          </div>
+          <Link
+            to={createPageUrl("Alerts")}
+            className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]"
+          >
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-[#FF6A00]" />
+              <div className="text-left">
+                <p className="font-medium text-[#1A1A1A] text-sm">Notifikasi</p>
+                <p className="text-xs text-[#8FA4C8]">Kelola alert dan peringatan</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
+          </Link>
+          <Link
+            to={createPageUrl("Reminders")}
+            className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]"
+          >
+            <div className="flex items-center gap-3">
+              <Clock className="w-5 h-5 text-[#FF6A00]" />
+              <div className="text-left">
+                <p className="font-medium text-[#1A1A1A] text-sm">Pengingat</p>
+                <p className="text-xs text-[#8FA4C8]">Atur pengingat pembayaran</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
+          </Link>
         </div>
 
         {/* Nana AI Preferences */}
