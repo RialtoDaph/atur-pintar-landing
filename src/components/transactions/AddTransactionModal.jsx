@@ -32,6 +32,8 @@ export default function AddTransactionModal({ onClose, onSave }) {
   const [saving, setSaving] = useState(false);
   const [customCats, setCustomCats] = useState([]);
   const [showManage, setShowManage] = useState(false);
+  const [recurring, setRecurring] = useState(false);
+  const [recurringInterval, setRecurringInterval] = useState("monthly");
 
   useEffect(() => { loadCustomCats(); }, []);
 
@@ -43,7 +45,14 @@ export default function AddTransactionModal({ onClose, onSave }) {
   async function handleSave() {
     if (!form.amount || !form.category) return;
     setSaving(true);
-    await onSave({ ...form, type: tab, amount: parseFloat(form.amount) });
+    await onSave({
+      ...form,
+      type: tab,
+      amount: parseFloat(form.amount),
+      is_recurring: recurring,
+      recurring_interval: recurring ? recurringInterval : undefined,
+      recurring_last_generated: recurring ? form.date : undefined,
+    });
     setSaving(false);
   }
 
