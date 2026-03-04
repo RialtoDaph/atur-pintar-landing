@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Loader2, TrendingUp, Target } from "lucide-react";
+import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from "recharts";
+import { Loader2, TrendingUp, Target, ArrowUpRight, ArrowDownRight, PieChart as PieChartIcon, BarChart3 } from "lucide-react";
 import { formatRupiah } from "@/components/utils/formatRupiah";
 
 const CATEGORIES = {
