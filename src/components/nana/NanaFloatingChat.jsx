@@ -150,8 +150,12 @@ export default function NanaFloatingChat() {
               visibleMessages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} gap-2`}>
                   {msg.role === "assistant" && (
-                    <div className="w-6 h-6 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0 mt-0.5">N</div>
-                  )}
+                     <img 
+                       src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/166a055ec_IMG_8610.jpg" 
+                       alt="Nana" 
+                       className="w-6 h-6 rounded-full object-cover flex-shrink-0 mt-0.5"
+                     />
+                   )}
                   <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs ${
                     msg.role === "user" ? "bg-[#FF6A00] text-white" : "bg-white border border-[#E2E8F0] text-[#1A1A1A]"
                   }`}>
