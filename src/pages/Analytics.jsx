@@ -295,82 +295,86 @@ export default function AnalyticsPage() {
         )}
 
         {/* Savings goals and investments */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Savings goals progress */}
           {goalsProgress.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-950 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <Card className="dm-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Progres Tujuan Tabungan
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {goalsProgress.map((goal) => (
+                    <div key={goal.name}>
+                      <div className="flex justify-between mb-2">
+                        <span className="font-medium">{goal.name}</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{goal.percentage}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div
+                          className="bg-[#FF6A00] h-2 rounded-full"
+                          style={{ width: `${Math.min(goal.percentage, 100)}%` }}
+                        />
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        {formatRupiah(goal.current)} / {formatRupiah(goal.target)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Tujuan Tabungan</h3>
-              </div>
-              <div className="space-y-5">
-                {goalsProgress.map((goal) => (
-                  <div key={goal.name} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-gray-900 dark:text-gray-100">{goal.name}</span>
-                      <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{goal.percentage}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                      <div
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-2.5 rounded-full transition-all"
-                        style={{ width: `${Math.min(goal.percentage, 100)}%` }}
-                      />
-                    </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
-                      {formatRupiah(goal.current)} / {formatRupiah(goal.target)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Investments summary */}
           {investments.length > 0 && (
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-md transition-all">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-950 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Portfolio Investasi</h3>
-              </div>
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Total</p>
-                  <p className="font-bold text-sm text-gray-900 dark:text-white">{formatRupiah(investmentsTotal)}</p>
-                </div>
-                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Gain</p>
-                  <p className={`font-bold text-sm ${investmentsGain >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {formatRupiah(investmentsGain)}
-                  </p>
-                </div>
-                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Return</p>
-                  <p className={`font-bold text-sm ${gainPercent >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                    {gainPercent}%
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {investments.map((inv) => (
-                  <div key={inv.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors">
-                    <div className="min-w-0">
-                      <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{inv.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Beli: {formatRupiah(inv.initial_amount)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{formatRupiah(inv.current_value)}</p>
-                      <p className={`text-xs font-medium ${inv.current_value >= inv.initial_amount ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                        {inv.current_value >= inv.initial_amount ? "+" : ""}{formatRupiah(inv.current_value - inv.initial_amount)}
-                      </p>
-                    </div>
+            <Card className="dm-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Ringkasan Investasi
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Nilai</p>
+                    <p className="text-2xl font-bold">{formatRupiah(investmentsTotal)}</p>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Keuntungan</p>
+                    <p className={`text-2xl font-bold ${investmentsGain >= 0 ? "text-green-600" : "text-red-600"}`}>
+                      {formatRupiah(investmentsGain)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Return</p>
+                    <p className={`text-2xl font-bold ${gainPercent >= 0 ? "text-green-600" : "text-red-600"}`}>
+                      {gainPercent}%
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {investments.map((inv) => (
+                    <div key={inv.id} className="flex justify-between p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                      <div>
+                        <p className="font-medium">{inv.name}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Beli: {formatRupiah(inv.initial_amount)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{formatRupiah(inv.current_value)}</p>
+                        <p className={`text-sm ${inv.current_value >= inv.initial_amount ? "text-green-600" : "text-red-600"}`}>
+                          {formatRupiah(inv.current_value - inv.initial_amount)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>
