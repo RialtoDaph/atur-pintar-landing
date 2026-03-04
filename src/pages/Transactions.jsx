@@ -56,7 +56,7 @@ export default function Transactions() {
   filtered.forEach(tx => {
     const d = new Date(tx.date);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    const label = d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
     if (!grouped[key]) grouped[key] = { label, items: [] };
     grouped[key].items.push(tx);
   });
@@ -115,8 +115,8 @@ export default function Transactions() {
                 <div className="px-5 py-3 border-b border-[#F2F4F7] flex items-center justify-between">
                   <p className="text-sm font-bold text-[#1B2559]">{group.label}</p>
                   <div className="flex gap-3 text-xs">
-                    {monthIncome > 0 && <span className="text-[#00C9A7] font-semibold">+${monthIncome.toFixed(0)}</span>}
-                    {monthExpense > 0 && <span className="text-[#FF6B6B] font-semibold">−${monthExpense.toFixed(0)}</span>}
+                    {monthIncome > 0 && <span className="text-[#00C9A7] font-semibold">+{formatRupiah(monthIncome)}</span>}
+                    {monthExpense > 0 && <span className="text-[#FF6B6B] font-semibold">−{formatRupiah(monthExpense)}</span>}
                   </div>
                 </div>
                 {group.items.map(tx => {
@@ -135,12 +135,12 @@ export default function Transactions() {
                           {tx.note || cat.label}
                         </p>
                         <p className="text-xs text-[#8FA4C8]">
-                          {new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · {cat.label}
+                          {new Date(tx.date).toLocaleDateString("id-ID", { month: "short", day: "numeric" })} · {cat.label}
                         </p>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm font-bold" style={{ color: isIncome ? "#00C9A7" : "#FF6B6B" }}>
-                          {isIncome ? "+" : "−"}${tx.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                          {isIncome ? "+" : "−"}{formatRupiah(tx.amount)}
                         </span>
                         <button
                           onClick={() => setEditingTx(tx)}
