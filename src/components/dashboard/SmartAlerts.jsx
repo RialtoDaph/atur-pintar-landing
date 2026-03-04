@@ -31,14 +31,14 @@ export default function SmartAlerts({ transactions, loading }) {
   }
 
   // High single expense
-  const highTx = thisMonth.filter(t => t.type === "expense" && t.amount > 500);
+  const highTx = thisMonth.filter(t => t.type === "expense" && t.amount > 500000);
   if (highTx.length > 0) {
     alerts.push({
       icon: AlertTriangle,
       color: "text-orange-500",
       bg: "bg-orange-50",
       border: "border-orange-100",
-      text: `${highTx.length} transaksi besar (>$500) bulan ini`,
+      text: `${highTx.length} transaksi besar (>Rp 500rb) bulan ini`,
     });
   }
 

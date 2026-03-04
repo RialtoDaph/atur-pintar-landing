@@ -1,4 +1,5 @@
 import { RefreshCw } from "lucide-react";
+import { formatRupiah } from "@/components/utils/formatRupiah";
 
 export default function SubscriptionDetector({ transactions, loading }) {
   if (loading) return null;
