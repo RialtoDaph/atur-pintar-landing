@@ -50,8 +50,8 @@ export default function Layout({ children, currentPageName }) {
     {
       label: "Akun",
       items: [
-        { name: "Pricing", label: "Premium", icon: DollarSign, page: "Pricing" },
-        { name: "SubscriptionManagement", label: "Subscription", icon: CreditCard, page: "SubscriptionManagement" },
+        // { name: "Pricing", label: "Premium", icon: DollarSign, page: "Pricing" },
+        // { name: "SubscriptionManagement", label: "Subscription", icon: CreditCard, page: "SubscriptionManagement" },
         { name: "Settings", label: "Pengaturan", icon: Settings, page: "Settings" },
       ]
     }
