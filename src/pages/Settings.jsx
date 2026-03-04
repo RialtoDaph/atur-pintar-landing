@@ -113,6 +113,26 @@ export default function Settings() {
           </button>
         </div>
 
+        {/* Bahasa */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-5 pt-4 pb-2">
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Bahasa / Language</p>
+          </div>
+          {LANGUAGES.map(lang => (
+            <button
+              key={lang.code}
+              onClick={() => selectLanguage(lang.code)}
+              className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7] first:border-0"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl">{lang.flag}</span>
+                <p className="font-medium text-[#1A1A1A] text-sm">{lang.label}</p>
+              </div>
+              {language === lang.code && <Check className="w-4 h-4 text-[#FF6A00]" />}
+            </button>
+          ))}
+        </div>
+
         {/* Mata Uang */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-2">
