@@ -2,13 +2,16 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, TrendingDown, Wallet, ArrowRight, ChevronRight } from "lucide-react";
+import { Plus, ChevronRight } from "lucide-react";
 import AddGoalModal from "@/components/goals/AddGoalModal";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
 import RecentTransactions from "@/components/dashboard/RecentTransactions";
 import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
+import SmartAlerts from "@/components/dashboard/SmartAlerts";
+import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
+import CashflowForecast from "@/components/dashboard/CashflowForecast";
 
 export default function Dashboard() {
   const [goals, setGoals] = useState([]);
