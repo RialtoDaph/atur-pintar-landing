@@ -12,6 +12,7 @@ import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
 import SmartAlerts from "@/components/dashboard/SmartAlerts";
 import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
+import RecurringManager from "@/components/transactions/RecurringManager";
 
 export default function Dashboard() {
   const [goals, setGoals] = useState([]);
