@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
+import { formatRupiah } from "@/components/utils/formatRupiah";
 
 export default function CashflowForecast({ transactions, loading }) {
   if (loading) return null;
