@@ -88,10 +88,10 @@ export default function NanaFloatingChat() {
       {/* Floating button */}
       {!open && (
         <img 
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/f91470034_generated_image.png" 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/83b9f64b6_generated_image.png" 
           alt="Nana AI" 
           onClick={openChat}
-          className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 hover:opacity-90 transition-all active:scale-95 nana-float cursor-pointer object-cover"
+          className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 hover:opacity-90 transition-all active:scale-95 nana-float cursor-pointer"
         />
       )}
 
