@@ -35,6 +35,7 @@ export default function Layout({ children, currentPageName }) {
     {
       label: "Kelola Keuangan",
       items: [
+        { name: "Analytics", label: "Analitik", icon: LineChart, page: "Analytics" },
         { name: "Goals", label: "Tujuan Tabungan", icon: Target, page: "Goals" },
         { name: "Budget", label: "Anggaran", icon: PiggyBank, page: "Budget" },
         { name: "Debts", label: "Utang", icon: CreditCard, page: "Debts" },
