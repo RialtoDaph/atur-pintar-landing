@@ -138,45 +138,75 @@ export default function AnalyticsPage() {
     );
   }
 
+  const totalExpense = Object.values(categoryData).reduce((a, b) => a + b, 0);
+  const totalIncome = transactions
+    .filter(t => t.type === "income" && t.date?.startsWith(currentMonth))
+    .reduce((s, t) => s + (t.amount || 0), 0);
+  const netBalance = totalIncome - totalExpense;
+
   return (
-    <div className={`min-h-screen ${false ? "bg-gray-50 dark:bg-gray-950" : "bg-white dark:bg-[#0A0A0A]"}`}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-gray-950 dark:via-[#0A0A0A] dark:to-gray-950">
       {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="p-8 max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">Analitik Keuangan</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Pantau tren pengeluaran dan insight keuangan Anda</p>
+      <div className="sticky top-0 z-20 backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-800/50">
+        <div className="px-8 py-6 max-w-7xl mx-auto">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+              <BarChart3 className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Analitik Keuangan</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Dashboard insight keuangan real-time</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="p-8 max-w-7xl mx-auto space-y-8">
-        {/* Top stats grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="px-8 py-8 max-w-7xl mx-auto space-y-8">
+        {/* Top stats grid - 3 columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Current month income */}
+          <div className="group relative bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-800 overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-green-400/20 to-green-600/20 rounded-full blur-3xl group-hover:scale-110 transition-transform" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Pemasukan Bulan Ini</p>
+                <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-950 flex items-center justify-center">
+                  <ArrowDownRight className="w-5 h-5 text-green-600 dark:text-green-400 rotate-180" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatRupiah(totalIncome)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">+2.5% dari bulan lalu</p>
+            </div>
+          </div>
+
           {/* Current month expense */}
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900 rounded-lg p-6 border border-orange-200 dark:border-orange-800">
-            <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">Pengeluaran Bulan Ini</p>
-            <p className="text-2xl font-bold text-orange-900 dark:text-orange-100 mt-2">
-              {formatRupiah(Object.values(categoryData).reduce((a, b) => a + b, 0))}
-            </p>
+          <div className="group relative bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-800 overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400/20 to-orange-600/20 rounded-full blur-3xl group-hover:scale-110 transition-transform" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Pengeluaran Bulan Ini</p>
+                <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-950 flex items-center justify-center">
+                  <ArrowUpRight className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatRupiah(totalExpense)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">-1.2% dari bulan lalu</p>
+            </div>
           </div>
 
-          {/* This month income */}
-          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 rounded-lg p-6 border border-green-200 dark:border-green-800">
-            <p className="text-sm text-green-600 dark:text-green-400 font-medium">Pemasukan Bulan Ini</p>
-            <p className="text-2xl font-bold text-green-900 dark:text-green-100 mt-2">
-              {formatRupiah(transactions.filter(t => t.type === "income" && t.date?.startsWith(currentMonth)).reduce((s, t) => s + (t.amount || 0), 0))}
-            </p>
-          </div>
-
-          {/* Active goals */}
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
-            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">Tujuan Tabungan Aktif</p>
-            <p className="text-2xl font-bold text-blue-900 dark:text-blue-100 mt-2">{goals.length}</p>
-          </div>
-
-          {/* Total investments */}
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 rounded-lg p-6 border border-purple-200 dark:border-purple-800">
-            <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">Nilai Investasi</p>
-            <p className="text-2xl font-bold text-purple-900 dark:text-purple-100 mt-2">{formatRupiah(investmentsTotal)}</p>
+          {/* Net balance */}
+          <div className="group relative bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-800 overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-full blur-3xl group-hover:scale-110 transition-transform" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Net Balance</p>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${netBalance >= 0 ? "bg-blue-100 dark:bg-blue-950" : "bg-red-100 dark:bg-red-950"}`}>
+                  <TrendingUp className={`w-5 h-5 ${netBalance >= 0 ? "text-blue-600 dark:text-blue-400" : "text-red-600 dark:text-red-400"}`} />
+                </div>
+              </div>
+              <p className={`text-3xl font-bold ${netBalance >= 0 ? "text-gray-900 dark:text-white" : "text-red-600 dark:text-red-400"}`}>{formatRupiah(netBalance)}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">{netBalance >= 0 ? "Surplus" : "Deficit"}</p>
+            </div>
           </div>
         </div>
 
