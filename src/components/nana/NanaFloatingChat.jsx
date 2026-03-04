@@ -110,7 +110,7 @@ export default function NanaFloatingChat() {
 
             </div>
             <div className="flex-1">
-              <p className="text-white font-bold text-sm">Nana AI</p>
+              <p className="text-white font-bold text-sm">Nana </p>
               <p className="text-[#8FA4C8] text-[10px]">Asisten Keuangan AI</p>
             </div>
             <button onClick={newConversation} className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" title="Obrolan baru">
@@ -136,7 +136,7 @@ export default function NanaFloatingChat() {
                 className="w-full h-full object-cover" />
 
                  </div>
-                <p className="text-white font-bold text-sm">Nana AI</p>
+                <p className="text-white font-bold text-sm">Nana </p>
                 <p className="text-[#8FA4C8] text-xs max-w-[220px]">Tanya apa saja soal keuanganmu!</p>
                 <div className="flex flex-col gap-1.5 mt-1 w-full">
                   {["Berapa pengeluaranku bulan ini?", "Bantu buat target tabungan", "Cek tagihan jatuh tempo"].map((s) =>
