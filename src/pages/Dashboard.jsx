@@ -61,18 +61,18 @@ export default function Dashboard() {
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
       <RecurringManager />
       {/* Top Header */}
-      <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
+      <div className="bg-[#0A0A0A] px-5 pt-8 pb-16">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[#8FA4C8] text-sm font-medium">Good day 👋</p>
-              <h1 className="text-white text-2xl font-bold mt-0.5">Your Finances</h1>
+              <p className="text-[#8FA4C8] text-xs font-medium">Good day 👋</p>
+              <h1 className="text-white text-xl font-bold mt-0.5">Your Finances</h1>
             </div>
             <button
               onClick={() => setShowAddTx(true)}
-              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+              className="w-9 h-9 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
             >
-              <Plus className="w-5 h-5 text-white" />
+              <Plus className="w-4 h-4 text-white" />
             </button>
           </div>
 
@@ -86,7 +86,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-4">
+      <div className="max-w-2xl mx-auto px-4 -mt-8 space-y-3">
 
         {/* Smart Alerts */}
         {widgets.smartAlerts && <SmartAlerts transactions={transactions} loading={loading} />}
