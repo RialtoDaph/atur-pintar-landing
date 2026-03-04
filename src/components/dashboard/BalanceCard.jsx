@@ -18,7 +18,7 @@ export default function BalanceCard({ income, expense, savings, loading }) {
       <div className="grid grid-cols-3 gap-3">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full bg-[#FF6A00]/20 flex items-center justify-center">
-            <TrendingUp className="w-3.5 h-3.5 text-[#00C9A7]" />
+            <TrendingUp className="w-3.5 h-3.5 text-[#FF6A00]" />
           </div>
           <div>
             <p className="text-[#8FA4C8] text-[10px]">Income</p>
