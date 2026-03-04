@@ -23,6 +23,7 @@ export default function Goals() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showTxModal, setShowTxModal] = useState(null); // 'deposit' | 'withdrawal'
+  const [showAddGoal, setShowAddGoal] = useState(false);
 
   const goal = goals.find((g) => g.id === goalId) || null;
 
