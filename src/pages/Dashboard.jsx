@@ -139,6 +139,9 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Portfolio Summary */}
+        <PortfolioSummary />
+
         {/* Savings Goals */}
         {widgets.savingsGoals && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
