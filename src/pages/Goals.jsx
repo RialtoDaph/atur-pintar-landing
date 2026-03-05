@@ -117,17 +117,17 @@ export default function Goals() {
         </Link>
 
         {/* Goal hero */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFEFED] mb-5">
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#E2E8F0] mb-5">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-3">
               <span className="text-4xl">{goal.icon || "💰"}</span>
               <div>
                 <h1 className="text-xl font-bold text-[#1A1A1A]">{goal.name}</h1>
-                {goal.description && <p className="text-sm text-[#9B9B9B] mt-0.5">{goal.description}</p>}
+                {goal.description && <p className="text-sm text-[#8FA4C8] mt-0.5">{goal.description}</p>}
               </div>
             </div>
             {goal.status === "completed" && (
-              <CheckCircle className="w-6 h-6 text-[#34C87A]" />
+              <CheckCircle className="w-6 h-6 text-[#00C9A7]" />
             )}
           </div>
 
