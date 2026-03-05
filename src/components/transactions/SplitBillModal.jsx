@@ -20,18 +20,31 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
 
   function addParticipant() {
     const name = newName.trim();
-    if (!name || participants.includes(name)) return;
-    setParticipants(p => [...p, name]);
+    if (!name || participants.find(p => p.name === name)) return;
+    setParticipants(p => [...p, { name, email: newEmail.trim() }]);
     setNewName("");
+    setNewEmail("");
+  }
+
+  function addFromAppUser(user) {
+    const name = user.full_name;
+    if (participants.find(p => p.name === name)) return;
+    setParticipants(p => [...p, { name, email: user.email }]);
   }
 
   function removeParticipant(name) {
-    setParticipants(p => p.filter(n => n !== name));
-    // Remove from allocations
+    setParticipants(p => p.filter(n => n.name !== name));
     setItems(prev => prev.map(item => ({
       ...item,
       allocated_to: item.allocated_to.filter(n => n !== name)
     })));
+  }
+
+  async function inviteParticipant(email) {
+    if (!email) return;
+    setInviting(email);
+    await base44.users.inviteUser(email, "user");
+    setInviting(null);
   }
 
   function toggleItemAllocation(itemIdx, person) {
@@ -47,39 +60,29 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
     }));
   }
 
-  // Calculate share per person
   function calcShares() {
+    const names = participants.map(p => p.name);
     if (splitMode === "equal") {
-      const perPerson = participants.length > 0
-        ? receiptData.total_amount / participants.length
-        : 0;
-      return participants.map(name => ({ name, amount: perPerson }));
+      const perPerson = names.length > 0 ? receiptData.total_amount / names.length : 0;
+      return participants.map(p => ({ ...p, amount: perPerson }));
     } else {
-      // itemized
       const shares = {};
-      participants.forEach(n => shares[n] = 0);
+      names.forEach(n => shares[n] = 0);
       items.forEach(item => {
         const itemTotal = item.price * item.quantity;
-        const people = item.allocated_to.length > 0 ? item.allocated_to : participants;
+        const people = item.allocated_to.length > 0 ? item.allocated_to : names;
         const perPerson = itemTotal / people.length;
         people.forEach(n => { if (shares[n] !== undefined) shares[n] += perPerson; });
       });
-      // Add tax equally
-      const taxPerPerson = (receiptData.tax_amount || 0) / Math.max(participants.length, 1);
-      return participants.map(name => ({ name, amount: (shares[name] || 0) + taxPerPerson }));
+      const taxPerPerson = (receiptData.tax_amount || 0) / Math.max(names.length, 1);
+      return participants.map(p => ({ ...p, amount: (shares[p.name] || 0) + taxPerPerson }));
     }
   }
 
   const shares = calcShares();
 
   function handleConfirm() {
-    onConfirm({
-      splitMode,
-      participants,
-      shares,
-      items,
-      receiptData
-    });
+    onConfirm({ splitMode, participants, shares, items, receiptData });
   }
 
   return (
