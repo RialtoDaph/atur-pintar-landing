@@ -59,6 +59,7 @@ import Reminders from './pages/Reminders';
 import Settings from './pages/Settings';
 import Tips from './pages/Tips';
 import Transactions from './pages/Transactions';
+import Menu from './pages/Menu';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +76,7 @@ export const PAGES = {
     "Settings": Settings,
     "Tips": Tips,
     "Transactions": Transactions,
+    "Menu": Menu,
 }
 
 export const pagesConfig = {
