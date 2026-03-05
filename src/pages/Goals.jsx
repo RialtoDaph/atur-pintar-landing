@@ -135,9 +135,9 @@ export default function Goals() {
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-2">
               <span className="font-bold text-[#1A1A1A] text-2xl">
-                ${(goal.current_amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                Rp {(goal.current_amount || 0).toLocaleString("id-ID")}
               </span>
-              <span className="text-[#9B9B9B] self-end text-sm">of ${goal.target_amount.toLocaleString()}</span>
+              <span className="text-[#9B9B9B] self-end text-sm">dari Rp {goal.target_amount.toLocaleString("id-ID")}</span>
             </div>
             <div className="h-2 bg-[#F0F0EE] rounded-full overflow-hidden">
               <div
@@ -146,15 +146,15 @@ export default function Goals() {
               />
             </div>
             <div className="flex justify-between mt-2">
-              <span className="text-xs text-[#9B9B9B]">{progress.toFixed(1)}% complete</span>
-              {remaining > 0 && <span className="text-xs text-[#9B9B9B]">${remaining.toLocaleString()} remaining</span>}
+              <span className="text-xs text-[#9B9B9B]">{progress.toFixed(1)}% tercapai</span>
+              {remaining > 0 && <span className="text-xs text-[#9B9B9B]">Sisa Rp {remaining.toLocaleString("id-ID")}</span>}
             </div>
           </div>
 
           {/* Deadline */}
           {goal.deadline && (
             <p className="text-xs text-[#9B9B9B] mb-4">
-              🗓 Target: {new Date(goal.deadline).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              🗓 Target: {new Date(goal.deadline).toLocaleDateString("id-ID", { month: "long", day: "numeric", year: "numeric" })}
             </p>
           )}
 
@@ -203,14 +203,14 @@ export default function Goals() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#1A1A1A]">{tx.note || (tx.type === "deposit" ? "Deposit" : "Withdrawal")}</p>
-                    <p className="text-xs text-[#9B9B9B]">{new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                    <p className="text-xs text-[#9B9B9B]">{new Date(tx.date).toLocaleDateString("id-ID", { month: "short", day: "numeric", year: "numeric" })}</p>
                   </div>
                 </div>
                 <span
                   className="text-sm font-bold"
                   style={{ color: tx.type === "deposit" ? "#34C87A" : "#FF5252" }}
                 >
-                  {tx.type === "deposit" ? "+" : "−"}${tx.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  {tx.type === "deposit" ? "+" : "−"}Rp {tx.amount.toLocaleString("id-ID")}
                 </span>
               </div>
             ))}
@@ -267,7 +267,7 @@ export default function Goals() {
       ) : (
         goals.map((g) => {
           const color = COLORS[g.color] || COLORS.blue;
-          const progress = g.target_amount > 0 ? Math.min((g.current_amount || 0 / g.target_amount) * 100, 100) : 0;
+          const progress = g.target_amount > 0 ? Math.min(((g.current_amount || 0) / g.target_amount) * 100, 100) : 0;
           const daysLeft = calculateDaysRemaining(g.deadline);
           const suggestedMonthly = calculateSuggestedMonthly(g);
           const isUrgent = daysLeft && daysLeft < 30;
