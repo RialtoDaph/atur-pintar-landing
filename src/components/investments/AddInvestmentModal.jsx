@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Loader2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const INVESTMENT_TYPES = [
   { key: "saham", label: "Saham", emoji: "📈" },
@@ -12,10 +14,29 @@ const INVESTMENT_TYPES = [
 ];
 
 export default function AddInvestmentModal({ onClose, onSave, investment = null }) {
+  const { t, formatCurrency } = useAppSettings();
   const [form, setForm] = useState(investment || {
     name: "", type: "reksa_dana", initial_amount: "", current_value: "", purchase_date: "", quantity: "", notes: ""
   });
   const [saving, setSaving] = useState(false);
+  const [fetchingPrice, setFetchingPrice] = useState(false);
+
+  async function fetchLivePrice() {
+    if (!form.name) return;
+    setFetchingPrice(true);
+    try {
+      const response = await base44.functions.invoke('getInvestmentPrice', {
+        symbol: form.name,
+        type: form.type === 'crypto' ? 'crypto' : 'stock'
+      });
+      if (response.data?.price) {
+        setForm(f => ({ ...f, current_value: response.data.price.toString() }));
+      }
+    } catch (e) {
+      console.log('Price fetch failed:', e.message);
+    }
+    setFetchingPrice(false);
+  }
 
   async function handleSave() {
     if (!form.name || !form.initial_amount || !form.current_value) return;
@@ -33,7 +54,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-[#1A1A1A]">{investment ? "Edit Investasi" : "Tambah Investasi"}</h2>
+          <h2 className="text-lg font-bold text-[#1A1A1A]">{investment ? t('edit_investment') : t('add_investment')}</h2>
           <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A]"><X className="w-5 h-5" /></button>
         </div>
 
@@ -53,28 +74,65 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
         </div>
 
         <div className="space-y-3 mb-6">
-          {[
-            { key: "name", label: "Nama Investasi", placeholder: "e.g. BBCA, Bitcoin, Reksa Dana Manulife", type: "text" },
-            { key: "initial_amount", label: "Modal Awal (Rp)", placeholder: "0", type: "number" },
-            { key: "current_value", label: "Nilai Saat Ini (Rp)", placeholder: "0", type: "number" },
-            { key: "quantity", label: "Jumlah Unit/Lembar", placeholder: "0 (opsional)", type: "number" },
-            { key: "purchase_date", label: "Tanggal Beli", placeholder: "", type: "date" },
-            { key: "notes", label: "Catatan", placeholder: "Catatan opsional", type: "text" },
-          ].map(field => (
-            <div key={field.key}>
-              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{field.label}</label>
-              <input type={field.type} placeholder={field.placeholder}
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                value={form[field.key]}
-                onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
-              />
+          <div>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Nama Investasi</label>
+            <input type="text" placeholder="e.g. BBCA, Bitcoin, Reksa Dana Manulife"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.name}
+              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('initial_amount')}</label>
+            <input type="number" placeholder="0"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.initial_amount}
+              onChange={e => setForm(f => ({ ...f, initial_amount: e.target.value }))}
+            />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest">{t('current_value')}</label>
+              <button type="button" onClick={fetchLivePrice} disabled={fetchingPrice || !form.name}
+                className="text-xs text-[#FF6A00] hover:text-[#e05e00] font-semibold flex items-center gap-1">
+                {fetchingPrice ? <Loader2 className="w-3 h-3 animate-spin" /> : '🔄'} Fetch Price
+              </button>
             </div>
-          ))}
+            <input type="number" placeholder="0"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.current_value}
+              onChange={e => setForm(f => ({ ...f, current_value: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Jumlah Unit/Lembar</label>
+            <input type="number" placeholder="0 (opsional)"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.quantity}
+              onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tanggal Beli</label>
+            <input type="date"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.purchase_date}
+              onChange={e => setForm(f => ({ ...f, purchase_date: e.target.value }))}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Catatan</label>
+            <input type="text" placeholder="Catatan opsional"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.notes}
+              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+            />
+          </div>
         </div>
 
         <button onClick={handleSave} disabled={saving || !form.name || !form.initial_amount || !form.current_value}
           className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors">
-          {saving ? "Menyimpan..." : investment ? "Update Investasi" : "Simpan Investasi"}
+          {saving ? "Menyimpan..." : investment ? "Update Investasi" : t('add_investment')}
         </button>
       </div>
     </div>
