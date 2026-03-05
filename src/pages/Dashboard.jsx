@@ -32,10 +32,12 @@ export default function Dashboard() {
   const [showAddTx, setShowAddTx] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(user => {
-      if (!user?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
+    base44.auth.me().then(u => {
+      setUser(u);
+      if (!u?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
         setShowOnboarding(true);
       }
     }).catch(() => {});
@@ -48,13 +50,13 @@ export default function Dashboard() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { if (user) loadData(); }, [user]);
 
   async function loadData() {
     setLoading(true);
     const [g, t] = await Promise.all([
-      base44.entities.SavingsGoal.list("-created_date"),
-      base44.entities.Transaction.list("-date", 100),
+      base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
+      base44.entities.Transaction.filter({ created_by: user.email }, "-date", 100),
     ]);
     setGoals(g);
     setTransactions(t);
