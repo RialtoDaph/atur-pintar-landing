@@ -342,11 +342,11 @@ export default function Goals() {
     </div>
 
     {showAddGoal && (
-      <AddGoalModal
-        onClose={() => setShowAddGoal(false)}
-        onSave={handleAddGoal}
-      />
+     <AddGoalModal
+       onClose={() => setShowAddGoal(false)}
+       onSave={handleAddGoal}
+     />
     )}
-  </div>
-  );
-  }
+    </div>
+    );
+    }
