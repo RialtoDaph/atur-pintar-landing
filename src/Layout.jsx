@@ -10,6 +10,7 @@ export default function Layout({ children, currentPageName }) {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
   const [user, setUser] = useState(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
