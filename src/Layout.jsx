@@ -34,9 +34,12 @@ export default function Layout({ children, currentPageName }) {
     { name: "Debts", label: "Utang", icon: CreditCard, page: "Debts" },
     { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
     { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
-    { name: "Alerts", label: "Alerts", icon: Bell, page: "Alerts" },
-    { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
     { name: "Tips", label: "Tips", icon: Lightbulb, page: "Tips" },
+  ];
+
+  const navSettingsItems = [
+    { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
+    { name: "Alerts", label: "Alerts", icon: Bell, page: "Alerts" },
     { name: "Settings", label: "Pengaturan", icon: Settings, page: "Settings" },
   ];
 
