@@ -156,15 +156,48 @@ export default function NanaFloatingChat() {
                  </div>
                 <p className="text-white font-bold text-sm">Nana</p>
                 <p className="text-[#8FA4C8] text-xs max-w-[220px]">Tanya apa saja soal keuanganmu!</p>
-                <div className="flex flex-col gap-1.5 mt-1 w-full">
-                  {["Berapa pengeluaranku bulan ini?", "Bantu buat target tabungan", "Cek tagihan jatuh tempo"].map((s) =>
-              <button key={s} onClick={() => setInput(s)}
-              className="text-left text-xs bg-[#2D2D2D] border border-[#3D3D3D] rounded-xl px-3 py-2 text-white hover:border-[#FF6A00] hover:bg-[#FF6A00]/10 transition-colors">
+                {/* Proactive alerts from financial context */}
+                {context && (() => {
+                  const alerts = [];
+                  context.budgetStatus?.forEach((b) => {
+                    if (b.pct >= 80) alerts.push({ Icon: AlertTriangle, color: "#F5A623", text: `${b.category} ${b.pct >= 100 ? "over budget!" : `${b.pct}% anggaran terpakai`}`, prompt: `Analisis pengeluaran ${b.category}ku yang sudah ${b.pct}% dari anggaran dan beri saran penghematan` });
+                  });
+                  const highDebt = context.debts?.find((d) => (d.interestRate || 0) >= 18);
+                  if (highDebt) alerts.push({ Icon: TrendingDown, color: "#FF6B6B", text: `Utang bunga tinggi: ${highDebt.name} (${highDebt.interestRate}%)`, prompt: `Analisis utang ${highDebt.name} dengan bunga ${highDebt.interestRate}% dan rekomendasikan strategi terbaik untuk melunasinya` });
+                  const urgentGoal = context.goals?.find((g) => g.daysLeft !== null && g.daysLeft < 30 && g.pct < 100);
+                  if (urgentGoal) alerts.push({ Icon: Target, color: "#4F7CFF", text: `Tujuan mendesak: ${urgentGoal.name} (${urgentGoal.daysLeft}h lagi)`, prompt: `Tujuanku "${urgentGoal.name}" deadline ${urgentGoal.daysLeft} hari lagi tapi baru ${urgentGoal.pct}%. Apa yang bisa aku lakukan?` });
+                  const dueToday = context.upcomingReminders?.find((r) => r.daysUntilDue === 0);
+                  if (dueToday) alerts.push({ Icon: AlertTriangle, color: "#FF6B6B", text: `Tagihan hari ini: ${dueToday.title}`, prompt: `Tagihan ${dueToday.title} jatuh tempo hari ini. Cek kondisi keuanganku.` });
+                  if (alerts.length === 0) return null;
+                  return (
+                    <div className="w-full mt-2 space-y-1.5">
+                      <p className="text-[10px] text-[#8FA4C8] font-medium text-left">⚡ Perhatian</p>
+                      {alerts.slice(0, 2).map((a, i) => (
+                        <button key={i} onClick={() => setInput(a.prompt)}
+                          className="w-full text-left text-[11px] rounded-xl px-3 py-2 border transition-colors flex items-center gap-2"
+                          style={{ background: `${a.color}20`, borderColor: `${a.color}50`, color: "#fff" }}>
+                          <a.Icon className="w-3 h-3 flex-shrink-0" style={{ color: a.color }} />
+                          {a.text}
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
+
+                <div className="flex flex-col gap-1.5 mt-2 w-full">
+                  <p className="text-[10px] text-[#8FA4C8] font-medium text-left">💬 Mulai dari sini</p>
+                  {[
+                    "Prioritaskan utangku berdasarkan bunga",
+                    "Analisis pola pengeluaranku bulan ini",
+                    context?.debts?.length >= 2 ? "Apakah aku bisa konsolidasikan utangku?" : "Bantu optimalkan anggaranku"
+                  ].map((s) =>
+                <button key={s} onClick={() => setInput(s)}
+                className="text-left text-xs bg-[#2D2D2D] border border-[#3D3D3D] rounded-xl px-3 py-2 text-white hover:border-[#FF6A00] hover:bg-[#FF6A00]/10 transition-colors">
                       {s}
                     </button>
-              )}
+                )}
                 </div>
-              </div> :
+                </div> :
 
           visibleMessages.map((msg, i) =>
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} gap-2`}>
