@@ -18,12 +18,21 @@ const INVESTMENT_TYPES = {
 export default function PortfolioSummary() {
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    base44.entities.Investment.list("-created_date", 50)
-      .then(data => { setInvestments(data); setLoading(false); })
-      .catch(() => setLoading(false));
+    base44.auth.me().then(u => {
+      setUser(u);
+    }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      base44.entities.Investment.filter({ created_by: user.email }, "-created_date", 50)
+        .then(data => { setInvestments(data); setLoading(false); })
+        .catch(() => setLoading(false));
+    }
+  }, [user]);
 
   if (loading) {
     return <div className="bg-white rounded-2xl shadow-sm h-36 animate-pulse" />;

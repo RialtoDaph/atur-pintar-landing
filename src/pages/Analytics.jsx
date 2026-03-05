@@ -33,23 +33,32 @@ export default function Analytics() {
   const [loading, setLoading] = useState(true);
   const [filterPeriod, setFilterPeriod] = useState("6");
   const [customDateRange, setCustomDateRange] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    Promise.all([
-      base44.entities.Transaction.list("-date", 500),
-      base44.entities.SavingsGoal.list("-created_date"),
-      base44.entities.Budget.list(),
-      base44.entities.Investment.list(),
-      base44.entities.Debt.list()
-    ]).then(([t, g, b, i, d]) => {
-      setTransactions(t);
-      setGoals(g);
-      setBudgets(b);
-      setInvestments(i);
-      setDebts(d);
-      setLoading(false);
-    });
+    base44.auth.me().then(u => {
+      setUser(u);
+    }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      Promise.all([
+        base44.entities.Transaction.filter({ created_by: user.email }, "-date", 500),
+        base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
+        base44.entities.Budget.filter({ created_by: user.email }),
+        base44.entities.Investment.filter({ created_by: user.email }),
+        base44.entities.Debt.filter({ created_by: user.email })
+      ]).then(([t, g, b, i, d]) => {
+        setTransactions(t);
+        setGoals(g);
+        setBudgets(b);
+        setInvestments(i);
+        setDebts(d);
+        setLoading(false);
+      });
+    }
+  }, [user]);
 
   // Handle filter changes
   const handleFilterChange = (filter) => {
