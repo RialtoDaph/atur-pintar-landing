@@ -36,6 +36,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
     { name: "Alerts", label: "Alerts", icon: Bell, page: "Alerts" },
     { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
+    { name: "Tips", label: "Tips", icon: Lightbulb, page: "Tips" },
     { name: "Settings", label: "Pengaturan", icon: Settings, page: "Settings" },
   ];
 
