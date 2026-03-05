@@ -74,7 +74,7 @@ export default function IntegrationSettings() {
         )}
       </button>
 
-      {/* Export to Google Sheets (for now JSON) */}
+      {/* Export to Google Sheets */}
       <button
         onClick={handleExportToSheets}
         disabled={exportingSheets}
@@ -83,18 +83,16 @@ export default function IntegrationSettings() {
         <div className="flex items-center gap-3">
           <FileJson className="w-5 h-5 text-[#4F7CFF]" />
           <div className="text-left">
-            <p className="font-medium text-[#1A1A1A] text-sm">Export Data Bulanan</p>
-            <p className="text-xs text-[#8FA4C8]">Unduh laporan lengkap</p>
+            <p className="font-medium text-[#1A1A1A] text-sm">Export ke Google Sheets</p>
+            <p className="text-xs text-[#8FA4C8]">Buat laporan bulanan otomatis</p>
           </div>
         </div>
         {exportingSheets ? (
           <Loader2 className="w-4 h-4 text-[#4F7CFF] animate-spin" />
         ) : (
-          <span className="text-xs font-semibold text-[#4F7CFF]">Download</span>
+          <span className="text-xs font-semibold text-[#4F7CFF]">Buat</span>
         )}
       </button>
-
-      <p className="text-xs text-[#8FA4C8] mt-4">Fitur Google Sheets akan segera tersedia. Saat ini data dapat diunduh sebagai JSON.</p>
     </div>
   );
 }
