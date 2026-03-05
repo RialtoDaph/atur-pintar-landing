@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Moon, Sun, DollarSign, Globe, LayoutDashboard, Bell, User, LogOut, ChevronRight, Check } from "lucide-react";
 import NanaPreferencesSettings from "@/components/settings/NanaPreferencesSettings";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
+import IntegrationSettings from "@/components/settings/IntegrationSettings";
 
 const LANGUAGES = [
   { code: "id", label: "Indonesia", flag: "🇮🇩" },
@@ -166,6 +167,11 @@ export default function Settings() {
         {/* Risk Profile Assessment */}
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <RiskProfileAssessment />
+        </div>
+
+        {/* Integrasi & Export */}
+        <div className="bg-white rounded-2xl shadow-sm p-5">
+          <IntegrationSettings />
         </div>
 
         {/* Widget Dashboard */}
