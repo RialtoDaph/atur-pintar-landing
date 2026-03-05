@@ -3,6 +3,7 @@ import { X, Settings2, Camera, Loader2, Scissors } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import SplitBillModal from "./SplitBillModal";
+import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
 
 const DEFAULT_CATEGORIES = {
   expense: [
