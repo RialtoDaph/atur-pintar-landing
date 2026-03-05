@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plus, Trash2, TrendingUp, TrendingDown } from "lucide-react";
 import AddInvestmentModal from "@/components/investments/AddInvestmentModal.jsx";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const INVESTMENT_TYPES = {
   saham: { label: "Saham", emoji: "📈" },
@@ -14,9 +15,11 @@ const INVESTMENT_TYPES = {
 };
 
 export default function InvestmentsPage() {
+  const { formatCurrency, t } = useAppSettings();
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [editingInv, setEditingInv] = useState(null);
 
   useEffect(() => { loadData(); }, []);
 
@@ -29,6 +32,22 @@ export default function InvestmentsPage() {
 
   async function handleDelete(id) {
     await base44.entities.Investment.delete(id);
+    loadData();
+  }
+
+  function handleEdit(inv) {
+    setEditingInv(inv);
+    setShowAdd(true);
+  }
+
+  async function handleSave(data) {
+    if (editingInv) {
+      await base44.entities.Investment.update(editingInv.id, data);
+    } else {
+      await base44.entities.Investment.create(data);
+    }
+    setShowAdd(false);
+    setEditingInv(null);
     loadData();
   }
 
@@ -55,14 +74,14 @@ export default function InvestmentsPage() {
           </div>
 
           <div className="bg-white/10 rounded-2xl p-5">
-            <p className="text-white/60 text-sm mb-1">Total Nilai Portofolio</p>
-            <p className="text-white font-bold text-3xl mb-2">Rp {totalValue.toLocaleString("id-ID")}</p>
+            <p className="text-white/60 text-sm mb-1">{t('total_portfolio')}</p>
+            <p className="text-white font-bold text-3xl mb-2">{formatCurrency(totalValue)}</p>
             <div className="flex items-center gap-1">
               {totalGain >= 0 ? <TrendingUp className="w-4 h-4 text-[#00C9A7]" /> : <TrendingDown className="w-4 h-4 text-[#FF6B6B]" />}
               <span className={`text-sm font-semibold ${totalGain >= 0 ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                {totalGain >= 0 ? "+" : ""}Rp {totalGain.toLocaleString("id-ID")} ({gainPercent}%)
+                {totalGain >= 0 ? "+" : ""}{formatCurrency(totalGain)} ({gainPercent}%)
               </span>
-              <span className="text-white/40 text-xs ml-1">dari modal Rp {totalInvested.toLocaleString("id-ID")}</span>
+              <span className="text-white/40 text-xs ml-1">dari modal {formatCurrency(totalInvested)}</span>
             </div>
           </div>
         </div>
@@ -97,25 +116,25 @@ export default function InvestmentsPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => setShowAdd(true)} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors">
-                      ✏️
-                    </button>
-                    <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                   <button onClick={() => handleEdit(inv)} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors">
+                     ✏️
+                   </button>
+                   <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
+                     <Trash2 className="w-4 h-4" />
+                   </button>
                   </div>
                 </div>
                 <div className="mt-3 flex justify-between items-end">
                   <div>
-                    <p className="text-xs text-[#8FA4C8]">Nilai Saat Ini</p>
-                    <p className="font-bold text-[#1A1A1A] text-lg">Rp {inv.current_value.toLocaleString("id-ID")}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-[#8FA4C8]">Keuntungan/Rugi</p>
-                    <p className={`font-bold text-base ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                      {isPositive ? "+" : ""}Rp {gain.toLocaleString("id-ID")} ({isPositive ? "+" : ""}{gainPct}%)
-                    </p>
-                  </div>
+                     <p className="text-xs text-[#8FA4C8]">{t('current_value')}</p>
+                     <p className="font-bold text-[#1A1A1A] text-lg">{formatCurrency(inv.current_value)}</p>
+                   </div>
+                   <div className="text-right">
+                     <p className="text-xs text-[#8FA4C8]">{t('profit_loss')}</p>
+                     <p className={`font-bold text-base ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                       {isPositive ? "+" : ""}{formatCurrency(gain)} ({isPositive ? "+" : ""}{gainPct}%)
+                     </p>
+                   </div>
                 </div>
                 {inv.notes && <p className="text-xs text-[#8FA4C8] mt-2 italic">{inv.notes}</p>}
               </div>
@@ -126,13 +145,12 @@ export default function InvestmentsPage() {
 
       {showAdd && (
         <AddInvestmentModal
-          investment={null}
-          onClose={() => setShowAdd(false)}
-          onSave={async (data) => {
-            await base44.entities.Investment.create(data);
+          investment={editingInv}
+          onClose={() => {
             setShowAdd(false);
-            loadData();
+            setEditingInv(null);
           }}
+          onSave={handleSave}
         />
       )}
     </div>
