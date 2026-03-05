@@ -40,7 +40,7 @@ export default function Dashboard() {
       }
     }).catch(() => {});
   }, []);
-  const [showResetPrompt, setShowResetPrompt] = useState(() => !localStorage.getItem("reset_prompt_shown"));
+
 
   useEffect(() => {
     const onStorage = () => setWidgets(getWidgets());
