@@ -30,24 +30,44 @@ async function searchCrypto(query) {
   }
 }
 
-// Search stocks via Yahoo Finance
+// Search stocks via Finnhub
 async function searchStocks(query) {
   try {
-    const res = await fetch(`https://query1.finance.yahoo.com/v10/finance/searchip?query=${encodeURIComponent(query)}&lang=en-US&region=US&quotesCount=5&newsCount=0`, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
+    const apiKey = Deno.env.get('FINNHUB_API_KEY');
+    if (!apiKey) {
+      console.error('FINNHUB_API_KEY not set');
+      return [];
+    }
+
+    const res = await fetch(`https://finnhub.io/api/v1/search?q=${encodeURIComponent(query)}&token=${apiKey}`);
     const data = await res.json();
 
-    if (!data.quotes || data.quotes.length === 0) return [];
+    if (!data.result || data.result.length === 0) return [];
 
-    return data.quotes.slice(0, 5).map(quote => ({
-      name: quote.longname || quote.symbol,
-      symbol: quote.symbol,
-      price: quote.regularMarketPrice || 0,
-      priceFormatted: `$${(quote.regularMarketPrice || 0).toFixed(2)}`,
-      change24h: quote.regularMarketChangePercent || 0,
-      type: 'saham'
-    }));
+    // Get top 5 results
+    const topResults = data.result.slice(0, 5);
+    
+    // Fetch price data for each symbol
+    const pricePromises = topResults.map(item =>
+      fetch(`https://finnhub.io/api/v1/quote?symbol=${item.symbol}&token=${apiKey}`)
+        .then(r => r.json())
+        .catch(() => null)
+    );
+
+    const prices = await Promise.all(pricePromises);
+
+    return topResults.map((item, idx) => {
+      const priceData = prices[idx];
+      return {
+        name: item.description || item.symbol,
+        symbol: item.symbol,
+        price: priceData?.c || 0,
+        priceFormatted: `$${(priceData?.c || 0).toFixed(2)}`,
+        change24h: priceData?.d || 0,
+        changePercent: priceData?.dp || 0,
+        type: 'saham'
+      };
+    }).filter(s => s.price > 0);
   } catch (e) {
     console.error('Stock search error:', e);
     return [];
@@ -74,13 +94,14 @@ Deno.serve(async (req) => {
 
     if (type === 'crypto') {
       results = await searchCrypto(query);
-    } else if (type === 'saham') {
+    } else if (type === 'saham' || type === 'obligasi') {
       results = await searchStocks(query);
-    } else if (type === 'reksa_dana') {
-      results = await searchMutualFunds(query);
+    } else if (type === 'reksa_dana' || type === 'deposito') {
+      // For mutual funds and bonds, try stock search as fallback
+      results = await searchStocks(query);
     }
 
-    return Response.json({ results });
+    return Response.json({ results: results.slice(0, 5) });
   } catch (error) {
     console.error('Search error:', error);
     return Response.json({ results: [], error: error.message }, { status: 500 });
