@@ -73,9 +73,9 @@ export default function NanaFloatingChat() {
     setSending(true);
     const text = input;
     setInput("");
-    const messageContent = preferences 
-      ? `${text}\n\n[Preferensi pengguna: Nada: ${preferences.tone}, Jenis saran utama: ${preferences.preferred_advice_types.join(", ")}, Frekuensi: ${preferences.frequency_preference}]`
-      : text;
+    // Append the full financial context to every message so Nana always has fresh data
+    const contextBlock = formatContextForMessage(context);
+    const messageContent = text + contextBlock;
     await base44.agents.addMessage(conv, { role: "user", content: messageContent });
     setSending(false);
   }
