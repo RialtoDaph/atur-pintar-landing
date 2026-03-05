@@ -201,30 +201,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Global Search */}
       {showSearch && <GlobalSearch onClose={() => setShowSearch(false)} />}
 
-      {/* More menu popup */}
-      {showMoreMenu && (
-        <>
-          <div className="fixed inset-0 z-50" onClick={() => setShowMoreMenu(false)} />
-          <div className="fixed bottom-16 right-2 z-50 bg-[#0A0A0A] rounded-2xl shadow-2xl border border-white/10 py-2 min-w-[160px]">
-            {mobileMoreNav.map((item) => {
-              const active = currentPageName === item.page;
-              return (
-                <Link
-                  key={item.page}
-                  to={createPageUrl(item.page)}
-                  onClick={() => setShowMoreMenu(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
-                    active ? "text-[#FF6A00]" : "text-[#888] hover:text-white"
-                  }`}
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </div>
-        </>
-      )}
+
     </div>
   );
 }
