@@ -60,6 +60,7 @@ import Reminders from './pages/Reminders';
 import Settings from './pages/Settings';
 import Tips from './pages/Tips';
 import Transactions from './pages/Transactions';
+import InvestmentDetail from './pages/InvestmentDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -77,6 +78,7 @@ export const PAGES = {
     "Settings": Settings,
     "Tips": Tips,
     "Transactions": Transactions,
+    "InvestmentDetail": InvestmentDetail,
 }
 
 export const pagesConfig = {
