@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Settings2, Camera, Loader2 } from "lucide-react";
+import { X, Settings2, Camera, Loader2, Scissors } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ManageCategoriesModal from "./ManageCategoriesModal";
+import SplitBillModal from "./SplitBillModal";
 
 const DEFAULT_CATEGORIES = {
   expense: [
@@ -35,6 +36,8 @@ export default function AddTransactionModal({ onClose, onSave }) {
   const [recurring, setRecurring] = useState(false);
   const [recurringInterval, setRecurringInterval] = useState("monthly");
   const [scanning, setScanning] = useState(false);
+  const [receiptData, setReceiptData] = useState(null); // extracted receipt
+  const [showSplitBill, setShowSplitBill] = useState(false);
   const fileRef = useRef(null);
 
   useEffect(() => { loadCustomCats(); }, []);
@@ -48,40 +51,68 @@ export default function AddTransactionModal({ onClose, onSave }) {
     const file = e.target.files[0];
     if (!file) return;
     setScanning(true);
+    setReceiptData(null);
+
     const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    const result = await base44.integrations.Core.InvokeLLM({
-      prompt: `Kamu adalah OCR untuk struk belanja. Ekstrak informasi dari gambar struk ini dan kembalikan dalam format JSON.
-      
-      Ekstrak:
-      - amount: total belanja dalam angka (tanpa tanda titik atau koma, hanya angka bulat dalam rupiah)
-      - date: tanggal transaksi dalam format YYYY-MM-DD (jika tidak ada, gunakan hari ini: ${new Date().toISOString().split("T")[0]})
-      - note: nama toko atau merchant
-      - category: salah satu dari kategori ini (pilih yang paling sesuai): housing, food, transport, health, entertainment, shopping, subscriptions, other
-      
-      Jika tidak bisa membaca informasi tertentu, gunakan nilai default yang masuk akal.`,
-      file_urls: [file_url],
-      response_json_schema: {
-        type: "object",
-        properties: {
-          amount: { type: "number" },
-          date: { type: "string" },
-          note: { type: "string" },
-          category: { type: "string" },
-        }
-      }
-    });
-    if (result) {
+
+    // Call backend to extract receipt data (detailed)
+    const response = await base44.functions.invoke("extractReceiptData", { file_url });
+    const extracted = response.data?.data;
+
+    if (extracted) {
+      setReceiptData(extracted);
       setTab("expense");
       setForm(f => ({
         ...f,
-        amount: result.amount ? String(Math.round(result.amount)) : f.amount,
-        date: result.date || f.date,
-        note: result.note || f.note,
-        category: result.category || f.category,
+        amount: extracted.total_amount ? String(Math.round(extracted.total_amount)) : f.amount,
+        date: extracted.date || f.date,
+        note: extracted.store_name || f.note,
+        category: "food",
       }));
     }
+
     setScanning(false);
     e.target.value = "";
+  }
+
+  async function handleSplitConfirm({ splitMode, participants, shares, items }) {
+    setShowSplitBill(false);
+    setSaving(true);
+
+    if (splitMode === "equal") {
+      // One transaction per participant
+      for (const share of shares) {
+        const note = share.name === "Saya"
+          ? `${receiptData.store_name} (split bill)`
+          : `${receiptData.store_name} — dibayarkan untuk ${share.name}`;
+        await onSave({
+          type: "expense",
+          amount: share.amount,
+          category: form.category || "food",
+          note,
+          date: form.date,
+          is_recurring: false,
+        });
+      }
+    } else {
+      // itemized: one transaction per participant based on allocated items
+      for (const share of shares) {
+        if (share.amount <= 0) continue;
+        const note = share.name === "Saya"
+          ? `${receiptData.store_name} (split bill)`
+          : `${receiptData.store_name} — dibayarkan untuk ${share.name}`;
+        await onSave({
+          type: "expense",
+          amount: share.amount,
+          category: form.category || "food",
+          note,
+          date: form.date,
+          is_recurring: false,
+        });
+      }
+    }
+
+    setSaving(false);
   }
 
   async function handleSave() {
@@ -127,6 +158,41 @@ export default function AddTransactionModal({ onClose, onSave }) {
               </button>
             </div>
           </div>
+
+          {/* Receipt preview + Split Bill CTA */}
+          {receiptData && (
+            <div className="mb-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4">
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <p className="text-xs text-[#8FA4C8] font-medium">Struk terdeteksi 🧾</p>
+                  <p className="text-sm font-bold text-[#1A1A1A]">{receiptData.store_name}</p>
+                  {receiptData.tax_amount > 0 && (
+                    <p className="text-xs text-[#8FA4C8]">Pajak: Rp {Math.round(receiptData.tax_amount).toLocaleString("id-ID")}</p>
+                  )}
+                </div>
+                <p className="text-sm font-bold text-[#FF6A00]">
+                  Rp {Math.round(receiptData.total_amount).toLocaleString("id-ID")}
+                </p>
+              </div>
+              {receiptData.items?.length > 0 && (
+                <div className="space-y-1 mb-3 max-h-28 overflow-y-auto">
+                  {receiptData.items.map((item, i) => (
+                    <div key={i} className="flex justify-between text-xs text-[#4A5568]">
+                      <span>{item.quantity > 1 ? `${item.quantity}x ` : ""}{item.name}</span>
+                      <span>Rp {Math.round(item.price * item.quantity).toLocaleString("id-ID")}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <button
+                onClick={() => setShowSplitBill(true)}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#0A0A0A] text-white text-xs font-bold hover:bg-[#333] transition-colors"
+              >
+                <Scissors className="w-3.5 h-3.5" />
+                Split Bill dengan Teman
+              </button>
+            </div>
+          )}
 
           {/* Type tabs */}
           <div className="flex bg-[#F2F4F7] rounded-xl p-1 mb-5">
@@ -233,6 +299,14 @@ export default function AddTransactionModal({ onClose, onSave }) {
         <ManageCategoriesModal
           onClose={() => setShowManage(false)}
           onUpdated={() => { loadCustomCats(); }}
+        />
+      )}
+
+      {showSplitBill && receiptData && (
+        <SplitBillModal
+          receiptData={receiptData}
+          onClose={() => setShowSplitBill(false)}
+          onConfirm={handleSplitConfirm}
         />
       )}
     </>
