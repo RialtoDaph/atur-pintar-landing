@@ -4,12 +4,19 @@ import { formatRupiah } from "@/components/utils/formatRupiah";
 import { base44 } from "@/api/base44Client";
 
 export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
-  const [participants, setParticipants] = useState(["Saya"]);
+  const [participants, setParticipants] = useState([{ name: "Saya", email: "" }]);
   const [newName, setNewName] = useState("");
-  const [splitMode, setSplitMode] = useState("equal"); // "equal" | "itemized"
+  const [newEmail, setNewEmail] = useState("");
+  const [splitMode, setSplitMode] = useState("equal");
   const [items, setItems] = useState(
     (receiptData.items || []).map(item => ({ ...item, allocated_to: [] }))
   );
+  const [appUsers, setAppUsers] = useState([]);
+  const [inviting, setInviting] = useState(null);
+
+  useEffect(() => {
+    base44.entities.User.list().then(setAppUsers).catch(() => {});
+  }, []);
 
   function addParticipant() {
     const name = newName.trim();
