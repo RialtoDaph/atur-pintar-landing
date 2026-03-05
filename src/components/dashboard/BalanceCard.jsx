@@ -6,8 +6,8 @@ export default function BalanceCard({ income, expense, savings, loading }) {
 
   if (loading) {
     return (
-      <div className="bg-[#0A0A0A] rounded-2xl p-5 animate-pulse h-36" />
-    );
+      <div className="bg-[#0A0A0A] rounded-2xl p-5 animate-pulse h-36" />);
+
   }
 
   return (
@@ -18,8 +18,8 @@ export default function BalanceCard({ income, expense, savings, loading }) {
       </p>
       <div className="grid grid-cols-3 gap-2">
         <div className="flex items-center gap-1.5">
-          <div className="w-6 h-6 rounded-full bg-[#FF6A00]/20 flex items-center justify-center flex-shrink-0">
-            <TrendingUp className="w-3 h-3 text-[#FF6A00]" />
+          <div className="bg-green-500 opacity-45 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0">
+            <TrendingUp className="text-[#99ff80] lucide lucide-trending-up w-3 h-3" />
           </div>
           <div>
             <p className="text-[#8FA4C8] text-[9px]">Pemasukan</p>
@@ -45,6 +45,6 @@ export default function BalanceCard({ income, expense, savings, loading }) {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
