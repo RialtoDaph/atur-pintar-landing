@@ -104,8 +104,8 @@ export default function Transactions() {
         ) : sortedGroups.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
             <p className="text-4xl mb-3">📭</p>
-            <p className="text-[#1B2559] font-semibold mb-1">No transactions yet</p>
-            <p className="text-[#8FA4C8] text-sm">Tap + to add your first transaction</p>
+            <p className="text-[#1A1A1A] font-semibold mb-1">Belum ada transaksi</p>
+            <p className="text-[#8FA4C8] text-sm">Tap + untuk menambah transaksi pertama Anda</p>
           </div>
         ) : (
           sortedGroups.map(key => {
