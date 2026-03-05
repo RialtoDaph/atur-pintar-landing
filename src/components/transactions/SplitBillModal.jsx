@@ -243,11 +243,15 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
             <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl divide-y divide-[#F2F4F7]">
               {shares.map(s => (
                 <div key={s.name} className="flex justify-between items-center px-4 py-3">
-                  <span className="text-sm font-medium text-[#1A1A1A]">{s.name}</span>
+                  <div>
+                    <span className="text-sm font-medium text-[#1A1A1A]">{s.name}</span>
+                    {s.name !== "Saya" && <span className="ml-2 text-[10px] text-[#8FA4C8]">→ IOU akan dibuat</span>}
+                  </div>
                   <span className="text-sm font-bold text-[#FF6A00]">{formatRupiah(s.amount)}</span>
                 </div>
               ))}
             </div>
+            <p className="text-[10px] text-[#8FA4C8] mt-2">* Tagihan IOU teman akan muncul di halaman Utang & Kredit</p>
           </div>
         </div>
 
