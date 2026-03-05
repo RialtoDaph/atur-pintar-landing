@@ -16,10 +16,11 @@ const INVESTMENT_TYPES = [
 export default function AddInvestmentModal({ onClose, onSave, investment = null }) {
   const { t, formatCurrency } = useAppSettings();
   const [form, setForm] = useState(investment || {
-    name: "", type: "reksa_dana", initial_amount: "", current_value: "", purchase_date: "", quantity: "", notes: ""
+    name: "", type: "reksa_dana", initial_amount: "", current_value: "", purchase_date: "", quantity: "", price_per_unit: "", notes: ""
   });
   const [saving, setSaving] = useState(false);
   const [fetchingPrice, setFetchingPrice] = useState(false);
+  const [pricePerUnit, setPricePerUnit] = useState(investment?.price_per_unit || "");
 
   async function fetchLivePrice() {
     if (!form.name) return;
@@ -38,14 +39,36 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
     setFetchingPrice(false);
   }
 
+  function calculateValues() {
+    const initialAmt = parseFloat(form.initial_amount) || 0;
+    const qty = parseFloat(form.quantity) || 0;
+    const price = parseFloat(pricePerUnit) || 0;
+
+    let calculatedValues = { ...form };
+
+    // Jika ada price per unit dan quantity, hitung initial_amount
+    if (price > 0 && qty > 0) {
+      calculatedValues.initial_amount = (price * qty).toString();
+    }
+
+    // current_value same as initial_amount jika tidak ada perubahan harga
+    if (!calculatedValues.current_value) {
+      calculatedValues.current_value = calculatedValues.initial_amount;
+    }
+
+    return calculatedValues;
+  }
+
   async function handleSave() {
-    if (!form.name || !form.initial_amount || !form.current_value) return;
+    if (!form.name || !form.initial_amount) return;
     setSaving(true);
+    const values = calculateValues();
     await onSave({
-      ...form,
-      initial_amount: parseFloat(form.initial_amount),
-      current_value: parseFloat(form.current_value),
+      ...values,
+      initial_amount: parseFloat(values.initial_amount),
+      current_value: parseFloat(values.current_value) || parseFloat(values.initial_amount),
       quantity: form.quantity ? parseFloat(form.quantity) : undefined,
+      price_per_unit: pricePerUnit ? parseFloat(pricePerUnit) : undefined,
     });
     setSaving(false);
   }
@@ -82,14 +105,43 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
             />
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Harga per Unit</label>
+              <input type="number" placeholder="0"
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                value={pricePerUnit}
+                onChange={e => setPricePerUnit(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Jumlah Unit/Lembar</label>
+              <input type="number" placeholder="0"
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                value={form.quantity}
+                onChange={e => setForm(f => {
+                  const qty = e.target.value;
+                  const price = parseFloat(pricePerUnit) || 0;
+                  return { 
+                    ...f, 
+                    quantity: qty,
+                    initial_amount: price > 0 && qty ? (parseFloat(qty) * price).toString() : f.initial_amount
+                  };
+                })}
+              />
+            </div>
+          </div>
+
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('initial_amount')}</label>
             <input type="number" placeholder="0"
               className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
               value={form.initial_amount}
-              onChange={e => setForm(f => ({ ...f, initial_amount: e.target.value }))}
+              onChange={e => setForm(f => ({ ...f, initial_amount: e.target.value, current_value: e.target.value }))}
             />
+            <p className="text-xs text-[#8FA4C8] mt-1">Nilai saat ini akan otomatis = modal awal</p>
           </div>
+
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest">{t('current_value')}</label>
@@ -103,14 +155,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
               value={form.current_value}
               onChange={e => setForm(f => ({ ...f, current_value: e.target.value }))}
             />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Jumlah Unit/Lembar</label>
-            <input type="number" placeholder="0 (opsional)"
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              value={form.quantity}
-              onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))}
-            />
+            <p className="text-xs text-[#8FA4C8] mt-1">Ubah jika harga berbeda dari modal awal</p>
           </div>
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tanggal Beli</label>
@@ -130,7 +175,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
           </div>
         </div>
 
-        <button onClick={handleSave} disabled={saving || !form.name || !form.initial_amount || !form.current_value}
+        <button onClick={handleSave} disabled={saving || !form.name || !form.initial_amount}
           className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors">
           {saving ? "Menyimpan..." : investment ? "Update Investasi" : t('add_investment')}
         </button>
