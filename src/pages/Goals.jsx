@@ -273,23 +273,26 @@ export default function Goals() {
           const isUrgent = daysLeft && daysLeft < 30;
 
           return (
-            <Link
+            <div
               key={g.id}
-              to={createPageUrl(`Goals?id=${g.id}`)}
               className="block bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl" style={{ backgroundColor: `${color}20` }}>
-                    {g.icon || "💰"}
+              <Link
+                to={createPageUrl(`Goals?id=${g.id}`)}
+                className="block"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl" style={{ backgroundColor: `${color}20` }}>
+                      {g.icon || "💰"}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#1A1A1A] text-sm">{g.name}</p>
+                      {g.description && <p className="text-xs text-[#8FA4C8] mt-0.5">{g.description}</p>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-[#1A1A1A] text-sm">{g.name}</p>
-                    {g.description && <p className="text-xs text-[#8FA4C8] mt-0.5">{g.description}</p>}
-                  </div>
+                  {g.status === "completed" && <CheckCircle className="w-5 h-5 text-[#00C9A7]" />}
                 </div>
-                {g.status === "completed" && <CheckCircle className="w-5 h-5 text-[#00C9A7]" />}
-              </div>
 
               <div className="mb-3">
                 <div className="flex justify-between text-xs mb-1.5">
