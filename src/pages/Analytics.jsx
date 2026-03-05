@@ -31,6 +31,8 @@ export default function Analytics() {
   const [investments, setInvestments] = useState([]);
   const [debts, setDebts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterPeriod, setFilterPeriod] = useState("6");
+  const [customDateRange, setCustomDateRange] = useState(null);
 
   useEffect(() => {
     Promise.all([
