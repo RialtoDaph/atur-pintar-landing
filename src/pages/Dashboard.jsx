@@ -143,6 +143,9 @@ export default function Dashboard() {
         {/* Portfolio Summary */}
         <PortfolioSummary />
 
+        {/* Goal Milestone Alerts */}
+        {!loading && goals.length > 0 && <GoalMilestoneAlerts goals={goals} />}
+
         {/* Savings Goals */}
         {widgets.savingsGoals && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
