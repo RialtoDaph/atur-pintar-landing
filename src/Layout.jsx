@@ -114,6 +114,27 @@ export default function Layout({ children, currentPageName }) {
           Cari...
         </button>
 
+        {/* Settings group at bottom */}
+        <div className="border-t border-white/10 pt-2 mt-2 space-y-1">
+          {navSettingsItems.map((item) => {
+            const active = currentPageName === item.page;
+            return (
+              <Link
+                key={item.page}
+                to={createPageUrl(item.page)}
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-[#FF6A00] text-white shadow-sm"
+                    : "text-[#888] hover:text-white hover:bg-white/10"
+                }`}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+
         {/* Dark mode + Profile */}
         <div className="space-y-1 mt-2">
           <button
