@@ -214,17 +214,17 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
                       <p className="text-sm font-bold text-[#1A1A1A]">{formatRupiah(item.price * item.quantity)}</p>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      {participants.map(person => (
+                      {participants.map(p => (
                         <button
-                          key={person}
-                          onClick={() => toggleItemAllocation(idx, person)}
+                          key={p.name}
+                          onClick={() => toggleItemAllocation(idx, p.name)}
                           className={`text-xs px-2.5 py-1 rounded-full border font-medium transition-all ${
-                            item.allocated_to.includes(person)
+                            item.allocated_to.includes(p.name)
                               ? "bg-[#FF6A00] border-[#FF6A00] text-white"
                               : "bg-white border-[#E2E8F0] text-[#4A5568] hover:border-[#FF6A00]"
                           }`}
                         >
-                          {person}
+                          {p.name}
                         </button>
                       ))}
                     </div>
