@@ -19,6 +19,7 @@ import ReminderWidget from "@/components/reminders/ReminderWidget";
 import DashboardInsights from "@/components/dashboard/DashboardInsights";
 import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
 import BudgetAlertWidget from "@/components/dashboard/BudgetAlertWidget";
+import IncomeExpenseChart from "@/components/dashboard/IncomeExpenseChart";
 
 function getWidgets() {
   const saved = localStorage.getItem("widgets");
