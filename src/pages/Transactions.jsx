@@ -66,12 +66,15 @@ export default function Transactions() {
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
       {/* Header */}
-      <div className="bg-[#1B2559] px-5 pt-10 pb-6">
+      <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <h1 className="text-white text-2xl font-bold">Transactions</h1>
+          <div>
+            <p className="text-[#8FA4C8] text-sm font-medium">Riwayat</p>
+            <h1 className="text-white text-2xl font-bold mt-0.5">Transaksi</h1>
+          </div>
           <button
             onClick={() => setShowAddTx(true)}
-            className="w-10 h-10 rounded-full bg-[#00C9A7] flex items-center justify-center shadow-lg hover:bg-[#00b596] transition-colors"
+            className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
           >
             <Plus className="w-5 h-5 text-white" />
           </button>
@@ -86,7 +89,7 @@ export default function Transactions() {
               key={tab}
               onClick={() => setFilter(tab)}
               className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                filter === tab ? "bg-[#1B2559] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#1B2559]"
+                filter === tab ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
               }`}
             >
               {tab}
