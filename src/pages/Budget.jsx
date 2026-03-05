@@ -19,18 +19,25 @@ export default function BudgetPage() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [user, setUser] = useState(null);
   const [currentMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    base44.auth.me().then(u => {
+      setUser(u);
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => { if (user) loadData(); }, [user]);
 
   async function loadData() {
     setLoading(true);
     const [b, t] = await Promise.all([
-      base44.entities.Budget.filter({ month: currentMonth }),
-      base44.entities.Transaction.list("-date", 200),
+      base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }),
+      base44.entities.Transaction.filter({ created_by: user.email }, "-date", 200),
     ]);
     setBudgets(b);
     setTransactions(t);

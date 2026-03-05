@@ -20,12 +20,19 @@ export default function InvestmentsPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [editingInv, setEditingInv] = useState(null);
+  const [user, setUser] = useState(null);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    base44.auth.me().then(u => {
+      setUser(u);
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => { if (user) loadData(); }, [user]);
 
   async function loadData() {
     setLoading(true);
-    const inv = await base44.entities.Investment.list("-created_date");
+    const inv = await base44.entities.Investment.filter({ created_by: user.email }, "-created_date");
     setInvestments(inv);
     setLoading(false);
   }
