@@ -187,6 +187,18 @@ export default function AddTransactionModal({ onClose, onSave }) {
                 <Scissors className="w-3.5 h-3.5" />
                 Split Bill dengan Teman
               </button>
+              <ReceiptCorrectionForm
+                receiptData={receiptData}
+                onChange={(corrected) => {
+                  setReceiptData(corrected);
+                  setForm(f => ({
+                    ...f,
+                    amount: corrected.total_amount ? String(Math.round(corrected.total_amount)) : f.amount,
+                    date: corrected.date || f.date,
+                    note: corrected.store_name || f.note,
+                  }));
+                }}
+              />
             </div>
           )}
 
