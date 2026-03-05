@@ -21,7 +21,7 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   }, []);
 
-  if (budgetsLoading || loading) {
+  if (loading) {
     return <div className="bg-white rounded-2xl shadow-sm h-24 animate-pulse" />;
   }
 
