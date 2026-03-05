@@ -162,9 +162,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
                 Jawab beberapa pertanyaan singkat agar kami bisa menyiapkan dasbor sesuai kondisi keuanganmu. Atau lewati saja dan mulai dari awal.
               </p>
               <div className="flex gap-3">
-                <button onClick={handleSkip} className="flex-1 py-3 rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#4A5568] hover:bg-[#F8FAFC] transition-colors">
-                  Lewati
-                </button>
+  
                 <button onClick={next} className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2">
                   Mulai <ArrowRight className="w-4 h-4" />
                 </button>
