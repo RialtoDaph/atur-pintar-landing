@@ -51,10 +51,39 @@ export default function Analytics() {
     });
   }, []);
 
-  // Build last 6 months trend data
+  // Handle filter changes
+  const handleFilterChange = (filter) => {
+    if (filter.type === "period") {
+      setFilterPeriod(filter.value);
+      setCustomDateRange(null);
+    } else if (filter.type === "custom") {
+      setCustomDateRange({
+        start: new Date(filter.startDate),
+        end: new Date(filter.endDate),
+      });
+    }
+  };
+
+  // Build trend data based on selected period
   const now = new Date();
-  const trendData = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+  const getMonthRange = () => {
+    if (customDateRange) {
+      return customDateRange;
+    }
+    const months = parseInt(filterPeriod);
+    return {
+      start: new Date(now.getFullYear(), now.getMonth() - (months - 1), 1),
+      end: now,
+    };
+  };
+
+  const monthRange = getMonthRange();
+  const monthDiff =
+    (monthRange.end.getFullYear() - monthRange.start.getFullYear()) * 12 +
+    (monthRange.end.getMonth() - monthRange.start.getMonth());
+
+  const trendData = Array.from({ length: monthDiff + 1 }, (_, i) => {
+    const d = new Date(monthRange.start.getFullYear(), monthRange.start.getMonth() + i, 1);
     const month = d.getMonth();
     const year = d.getFullYear();
     const monthTx = transactions.filter(t => {
