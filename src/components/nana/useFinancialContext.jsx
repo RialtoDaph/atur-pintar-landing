@@ -1,0 +1,199 @@
+import { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+
+/**
+ * Hook that builds a rich financial context snapshot for Nana AI.
+ * This is appended to every message so Nana always has up-to-date data.
+ */
+export function useFinancialContext() {
+  const [context, setContext] = useState(null);
+
+  useEffect(() => {
+    buildContext();
+  }, []);
+
+  async function buildContext() {
+    try {
+      const user = await base44.auth.me();
+      const now = new Date();
+      const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const lastMonth = (() => {
+        const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      })();
+
+      const [transactions, goals, budgets, debts, investments, reminders, riskProfile, preferences] =
+        await Promise.all([
+          base44.entities.Transaction.list("-date", 200),
+          base44.entities.SavingsGoal.list(),
+          base44.entities.Budget.list(),
+          base44.entities.Debt.list(),
+          base44.entities.Investment.list(),
+          base44.entities.Reminder.list(),
+          base44.entities.UserRiskProfile.filter({ created_by: user.email }),
+          base44.entities.NanaPreferences.filter({ created_by: user.email }),
+        ]);
+
+      // This month transactions
+      const thisTx = transactions.filter((t) => t.date?.startsWith(thisMonth));
+      const lastTx = transactions.filter((t) => t.date?.startsWith(lastMonth));
+
+      const thisIncome = thisTx.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
+      const thisExpense = thisTx.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+      const lastExpense = lastTx.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+
+      // Category breakdown this month
+      const catBreakdown = {};
+      thisTx.filter((t) => t.type === "expense").forEach((t) => {
+        const c = t.category || "other";
+        catBreakdown[c] = (catBreakdown[c] || 0) + t.amount;
+      });
+
+      // Budget status
+      const thisMonthBudgets = budgets.filter((b) => b.month === thisMonth);
+      const budgetStatus = thisMonthBudgets.map((b) => ({
+        category: b.category,
+        limit: b.amount,
+        spent: catBreakdown[b.category] || 0,
+        remaining: b.amount - (catBreakdown[b.category] || 0),
+        pct: Math.round(((catBreakdown[b.category] || 0) / b.amount) * 100),
+      }));
+
+      // Active debts sorted by interest rate desc
+      const activeDebts = debts
+        .filter((d) => d.status === "active")
+        .sort((a, b) => (b.interest_rate || 0) - (a.interest_rate || 0));
+      const totalDebtRemaining = activeDebts.reduce((s, d) => s + (d.remaining_amount || 0), 0);
+      const totalMonthlyDebtPayment = activeDebts.reduce((s, d) => s + (d.monthly_payment || 0), 0);
+
+      // Goals progress
+      const activeGoals = goals.filter((g) => g.status === "active").map((g) => {
+        const pct = Math.round(((g.current_amount || 0) / (g.target_amount || 1)) * 100);
+        const remaining = (g.target_amount || 0) - (g.current_amount || 0);
+        const daysLeft = g.deadline
+          ? Math.round((new Date(g.deadline) - now) / (1000 * 60 * 60 * 24))
+          : null;
+        const monthsLeft = daysLeft ? Math.ceil(daysLeft / 30) : null;
+        const neededPerMonth = monthsLeft && monthsLeft > 0 ? Math.round(remaining / monthsLeft) : null;
+        return { ...g, pct, remaining, daysLeft, monthsLeft, neededPerMonth };
+      });
+
+      // Upcoming reminders (due within 10 days)
+      const dayOfMonth = now.getDate();
+      const upcomingReminders = reminders
+        .filter((r) => r.is_active && r.due_day >= dayOfMonth && r.due_day - dayOfMonth <= 10)
+        .sort((a, b) => a.due_day - b.due_day);
+
+      // Investment summary
+      const totalInvested = investments.reduce((s, i) => s + (i.initial_amount || 0), 0);
+      const totalCurrentValue = investments.reduce((s, i) => s + (i.current_value || 0), 0);
+
+      const snapshot = {
+        date: now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
+        user: { name: user.full_name },
+        preferences: preferences?.[0] || null,
+        riskProfile: riskProfile?.[0] || null,
+        thisMonth: {
+          income: thisIncome,
+          expense: thisExpense,
+          net: thisIncome - thisExpense,
+          expenseVsLastMonth: lastExpense ? Math.round(((thisExpense - lastExpense) / lastExpense) * 100) : null,
+          categoryBreakdown: catBreakdown,
+        },
+        budgetStatus,
+        debts: activeDebts.map((d) => ({
+          name: d.name,
+          type: d.type,
+          remaining: d.remaining_amount,
+          interestRate: d.interest_rate,
+          monthlyPayment: d.monthly_payment,
+          dueDate: d.due_date,
+        })),
+        debtSummary: { totalRemaining: totalDebtRemaining, totalMonthlyPayment: totalMonthlyDebtPayment },
+        goals: activeGoals.map((g) => ({
+          name: g.name,
+          target: g.target_amount,
+          current: g.current_amount || 0,
+          pct: g.pct,
+          remaining: g.remaining,
+          deadline: g.deadline,
+          daysLeft: g.daysLeft,
+          neededPerMonth: g.neededPerMonth,
+        })),
+        investments: {
+          totalInvested,
+          totalCurrentValue,
+          returnAmount: totalCurrentValue - totalInvested,
+          returnPct: totalInvested > 0 ? Math.round(((totalCurrentValue - totalInvested) / totalInvested) * 100) : 0,
+          count: investments.length,
+        },
+        upcomingReminders: upcomingReminders.map((r) => ({
+          title: r.title,
+          amount: r.amount,
+          dueDay: r.due_day,
+          daysUntilDue: r.due_day - dayOfMonth,
+        })),
+      };
+
+      setContext(snapshot);
+    } catch (e) {
+      console.error("Failed to build financial context:", e);
+    }
+  }
+
+  function formatContextForMessage(snapshot) {
+    if (!snapshot) return "";
+    const fmt = (n) => `Rp ${Math.round(n || 0).toLocaleString("id-ID")}`;
+
+    const lines = [
+      `\n\n---\n[FINANCIAL_CONTEXT - ${snapshot.date}]`,
+      `Pengguna: ${snapshot.user.name}`,
+      snapshot.preferences ? `Preferensi: Nada=${snapshot.preferences.tone}, Saran=${(snapshot.preferences.preferred_advice_types || []).join("/")}` : "",
+      snapshot.riskProfile ? `Profil Risiko: ${snapshot.riskProfile.risk_tolerance}, Pengalaman=${snapshot.riskProfile.investment_experience}, Tujuan=${snapshot.riskProfile.financial_goal}` : "",
+      `\nKEUANGAN BULAN INI:`,
+      `- Pemasukan: ${fmt(snapshot.thisMonth.income)}`,
+      `- Pengeluaran: ${fmt(snapshot.thisMonth.expense)}`,
+      `- Net: ${fmt(snapshot.thisMonth.net)}${snapshot.thisMonth.expenseVsLastMonth !== null ? ` (pengeluaran ${snapshot.thisMonth.expenseVsLastMonth > 0 ? "+" : ""}${snapshot.thisMonth.expenseVsLastMonth}% vs bulan lalu)` : ""}`,
+    ];
+
+    if (snapshot.budgetStatus.length > 0) {
+      lines.push(`\nSTATUS ANGGARAN:`);
+      snapshot.budgetStatus.forEach((b) => {
+        const flag = b.pct >= 100 ? " ⚠️OVER" : b.pct >= 80 ? " ⚠️HAMPIR HABIS" : "";
+        lines.push(`- ${b.category}: ${fmt(b.spent)}/${fmt(b.limit)} (${b.pct}%)${flag}`);
+      });
+    }
+
+    if (snapshot.debts.length > 0) {
+      lines.push(`\nUTANG AKTIF (urutan bunga tertinggi):`);
+      snapshot.debts.forEach((d, i) => {
+        lines.push(`${i + 1}. ${d.name} (${d.type}): sisa ${fmt(d.remaining)}, bunga ${d.interestRate || 0}%/tahun, cicilan ${fmt(d.monthlyPayment)}/bulan${d.dueDate ? `, jatuh tempo ${d.dueDate}` : ""}`);
+      });
+      lines.push(`Total utang: ${fmt(snapshot.debtSummary.totalRemaining)}, total cicilan: ${fmt(snapshot.debtSummary.totalMonthlyPayment)}/bulan`);
+    }
+
+    if (snapshot.goals.length > 0) {
+      lines.push(`\nTUJUAN TABUNGAN AKTIF:`);
+      snapshot.goals.forEach((g) => {
+        const urgency = g.daysLeft !== null && g.daysLeft < 30 ? " ⚠️MENDESAK" : "";
+        lines.push(`- ${g.name}: ${fmt(g.current)}/${fmt(g.target)} (${g.pct}%), sisa ${fmt(g.remaining)}${g.deadline ? `, deadline ${g.deadline} (${g.daysLeft} hari lagi)` : ""}${g.neededPerMonth ? `, perlu ${fmt(g.neededPerMonth)}/bulan` : ""}${urgency}`);
+      });
+    }
+
+    if (snapshot.investments.count > 0) {
+      lines.push(`\nINVESTASI: ${snapshot.investments.count} portofolio, modal ${fmt(snapshot.investments.totalInvested)}, nilai kini ${fmt(snapshot.investments.totalCurrentValue)} (return ${snapshot.investments.returnPct >= 0 ? "+" : ""}${snapshot.investments.returnPct}%)`);
+    }
+
+    if (snapshot.upcomingReminders.length > 0) {
+      lines.push(`\nTAGIHAN JATUH TEMPO (10 hari ke depan):`);
+      snapshot.upcomingReminders.forEach((r) => {
+        lines.push(`- ${r.title}${r.amount ? `: ${fmt(r.amount)}` : ""} — ${r.daysUntilDue === 0 ? "HARI INI" : `${r.daysUntilDue} hari lagi`}`);
+      });
+    }
+
+    lines.push(`[/FINANCIAL_CONTEXT]\n---`);
+    return lines.filter(Boolean).join("\n");
+  }
+
+  return { context, formatContextForMessage };
+}
