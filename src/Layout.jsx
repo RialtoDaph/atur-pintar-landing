@@ -135,9 +135,14 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile top header */}
       <div className="sm:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] flex items-center justify-between px-5 py-3 border-b border-white/10">
         <p className="text-white font-bold text-lg tracking-tight">Atur.in</p>
-        <Link to={createPageUrl("Settings")} className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-xs font-bold">
-          {initials}
-        </Link>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white">
+            <Search className="w-4 h-4" />
+          </button>
+          <Link to={createPageUrl("Settings")} className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-xs font-bold">
+            {initials}
+          </Link>
+        </div>
       </div>
 
       {/* Main content — add top padding on mobile for header */}
