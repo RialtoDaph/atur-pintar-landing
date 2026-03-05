@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { AlertTriangle, CheckCircle, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -15,19 +15,10 @@ const DEFAULT_CATEGORIES = {
   other: { label: "Other", emoji: "📦", color: "#95A5A6" },
 };
 
-export default function BudgetAlertWidget({ transactions = [], loading = false }) {
-  const [budgets, setBudgets] = useState([]);
-  const [budgetsLoading, setBudgetsLoading] = useState(true);
-
-  const currentMonth = (() => {
+export default function BudgetAlertWidget({ transactions = [], loading = false, budgets = [] }) {
+  const currentMonth = useMemo(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  })();
-
-  useEffect(() => {
-    base44.entities.Budget.filter({ month: currentMonth })
-      .then(b => { setBudgets(b); setBudgetsLoading(false); })
-      .catch(() => setBudgetsLoading(false));
   }, []);
 
   if (budgetsLoading || loading) {
