@@ -136,6 +136,34 @@ export default function Transactions() {
       </div>
 
       <div className="max-w-2xl mx-auto px-5 mt-4 space-y-4">
+        {/* Select mode action bar */}
+        {selectMode && (
+          <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button onClick={selectAll} className="text-xs font-semibold text-[#FF6A00]">Pilih Semua</button>
+              {selectedIds.size > 0 && <span className="text-xs text-[#8FA4C8]">({selectedIds.size} dipilih)</span>}
+            </div>
+            <div className="flex items-center gap-2">
+              {selectedIds.size > 0 && (
+                <button
+                  onClick={handleDeleteSelected}
+                  disabled={deleting}
+                  className="px-3 py-1.5 rounded-lg bg-[#FF6B6B] text-white text-xs font-bold disabled:opacity-50"
+                >
+                  {deleting ? "Menghapus..." : `Hapus (${selectedIds.size})`}
+                </button>
+              )}
+              <button
+                onClick={handleDeleteAll}
+                disabled={deleting || filtered.length === 0}
+                className="px-3 py-1.5 rounded-lg bg-[#0A0A0A] text-white text-xs font-bold disabled:opacity-50"
+              >
+                Hapus Semua
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Filter tabs */}
         <div className="flex bg-white rounded-xl p-1 shadow-sm">
           {FILTER_TABS.map(tab => (
