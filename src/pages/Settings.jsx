@@ -205,7 +205,7 @@ export default function Settings() {
           </button>
         </div>
 
-        <p className="text-center text-xs text-[#8FA4C8] pb-4">SaveWise v1.0 · Dibuat dengan ❤️</p>
+        <p className="text-center text-xs text-[#8FA4C8] pb-4">Atur.in v1.0 · Dibuat dengan ❤️</p>
       </div>
     </div>
   );

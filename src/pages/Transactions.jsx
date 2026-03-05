@@ -116,7 +116,7 @@ export default function Transactions() {
             return (
               <div key={key} className="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div className="px-5 py-3 border-b border-[#F2F4F7] flex items-center justify-between">
-                  <p className="text-sm font-bold text-[#1B2559]">{group.label}</p>
+                  <p className="text-sm font-bold text-[#1A1A1A]">{group.label}</p>
                   <div className="flex gap-3 text-xs">
                     {monthIncome > 0 && <span className="text-[#00C9A7] font-semibold">+{formatRupiah(monthIncome)}</span>}
                     {monthExpense > 0 && <span className="text-[#FF6B6B] font-semibold">−{formatRupiah(monthExpense)}</span>}
