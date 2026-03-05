@@ -32,7 +32,15 @@ export default function Dashboard() {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddTx, setShowAddTx] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
-  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem("onboarding_done"));
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then(user => {
+      if (!user?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
+        setShowOnboarding(true);
+      }
+    }).catch(() => {});
+  }, []);
   const [showResetPrompt, setShowResetPrompt] = useState(() => !localStorage.getItem("reset_prompt_shown"));
 
   useEffect(() => {
