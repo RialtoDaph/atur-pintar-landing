@@ -72,6 +72,7 @@ export default function DebtsPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
+        <IOUSection />
         {loading ? (
           [...Array(2)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-28 animate-pulse" />)
         ) : activeDebts.length === 0 ? (
