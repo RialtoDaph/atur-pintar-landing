@@ -96,6 +96,9 @@ export default function Dashboard() {
         {/* Reminder Widget */}
         <ReminderWidget />
 
+        {/* Personal Insights */}
+        {!loading && <DashboardInsights transactions={transactions} goals={goals} />}
+
         {/* Smart Alerts Panel */}
         <SmartAlertsPanel />
 
