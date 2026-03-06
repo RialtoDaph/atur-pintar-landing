@@ -38,6 +38,31 @@ function countFutureOccurrences(template, today, daysInMonth) {
   return count;
 }
 
+// Calculate historical average spending from past 3 months
+function getHistoricalMonthlyAverage(transactions, type, months = 3) {
+  const now = new Date();
+  let totalAmount = 0;
+  let monthCount = 0;
+
+  for (let i = 1; i <= months; i++) {
+    const pastMonth = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const nextMonth = new Date(pastMonth.getFullYear(), pastMonth.getMonth() + 1, 1);
+
+    const monthTransactions = transactions.filter(tx => {
+      const d = new Date(tx.date);
+      return d >= pastMonth && d < nextMonth && tx.type === type;
+    });
+
+    const monthAmount = monthTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+    if (monthAmount > 0) {
+      totalAmount += monthAmount;
+      monthCount++;
+    }
+  }
+
+  return monthCount > 0 ? totalAmount / monthCount : 0;
+}
+
 export default function CashflowForecast({ transactions, loading, user }) {
   const { formatCurrency, t } = useAppSettings();
   const [recurringTemplates, setRecurringTemplates] = useState([]);
@@ -66,47 +91,49 @@ export default function CashflowForecast({ transactions, loading, user }) {
   const currentExpense = thisMonth.filter(tx => tx.type === "expense").reduce((s, tx) => s + tx.amount, 0);
 
   // --- Recurring-aware projection ---
-  // For each recurring template, estimate how many more times it fires this month
   let scheduledFutureIncome = 0;
   let scheduledFutureExpense = 0;
 
-  // Collect parent IDs that already have a child this month (so we don't double-count)
   const childParentIdsThisMonth = new Set(
     thisMonth.filter(tx => tx.is_recurring_child && tx.recurring_parent_id).map(tx => tx.recurring_parent_id)
   );
 
   for (const tpl of recurringTemplates) {
     const occurrences = countFutureOccurrences(tpl, now, daysInMonth);
-    // If monthly and already generated this month, skip
     if (tpl.recurring_interval === "monthly" && childParentIdsThisMonth.has(tpl.id)) continue;
     scheduledFutureIncome += (occurrences.income || 0) * tpl.amount;
     scheduledFutureExpense += (occurrences.expense || 0) * tpl.amount;
   }
 
-  // For non-recurring spend, use daily average for the remainder
-  // Exclude recurring-child and salary/freelance income from daily avg (one-time income like salary should not be projected forward)
+  // Use historical data for better forecasting
   const ONE_TIME_INCOME_CATEGORIES = ["salary", "freelance", "bonus", "dividend", "reimbursement"];
   const nonRecurringExpense = thisMonth.filter(tx => tx.type === "expense" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
-  // Only average irregular/daily income, not large one-time salary entries
+  
+  // Get historical average for remaining days
+  const historicalMonthlyExpense = getHistoricalMonthlyAverage(transactions, "expense", 3);
+  const historicalDailyExpense = historicalMonthlyExpense / daysInMonth;
+
+  // Use current month data if available, otherwise fall back to historical average
+  const daysElapsed = Math.max(1, dayOfMonth - 1);
+  const currentDailyExpense = daysElapsed > 0 ? nonRecurringExpense / daysElapsed : historicalDailyExpense;
+  
+  // Blend current trend with historical average for better accuracy
+  const blendedDailyExpense = (currentDailyExpense * 0.6) + (historicalDailyExpense * 0.4);
+
+  // Similar logic for income (excluding one-time categories)
   const nonRecurringIncome = thisMonth.filter(tx =>
     tx.type === "income" &&
     !tx.is_recurring_child &&
     !ONE_TIME_INCOME_CATEGORIES.includes(tx.category)
   ).reduce((s, tx) => s + tx.amount, 0);
-  // One-time income (salary etc) is already counted in currentIncome — no need to project forward
-  const oneTimeIncome = thisMonth.filter(tx =>
-    tx.type === "income" &&
-    ONE_TIME_INCOME_CATEGORIES.includes(tx.category)
-  ).reduce((s, tx) => s + tx.amount, 0);
 
-  // Use at least 1 day as denominator; more conservative early-month projections
-  const daysElapsed = Math.max(1, dayOfMonth - 1);
-  const dailyExpenseAvg = daysElapsed > 0 ? nonRecurringExpense / daysElapsed : 0;
-  // Only project daily avg for non-salary income; salary already captured in currentIncome
-  const dailyIncomeAvg = daysElapsed > 0 ? nonRecurringIncome / daysElapsed : 0;
+  const historicalMonthlyIncome = getHistoricalMonthlyAverage(transactions, "income", 3);
+  const historicalDailyIncome = historicalMonthlyIncome / daysInMonth;
+  const currentDailyIncome = daysElapsed > 0 ? nonRecurringIncome / daysElapsed : historicalDailyIncome;
+  const blendedDailyIncome = (currentDailyIncome * 0.6) + (historicalDailyIncome * 0.4);
 
-  const projectedExtraExpense = dailyExpenseAvg * daysLeft + scheduledFutureExpense;
-  const projectedExtraIncome = dailyIncomeAvg * daysLeft + scheduledFutureIncome;
+  const projectedExtraExpense = blendedDailyExpense * daysLeft + scheduledFutureExpense;
+  const projectedExtraIncome = blendedDailyIncome * daysLeft + scheduledFutureIncome;
 
   const projectedTotalExpense = currentExpense + projectedExtraExpense;
   const projectedTotalIncome = currentIncome + projectedExtraIncome;
