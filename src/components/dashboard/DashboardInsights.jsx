@@ -83,7 +83,7 @@ export default function DashboardInsights({ transactions, goals }) {
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="px-4 pt-4 pb-2 flex items-center gap-2">
         <Lightbulb className="w-4 h-4 text-[#FF6A00]" />
-        <h2 className="font-bold text-[#0A0A0A] text-sm">Insight Bulan Ini</h2>
+        <h2 className="font-bold text-[#0A0A0A] text-sm">{t('insight_title')}</h2>
       </div>
       <div className="px-4 pb-4 space-y-2">
         {insights.map((ins, i) => (

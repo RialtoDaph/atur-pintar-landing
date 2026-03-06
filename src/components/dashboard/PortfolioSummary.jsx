@@ -65,9 +65,9 @@ export default function PortfolioSummary() {
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <h2 className="font-bold text-[#0A0A0A] text-sm">Portofolio Investasi</h2>
+        <h2 className="font-bold text-[#0A0A0A] text-sm">{t('portfolio_title')}</h2>
         <Link to={createPageUrl("Investments")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
-          Lihat semua <ChevronRight className="w-3 h-3" />
+          {t('view_all')} <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
 
@@ -75,7 +75,7 @@ export default function PortfolioSummary() {
         {/* Summary row */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase tracking-widest">Total Nilai</p>
+            <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase tracking-widest">{t('total_value')}</p>
             <p className="text-[#1A1A1A] font-bold text-xl">{formatCurrency(totalValue)}</p>
           </div>
           <div className={`flex flex-col items-end px-3 py-1.5 rounded-xl ${isPositive ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>

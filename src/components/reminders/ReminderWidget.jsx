@@ -48,10 +48,10 @@ export default function ReminderWidget() {
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-[#FF6A00]" />
-          <h2 className="font-bold text-[#0A0A0A] text-sm">Pengingat Mendatang</h2>
+          <h2 className="font-bold text-[#0A0A0A] text-sm">{t('upcoming_reminders')}</h2>
         </div>
         <Link to={createPageUrl("Reminders")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
-          Lihat semua <ChevronRight className="w-3 h-3" />
+        {t('view_all')} <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
       <div className="px-4 pb-4 space-y-2">
@@ -64,7 +64,7 @@ export default function ReminderWidget() {
                 <p className="text-sm font-semibold text-[#0A0A0A] truncate">{r.title}</p>
                 <p className="text-xs text-[#8FA4C8]">
                   {r.amount ? formatCurrency(r.amount) + " · " : ""}
-                  {r.daysLeft === 0 ? "Hari ini!" : r.daysLeft === 1 ? "Besok!" : `${r.daysLeft} hari lagi`}
+                  {r.daysLeft === 0 ? t('today') : r.daysLeft === 1 ? t('tomorrow') : `${r.daysLeft} ${t('days_left')}`}
                 </p>
               </div>
               <button onClick={() => dismiss(r)} className="w-7 h-7 rounded-full bg-[#00C9A7]/15 flex items-center justify-center hover:bg-[#00C9A7]/30 transition-colors flex-shrink-0">
