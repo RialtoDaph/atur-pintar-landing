@@ -53,7 +53,7 @@ export default function Transactions() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm("Hapus transaksi ini?")) return;
+    if (!window.confirm(t('tx_confirm_delete'))) return;
     await base44.entities.Transaction.delete(id);
     loadData();
   }
@@ -83,7 +83,7 @@ export default function Transactions() {
 
   async function handleDeleteSelected() {
     if (selectedIds.size === 0) return;
-    if (!window.confirm(`Hapus ${selectedIds.size} transaksi yang dipilih?`)) return;
+    if (!window.confirm(`${t('tx_delete_selected')} ${selectedIds.size} transaksi yang dipilih?`)) return;
     setDeleting(true);
     await Promise.all([...selectedIds].map(id => base44.entities.Transaction.delete(id)));
     setDeleting(false);
@@ -92,7 +92,7 @@ export default function Transactions() {
   }
 
   async function handleDeleteAll() {
-    if (!window.confirm(`Hapus SEMUA ${filtered.length} transaksi yang ditampilkan? Tindakan ini tidak bisa dibatalkan.`)) return;
+    if (!window.confirm(`${t('tx_delete_all')} (${filtered.length})? Tindakan ini tidak bisa dibatalkan.`)) return;
     setDeleting(true);
     await Promise.all(filtered.map(t => base44.entities.Transaction.delete(t.id)));
     setDeleting(false);
@@ -120,15 +120,15 @@ export default function Transactions() {
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
-            <p className="text-[#8FA4C8] text-sm font-medium">Riwayat</p>
-            <h1 className="text-white text-2xl font-bold mt-0.5">Transaksi</h1>
+            <p className="text-[#8FA4C8] text-sm font-medium">{t('tx_history')}</p>
+            <h1 className="text-white text-2xl font-bold mt-0.5">{t('tx_title')}</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => { setSelectMode(s => !s); setSelectedIds(new Set()); }}
               className={`px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${selectMode ? "bg-white text-[#0A0A0A]" : "bg-white/10 text-white hover:bg-white/20"}`}
             >
-              {selectMode ? "Batal" : "Pilih"}
+              {selectMode ? t('tx_cancel') : t('tx_select')}
             </button>
             <button
               onClick={() => setShowAddTx(true)}
@@ -145,8 +145,8 @@ export default function Transactions() {
         {selectMode && (
           <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <button onClick={selectAll} className="text-xs font-semibold text-[#FF6A00]">Pilih Semua</button>
-              {selectedIds.size > 0 && <span className="text-xs text-[#8FA4C8]">({selectedIds.size} dipilih)</span>}
+              <button onClick={selectAll} className="text-xs font-semibold text-[#FF6A00]">{t('tx_select_all')}</button>
+              {selectedIds.size > 0 && <span className="text-xs text-[#8FA4C8]">({selectedIds.size} {t('tx_selected')})</span>}
             </div>
             <div className="flex items-center gap-2">
               {selectedIds.size > 0 && (
@@ -155,7 +155,7 @@ export default function Transactions() {
                   disabled={deleting}
                   className="px-3 py-1.5 rounded-lg bg-[#FF6B6B] text-white text-xs font-bold disabled:opacity-50"
                 >
-                  {deleting ? "Menghapus..." : `Hapus (${selectedIds.size})`}
+                  {deleting ? t('tx_deleting') : `${t('tx_delete_selected')} (${selectedIds.size})`}
                 </button>
               )}
               <button
@@ -163,7 +163,7 @@ export default function Transactions() {
                 disabled={deleting || filtered.length === 0}
                 className="px-3 py-1.5 rounded-lg bg-[#0A0A0A] text-white text-xs font-bold disabled:opacity-50"
               >
-                Hapus Semua
+                {t('tx_delete_all')}
               </button>
             </div>
           </div>
