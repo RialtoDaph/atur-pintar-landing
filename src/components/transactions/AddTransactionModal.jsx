@@ -258,10 +258,10 @@ export default function AddTransactionModal({ onClose, onSave }) {
           {/* Note & Date */}
           <div className="space-y-4 mb-6">
             <div>
-              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Note (optional)</label>
+              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('note_optional')}</label>
               <input
                 className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                placeholder="e.g. Grocery run, Netflix..."
+                placeholder={t('note_placeholder')}
                 value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })}
               />
