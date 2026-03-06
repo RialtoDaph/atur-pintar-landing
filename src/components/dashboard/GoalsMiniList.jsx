@@ -8,7 +8,7 @@ const COLORS = {
 };
 
 export default function GoalsMiniList({ goals, loading }) {
-  const { formatCurrency } = useAppSettings();
+  const { formatCurrency, t } = useAppSettings();
   if (loading) {
     return (
       <div className="px-5 pb-4 space-y-3">
