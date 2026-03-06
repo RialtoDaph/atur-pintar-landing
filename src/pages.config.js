@@ -53,6 +53,7 @@ import Budget from './pages/Budget';
 import Dashboard from './pages/Dashboard';
 import Debts from './pages/Debts';
 import Goals from './pages/Goals';
+import InvestmentDetail from './pages/InvestmentDetail';
 import Investments from './pages/Investments';
 import Menu from './pages/Menu';
 import Nana from './pages/Nana';
@@ -60,7 +61,6 @@ import Reminders from './pages/Reminders';
 import Settings from './pages/Settings';
 import Tips from './pages/Tips';
 import Transactions from './pages/Transactions';
-import InvestmentDetail from './pages/InvestmentDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +71,7 @@ export const PAGES = {
     "Dashboard": Dashboard,
     "Debts": Debts,
     "Goals": Goals,
+    "InvestmentDetail": InvestmentDetail,
     "Investments": Investments,
     "Menu": Menu,
     "Nana": Nana,
@@ -78,7 +79,6 @@ export const PAGES = {
     "Settings": Settings,
     "Tips": Tips,
     "Transactions": Transactions,
-    "InvestmentDetail": InvestmentDetail,
 }
 
 export const pagesConfig = {

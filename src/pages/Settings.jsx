@@ -4,6 +4,7 @@ import { Moon, Sun, DollarSign, Globe, LayoutDashboard, Bell, User, LogOut, Chev
 import NanaPreferencesSettings from "@/components/settings/NanaPreferencesSettings";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const LANGUAGES = [
   { code: "id", label: "Indonesia", flag: "🇮🇩" },
