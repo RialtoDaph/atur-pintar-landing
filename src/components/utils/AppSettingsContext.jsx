@@ -720,8 +720,17 @@ export function AppSettingsProvider({ children }) {
     return decimals > 0 && decimalPart ? `${formattedInt}${settings.decimal_separator}${decimalPart}` : formattedInt;
   };
 
+  const formatShortNumber = (value) => {
+    if (typeof value !== 'number') value = parseFloat(value) || 0;
+    const absValue = Math.abs(value);
+    if (absValue >= 1000000000) return `${(absValue / 1000000000).toFixed(1)}M`;
+    if (absValue >= 1000000) return `${(absValue / 1000000).toFixed(0)}${settings.language === 'id' ? 'jt' : 'M'}`;
+    if (absValue >= 1000) return `${(absValue / 1000).toFixed(0)}${settings.language === 'id' ? 'rb' : 'K'}`;
+    return absValue.toString();
+  };
+
   return (
-    <AppSettingsContext.Provider value={{ settings, setSettings, updateSettings, loading, t, formatCurrency, formatNumber }}>
+    <AppSettingsContext.Provider value={{ settings, setSettings, updateSettings, loading, t, formatCurrency, formatNumber, formatShortNumber }}>
       {children}
     </AppSettingsContext.Provider>
   );
