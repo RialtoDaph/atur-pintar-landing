@@ -157,7 +157,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest">{t('current_value')}</label>
               <button type="button" onClick={fetchLivePrice} disabled={fetchingPrice || !form.name}
                 className="text-xs text-[#FF6A00] hover:text-[#e05e00] font-semibold flex items-center gap-1">
-                {fetchingPrice ? <Loader2 className="w-3 h-3 animate-spin" /> : '🔄'} Fetch Price
+                {fetchingPrice ? <Loader2 className="w-3 h-3 animate-spin" /> : '🔄'} {t('fetch_price')}
               </button>
             </div>
             <input type="number" placeholder="0"
