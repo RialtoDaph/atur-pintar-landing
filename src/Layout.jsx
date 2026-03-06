@@ -7,11 +7,12 @@ import NanaFloatingChat from "@/components/nana/NanaFloatingChat";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
 
-export default function Layout({ children, currentPageName }) {
+function LayoutInner({ children, currentPageName }) {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
   const [user, setUser] = useState(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const { t } = useAppSettings();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -26,8 +27,6 @@ export default function Layout({ children, currentPageName }) {
       localStorage.setItem("darkMode", "false");
     }
   }, [darkMode]);
-
-  const { t } = useAppSettings();
 
   const navItems = [
     { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
@@ -59,7 +58,6 @@ export default function Layout({ children, currentPageName }) {
   const initials = user?.full_name ? user.full_name.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase() : "U";
 
   return (
-    <AppSettingsProvider>
     <div className={`min-h-screen font-sans pb-20 sm:pb-0 transition-colors ${darkMode ? "bg-[#111] text-white" : "bg-[#F2F4F7]"}`}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -205,6 +203,13 @@ export default function Layout({ children, currentPageName }) {
       {/* Global Search */}
       {showSearch && <GlobalSearch onClose={() => setShowSearch(false)} />}
     </div>
+  );
+}
+
+export default function Layout({ children, currentPageName }) {
+  return (
+    <AppSettingsProvider>
+      <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
     </AppSettingsProvider>
   );
 }
