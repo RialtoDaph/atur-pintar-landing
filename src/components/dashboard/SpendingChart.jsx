@@ -60,7 +60,7 @@ export default function SpendingChart({ transactions, loading }) {
                 <Cell key={i} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip formatter={(v) => formatRupiah(v)} contentStyle={{ borderRadius: 10, border: "none", boxShadow: "0 2px 12px rgba(0,0,0,0.1)", fontSize: 12 }} />
+            <Tooltip formatter={(v) => formatCurrency(v)} contentStyle={{ borderRadius: 10, border: "none", boxShadow: "0 2px 12px rgba(0,0,0,0.1)", fontSize: 12 }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -69,7 +69,7 @@ export default function SpendingChart({ transactions, loading }) {
           <div key={d.key} className="flex items-center gap-2 min-w-0">
             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: d.color }} />
             <span className="text-xs text-[#4A5568] flex-1 min-w-0 truncate">{d.emoji} {d.label}</span>
-            <span className="text-xs font-semibold text-[#1A1A1A] flex-shrink-0 whitespace-nowrap">{formatRupiah(d.value)}</span>
+            <span className="text-xs font-semibold text-[#1A1A1A] flex-shrink-0 whitespace-nowrap">{formatCurrency(d.value)}</span>
             <span className="text-[10px] text-[#8FA4C8] flex-shrink-0 w-8 text-right whitespace-nowrap">{total > 0 ? ((d.value / total) * 100).toFixed(0) : 0}%</span>
           </div>
         ))}
