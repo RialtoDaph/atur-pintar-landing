@@ -86,7 +86,7 @@ export default function PortfolioSummary() {
               </span>
             </div>
             <span className={`text-xs font-medium ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-              {isPositive ? "+" : ""}{formatRp(totalGain)}
+            {isPositive ? "+" : ""}{formatCurrency(totalGain)}
             </span>
           </div>
         </div>
