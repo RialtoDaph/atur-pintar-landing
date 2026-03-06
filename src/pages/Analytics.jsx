@@ -217,8 +217,8 @@ export default function Analytics() {
 
   // Calculate summary stats
   const totalIncome = trendData.reduce((sum, month) => sum + month.Income, 0);
-  const totalExpenses = trendData.reduce((sum, month) => sum + month.Expenses, 0);
-  const netCashflow = totalIncome - totalExpenses;
+  const periodExpenses = trendData.reduce((sum, month) => sum + month.Expenses, 0);
+  const netCashflow = totalIncome - periodExpenses;
   const savingsRate = totalIncome > 0 ? ((netCashflow / totalIncome) * 100).toFixed(1) : 0;
 
   return (
@@ -245,7 +245,7 @@ export default function Analytics() {
           {/* Total Expenses */}
           <div className="bg-white rounded-2xl p-4 shadow-sm border-l-4 border-[#FF6B6B]">
             <p className="text-[10px] text-[#8FA4C8] font-medium uppercase tracking-widest mb-1.5">{t('analytics_expense_label')}</p>
-            <p className="text-lg sm:text-xl font-bold text-[#FF6B6B]">{formatShortNumber(totalExpenses)}</p>
+            <p className="text-lg sm:text-xl font-bold text-[#FF6B6B]">{formatShortNumber(periodExpenses)}</p>
             <p className="text-[10px] text-[#8FA4C8] mt-1">{formatPeriodLabel(filterPeriod)}</p>
           </div>
 
