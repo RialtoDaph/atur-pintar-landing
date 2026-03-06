@@ -246,8 +246,8 @@ export default function Goals() {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-[#8FA4C8] text-sm font-medium">Rencana</p>
-            <h1 className="text-white text-2xl font-bold mt-0.5">Tujuan Finansial</h1>
+            <p className="text-[#8FA4C8] text-sm font-medium">{t('goals_plan')}</p>
+            <h1 className="text-white text-2xl font-bold mt-0.5">{t('goals_title')}</h1>
           </div>
           <button
             onClick={() => setShowAddGoal(true)}
@@ -258,9 +258,9 @@ export default function Goals() {
         </div>
 
         <div className="bg-white/10 rounded-2xl p-5">
-          <p className="text-white/60 text-sm mb-1">Total Target</p>
-          <p className="text-white font-bold text-3xl mb-2">Rp {goals.reduce((s, g) => s + g.target_amount, 0).toLocaleString("id-ID")}</p>
-          <p className="text-white/40 text-xs">{goals.filter(g => g.status === "active").length} tujuan aktif</p>
+          <p className="text-white/60 text-sm mb-1">{t('goals_total_target')}</p>
+          <p className="text-white font-bold text-3xl mb-2">{formatCurrency(goals.reduce((s, g) => s + g.target_amount, 0))}</p>
+          <p className="text-white/40 text-xs">{goals.filter(g => g.status === "active").length} {t('goals_active')}</p>
         </div>
       </div>
     </div>
@@ -271,8 +271,8 @@ export default function Goals() {
       ) : goals.length === 0 ? (
         <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
           <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
-          <p className="text-[#4A5568] font-semibold">Belum ada tujuan finansial</p>
-          <p className="text-[#8FA4C8] text-sm mt-1">Tap + untuk membuat tujuan tabungan pertama Anda</p>
+          <p className="text-[#4A5568] font-semibold">{t('goals_empty_title')}</p>
+          <p className="text-[#8FA4C8] text-sm mt-1">{t('goals_empty_desc')}</p>
         </div>
       ) : (
         goals.map((g) => {
@@ -283,7 +283,7 @@ export default function Goals() {
           const isUrgent = daysLeft && daysLeft < 30;
 
           const handleDeleteGoal = async () => {
-            if (!window.confirm("Hapus tujuan ini?")) return;
+          if (!window.confirm(t('goals_delete_confirm'))) return;
             await base44.entities.SavingsGoal.delete(g.id);
             loadData();
           };
@@ -324,7 +324,7 @@ export default function Goals() {
                   {g.deadline && (
                     <div className="flex items-center gap-1 text-[#8FA4C8]">
                       <Calendar className="w-3.5 h-3.5" />
-                      {daysLeft >= 0 ? `${daysLeft} hari` : "Kadaluarsa"}
+                      {daysLeft >= 0 ? `${daysLeft} ${t('goals_days_left')}` : t('goals_expired')}
                     </div>
                   )}
                   {suggestedMonthly && (
@@ -344,7 +344,7 @@ export default function Goals() {
                 }}
                 className="mt-3 text-xs text-red-400 hover:text-red-600 transition-colors flex items-center gap-1 w-full justify-center"
               >
-                <Trash2 className="w-3.5 h-3.5" /> Hapus
+                <Trash2 className="w-3.5 h-3.5" /> {t('goals_delete')}
               </button>
               </div>
               );
