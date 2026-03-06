@@ -19,10 +19,14 @@ const CATEGORY_CONFIG_BASE = {
   other: { emoji: "📦", label: "Other", color: "#95A5A6" },
 };
 
-const FILTER_TABS = ["all", "expense", "income"];
-
 export default function Transactions() {
-  const { formatCurrency } = useAppSettings();
+  const { formatCurrency, t } = useAppSettings();
+  const FILTER_TABS = [
+    { key: "all", label: t('tx_filter_all') },
+    { key: "expense", label: t('tx_filter_expense') },
+    { key: "income", label: t('tx_filter_income') },
+  ];
+  const CATEGORY_CONFIG = CATEGORY_CONFIG_BASE;
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
