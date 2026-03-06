@@ -105,35 +105,21 @@ export default function CashflowForecast({ transactions, loading, user }) {
     scheduledFutureExpense += (occurrences.expense || 0) * tpl.amount;
   }
 
-  // Use historical data for better forecasting
+  // Use historical data for conservative forecasting
   const ONE_TIME_INCOME_CATEGORIES = ["salary", "freelance", "bonus", "dividend", "reimbursement"];
-  const nonRecurringExpense = thisMonth.filter(tx => tx.type === "expense" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
   
-  // Get historical average for remaining days
+  // Get historical average for remaining days - more conservative approach
   const historicalMonthlyExpense = getHistoricalMonthlyAverage(transactions, "expense", 3);
   const historicalDailyExpense = historicalMonthlyExpense / daysInMonth;
 
-  // Use current month data if available, otherwise fall back to historical average
-  const daysElapsed = Math.max(1, dayOfMonth - 1);
-  const currentDailyExpense = daysElapsed > 0 ? nonRecurringExpense / daysElapsed : historicalDailyExpense;
-  
-  // Blend current trend with historical average for better accuracy
-  const blendedDailyExpense = (currentDailyExpense * 0.6) + (historicalDailyExpense * 0.4);
+  // Use only historical average for projection - this is more stable and less likely to overestimate
+  const projectedExtraExpense = (historicalDailyExpense * daysLeft) + scheduledFutureExpense;
 
-  // Similar logic for income (excluding one-time categories)
-  const nonRecurringIncome = thisMonth.filter(tx =>
-    tx.type === "income" &&
-    !tx.is_recurring_child &&
-    !ONE_TIME_INCOME_CATEGORIES.includes(tx.category)
-  ).reduce((s, tx) => s + tx.amount, 0);
-
+  // Similar logic for income
   const historicalMonthlyIncome = getHistoricalMonthlyAverage(transactions, "income", 3);
   const historicalDailyIncome = historicalMonthlyIncome / daysInMonth;
-  const currentDailyIncome = daysElapsed > 0 ? nonRecurringIncome / daysElapsed : historicalDailyIncome;
-  const blendedDailyIncome = (currentDailyIncome * 0.6) + (historicalDailyIncome * 0.4);
 
-  const projectedExtraExpense = blendedDailyExpense * daysLeft + scheduledFutureExpense;
-  const projectedExtraIncome = blendedDailyIncome * daysLeft + scheduledFutureIncome;
+  const projectedExtraIncome = (historicalDailyIncome * daysLeft) + scheduledFutureIncome;
 
   const projectedTotalExpense = currentExpense + projectedExtraExpense;
   const projectedTotalIncome = currentIncome + projectedExtraIncome;
