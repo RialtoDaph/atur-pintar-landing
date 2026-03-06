@@ -118,9 +118,9 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
         })}
         <Link
           to={createPageUrl("Budget")}
-          className="flex flex-col items-center justify-center flex-shrink-0 w-20 h-32 cursor-pointer group"
+          className="flex flex-col items-center flex-shrink-0 cursor-pointer group"
         >
-          <div className="w-20 h-20 rounded-full bg-[#F2F4F7] group-hover:bg-[#E8EEF7] transition-colors flex items-center justify-center text-2xl text-[#8FA4C8] mb-2">
+          <div className="w-10 h-10 rounded-full bg-[#F2F4F7] group-hover:bg-[#E8EEF7] transition-colors flex items-center justify-center text-lg text-[#8FA4C8] mb-2">
             +
           </div>
           <p className="text-xs font-medium text-[#8FA4C8] group-hover:text-[#FF6A00] transition-colors">Tambah</p>
