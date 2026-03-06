@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb } from "lucide-react";
-import { formatRupiah } from "@/components/utils/formatRupiah";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function DashboardInsights({ transactions, goals }) {
   const now = new Date();
