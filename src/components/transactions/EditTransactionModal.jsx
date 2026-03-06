@@ -119,7 +119,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
             </div>
           </div>
 
-          {/* Note & Date */}
+          {/* Note & Date & Goal */}
           <div className="space-y-3 mb-5">
             <div>
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Note</label>
@@ -138,6 +138,21 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
               />
             </div>
+            {goals && goals.length > 0 && (
+              <div>
+                <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('link_to_goal')}</label>
+                <select
+                  value={form.goal_id || ""}
+                  onChange={(e) => setForm({ ...form, goal_id: e.target.value })}
+                  className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                >
+                  <option value="">{t('no_goal')}</option>
+                  {goals.map(goal => (
+                    <option key={goal.id} value={goal.id}>{goal.icon} {goal.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           <button onClick={handleSave} disabled={saving || !form.amount || !form.category}
