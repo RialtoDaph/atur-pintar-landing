@@ -317,6 +317,23 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
             )}
           </div>
 
+          {/* Linked Goal (if any savings goals exist) */}
+          {goals && goals.length > 0 && tab === "savings" && (
+            <div className="mb-5">
+              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">{t('link_to_goal')}</label>
+              <select
+                value={form.goal_id || ""}
+                onChange={(e) => setForm({ ...form, goal_id: e.target.value })}
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              >
+                <option value="">{t('no_goal')}</option>
+                {goals.map(goal => (
+                  <option key={goal.id} value={goal.id}>{goal.icon} {goal.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <button onClick={handleSave} disabled={saving || !form.amount || !form.category}
             className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
             style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
