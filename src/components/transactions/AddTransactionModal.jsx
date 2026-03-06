@@ -286,7 +286,7 @@ export default function AddTransactionModal({ onClose, onSave }) {
               }`}
             >
               <span className="text-base">🔄</span>
-              <span className="text-sm font-semibold text-[#1A1A1A] flex-1 text-left">Recurring transaction</span>
+              <span className="text-sm font-semibold text-[#1A1A1A] flex-1 text-left">{t('recurring_transaction')}</span>
               <div className={`w-4 h-4 rounded-full border-2 ${recurring ? "bg-[#FF6A00] border-[#FF6A00]" : "border-[#CBD5E0]"}`} />
             </button>
             {recurring && (
