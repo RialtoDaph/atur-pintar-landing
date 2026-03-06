@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { useAppSettings } from "@/components/utils/useAppSettings";
+import { parseRupiah } from "@/components/utils/parseRupiah";
 
 const ICONS = ["💰", "🏠", "✈️", "🚗", "💍", "🎓", "🏖️", "💻", "🛍️", "🎯"];
 const COLORS = [
@@ -12,6 +14,7 @@ const COLORS = [
 ];
 
 export default function AddGoalModal({ onClose, onSave }) {
+  const { t, formatCurrency, settings } = useAppSettings();
   const [form, setForm] = useState({
     name: "",
     target_amount: "",
@@ -28,17 +31,17 @@ export default function AddGoalModal({ onClose, onSave }) {
     setSaving(true);
     await onSave({
       ...form,
-      target_amount: parseFloat(form.target_amount),
-      current_amount: parseFloat(form.current_amount) || 0,
+      target_amount: parseRupiah(form.target_amount),
+      current_amount: parseRupiah(form.current_amount) || 0,
     });
     setSaving(false);
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-[#1A1A1A]">New Savings Goal</h2>
+          <h2 className="text-lg font-bold text-[#1A1A1A]">{t('add_goal')}</h2>
           <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors">
             <X className="w-5 h-5" />
           </button>
@@ -46,7 +49,7 @@ export default function AddGoalModal({ onClose, onSave }) {
 
         {/* Icon picker */}
         <div className="mb-5">
-          <p className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-2">Icon</p>
+          <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">{t('icon')}</p>
           <div className="flex flex-wrap gap-2">
             {ICONS.map((icon) => (
               <button
@@ -64,7 +67,7 @@ export default function AddGoalModal({ onClose, onSave }) {
 
         {/* Color picker */}
         <div className="mb-5">
-          <p className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-2">Color</p>
+          <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">{t('color')}</p>
           <div className="flex gap-2">
             {COLORS.map((c) => (
               <button
@@ -80,51 +83,65 @@ export default function AddGoalModal({ onClose, onSave }) {
         {/* Fields */}
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-1 block">Goal Name</label>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1 block">{t('goals_name')}</label>
             <input
-              className="w-full border border-[#EFEFED] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] bg-[#F7F6F3]"
-              placeholder="e.g. Dream Vacation"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              placeholder={t('goals_name_placeholder') || "e.g. Dream Vacation"}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-1 block">Target ($)</label>
-              <input
-                type="number"
-                className="w-full border border-[#EFEFED] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] bg-[#F7F6F3]"
-                placeholder="5000"
-                value={form.target_amount}
-                onChange={(e) => setForm({ ...form, target_amount: e.target.value })}
-              />
+              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1 block">{t('goals_target')}</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] text-sm">{settings.currency_symbol}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="w-full border border-[#E2E8F0] rounded-xl pl-8 pr-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                  placeholder="0"
+                  value={form.target_amount}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9.,]/g, "");
+                    setForm({ ...form, target_amount: val });
+                  }}
+                />
+              </div>
             </div>
             <div>
-              <label className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-1 block">Already saved ($)</label>
-              <input
-                type="number"
-                className="w-full border border-[#EFEFED] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] bg-[#F7F6F3]"
-                placeholder="0"
-                value={form.current_amount}
-                onChange={(e) => setForm({ ...form, current_amount: e.target.value })}
-              />
+              <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1 block">{t('goals_saved')}</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] text-sm">{settings.currency_symbol}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className="w-full border border-[#E2E8F0] rounded-xl pl-8 pr-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                  placeholder="0"
+                  value={form.current_amount}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9.,]/g, "");
+                    setForm({ ...form, current_amount: val });
+                  }}
+                />
+              </div>
             </div>
           </div>
           <div>
-            <label className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-1 block">Deadline (optional)</label>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1 block">{t('goals_deadline_optional')}</label>
             <input
               type="date"
-              className="w-full border border-[#EFEFED] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] bg-[#F7F6F3]"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
               value={form.deadline}
               onChange={(e) => setForm({ ...form, deadline: e.target.value })}
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-1 block">Description (optional)</label>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1 block">{t('goals_description_optional')}</label>
             <textarea
               rows={2}
-              className="w-full border border-[#EFEFED] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] bg-[#F7F6F3] resize-none"
-              placeholder="Why are you saving for this?"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] resize-none"
+              placeholder={t('goals_description_placeholder') || "Why are you saving for this?"}
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
             />
@@ -134,9 +151,9 @@ export default function AddGoalModal({ onClose, onSave }) {
         <button
           onClick={handleSave}
           disabled={saving || !form.name || !form.target_amount}
-          className="mt-6 w-full bg-[#1A1A1A] text-white py-3.5 rounded-xl font-semibold text-sm disabled:opacity-40 hover:bg-[#333] transition-colors"
+          className="mt-6 w-full bg-[#FF6A00] text-white py-3.5 rounded-xl font-semibold text-sm disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
         >
-          {saving ? "Creating..." : "Create Goal"}
+          {saving ? t('saving') : t('add_goal')}
         </button>
       </div>
     </div>
