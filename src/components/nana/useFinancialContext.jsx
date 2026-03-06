@@ -121,7 +121,6 @@ export function useFinancialContext() {
       });
 
       // Upcoming reminders (due within 10 days)
-      const dayOfMonth = now.getDate();
       const upcomingReminders = reminders
         .filter((r) => r.is_active && r.due_day >= dayOfMonth && r.due_day - dayOfMonth <= 10)
         .sort((a, b) => a.due_day - b.due_day);
