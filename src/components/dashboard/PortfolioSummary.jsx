@@ -102,7 +102,7 @@ export default function PortfolioSummary() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => [formatRp(value), ""]}
+                  formatter={(value) => [formatCurrency(value), ""]}
                   contentStyle={{ background: "#1A1A1A", border: "none", borderRadius: 8, color: "#fff", fontSize: 11 }}
                 />
               </PieChart>
