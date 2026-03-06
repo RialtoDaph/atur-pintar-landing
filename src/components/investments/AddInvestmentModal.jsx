@@ -165,7 +165,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
               value={form.current_value}
               onChange={e => setForm(f => ({ ...f, current_value: e.target.value }))}
             />
-            <p className="text-xs text-[#8FA4C8] mt-1">Ubah jika harga berbeda dari modal awal</p>
+            <p className="text-xs text-[#8FA4C8] mt-1">{t('change_if_price_differs')}</p>
           </div>
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tanggal Beli</label>

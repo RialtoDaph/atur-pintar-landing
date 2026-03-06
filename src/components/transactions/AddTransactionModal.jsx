@@ -170,7 +170,7 @@ export default function AddTransactionModal({ onClose, onSave }) {
                   )}
                 </div>
                 <p className="text-sm font-bold text-[#FF6A00]">
-                  Rp {Math.round(receiptData.total_amount).toLocaleString("id-ID")}
+                  {formatCurrency(receiptData.total_amount)}
                 </p>
               </div>
               {receiptData.items?.length > 0 && (
