@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS = {
 
 const TRANSLATIONS = {
   id: {
+    // Investment
     expense: 'Pengeluaran',
     income: 'Pemasukan',
     savings: 'Tabungan',
@@ -21,12 +22,252 @@ const TRANSLATIONS = {
     total_portfolio: 'Total Nilai Portofolio',
     savings_goal: 'Tujuan Tabungan',
     monthly_budget: 'Anggaran Bulanan',
-    profit_loss: 'Keuntungan/Rugi',
+    profit_loss: 'Untung/Rugi',
     current_value: 'Nilai Saat Ini',
     initial_amount: 'Modal Awal',
     profit_percent: 'Persen Profit',
+
+    // Layout / Nav
+    nav_home: 'Home',
+    nav_transactions: 'Transaksi',
+    nav_goals: 'Tujuan',
+    nav_budget: 'Anggaran',
+    nav_debts: 'Utang',
+    nav_investments: 'Investasi',
+    nav_analytics: 'Analitik',
+    nav_tips: 'Tips',
+    nav_reminders: 'Pengingat',
+    nav_alerts: 'Alerts',
+    nav_settings: 'Pengaturan',
+    nav_more: 'Lainnya',
+    nav_manage: 'Kelola keuanganmu',
+    search_placeholder: 'Cari...',
+    dark_mode: 'Mode Gelap',
+    light_mode: 'Mode Terang',
+    profile: 'Profil',
+
+    // Dashboard
+    dashboard_greeting: 'Halo 👋',
+    dashboard_title: 'Keuanganmu',
+    recent_transactions: 'Transaksi Terbaru',
+    view_all: 'Lihat semua',
+    savings_goals: 'Tujuan Tabungan',
+    add_goal: '+ Tambah',
+
+    // BalanceCard
+    balance_card_title: 'Total Saldo Bulan Ini',
+    income_label: 'Pemasukan',
+    expense_label: 'Pengeluaran',
+    savings_label: 'Tabungan',
+
+    // RecentTransactions
+    no_transactions: 'Belum ada transaksi. Tambahkan yang pertama!',
+
+    // GoalsMiniList
+    no_goals: 'Belum ada tujuan. Mulai menabung sekarang!',
+
+    // SmartAlerts
+    smart_alerts_title: '🔔 Peringatan Cerdas',
+
+    // SubscriptionDetector
+    subscriptions_detected: '🔁 Langganan Terdeteksi',
+    per_month: '/ bulan',
+    no_subscriptions: 'Belum ada langganan terdeteksi.',
+
+    // CashflowForecast
+    cashflow_title: 'Proyeksi Cashflow',
+    day_progress: 'Hari ke-',
+    days_left: 'hari lagi',
+    end_of_month_prediction: 'Prediksi akhir bulan',
+    safe: 'Aman 🎉',
+    warning: 'Awas ⚠️',
+    est_income: 'Est. Masuk',
+    est_expense: 'Est. Keluar',
+
+    // BudgetAlertWidget
+    budget_alert_title: 'Peringatan Anggaran',
+    budget_safe_title: 'Anggaran Aman',
+    budget_safe_desc: 'Semua kategori masih dalam batas',
+
+    // IncomeExpenseChart
+    income_vs_expense: 'Pendapatan vs Pengeluaran',
+    months_3: '3 bulan',
+    months_6: '6 bulan',
+    months_12: '12 bulan',
+    no_transaction_data: 'Tidak ada data transaksi',
+    income_legend: 'Pendapatan',
+    expense_legend: 'Pengeluaran',
+
+    // PortfolioSummary
+    portfolio_title: 'Portofolio Investasi',
+    total_value: 'Total Nilai',
+
+    // DashboardInsights
+    insight_title: 'Insight Bulan Ini',
+
+    // ReminderWidget
+    upcoming_reminders: 'Pengingat Mendatang',
+    today: 'Hari ini!',
+    tomorrow: 'Besok!',
+
+    // Pages - Transactions
+    tx_history: 'Riwayat',
+    tx_title: 'Transaksi',
+    tx_select: 'Pilih',
+    tx_cancel: 'Batal',
+    tx_select_all: 'Pilih Semua',
+    tx_selected: 'dipilih',
+    tx_deleting: 'Menghapus...',
+    tx_delete_selected: 'Hapus',
+    tx_delete_all: 'Hapus Semua',
+    tx_empty_title: 'Belum ada transaksi',
+    tx_empty_desc: 'Tap + untuk menambah transaksi pertama Anda',
+    tx_confirm_delete: 'Hapus transaksi ini?',
+    tx_filter_all: 'Semua',
+    tx_filter_expense: 'Pengeluaran',
+    tx_filter_income: 'Pemasukan',
+
+    // Pages - Goals
+    goals_plan: 'Rencana',
+    goals_title: 'Tujuan Finansial',
+    goals_total_target: 'Total Target',
+    goals_active: 'tujuan aktif',
+    goals_empty_title: 'Belum ada tujuan finansial',
+    goals_empty_desc: 'Tap + untuk membuat tujuan tabungan pertama Anda',
+    goals_delete_confirm: 'Hapus tujuan ini?',
+    goals_days_left: 'hari',
+    goals_expired: 'Kadaluarsa',
+    goals_delete: 'Hapus',
+    goals_back: 'Back',
+    goals_add_money: 'Add Money',
+    goals_withdraw: 'Withdraw',
+    goals_activity: 'Activity',
+    goals_delete_goal: 'Delete goal',
+    goals_no_tx: 'No transactions yet',
+    goals_achieved_pct: '% tercapai',
+    goals_remaining: 'Sisa Rp',
+
+    // Pages - Budget
+    budget_subtitle: 'Anggaran Bulanan',
+    budget_total: 'Total Anggaran',
+    budget_spent: 'Terpakai',
+    budget_remaining: 'Sisa',
+    budget_empty_title: 'Belum ada anggaran',
+    budget_empty_desc: 'Tap + untuk menambahkan anggaran per kategori',
+    budget_over: 'Melebihi anggaran',
+
+    // Pages - Debts
+    debts_management: 'Manajemen',
+    debts_title: 'Utang & Kredit',
+    debts_total: 'Total Utang',
+    debts_monthly: 'Cicilan/Bulan',
+    debts_empty_title: 'Tidak ada utang aktif',
+    debts_empty_desc: 'Tap + untuk mencatat utang atau kredit',
+    debts_paid: 'Sudah Lunas',
+    debts_paid_pct: '% sudah dibayar',
+    debts_remaining: 'Sisa',
+    debts_installment: 'Cicilan',
+    debts_mark_paid_title: 'Tandai lunas',
+
+    // Pages - Analytics
+    analytics_overview: 'Overview',
+    analytics_title: 'Analytics',
+    analytics_spending_trend: 'Tren Pengeluaran',
+    analytics_income_vs_expense: 'Pemasukan vs Pengeluaran',
+    analytics_income_label: 'Pemasukan',
+    analytics_expense_label: 'Pengeluaran',
+    analytics_category_breakdown: 'Pengeluaran per Kategori',
+    analytics_this_month: 'Bulan ini',
+    analytics_no_expense_data: 'Tidak ada data pengeluaran bulan ini',
+    analytics_budget_vs_spent: 'Alokasi Anggaran vs Pengeluaran',
+    analytics_goals_progress: 'Pencapaian Tujuan Tabungan',
+    analytics_investment_summary: 'Ringkasan Investasi',
+    analytics_initial_value: 'Nilai Awal',
+    analytics_current_value: 'Nilai Sekarang',
+    analytics_return: 'Return',
+
+    // Pages - Settings
+    settings_preferences: 'Preferensi',
+    settings_title: 'Pengaturan',
+    settings_user_label: 'Pengguna',
+    settings_appearance: 'Tampilan',
+    settings_dark_mode: 'Mode Gelap',
+    settings_active: 'Aktif',
+    settings_inactive: 'Nonaktif',
+    settings_language: 'Bahasa / Language',
+    settings_currency: 'Mata Uang',
+    settings_widget_dashboard: 'Widget Dashboard',
+    settings_widget_desc: 'Pilih widget yang ditampilkan di halaman utama',
+    settings_account: 'Akun',
+    settings_logout: 'Keluar',
+    settings_version: 'Atur.in v1.0 · Dibuat dengan ❤️',
+
+    // Pages - Reminders
+    reminders_manage: 'Kelola',
+    reminders_title: 'Pengingat',
+    reminders_total_active: 'Total tagihan aktif bulan ini',
+    reminders_active_count: 'pengingat aktif',
+    reminders_empty: 'Belum ada pengingat',
+    reminders_add_first: '+ Tambah pengingat pertama',
+    reminders_upcoming: 'Akan Datang',
+    reminders_paid_this_month: 'Sudah Dibayar Bulan Ini',
+    reminders_inactive: 'Nonaktif',
+    reminders_due_day: 'Tgl',
+    reminders_every_month: 'tiap bulan',
+    reminders_mark_paid: 'Sudah bayar',
+    reminders_edit: 'Edit',
+
+    // Pages - Alerts
+    alerts_back: 'Kembali',
+    alerts_title: 'Smart Alerts',
+    alerts_subtitle: 'Notifikasi finansial cerdas untuk Anda',
+    alerts_unread: 'Belum dibaca',
+    alerts_all: 'Semua',
+    alerts_empty_title: 'Tidak ada alerts',
+    alerts_empty_desc: 'Anda semua catan dengan baik!',
+    alerts_mark_read: 'Tandai sudah dibaca',
+    alerts_follow_up: 'Tindaklanjuti →',
+    alerts_delete: 'Hapus',
+    alerts_email: 'Email',
+
+    // Pages - Investments
+    investments_portfolio: 'Portofolio',
+    investments_title: 'Investasi',
+    investments_from_capital: 'dari modal',
+    investments_empty_title: 'Belum ada investasi',
+    investments_empty_desc: 'Tap + untuk mencatat investasi Anda',
+    investments_watchlist_title: 'Pantau Aset',
+    investments_watchlist_hide: 'Sembunyikan',
+    investments_watchlist_show: 'Tampilkan',
+    investments_target: 'Target',
+    investments_portfolio_weight: '% portofolio',
+
+    // Pages - Tips
+    tips_guide: 'Panduan',
+    tips_title: 'Tips & Cara Pakai',
+    tips_search_placeholder: 'Cari pertanyaan atau topik...',
+    tips_empty_title: 'Tidak ada hasil',
+    tips_empty_desc: 'Coba kata kunci lain',
+    tips_help_title: 'Butuh bantuan lebih?',
+    tips_help_desc: 'Tanya langsung ke Nana AI — asisten keuangan pintarmu yang siap membantu 24/7.',
+
+    // Pages - Nana
+    nana_subtitle: 'Asisten Keuangan AI',
+    nana_new_chat_title: 'Obrolan baru',
+    nana_greeting: 'Halo! Aku Nana 👋',
+    nana_greeting_desc: 'Asisten keuangan pribadimu. Tanya apa saja soal keuanganmu, aku siap bantu!',
+    nana_input_placeholder: 'Tanya Nana sesuatu...',
+
+    // Pages - Menu
+    menu_nav: 'Navigasi',
+    menu_title: 'Menu Lainnya',
+    menu_finance: 'Keuangan',
+    menu_notifications: 'Notifikasi & Info',
+    menu_account: 'Akun',
   },
+
   en: {
+    // Investment
     expense: 'Expense',
     income: 'Income',
     savings: 'Savings',
@@ -40,6 +281,244 @@ const TRANSLATIONS = {
     current_value: 'Current Value',
     initial_amount: 'Initial Amount',
     profit_percent: 'Profit %',
+
+    // Layout / Nav
+    nav_home: 'Home',
+    nav_transactions: 'Transactions',
+    nav_goals: 'Goals',
+    nav_budget: 'Budget',
+    nav_debts: 'Debts',
+    nav_investments: 'Investments',
+    nav_analytics: 'Analytics',
+    nav_tips: 'Tips',
+    nav_reminders: 'Reminders',
+    nav_alerts: 'Alerts',
+    nav_settings: 'Settings',
+    nav_more: 'More',
+    nav_manage: 'Manage your finances',
+    search_placeholder: 'Search...',
+    dark_mode: 'Dark Mode',
+    light_mode: 'Light Mode',
+    profile: 'Profile',
+
+    // Dashboard
+    dashboard_greeting: 'Hello 👋',
+    dashboard_title: 'Your Finances',
+    recent_transactions: 'Recent Transactions',
+    view_all: 'View all',
+    savings_goals: 'Savings Goals',
+    add_goal: '+ Add',
+
+    // BalanceCard
+    balance_card_title: 'This Month Balance',
+    income_label: 'Income',
+    expense_label: 'Expenses',
+    savings_label: 'Savings',
+
+    // RecentTransactions
+    no_transactions: 'No transactions yet. Add your first one!',
+
+    // GoalsMiniList
+    no_goals: 'No goals yet. Start saving now!',
+
+    // SmartAlerts
+    smart_alerts_title: '🔔 Smart Alerts',
+
+    // SubscriptionDetector
+    subscriptions_detected: '🔁 Subscriptions Detected',
+    per_month: '/ month',
+    no_subscriptions: 'No subscriptions detected yet.',
+
+    // CashflowForecast
+    cashflow_title: 'Cashflow Forecast',
+    day_progress: 'Day ',
+    days_left: 'days left',
+    end_of_month_prediction: 'End of month prediction',
+    safe: 'Safe 🎉',
+    warning: 'Warning ⚠️',
+    est_income: 'Est. Income',
+    est_expense: 'Est. Expense',
+
+    // BudgetAlertWidget
+    budget_alert_title: 'Budget Alert',
+    budget_safe_title: 'Budget on Track',
+    budget_safe_desc: 'All categories within limit',
+
+    // IncomeExpenseChart
+    income_vs_expense: 'Income vs Expenses',
+    months_3: '3 months',
+    months_6: '6 months',
+    months_12: '12 months',
+    no_transaction_data: 'No transaction data',
+    income_legend: 'Income',
+    expense_legend: 'Expenses',
+
+    // PortfolioSummary
+    portfolio_title: 'Investment Portfolio',
+    total_value: 'Total Value',
+
+    // DashboardInsights
+    insight_title: 'This Month Insights',
+
+    // ReminderWidget
+    upcoming_reminders: 'Upcoming Reminders',
+    today: 'Today!',
+    tomorrow: 'Tomorrow!',
+
+    // Pages - Transactions
+    tx_history: 'History',
+    tx_title: 'Transactions',
+    tx_select: 'Select',
+    tx_cancel: 'Cancel',
+    tx_select_all: 'Select All',
+    tx_selected: 'selected',
+    tx_deleting: 'Deleting...',
+    tx_delete_selected: 'Delete',
+    tx_delete_all: 'Delete All',
+    tx_empty_title: 'No transactions yet',
+    tx_empty_desc: 'Tap + to add your first transaction',
+    tx_confirm_delete: 'Delete this transaction?',
+    tx_filter_all: 'All',
+    tx_filter_expense: 'Expense',
+    tx_filter_income: 'Income',
+
+    // Pages - Goals
+    goals_plan: 'Planning',
+    goals_title: 'Financial Goals',
+    goals_total_target: 'Total Target',
+    goals_active: 'active goals',
+    goals_empty_title: 'No financial goals yet',
+    goals_empty_desc: 'Tap + to create your first savings goal',
+    goals_delete_confirm: 'Delete this goal?',
+    goals_days_left: 'days',
+    goals_expired: 'Expired',
+    goals_delete: 'Delete',
+    goals_back: 'Back',
+    goals_add_money: 'Add Money',
+    goals_withdraw: 'Withdraw',
+    goals_activity: 'Activity',
+    goals_delete_goal: 'Delete goal',
+    goals_no_tx: 'No transactions yet',
+    goals_achieved_pct: '% achieved',
+    goals_remaining: 'Remaining',
+
+    // Pages - Budget
+    budget_subtitle: 'Monthly Budget',
+    budget_total: 'Total Budget',
+    budget_spent: 'Spent',
+    budget_remaining: 'Remaining',
+    budget_empty_title: 'No budgets yet',
+    budget_empty_desc: 'Tap + to add a budget per category',
+    budget_over: 'Over budget',
+
+    // Pages - Debts
+    debts_management: 'Management',
+    debts_title: 'Debts & Credit',
+    debts_total: 'Total Debt',
+    debts_monthly: 'Monthly Payment',
+    debts_empty_title: 'No active debts',
+    debts_empty_desc: 'Tap + to record a debt or credit',
+    debts_paid: 'Paid Off',
+    debts_paid_pct: '% paid',
+    debts_remaining: 'Remaining',
+    debts_installment: 'Installment',
+    debts_mark_paid_title: 'Mark as paid',
+
+    // Pages - Analytics
+    analytics_overview: 'Overview',
+    analytics_title: 'Analytics',
+    analytics_spending_trend: 'Spending Trend',
+    analytics_income_vs_expense: 'Income vs Expenses',
+    analytics_income_label: 'Income',
+    analytics_expense_label: 'Expenses',
+    analytics_category_breakdown: 'Expenses by Category',
+    analytics_this_month: 'This month',
+    analytics_no_expense_data: 'No expense data this month',
+    analytics_budget_vs_spent: 'Budget Allocation vs Spent',
+    analytics_goals_progress: 'Savings Goal Progress',
+    analytics_investment_summary: 'Investment Summary',
+    analytics_initial_value: 'Initial Value',
+    analytics_current_value: 'Current Value',
+    analytics_return: 'Return',
+
+    // Pages - Settings
+    settings_preferences: 'Preferences',
+    settings_title: 'Settings',
+    settings_user_label: 'User',
+    settings_appearance: 'Appearance',
+    settings_dark_mode: 'Dark Mode',
+    settings_active: 'Active',
+    settings_inactive: 'Inactive',
+    settings_language: 'Language',
+    settings_currency: 'Currency',
+    settings_widget_dashboard: 'Dashboard Widgets',
+    settings_widget_desc: 'Choose which widgets to show on the home page',
+    settings_account: 'Account',
+    settings_logout: 'Logout',
+    settings_version: 'Atur.in v1.0 · Made with ❤️',
+
+    // Pages - Reminders
+    reminders_manage: 'Manage',
+    reminders_title: 'Reminders',
+    reminders_total_active: 'Total active bills this month',
+    reminders_active_count: 'active reminders',
+    reminders_empty: 'No reminders yet',
+    reminders_add_first: '+ Add first reminder',
+    reminders_upcoming: 'Upcoming',
+    reminders_paid_this_month: 'Paid This Month',
+    reminders_inactive: 'Inactive',
+    reminders_due_day: 'Day',
+    reminders_every_month: 'every month',
+    reminders_mark_paid: 'Mark as paid',
+    reminders_edit: 'Edit',
+
+    // Pages - Alerts
+    alerts_back: 'Back',
+    alerts_title: 'Smart Alerts',
+    alerts_subtitle: 'Smart financial notifications for you',
+    alerts_unread: 'Unread',
+    alerts_all: 'All',
+    alerts_empty_title: 'No alerts',
+    alerts_empty_desc: 'You\'re all caught up!',
+    alerts_mark_read: 'Mark as read',
+    alerts_follow_up: 'Follow up →',
+    alerts_delete: 'Delete',
+    alerts_email: 'Email',
+
+    // Pages - Investments
+    investments_portfolio: 'Portfolio',
+    investments_title: 'Investments',
+    investments_from_capital: 'from capital',
+    investments_empty_title: 'No investments yet',
+    investments_empty_desc: 'Tap + to record your investment',
+    investments_watchlist_title: 'Watch Assets',
+    investments_watchlist_hide: 'Hide',
+    investments_watchlist_show: 'Show',
+    investments_target: 'Target',
+    investments_portfolio_weight: '% portfolio',
+
+    // Pages - Tips
+    tips_guide: 'Guide',
+    tips_title: 'Tips & How To',
+    tips_search_placeholder: 'Search questions or topics...',
+    tips_empty_title: 'No results',
+    tips_empty_desc: 'Try a different keyword',
+    tips_help_title: 'Need more help?',
+    tips_help_desc: 'Ask Nana AI directly — your smart financial assistant available 24/7.',
+
+    // Pages - Nana
+    nana_subtitle: 'AI Financial Assistant',
+    nana_new_chat_title: 'New chat',
+    nana_greeting: 'Hello! I\'m Nana 👋',
+    nana_greeting_desc: 'Your personal financial assistant. Ask me anything about your finances!',
+    nana_input_placeholder: 'Ask Nana something...',
+
+    // Pages - Menu
+    menu_nav: 'Navigation',
+    menu_title: 'More Options',
+    menu_finance: 'Finance',
+    menu_notifications: 'Notifications & Info',
+    menu_account: 'Account',
   },
 };
 
