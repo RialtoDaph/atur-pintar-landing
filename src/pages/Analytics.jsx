@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { formatRupiah } from "@/components/utils/formatRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
@@ -9,29 +9,28 @@ import {
   PieChart, Pie, Cell, Legend, LineChart, Line, Area, AreaChart, CartesianGrid
 } from "recharts";
 
-const CATEGORY_CONFIG = {
-  housing:       { label: "Housing",       emoji: "🏠", color: "#4F7CFF" },
-  food:          { label: "Food",           emoji: "🍔", color: "#FF6B6B" },
-  transport:     { label: "Transport",      emoji: "🚗", color: "#F5A623" },
-  health:        { label: "Health",         emoji: "❤️", color: "#FF5E8A" },
-  entertainment: { label: "Entertainment",  emoji: "🎬", color: "#9B59B6" },
-  shopping:      { label: "Shopping",       emoji: "🛍️", color: "#E91E8C" },
-  subscriptions: { label: "Subscriptions",  emoji: "📱", color: "#1ABC9C" },
-  salary:        { label: "Salary",         emoji: "💼", color: "#00C9A7" },
-  freelance:     { label: "Freelance",      emoji: "💻", color: "#34C87A" },
-  savings:       { label: "Savings",        emoji: "🐷", color: "#4F7CFF" },
-  other:         { label: "Other",          emoji: "📦", color: "#8FA4C8" },
-};
-
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const DEFAULT_CATEGORIES_FLAT = [
+  { key: "housing", i18nKey: "cat_housing", emoji: "🏠", color: "#4F7CFF" },
+  { key: "food", i18nKey: "cat_food", emoji: "🍔", color: "#FF6B6B" },
+  { key: "transport", i18nKey: "cat_transport", emoji: "🚗", color: "#F5A623" },
+  { key: "health", i18nKey: "cat_health", emoji: "❤️", color: "#FF5E8A" },
+  { key: "entertainment", i18nKey: "cat_entertainment", emoji: "🎬", color: "#9B59B6" },
+  { key: "shopping", i18nKey: "cat_shopping", emoji: "🛍️", color: "#E91E8C" },
+  { key: "subscriptions", i18nKey: "cat_subscriptions", emoji: "📱", color: "#1ABC9C" },
+  { key: "salary", i18nKey: "cat_salary", emoji: "💼", color: "#00C9A7" },
+  { key: "freelance", i18nKey: "cat_freelance", emoji: "💻", color: "#34C87A" },
+  { key: "savings", i18nKey: "cat_savings", emoji: "🐷", color: "#4F7CFF" },
+  { key: "other", i18nKey: "cat_other", emoji: "📦", color: "#8FA4C8" },
+];
 
 export default function Analytics() {
-  const { t } = useAppSettings();
+  const { t, formatShortNumber } = useAppSettings();
   const [transactions, setTransactions] = useState([]);
   const [goals, setGoals] = useState([]);
   const [budgets, setBudgets] = useState([]);
   const [investments, setInvestments] = useState([]);
   const [debts, setDebts] = useState([]);
+  const [customCategories, setCustomCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterPeriod, setFilterPeriod] = useState("6");
   const [customDateRange, setCustomDateRange] = useState(null);
@@ -50,17 +49,40 @@ export default function Analytics() {
         base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
         base44.entities.Budget.filter({ created_by: user.email }),
         base44.entities.Investment.filter({ created_by: user.email }),
-        base44.entities.Debt.filter({ created_by: user.email })
-      ]).then(([t, g, b, i, d]) => {
+        base44.entities.Debt.filter({ created_by: user.email }),
+        base44.entities.CustomCategory.list("-created_date")
+      ]).then(([t, g, b, i, d, cc]) => {
         setTransactions(t);
         setGoals(g);
         setBudgets(b);
         setInvestments(i);
         setDebts(d);
+        setCustomCategories(cc);
         setLoading(false);
       });
     }
   }, [user]);
+
+  // Build localized months array
+  const localizedMonths = useMemo(() => {
+    return [
+      t('month_jan'), t('month_feb'), t('month_mar'), t('month_apr'),
+      t('month_may'), t('month_jun'), t('month_jul'), t('month_aug'),
+      t('month_sep'), t('month_oct'), t('month_nov'), t('month_dec')
+    ];
+  }, [t]);
+
+  // Build category config from defaults + custom
+  const allCategoriesConfig = useMemo(() => {
+    const config = {};
+    DEFAULT_CATEGORIES_FLAT.forEach(cat => {
+      config[cat.key] = { label: t(cat.i18nKey), emoji: cat.emoji, color: cat.color };
+    });
+    customCategories.forEach(cat => {
+      config[`custom_${cat.id}`] = { label: cat.name, emoji: cat.emoji, color: cat.color };
+    });
+    return config;
+  }, [customCategories, t]);
 
   // Handle filter changes
   const handleFilterChange = (filter) => {
@@ -74,6 +96,9 @@ export default function Analytics() {
       });
     }
   };
+
+  // Format Y-axis tick values
+  const formatYAxisTick = useCallback((value) => formatShortNumber(value), [formatShortNumber]);
 
   // Build trend data based on selected period
   const now = new Date();
@@ -102,7 +127,7 @@ export default function Analytics() {
       return td.getMonth() === month && td.getFullYear() === year;
     });
     return {
-      name: MONTHS[month],
+      name: localizedMonths[month],
       Income: monthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0),
       Expenses: monthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0),
     };
@@ -122,10 +147,10 @@ export default function Analytics() {
 
   const pieData = Object.entries(categoryMap)
     .map(([key, value]) => ({
-      name: CATEGORY_CONFIG[key]?.label || key,
+      name: allCategoriesConfig[key]?.label || key,
       value,
-      color: CATEGORY_CONFIG[key]?.color || "#8FA4C8",
-      emoji: CATEGORY_CONFIG[key]?.emoji || "📦",
+      color: allCategoriesConfig[key]?.color || "#8FA4C8",
+      emoji: allCategoriesConfig[key]?.emoji || "📦",
     }))
     .sort((a, b) => b.value - a.value);
 
@@ -142,7 +167,7 @@ export default function Analytics() {
       return td.getMonth() === month && td.getFullYear() === year;
     });
     return {
-      name: MONTHS[month],
+      name: localizedMonths[month],
       Expense: monthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0),
       Income: monthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0),
     };
@@ -152,10 +177,10 @@ export default function Analytics() {
   const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   const monthBudgets = budgets.filter(b => b.month === thisMonth);
   const budgetData = monthBudgets.map(b => ({
-    name: CATEGORY_CONFIG[b.category]?.label || b.category,
+    name: allCategoriesConfig[b.category]?.label || b.category,
     budget: b.amount,
     spent: thisMonthTx.filter(t => t.category === b.category).reduce((s, t) => s + t.amount, 0),
-    color: CATEGORY_CONFIG[b.category]?.color || "#8FA4C8"
+    color: allCategoriesConfig[b.category]?.color || "#8FA4C8"
   }));
 
   // Savings goals progress
@@ -211,7 +236,7 @@ export default function Analytics() {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
               <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#8FA4C8" }} />
-              <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(0)}jt` : v >= 1000 ? `${(v/1000).toFixed(0)}rb` : v} />
+              <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} tickFormatter={formatYAxisTick} />
               <Tooltip formatter={(value) => [formatRupiah(value), undefined]} contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} />
               <Area type="monotone" dataKey="Expense" stroke="#FF6B6B" fill="url(#colorExpense)" strokeWidth={2} />
             </AreaChart>
@@ -224,7 +249,7 @@ export default function Analytics() {
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={trendData} barCategoryGap="30%">
               <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(0)}jt` : v >= 1000 ? `${(v/1000).toFixed(0)}rb` : v} />
+              <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={formatYAxisTick} />
               <Tooltip
                 formatter={(value) => [formatRupiah(value), undefined]}
                 contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
@@ -303,7 +328,7 @@ export default function Analytics() {
               <BarChart data={budgetData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} />
-                <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(0)}jt` : v >= 1000 ? `${(v/1000).toFixed(0)}rb` : v} />
+                <YAxis tick={{ fontSize: 11, fill: "#8FA4C8" }} tickFormatter={formatYAxisTick} />
                 <Tooltip formatter={(value) => [formatRupiah(value), undefined]} contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }} />
                 <Bar dataKey="budget" fill="#4F7CFF" radius={[6, 6, 0, 0]} name={t('budget_total')} />
                 <Bar dataKey="spent" fill="#FF6B6B" radius={[6, 6, 0, 0]} name={t('budget_spent')} />
