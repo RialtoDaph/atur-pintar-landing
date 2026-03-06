@@ -61,8 +61,8 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
             <CheckCircle className="w-4 h-4 text-[#00C9A7]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#1A1A1A]">Anggaran Aman</p>
-            <p className="text-[10px] text-[#8FA4C8]">Semua kategori masih dalam batas</p>
+            <p className="text-sm font-semibold text-[#1A1A1A]">{t('budget_safe_title')}</p>
+            <p className="text-[10px] text-[#8FA4C8]">{t('budget_safe_desc')}</p>
           </div>
         </div>
         <Link to={createPageUrl("Budget")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
@@ -77,7 +77,7 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <div className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-[#F5A623]" />
-          <h2 className="font-bold text-[#0A0A0A] text-sm">Peringatan Anggaran</h2>
+          <h2 className="font-bold text-[#0A0A0A] text-sm">{t('budget_alert_title')}</h2>
         </div>
         <Link to={createPageUrl("Budget")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
           Lihat semua <ChevronRight className="w-3 h-3" />

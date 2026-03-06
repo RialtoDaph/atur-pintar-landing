@@ -38,14 +38,14 @@ export default function CashflowForecast({ transactions, loading }) {
     <div className="bg-white rounded-2xl shadow-sm p-4">
       <div className="flex items-center gap-2 mb-2.5">
         <Calendar className="w-4 h-4 text-[#FF6A00]" />
-        <h2 className="font-bold text-[#0A0A0A] text-sm">Proyeksi Cashflow</h2>
+        <h2 className="font-bold text-[#0A0A0A] text-sm">{t('cashflow_title')}</h2>
       </div>
 
       {/* Month progress */}
       <div className="mb-3">
         <div className="flex justify-between text-xs text-[#9B9B9B] mb-1">
-          <span>Hari ke-{dayOfMonth}</span>
-          <span>{daysLeft} hari lagi</span>
+          <span>{t('day_progress')}{dayOfMonth}</span>
+          <span>{daysLeft} {t('days_left')}</span>
         </div>
         <div className="h-1.5 bg-[#F0F0EE] rounded-full overflow-hidden">
           <div
@@ -59,24 +59,24 @@ export default function CashflowForecast({ transactions, loading }) {
       <div className="grid grid-cols-3 gap-2">
         <div className={`col-span-3 rounded-xl px-3 py-2.5 flex items-center justify-between ${isPositive ? "bg-green-50 border border-green-100" : "bg-red-50 border border-red-100"}`}>
           <div>
-            <p className="text-[10px] text-[#9B9B9B]">Prediksi akhir bulan</p>
+            <p className="text-[10px] text-[#9B9B9B]">{t('end_of_month_prediction')}</p>
             <p className={`text-base font-bold ${isPositive ? "text-green-600" : "text-red-500"}`}>
               {isPositive ? "+" : "-"}{formatCurrency(Math.abs(projectedBalance))}
             </p>
           </div>
-          <p className="text-xs text-[#9B9B9B]">{isPositive ? "Aman 🎉" : "Awas ⚠️"}</p>
+          <p className="text-xs text-[#9B9B9B]">{isPositive ? t('safe') : t('warning')}</p>
         </div>
         <div className="col-span-1 bg-[#F9F9F9] rounded-xl p-2.5">
           <div className="flex items-center gap-1 mb-0.5">
             <TrendingUp className="w-3 h-3 text-green-500" />
-            <p className="text-[10px] text-[#9B9B9B]">Est. Masuk</p>
+            <p className="text-[10px] text-[#9B9B9B]">{t('est_income')}</p>
           </div>
           <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(projectedTotalIncome)}</p>
         </div>
         <div className="col-span-2 bg-[#F9F9F9] rounded-xl p-2.5">
           <div className="flex items-center gap-1 mb-0.5">
             <TrendingDown className="w-3 h-3 text-red-400" />
-            <p className="text-[10px] text-[#9B9B9B]">Est. Keluar</p>
+            <p className="text-[10px] text-[#9B9B9B]">{t('est_expense')}</p>
           </div>
           <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(projectedTotalExpense)}</p>
         </div>
