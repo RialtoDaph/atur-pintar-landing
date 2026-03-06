@@ -163,7 +163,7 @@ export default function AddTransactionModal({ onClose, onSave }) {
             <div className="mb-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-xs text-[#8FA4C8] font-medium">Struk terdeteksi 🧾</p>
+                  <p className="text-xs text-[#8FA4C8] font-medium">{t('receipt_detected')}</p>
                   <p className="text-sm font-bold text-[#1A1A1A]">{receiptData.store_name}</p>
                   {receiptData.tax_amount > 0 && (
                     <p className="text-xs text-[#8FA4C8]">Pajak: Rp {Math.round(receiptData.tax_amount).toLocaleString("id-ID")}</p>

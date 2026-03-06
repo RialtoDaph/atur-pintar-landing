@@ -149,7 +149,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
               value={form.initial_amount}
               onChange={e => setForm(f => ({ ...f, initial_amount: e.target.value, current_value: e.target.value }))}
             />
-            <p className="text-xs text-[#8FA4C8] mt-1">Nilai saat ini akan otomatis = modal awal</p>
+            <p className="text-xs text-[#8FA4C8] mt-1">{t('current_value_auto')}</p>
           </div>
 
           <div>
