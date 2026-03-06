@@ -24,7 +24,7 @@ export default function SubscriptionDetector({ transactions, loading }) {
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-bold text-[#0A0A0A] text-sm">🔁 Langganan Terdeteksi</h2>
         <span className="text-xs font-semibold text-[#FF6A00] bg-orange-50 px-2 py-1 rounded-full">
-          {formatRupiah(totalSubs)} / bulan
+          {formatCurrency(totalSubs)} / bulan
         </span>
       </div>
       {list.length === 0 ? (
