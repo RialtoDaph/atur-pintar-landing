@@ -409,6 +409,7 @@ export default function Transactions() {
       {editingTx && (
         <EditTransactionModal
           transaction={editingTx}
+          goals={goals}
           onClose={() => setEditingTx(null)}
           onSave={handleEdit}
         />
