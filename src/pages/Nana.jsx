@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Send, Sparkles, Plus } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function Nana() {
+  const { t } = useAppSettings();
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -84,13 +86,13 @@ export default function Nana() {
           <div className="w-9 h-9 rounded-full bg-[#FF6A00] flex items-center justify-center text-white font-bold text-sm">N</div>
           <div>
             <p className="text-white font-bold text-sm">Nana</p>
-            <p className="text-[#8FA4C8] text-[10px]">Asisten Keuangan AI</p>
+            <p className="text-[#8FA4C8] text-[10px]">{t('nana_subtitle')}</p>
           </div>
         </div>
         <button
           onClick={newConversation}
           className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-          title="Obrolan baru"
+          title={t('nana_new_chat_title')}
         >
           <Plus className="w-4 h-4 text-white" />
         </button>
@@ -107,8 +109,8 @@ export default function Nana() {
             <div className="w-14 h-14 rounded-full bg-[#FF6A00]/10 flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-[#FF6A00]" />
             </div>
-            <p className="text-[#0A0A0A] font-bold text-base">Halo! Aku Nana 👋</p>
-            <p className="text-[#8FA4C8] text-sm max-w-xs">Asisten keuangan pribadimu. Tanya apa saja soal keuanganmu, aku siap bantu!</p>
+            <p className="text-[#0A0A0A] font-bold text-base">{t('nana_greeting')}</p>
+            <p className="text-[#8FA4C8] text-sm max-w-xs">{t('nana_greeting_desc')}</p>
             <div className="grid grid-cols-1 gap-2 mt-2 w-full max-w-xs">
               {["Berapa total pengeluaranku bulan ini?", "Bantu aku buat target tabungan", "Cek tagihan yang hampir jatuh tempo"].map(s => (
                 <button key={s} onClick={() => setInput(s)}
@@ -159,7 +161,7 @@ export default function Nana() {
           <textarea
             className="flex-1 text-sm text-[#1A1A1A] resize-none outline-none bg-transparent placeholder:text-[#C0C9D8] max-h-24"
             rows={1}
-            placeholder="Tanya Nana sesuatu..."
+            placeholder={t('nana_input_placeholder')}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
