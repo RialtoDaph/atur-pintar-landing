@@ -63,7 +63,7 @@ export default function ReminderWidget() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-[#0A0A0A] truncate">{r.title}</p>
                 <p className="text-xs text-[#8FA4C8]">
-                  {r.amount ? formatRupiah(r.amount) + " · " : ""}
+                  {r.amount ? formatCurrency(r.amount) + " · " : ""}
                   {r.daysLeft === 0 ? "Hari ini!" : r.daysLeft === 1 ? "Besok!" : `${r.daysLeft} hari lagi`}
                 </p>
               </div>
