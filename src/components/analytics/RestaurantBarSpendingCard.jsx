@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart, Legend } from "recharts";
 import { ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
@@ -18,13 +18,20 @@ export default function RestaurantBarSpendingCard({
   const now = new Date();
 
   // Find restaurant and bar category IDs
-  const restaurantCatId = customCategories.find(
-    c => c.name?.toLowerCase().includes("restoran") || c.name?.toLowerCase().includes("restaurant")
-  )?.id;
-  
-  const barCatId = customCategories.find(
-    c => c.name?.toLowerCase().includes("bar") || c.name?.toLowerCase().includes("minuman")
-  )?.id;
+  // Support for specific food & beverage sub-categories
+  const foodBevCats = customCategories.filter(c => {
+    const name = c.name?.toLowerCase() || "";
+    return (
+      name.includes("makan") ||
+      name.includes("restoran") ||
+      name.includes("restaurant") ||
+      name.includes("minuman") ||
+      name.includes("kopi") ||
+      name.includes("coffee") ||
+      name.includes("bar") ||
+      name.includes("makanan")
+    );
+  });
 
   const getMonthRange = () => {
     if (customDateRange) {
@@ -43,18 +50,17 @@ export default function RestaurantBarSpendingCard({
     (monthRange.end.getFullYear() - monthRange.start.getFullYear()) * 12 +
     (monthRange.end.getMonth() - monthRange.start.getMonth());
 
-  // Filter for restaurant + bar only
+  // Filter for food & beverage categories
   const isRestaurantBar = (tx) => {
-    if (restaurantCatId && tx.category === `custom_${restaurantCatId}`) return true;
-    if (barCatId && tx.category === `custom_${barCatId}`) return true;
-    return false;
+    return foodBevCats.some(cat => tx.category === `custom_${cat.id}`);
   };
 
-  // Calculate monthly expenses for current period
+  // Calculate monthly expenses for current period (stacked by sub-category)
   const currentMonthlyData = Array.from({ length: monthDiff + 1 }, (_, i) => {
     const d = new Date(monthRange.start.getFullYear(), monthRange.start.getMonth() + i, 1);
     const month = d.getMonth();
     const year = d.getFullYear();
+    
     const monthTx = transactions.filter(t => {
       const td = new Date(t.date);
       return (
@@ -64,11 +70,26 @@ export default function RestaurantBarSpendingCard({
         isRestaurantBar(t)
       );
     });
-    const total = monthTx.reduce((s, t) => s + t.amount, 0);
+    
+    // Aggregate by sub-category
+    const byCategory = {};
+    let total = 0;
+    
+    monthTx.forEach(t => {
+      const catId = t.category.replace("custom_", "");
+      const cat = foodBevCats.find(c => c.id === catId);
+      const catName = cat?.name || "Other";
+      
+      if (!byCategory[catName]) byCategory[catName] = 0;
+      byCategory[catName] += t.amount;
+      total += t.amount;
+    });
+    
     return {
       name: d.toLocaleDateString("id-ID", { month: "short" }),
-      value: total,
-      label: d.toLocaleDateString("id-ID", { month: "2-digit", year: "2-digit" })
+      total: total,
+      label: d.toLocaleDateString("id-ID", { month: "2-digit", year: "2-digit" }),
+      ...byCategory
     };
   });
 
@@ -123,16 +144,37 @@ export default function RestaurantBarSpendingCard({
       <h2 className="font-bold text-[#0A0A0A] text-base mb-4">Restaurant & Bar</h2>
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={180}>
-        <BarChart data={currentMonthlyData}>
+      <ResponsiveContainer width="100%" height={200}>
+        <ComposedChart data={currentMonthlyData}>
           <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
           <Tooltip
             formatter={(value) => [formatRupiah(value), undefined]}
             contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
           />
-          <Bar dataKey="value" fill="#FF6A00" radius={[6, 6, 0, 0]} />
-        </BarChart>
+          <Legend wrapperStyle={{ paddingTop: 12, fontSize: 11 }} />
+          {foodBevCats.map((cat, idx) => {
+            const colors = ["#FF6A00", "#FF8C3A", "#FFB366", "#FFD699", "#FFCC66", "#FFB347"];
+            return (
+              <Bar
+                key={cat.id}
+                dataKey={cat.name}
+                fill={colors[idx % colors.length]}
+                stackId="food-bev"
+                radius={idx === foodBevCats.length - 1 ? [6, 6, 0, 0] : [0, 0, 0, 0]}
+              />
+            );
+          })}
+          <Line
+            type="monotone"
+            dataKey="total"
+            stroke="#8FA4C8"
+            strokeDasharray="4 4"
+            strokeWidth={2}
+            dot={false}
+            isAnimationActive={false}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
 
       {/* Summary */}
