@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ComposedChart, Line } from "recharts";
 import { ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
@@ -50,7 +50,7 @@ export default function RestaurantBarSpendingCard({
     return false;
   };
 
-  // Calculate monthly expenses for current period
+  // Calculate monthly expenses for current period (with sub-category breakdown)
   const currentMonthlyData = Array.from({ length: monthDiff + 1 }, (_, i) => {
     const d = new Date(monthRange.start.getFullYear(), monthRange.start.getMonth() + i, 1);
     const month = d.getMonth();
@@ -64,10 +64,16 @@ export default function RestaurantBarSpendingCard({
         isRestaurantBar(t)
       );
     });
+    
+    const restaurant = monthTx.filter(t => restaurantCatId && t.category === `custom_${restaurantCatId}`).reduce((s, t) => s + t.amount, 0);
+    const bar = monthTx.filter(t => barCatId && t.category === `custom_${barCatId}`).reduce((s, t) => s + t.amount, 0);
     const total = monthTx.reduce((s, t) => s + t.amount, 0);
+    
     return {
       name: d.toLocaleDateString("id-ID", { month: "short" }),
-      value: total,
+      restaurant,
+      bar,
+      total,
       label: d.toLocaleDateString("id-ID", { month: "2-digit", year: "2-digit" })
     };
   });
@@ -124,15 +130,17 @@ export default function RestaurantBarSpendingCard({
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={180}>
-        <BarChart data={currentMonthlyData}>
+        <ComposedChart data={currentMonthlyData}>
           <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
           <Tooltip
             formatter={(value) => [formatRupiah(value), undefined]}
             contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
           />
-          <Bar dataKey="value" fill="#FF6A00" radius={[6, 6, 0, 0]} />
-        </BarChart>
+          <Bar dataKey="restaurant" fill="#FF6A00" radius={[6, 6, 0, 0]} stackId="a" />
+          <Bar dataKey="bar" fill="#FF8C42" radius={[6, 6, 0, 0]} stackId="a" />
+          <Line dataKey="total" stroke="#FF6A00" strokeDasharray="5,5" dot={false} strokeWidth={2} />
+        </ComposedChart>
       </ResponsiveContainer>
 
       {/* Summary */}

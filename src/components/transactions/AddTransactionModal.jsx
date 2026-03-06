@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Settings2, Camera, Loader2, Scissors } from "lucide-react";
+import { X, Settings2, Camera, Loader2, Scissors, GripVertical } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { parseRupiah } from "@/components/utils/parseRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import SplitBillModal from "./SplitBillModal";
 import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const DEFAULT_CATEGORIES = {
   expense: [
@@ -43,6 +44,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
   const [scanning, setScanning] = useState(false);
   const [receiptData, setReceiptData] = useState(null); // extracted receipt
   const [showSplitBill, setShowSplitBill] = useState(false);
+  const [catOrder, setCatOrder] = useState([]); // Category drag order
   const fileRef = useRef(null);
 
   useEffect(() => { loadCustomCats(); }, []);
@@ -141,6 +143,21 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
     ...defaultCats.map(c => ({ ...c, label: t(c.i18nKey) })),
     ...filteredCustom.map(c => ({ key: `custom_${c.id}`, label: c.name, emoji: c.emoji, color: c.color || "#888" })),
   ];
+  
+  // Apply drag order if available
+  const orderedCats = catOrder.length > 0 
+    ? catOrder.map(key => allCats.find(c => c.key === key)).filter(Boolean)
+    : allCats;
+  
+  const handleDragEnd = (result) => {
+    const { source, destination } = result;
+    if (!destination || source.index === destination.index) return;
+    
+    const newOrder = Array.from(orderedCats);
+    const [moved] = newOrder.splice(source.index, 1);
+    newOrder.splice(destination.index, 0, moved);
+    setCatOrder(newOrder.map(c => c.key));
+  };
 
   // Format currency input helper
   const formatCurrencyInput = (val) => {
@@ -261,17 +278,46 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
           {/* Category */}
           <div className="mb-5">
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">{t('category')}</label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {allCats.map((c) => (
-                <button key={c.key} onClick={() => setForm({ ...form, category: c.key })}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
-                    form.category === c.key ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
-                  }`}>
-                  <span className="text-lg sm:text-xl">{c.emoji}</span>
-                  <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
-                </button>
-              ))}
-            </div>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="categories" direction="horizontal">
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className={`grid grid-cols-3 sm:grid-cols-4 gap-2 p-2 rounded-lg transition-colors ${snapshot.isDraggingOver ? "bg-[#FF6A00]/5" : ""}`}
+                  >
+                    {orderedCats.map((c, idx) => (
+                      <Draggable key={c.key} draggableId={c.key} index={idx}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={`relative transition-all ${snapshot.isDragging ? "opacity-50" : ""}`}
+                          >
+                            <button
+                              {...provided.dragHandleProps}
+                              onClick={() => setForm({ ...form, category: c.key })}
+                              className={`w-full flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
+                                form.category === c.key ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
+                              }`}
+                            >
+                              <span className="text-lg sm:text-xl">{c.emoji}</span>
+                              <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
+                            </button>
+                            {snapshot.isDragging && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-xl">
+                                <GripVertical className="w-4 h-4 text-[#FF6A00]" />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
 
           {/* Note & Date */}
