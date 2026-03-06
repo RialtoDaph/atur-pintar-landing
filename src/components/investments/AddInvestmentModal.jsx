@@ -85,7 +85,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
         </div>
 
         <div className="mb-4">
-          <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Jenis Investasi</label>
+          <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">{t('investment_type')}</label>
           <div className="grid grid-cols-4 gap-2">
             {INVESTMENT_TYPES.map(t => (
               <button key={t.key} onClick={() => setForm(f => ({ ...f, type: t.key }))}

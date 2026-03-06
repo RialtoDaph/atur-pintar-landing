@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { X, Settings2, Camera, Loader2, Scissors } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { parseRupiah } from "@/components/utils/parseRupiah";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import SplitBillModal from "./SplitBillModal";
 import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
