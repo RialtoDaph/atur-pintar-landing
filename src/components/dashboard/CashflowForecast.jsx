@@ -83,13 +83,25 @@ export default function CashflowForecast({ transactions, loading, user }) {
     scheduledFutureExpense += (occurrences.expense || 0) * tpl.amount;
   }
 
-  // For non-recurring spend/income, use daily average for the remainder
-  // (exclude recurring-child transactions from the daily avg base to avoid double-counting)
+  // For non-recurring spend, use daily average for the remainder
+  // Exclude recurring-child and salary/freelance income from daily avg (one-time income like salary should not be projected forward)
+  const ONE_TIME_INCOME_CATEGORIES = ["salary", "freelance", "bonus", "dividend", "reimbursement"];
   const nonRecurringExpense = thisMonth.filter(tx => tx.type === "expense" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
-  const nonRecurringIncome = thisMonth.filter(tx => tx.type === "income" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
+  // Only average irregular/daily income, not large one-time salary entries
+  const nonRecurringIncome = thisMonth.filter(tx =>
+    tx.type === "income" &&
+    !tx.is_recurring_child &&
+    !ONE_TIME_INCOME_CATEGORIES.includes(tx.category)
+  ).reduce((s, tx) => s + tx.amount, 0);
+  // One-time income (salary etc) is already counted in currentIncome — no need to project forward
+  const oneTimeIncome = thisMonth.filter(tx =>
+    tx.type === "income" &&
+    ONE_TIME_INCOME_CATEGORIES.includes(tx.category)
+  ).reduce((s, tx) => s + tx.amount, 0);
 
   const daysElapsed = Math.max(1, dayOfMonth - 1);
   const dailyExpenseAvg = nonRecurringExpense / daysElapsed;
+  // Only project daily avg for non-salary income; salary already captured in currentIncome
   const dailyIncomeAvg = nonRecurringIncome / daysElapsed;
 
   const projectedExtraExpense = dailyExpenseAvg * daysLeft + scheduledFutureExpense;
