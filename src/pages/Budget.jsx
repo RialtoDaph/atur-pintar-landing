@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plus, Trash2, TrendingUp } from "lucide-react";
 import AddBudgetModal from "@/components/budget/AddBudgetModal.jsx";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const DEFAULT_CATEGORIES = {
   housing: { label: "Housing", emoji: "🏠", color: "#4F7CFF" },
@@ -15,6 +16,7 @@ const DEFAULT_CATEGORIES = {
 };
 
 export default function BudgetPage() {
+  const { t, formatCurrency } = useAppSettings();
   const [budgets, setBudgets] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,7 +76,7 @@ export default function BudgetPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-[#8FA4C8] text-sm font-medium">{monthLabel}</p>
-              <h1 className="text-white text-2xl font-bold mt-0.5">Anggaran Bulanan</h1>
+              <h1 className="text-white text-2xl font-bold mt-0.5">{t('budget_subtitle')}</h1>
             </div>
             <button
               onClick={() => setShowAdd(true)}
@@ -87,8 +89,8 @@ export default function BudgetPage() {
           {/* Overview Card */}
           <div className="bg-white/10 rounded-2xl p-5">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-white/70 text-sm">Total Anggaran</span>
-              <span className="text-white font-bold text-lg">Rp {totalBudget.toLocaleString("id-ID")}</span>
+              <span className="text-white/70 text-sm">{t('budget_total')}</span>
+              <span className="text-white font-bold text-lg">{formatCurrency(totalBudget)}</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-3 mb-2">
               <div
@@ -100,8 +102,8 @@ export default function BudgetPage() {
               />
             </div>
             <div className="flex justify-between text-xs text-white/60">
-              <span>Terpakai: Rp {totalSpent.toLocaleString("id-ID")}</span>
-              <span>Sisa: Rp {Math.max(totalBudget - totalSpent, 0).toLocaleString("id-ID")}</span>
+              <span>{t('budget_spent')}: {formatCurrency(totalSpent)}</span>
+              <span>{t('budget_remaining')}: {formatCurrency(Math.max(totalBudget - totalSpent, 0))}</span>
             </div>
           </div>
         </div>
@@ -115,8 +117,8 @@ export default function BudgetPage() {
         ) : budgets.length === 0 ? (
           <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
             <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
-            <p className="text-[#4A5568] font-semibold">Belum ada anggaran</p>
-            <p className="text-[#8FA4C8] text-sm mt-1">Tap + untuk menambahkan anggaran per kategori</p>
+            <p className="text-[#4A5568] font-semibold">{t('budget_empty_title')}</p>
+            <p className="text-[#8FA4C8] text-sm mt-1">{t('budget_empty_desc')}</p>
           </div>
         ) : (
           budgets.map(budget => {
@@ -133,7 +135,7 @@ export default function BudgetPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-[#1A1A1A]">{cat.label}</p>
-                      <p className="text-xs text-[#8FA4C8]">Rp {spent.toLocaleString("id-ID")} / Rp {budget.amount.toLocaleString("id-ID")}</p>
+                      <p className="text-xs text-[#8FA4C8]">{formatCurrency(spent)} / {formatCurrency(budget.amount)}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -155,7 +157,7 @@ export default function BudgetPage() {
                   />
                 </div>
                 {isOver && (
-                  <p className="text-xs text-[#FF6B6B] mt-1.5 font-medium">⚠️ Melebihi anggaran Rp {(spent - budget.amount).toLocaleString("id-ID")}</p>
+                  <p className="text-xs text-[#FF6B6B] mt-1.5 font-medium">⚠️ {t('budget_over')} {formatCurrency(spent - budget.amount)}</p>
                 )}
               </div>
             );
