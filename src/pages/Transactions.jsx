@@ -70,14 +70,29 @@ export default function Transactions() {
 
   async function handleDelete(id) {
     if (!window.confirm(t('tx_confirm_delete'))) return;
-    await base44.entities.Transaction.delete(id);
-    loadData();
+    setDeleting(true);
+    try {
+      await base44.entities.Transaction.delete(id);
+      toast.success(t('tx_delete_success'));
+      loadData();
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast.error(t('tx_delete_error'));
+    } finally {
+      setDeleting(false);
+    }
   }
 
   async function handleEdit(id, data) {
-    await base44.entities.Transaction.update(id, data);
-    setEditingTx(null);
-    loadData();
+    try {
+      await base44.entities.Transaction.update(id, data);
+      toast.success(t('tx_update_success'));
+      setEditingTx(null);
+      loadData();
+    } catch (error) {
+      console.error("Update failed:", error);
+      toast.error(t('tx_update_error'));
+    }
   }
 
   function toggleSelect(id) {
