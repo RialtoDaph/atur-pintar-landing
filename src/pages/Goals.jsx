@@ -145,8 +145,8 @@ export default function Goals() {
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-2">
               <span className="font-bold text-[#1A1A1A] text-2xl">
-                Rp {(goal.current_amount || 0).toLocaleString("id-ID")}
-              </span>
+                 {formatCurrency(goal.current_amount || 0)}
+               </span>
               <span className="text-[#9B9B9B] self-end text-sm">dari {formatCurrency(goal.target_amount)}</span>
             </div>
             <div className="h-2 bg-[#F0F0EE] rounded-full overflow-hidden">
