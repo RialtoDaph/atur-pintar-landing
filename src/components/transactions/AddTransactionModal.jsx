@@ -306,7 +306,7 @@ export default function AddTransactionModal({ onClose, onSave }) {
           <button onClick={handleSave} disabled={saving || !form.amount || !form.category}
             className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
             style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
-            {saving ? "Saving..." : `Add ${tab === "expense" ? "Expense" : "Income"}`}
+            {saving ? t('saving') : `${t('add')} ${tab === "expense" ? t('expense') : t('income')}`}
           </button>
         </div>
       </div>
