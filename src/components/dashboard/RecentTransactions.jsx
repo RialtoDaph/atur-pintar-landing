@@ -1,4 +1,4 @@
-import { formatRupiah } from "@/components/utils/formatRupiah";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const CATEGORY_CONFIG = {
   housing: { emoji: "🏠", color: "#4F7CFF" },
