@@ -100,7 +100,7 @@ export default function Transactions() {
     loadData();
   }
 
-  const filtered = filter === "all" ? transactions : transactions.filter(t => t.type === filter);
+  const filtered = filter === "all" ? transactions : transactions.filter(tx => tx.type === filter);
 
   // Group by month
   const grouped = {};
@@ -173,13 +173,13 @@ export default function Transactions() {
         <div className="flex bg-white rounded-xl p-1 shadow-sm">
           {FILTER_TABS.map(tab => (
             <button
-              key={tab}
-              onClick={() => setFilter(tab)}
+              key={tab.key}
+              onClick={() => setFilter(tab.key)}
               className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                filter === tab ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
+                filter === tab.key ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
               }`}
             >
-              {tab}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -191,8 +191,8 @@ export default function Transactions() {
         ) : sortedGroups.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
             <p className="text-4xl mb-3">📭</p>
-            <p className="text-[#1A1A1A] font-semibold mb-1">Belum ada transaksi</p>
-            <p className="text-[#8FA4C8] text-sm">Tap + untuk menambah transaksi pertama Anda</p>
+            <p className="text-[#1A1A1A] font-semibold mb-1">{t('tx_empty_title')}</p>
+            <p className="text-[#8FA4C8] text-sm">{t('tx_empty_desc')}</p>
           </div>
         ) : (
           sortedGroups.map(key => {
