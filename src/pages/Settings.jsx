@@ -30,7 +30,7 @@ const WIDGETS = [
 export default function Settings() {
   const [user, setUser] = useState(null);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
-  const { settings, updateSettings } = useAppSettings();
+  const { settings, updateSettings, t } = useAppSettings();
   const [currency, setCurrency] = useState("IDR");
   const [language, setLanguage] = useState("id");
   const [widgets, setWidgets] = useState(() => {
@@ -90,8 +90,8 @@ export default function Settings() {
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-8">
         <div className="max-w-2xl mx-auto">
-          <p className="text-[#8FA4C8] text-sm font-medium">Preferensi</p>
-          <h1 className="text-white text-2xl font-bold mt-0.5">Pengaturan</h1>
+          <p className="text-[#8FA4C8] text-sm font-medium">{t('settings_preferences')}</p>
+          <h1 className="text-white text-2xl font-bold mt-0.5">{t('settings_title')}</h1>
         </div>
       </div>
 
@@ -104,7 +104,7 @@ export default function Settings() {
               {user.full_name?.[0]?.toUpperCase() || "U"}
             </div>
             <div>
-              <p className="font-bold text-[#1A1A1A]">{user.full_name || "Pengguna"}</p>
+              <p className="font-bold text-[#1A1A1A]">{user.full_name || t('settings_user_label')}</p>
               <p className="text-sm text-[#8FA4C8]">{user.email}</p>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function Settings() {
         {/* Tampilan */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-2">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Tampilan</p>
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_appearance')}</p>
           </div>
           <button
             onClick={toggleDark}
@@ -122,8 +122,8 @@ export default function Settings() {
             <div className="flex items-center gap-3">
               {darkMode ? <Moon className="w-5 h-5 text-[#FF6A00]" /> : <Sun className="w-5 h-5 text-[#FF6A00]" />}
               <div className="text-left">
-                <p className="font-medium text-[#1A1A1A] text-sm">Mode Gelap</p>
-                <p className="text-xs text-[#8FA4C8]">{darkMode ? "Aktif" : "Nonaktif"}</p>
+                <p className="font-medium text-[#1A1A1A] text-sm">{t('settings_dark_mode')}</p>
+                <p className="text-xs text-[#8FA4C8]">{darkMode ? t('settings_active') : t('settings_inactive')}</p>
               </div>
             </div>
             <div className={`w-11 h-6 rounded-full transition-colors relative ${darkMode ? "bg-[#FF6A00]" : "bg-[#E2E8F0]"}`}>
@@ -135,7 +135,7 @@ export default function Settings() {
         {/* Bahasa */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-2">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Bahasa / Language</p>
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_language')}</p>
           </div>
           {LANGUAGES.map(lang => (
             <button
@@ -155,7 +155,7 @@ export default function Settings() {
         {/* Mata Uang */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-2">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Mata Uang</p>
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_currency')}</p>
           </div>
           {CURRENCIES.map(cur => (
             <button
@@ -193,8 +193,8 @@ export default function Settings() {
         {/* Widget Dashboard */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-2">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Widget Dashboard</p>
-            <p className="text-xs text-[#8FA4C8] mt-0.5">Pilih widget yang ditampilkan di halaman utama</p>
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_widget_dashboard')}</p>
+            <p className="text-xs text-[#8FA4C8] mt-0.5">{t('settings_widget_desc')}</p>
           </div>
           {WIDGETS.map((w, i) => (
             <button
@@ -216,18 +216,18 @@ export default function Settings() {
         {/* Akun */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-2">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Akun</p>
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_account')}</p>
           </div>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#FFF5F5] transition-colors border-t border-[#F2F4F7] text-[#FF6B6B]"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium text-sm">Keluar</span>
+            <span className="font-medium text-sm">{t('settings_logout')}</span>
           </button>
         </div>
 
-        <p className="text-center text-xs text-[#8FA4C8] pb-4">Atur.in v1.0 · Dibuat dengan ❤️</p>
+        <p className="text-center text-xs text-[#8FA4C8] pb-4">{t('settings_version')}</p>
       </div>
     </div>
   );
