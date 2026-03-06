@@ -219,7 +219,12 @@ export default function Analytics() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-5 mt-6 space-y-5">
+      <div className="max-w-4xl mx-auto px-5 mt-4 space-y-5">
+
+        {/* Filter - Compact at top */}
+        <div className="relative">
+          <DateRangeFilter onFilterChange={handleFilterChange} defaultPeriod="6" />
+        </div>
 
         {/* Summary Cards - 4 column grid, responsive to 2 or 1 on mobile */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
@@ -249,9 +254,6 @@ export default function Analytics() {
             <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] mt-1">of income</p>
           </div>
         </div>
-
-        {/* Filter */}
-        <DateRangeFilter onFilterChange={handleFilterChange} defaultPeriod="6" />
 
         {/* Calendar Section */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
