@@ -26,7 +26,6 @@ export default function Goals() {
   const [loading, setLoading] = useState(true);
   const [showTxModal, setShowTxModal] = useState(null); // 'deposit' | 'withdrawal'
   const [showAddGoal, setShowAddGoal] = useState(false);
-  const [editingGoal, setEditingGoal] = useState(null);
 
   const goal = goals.find((g) => g.id === goalId) || null;
 
@@ -84,12 +83,7 @@ export default function Goals() {
   }
 
   async function handleAddGoal(data) {
-    if (editingGoal) {
-      await base44.entities.SavingsGoal.update(editingGoal.id, data);
-      setEditingGoal(null);
-    } else {
-      await base44.entities.SavingsGoal.create(data);
-    }
+    await base44.entities.SavingsGoal.create(data);
     setShowAddGoal(false);
     loadData();
   }
@@ -188,15 +182,6 @@ export default function Goals() {
                 className="flex items-center justify-center gap-2 bg-[#F7F6F3] text-[#1A1A1A] py-3 rounded-xl text-sm font-semibold hover:bg-[#EFEFED] transition-colors border border-[#EFEFED]"
               >
                 <Minus className="w-4 h-4" /> {t('goals_withdraw')}
-              </button>
-              <button
-                onClick={() => {
-                  setEditingGoal(goal);
-                  setShowAddGoal(true);
-                }}
-                className="flex items-center justify-center gap-2 bg-[#FF6A00] text-white py-3 rounded-xl text-sm font-semibold hover:bg-[#e05e00] transition-colors col-span-2"
-              >
-                ✏️ {t('goals_edit') || 'Edit Goal'}
               </button>
             </div>
           )}
@@ -369,12 +354,8 @@ export default function Goals() {
 
     {showAddGoal && (
      <AddGoalModal
-       onClose={() => {
-         setShowAddGoal(false);
-         setEditingGoal(null);
-       }}
+       onClose={() => setShowAddGoal(false)}
        onSave={handleAddGoal}
-       editingGoal={editingGoal}
      />
     )}
     </div>

@@ -66,17 +66,12 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
     if (!form.name || !form.initial_amount) return;
     setSaving(true);
     const values = calculateValues();
-    const parseAmount = (val) => {
-      if (!val) return 0;
-      const numStr = String(val).replace(/[^0-9.,]/g, "").replace(/\./g, "").replace(",", ".");
-      return parseFloat(numStr) || 0;
-    };
     await onSave({
       ...values,
-      initial_amount: parseAmount(values.initial_amount),
-      current_value: parseAmount(values.current_value) || parseAmount(values.initial_amount),
+      initial_amount: parseFloat(values.initial_amount),
+      current_value: parseFloat(values.current_value) || parseFloat(values.initial_amount),
       quantity: form.quantity ? parseFloat(form.quantity) : undefined,
-      price_per_unit: pricePerUnit ? parseAmount(pricePerUnit) : undefined,
+      price_per_unit: pricePerUnit ? parseFloat(pricePerUnit) : undefined,
     });
     setSaving(false);
   }
@@ -149,14 +144,11 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
 
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('initial_amount')}</label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] text-sm">{useAppSettings().settings.currency_symbol}</span>
-              <input type="text" inputMode="numeric" placeholder="0"
-                className="w-full border border-[#E2E8F0] rounded-xl pl-8 pr-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                value={form.initial_amount}
-                onChange={e => setForm(f => ({ ...f, initial_amount: e.target.value, current_value: e.target.value }))}
-              />
-            </div>
+            <input type="number" placeholder="0"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.initial_amount}
+              onChange={e => setForm(f => ({ ...f, initial_amount: e.target.value, current_value: e.target.value }))}
+            />
             <p className="text-xs text-[#8FA4C8] mt-1">{t('current_value_auto')}</p>
           </div>
 
@@ -168,14 +160,11 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
                 {fetchingPrice ? <Loader2 className="w-3 h-3 animate-spin" /> : '🔄'} {t('fetch_price')}
               </button>
             </div>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] text-sm">{useAppSettings().settings.currency_symbol}</span>
-              <input type="text" inputMode="numeric" placeholder="0"
-                className="w-full border border-[#E2E8F0] rounded-xl pl-8 pr-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                value={form.current_value}
-                onChange={e => setForm(f => ({ ...f, current_value: e.target.value }))}
-              />
-            </div>
+            <input type="number" placeholder="0"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              value={form.current_value}
+              onChange={e => setForm(f => ({ ...f, current_value: e.target.value }))}
+            />
             <p className="text-xs text-[#8FA4C8] mt-1">{t('change_if_price_differs')}</p>
           </div>
           <div>

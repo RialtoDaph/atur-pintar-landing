@@ -87,9 +87,8 @@ export default function CashflowForecast({ transactions, loading, user }) {
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
-  // Only count non-recurring-child transactions in current expense/income
-  const currentIncome = thisMonth.filter(tx => tx.type === "income" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
-  const currentExpense = thisMonth.filter(tx => tx.type === "expense" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
+  const currentIncome = thisMonth.filter(tx => tx.type === "income").reduce((s, tx) => s + tx.amount, 0);
+  const currentExpense = thisMonth.filter(tx => tx.type === "expense").reduce((s, tx) => s + tx.amount, 0);
 
   // --- Recurring-aware projection ---
   let scheduledFutureIncome = 0;
@@ -101,8 +100,7 @@ export default function CashflowForecast({ transactions, loading, user }) {
 
   for (const tpl of recurringTemplates) {
     const occurrences = countFutureOccurrences(tpl, now, daysInMonth);
-    // Skip if template already has child transaction today or this month
-    if (childParentIdsThisMonth.has(tpl.id)) continue;
+    if (tpl.recurring_interval === "monthly" && childParentIdsThisMonth.has(tpl.id)) continue;
     scheduledFutureIncome += (occurrences.income || 0) * tpl.amount;
     scheduledFutureExpense += (occurrences.expense || 0) * tpl.amount;
   }

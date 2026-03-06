@@ -96,42 +96,34 @@ export default function DebtsPage() {
             const type = DEBT_TYPES[debt.type] || DEBT_TYPES.lainnya;
             const progress = debt.total_amount > 0 ? ((debt.total_amount - debt.remaining_amount) / debt.total_amount) * 100 : 0;
             return (
-              <div key={debt.id} className="bg-white rounded-2xl p-4 shadow-sm">
-                <div className="flex items-start justify-between mb-2.5">
-                  <div className="flex items-center gap-3 flex-1">
-                    <div className="w-10 h-10 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center text-lg flex-shrink-0">
+              <div key={debt.id} className="bg-white rounded-2xl p-5 shadow-sm">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center text-xl">
                       {debt.icon || type.emoji}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-[#1A1A1A] text-sm">{debt.name}</p>
-                      <p className="text-xs text-[#8FA4C8]">{type.label}{debt.interest_rate ? ` · ${debt.interest_rate}%` : ""}</p>
+                    <div>
+                      <p className="font-semibold text-[#1A1A1A]">{debt.name}</p>
+                      <p className="text-xs text-[#8FA4C8]">{type.label}{debt.interest_rate ? ` · ${debt.interest_rate}% p.a.` : ""}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1 flex-shrink-0">
-                    <button onClick={() => markPaid(debt)} className="text-[#CBD5E0] hover:text-[#00C9A7] transition-colors p-1" title={t('debts_mark_paid_title')}>
+                  <div className="flex gap-1">
+                    <button onClick={() => markPaid(debt)} className="text-[#CBD5E0] hover:text-[#00C9A7] transition-colors" title={t('debts_mark_paid_title')}>
                       <CheckCircle className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleDelete(debt.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors p-1">
+                    <button onClick={() => handleDelete(debt.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 mb-2.5 text-xs">
-                  <div className="bg-[#F8FAFC] rounded-lg p-2">
-                    <p className="text-[#8FA4C8] font-medium mb-0.5">{t('debts_remaining')}</p>
-                    <p className="text-[#FF6B6B] font-bold">{formatCurrency(debt.remaining_amount)}</p>
-                  </div>
-                  {debt.monthly_payment && (
-                    <div className="bg-[#F8FAFC] rounded-lg p-2">
-                      <p className="text-[#8FA4C8] font-medium mb-0.5">{t('debts_installment')}</p>
-                      <p className="font-semibold text-[#1A1A1A]">{formatCurrency(debt.monthly_payment)}</p>
-                    </div>
-                  )}
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-[#8FA4C8]">{t('debts_remaining')}: <span className="text-[#FF6B6B] font-bold">{formatCurrency(debt.remaining_amount)}</span></span>
+                  {debt.monthly_payment && <span className="text-[#8FA4C8]">{t('debts_installment')}: <span className="font-semibold text-[#1A1A1A]">{formatCurrency(debt.monthly_payment)}/bln</span></span>}
                 </div>
-                <div className="w-full bg-[#F2F4F7] rounded-full h-1.5">
-                  <div className="h-1.5 rounded-full bg-[#00C9A7] transition-all" style={{ width: `${progress}%` }} />
+                <div className="w-full bg-[#F2F4F7] rounded-full h-2">
+                  <div className="h-2 rounded-full bg-[#00C9A7] transition-all" style={{ width: `${progress}%` }} />
                 </div>
-                <p className="text-xs text-[#8FA4C8] mt-1.5 text-right">{Math.round(progress)}{t('debts_paid_pct')}</p>
+                <p className="text-xs text-[#8FA4C8] mt-1">{Math.round(progress)}{t('debts_paid_pct')}</p>
               </div>
             );
           })
