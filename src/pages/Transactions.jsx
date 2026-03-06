@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, Pencil, CheckSquare, Square, X } from "lucide-react";
+import { Plus, Trash2, Pencil, CheckSquare, Square, X, Repeat2, Target, Search } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { toast } from "sonner";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import EditTransactionModal from "@/components/transactions/EditTransactionModal";
 
-const CATEGORY_CONFIG_BASE = {
+const DEFAULT_CATEGORIES = {
   housing: { emoji: "🏠", label: "Housing", color: "#4F7CFF" },
   food: { emoji: "🍔", label: "Food", color: "#00C9A7" },
   transport: { emoji: "🚗", label: "Transport", color: "#F5A623" },
