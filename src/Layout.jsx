@@ -78,7 +78,7 @@ export default function Layout({ children, currentPageName }) {
         {/* Logo */}
         <div className="mb-8 px-2">
           <p className="text-xl font-bold text-white tracking-tight">Atur.in</p>
-          <p className="text-xs text-[#8FA4C8] mt-0.5">Kelola keuanganmu</p>
+          <p className="text-xs text-[#8FA4C8] mt-0.5">{t('nav_manage')}</p>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
@@ -107,7 +107,7 @@ export default function Layout({ children, currentPageName }) {
           className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full"
         >
           <Search className="w-4 h-4" />
-          Cari...
+          {t('search_placeholder')}
         </button>
 
         {/* Settings group at bottom */}
@@ -138,7 +138,7 @@ export default function Layout({ children, currentPageName }) {
             className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full"
           >
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            {darkMode ? "Mode Terang" : "Mode Gelap"}
+            {darkMode ? t('light_mode') : t('dark_mode')}
           </button>
           <Link
             to={createPageUrl("Settings")}
@@ -147,7 +147,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="w-5 h-5 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-[9px] font-bold">
               {initials}
             </div>
-            <span className="truncate">{user?.full_name || "Profil"}</span>
+            <span className="truncate">{user?.full_name || t('profile')}</span>
           </Link>
         </div>
       </div>
@@ -195,7 +195,7 @@ export default function Layout({ children, currentPageName }) {
           }`}
         >
           <Grid3x3 className="w-5 h-5" />
-          Lainnya
+          {t('nav_more')}
         </Link>
       </div>
 
