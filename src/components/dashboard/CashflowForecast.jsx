@@ -1,36 +1,105 @@
-import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
+import { TrendingUp, TrendingDown, Calendar, RefreshCw } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+
+// Count how many times a recurring template will fire in the remaining days of this month
+function countFutureOccurrences(template, today, daysInMonth) {
+  const interval = template.recurring_interval;
+  const templateDate = new Date(template.date);
+  const templateDay = templateDate.getDate();
+  const count = { income: 0, expense: 0 };
+
+  // Already-generated child transactions in this month are counted in currentIncome/Expense
+  // We only project FUTURE occurrences (after today)
+  const futureStart = today.getDate() + 1;
+
+  if (interval === "monthly") {
+    // If the template's day-of-month falls after today in this month, count it once
+    if (templateDay >= futureStart && templateDay <= daysInMonth) {
+      count[template.type] = (count[template.type] || 0) + 1;
+    }
+  } else if (interval === "weekly") {
+    // Count Wednesdays (or whatever weekday) remaining in the month
+    const templateWeekday = templateDate.getDay();
+    for (let d = futureStart; d <= daysInMonth; d++) {
+      const wd = new Date(today.getFullYear(), today.getMonth(), d).getDay();
+      if (wd === templateWeekday) count[template.type] = (count[template.type] || 0) + 1;
+    }
+  } else if (interval === "daily") {
+    count[template.type] = (count[template.type] || 0) + (daysInMonth - today.getDate());
+  } else if (interval === "yearly") {
+    const sameMonth = templateDate.getMonth() === today.getMonth();
+    if (sameMonth && templateDay >= futureStart) {
+      count[template.type] = (count[template.type] || 0) + 1;
+    }
+  }
+
+  return count;
+}
 
 export default function CashflowForecast({ transactions, loading }) {
   const { formatCurrency, t } = useAppSettings();
-  if (loading) return null;
+  const [recurringTemplates, setRecurringTemplates] = useState([]);
+  const [recurringLoaded, setRecurringLoaded] = useState(false);
+
+  useEffect(() => {
+    base44.entities.Transaction.filter({ is_recurring: true })
+      .then(data => { setRecurringTemplates(data); setRecurringLoaded(true); })
+      .catch(() => setRecurringLoaded(true));
+  }, []);
+
+  if (loading || !recurringLoaded) return null;
 
   const now = new Date();
   const dayOfMonth = now.getDate();
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   const daysLeft = Math.max(0, daysInMonth - dayOfMonth);
 
-  const thisMonth = transactions.filter(t => {
-    const d = new Date(t.date);
+  const thisMonth = transactions.filter(tx => {
+    const d = new Date(tx.date);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });
 
-  const currentIncome = thisMonth.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const currentExpense = thisMonth.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+  const currentIncome = thisMonth.filter(tx => tx.type === "income").reduce((s, tx) => s + tx.amount, 0);
+  const currentExpense = thisMonth.filter(tx => tx.type === "expense").reduce((s, tx) => s + tx.amount, 0);
 
-  // Only project if we have actual data (not first day)
-  const daysElapsed = dayOfMonth - 1;
-  const dailyExpenseAvg = daysElapsed > 0 ? currentExpense / daysElapsed : currentExpense;
-  const projectedExtraExpense = daysLeft > 0 ? dailyExpenseAvg * daysLeft : 0;
+  // --- Recurring-aware projection ---
+  // For each recurring template, estimate how many more times it fires this month
+  let scheduledFutureIncome = 0;
+  let scheduledFutureExpense = 0;
+
+  // Collect parent IDs that already have a child this month (so we don't double-count)
+  const childParentIdsThisMonth = new Set(
+    thisMonth.filter(tx => tx.is_recurring_child && tx.recurring_parent_id).map(tx => tx.recurring_parent_id)
+  );
+
+  for (const tpl of recurringTemplates) {
+    const occurrences = countFutureOccurrences(tpl, now, daysInMonth);
+    // If monthly and already generated this month, skip
+    if (tpl.recurring_interval === "monthly" && childParentIdsThisMonth.has(tpl.id)) continue;
+    scheduledFutureIncome += (occurrences.income || 0) * tpl.amount;
+    scheduledFutureExpense += (occurrences.expense || 0) * tpl.amount;
+  }
+
+  // For non-recurring spend/income, use daily average for the remainder
+  // (exclude recurring-child transactions from the daily avg base to avoid double-counting)
+  const nonRecurringExpense = thisMonth.filter(tx => tx.type === "expense" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
+  const nonRecurringIncome = thisMonth.filter(tx => tx.type === "income" && !tx.is_recurring_child).reduce((s, tx) => s + tx.amount, 0);
+
+  const daysElapsed = Math.max(1, dayOfMonth - 1);
+  const dailyExpenseAvg = nonRecurringExpense / daysElapsed;
+  const dailyIncomeAvg = nonRecurringIncome / daysElapsed;
+
+  const projectedExtraExpense = dailyExpenseAvg * daysLeft + scheduledFutureExpense;
+  const projectedExtraIncome = dailyIncomeAvg * daysLeft + scheduledFutureIncome;
+
   const projectedTotalExpense = currentExpense + projectedExtraExpense;
-
-  // Daily avg income
-  const dailyIncomeAvg = daysElapsed > 0 ? currentIncome / daysElapsed : currentIncome;
-  const projectedExtraIncome = daysLeft > 0 ? dailyIncomeAvg * daysLeft : 0;
   const projectedTotalIncome = currentIncome + projectedExtraIncome;
 
   const projectedBalance = projectedTotalIncome - projectedTotalExpense;
   const isPositive = projectedBalance >= 0;
+  const hasScheduled = scheduledFutureIncome > 0 || scheduledFutureExpense > 0;
 
   const progressPct = daysInMonth > 0 ? Math.round((dayOfMonth / daysInMonth) * 100) : 0;
 
