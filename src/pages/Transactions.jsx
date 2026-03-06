@@ -51,9 +51,21 @@ export default function Transactions() {
 
   async function loadData() {
     setLoading(true);
-    const t = await base44.entities.Transaction.filter({ created_by: user.email }, "-date", 200);
-    setTransactions(t);
-    setLoading(false);
+    try {
+      const [txs, cats, gls] = await Promise.all([
+        base44.entities.Transaction.filter({ created_by: user.email }, "-date", 200),
+        base44.entities.CustomCategory.list("-created_date"),
+        base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
+      ]);
+      setTransactions(txs);
+      setCustomCategories(cats);
+      setGoals(gls);
+    } catch (error) {
+      console.error("Failed to load data:", error);
+      toast.error(t('error_loading_data'));
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleDelete(id) {
