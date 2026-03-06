@@ -74,7 +74,7 @@ export default function Transactions() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm(t('tx_confirm_delete'))) return;
+    if (!confirm(t('tx_confirm_delete'))) return;
     setDeleting(true);
     try {
       await base44.entities.Transaction.delete(id);
@@ -120,7 +120,7 @@ export default function Transactions() {
 
   async function handleDeleteSelected() {
     if (selectedIds.size === 0) return;
-    if (!window.confirm(t('tx_confirm_delete_selected', { count: selectedIds.size }))) return;
+    if (!confirm(t('tx_confirm_delete_selected', { count: selectedIds.size }))) return;
     setDeleting(true);
     try {
       await Promise.all([...selectedIds].map(id => base44.entities.Transaction.delete(id)));
@@ -135,7 +135,7 @@ export default function Transactions() {
   }
 
   async function handleDeleteAll() {
-    if (!window.confirm(t('tx_confirm_delete_all', { count: filtered.length }))) return;
+    if (!confirm(t('tx_confirm_delete_all', { count: filtered.length }))) return;
     setDeleting(true);
     try {
       await Promise.all(filtered.map(t => base44.entities.Transaction.delete(t.id)));
@@ -174,7 +174,7 @@ export default function Transactions() {
 
   // Group by month
   const grouped = {};
-  const locale = settings?.locale || "id-ID";
+  const locale = settings.locale || "id-ID";
   filtered.forEach(tx => {
     const d = new Date(tx.date);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;

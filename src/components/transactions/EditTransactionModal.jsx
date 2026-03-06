@@ -100,7 +100,19 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                 className="w-full border border-[#E2E8F0] rounded-xl pl-9 pr-4 py-3 text-2xl font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
                 placeholder="0"
                 value={form.amount}
-                onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9.,]/g, "");
+                  const numStr = val.replace(new RegExp("\\" + settings.thousand_separator, "g"), "").replace(settings.decimal_separator, ".");
+                  const num = parseFloat(numStr) || 0;
+                  const intPart = Math.floor(num);
+                  const intStr = intPart.toString().split('').reverse();
+                  const grouped = [];
+                  for (let i = 0; i < intStr.length; i++) {
+                    if (i > 0 && i % 3 === 0) grouped.push(settings.thousand_separator);
+                    grouped.push(intStr[i]);
+                  }
+                  setForm({ ...form, amount: grouped.reverse().join('') });
+                }}
               />
             </div>
           </div>
