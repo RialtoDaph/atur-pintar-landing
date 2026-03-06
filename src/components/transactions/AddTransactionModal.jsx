@@ -207,15 +207,15 @@ export default function AddTransactionModal({ onClose, onSave }) {
 
           {/* Type tabs */}
           <div className="flex bg-[#F2F4F7] rounded-xl p-1 mb-5">
-            {["expense", "income"].map((t) => (
-              <button key={t} onClick={() => { setTab(t); setForm(f => ({ ...f, category: "" })); }}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
-                  tab === t
-                    ? t === "expense" ? "bg-[#FF6B6B] text-white shadow-sm" : "bg-[#00C9A7] text-white shadow-sm"
-                    : "text-[#8FA4C8]"
-                }`}>
-                {t === "expense" ? "Expense" : "Income"}
-              </button>
+            {["expense", "income"].map((tabKey) => (
+             <button key={tabKey} onClick={() => { setTab(tabKey); setForm(f => ({ ...f, category: "" })); }}
+               className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
+                 tab === tabKey
+                   ? tabKey === "expense" ? "bg-[#FF6B6B] text-white shadow-sm" : "bg-[#00C9A7] text-white shadow-sm"
+                   : "text-[#8FA4C8]"
+               }`}>
+               {tabKey === "expense" ? t('expense') : t('income')}
+             </button>
             ))}
           </div>
 

@@ -187,7 +187,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
 
         <button onClick={handleSave} disabled={saving || !form.name || !form.initial_amount}
           className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors">
-          {saving ? "Menyimpan..." : investment ? "Update Investasi" : t('add_investment')}
+          {saving ? t('saving') : investment ? t('update_investment') : t('add_investment')}
         </button>
       </div>
     </div>
