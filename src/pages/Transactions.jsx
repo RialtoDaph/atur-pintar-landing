@@ -107,7 +107,7 @@ export default function Transactions() {
   filtered.forEach(tx => {
     const d = new Date(tx.date);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString(navigator.language, { month: "long", year: "numeric" });
+    const label = d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
     if (!grouped[key]) grouped[key] = { label, items: [] };
     grouped[key].items.push(tx);
   });
@@ -236,7 +236,7 @@ export default function Transactions() {
                           {tx.note || cat.label}
                         </p>
                         <p className="text-xs text-[#8FA4C8]">
-                          {new Date(tx.date).toLocaleDateString(navigator.language, { month: "short", day: "numeric" })} · {cat.label}
+                          {new Date(tx.date).toLocaleDateString("id-ID", { month: "short", day: "numeric" })} · {cat.label}
                         </p>
                       </div>
                       <div className="flex items-center gap-1.5">

@@ -41,7 +41,6 @@ export default function DebtsPage() {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm(t('debts_confirm_delete'))) return;
     await base44.entities.Debt.delete(id);
     loadData();
   }
