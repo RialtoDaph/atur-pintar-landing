@@ -141,13 +141,21 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
   const filteredCustom = customCats.filter(c => c.type === tab || c.type === "both");
   const allCats = [
     ...defaultCats.map(c => ({ ...c, label: t(c.i18nKey) })),
-    ...filteredCustom.map(c => ({ key: `custom_${c.id}`, label: c.name, emoji: c.emoji, color: c.color || "#888" })),
+    ...filteredCustom.map(c => ({ key: `custom_${c.id}`, label: c.name, emoji: c.emoji, color: c.color || "#888", parent_category_key: c.parent_category_key })),
   ];
+  
+  // Build category structure with sub-categories
+  const mainCats = allCats.filter(c => !c.parent_category_key);
+  const subCatsByParent = {};
+  allCats.filter(c => c.parent_category_key).forEach(c => {
+    if (!subCatsByParent[c.parent_category_key]) subCatsByParent[c.parent_category_key] = [];
+    subCatsByParent[c.parent_category_key].push(c);
+  });
   
   // Apply drag order if available
   const orderedCats = catOrder.length > 0 
-    ? catOrder.map(key => allCats.find(c => c.key === key)).filter(Boolean)
-    : allCats;
+    ? catOrder.map(key => mainCats.find(c => c.key === key)).filter(Boolean)
+    : mainCats;
   
   const handleDragEnd = (result) => {
     const { source, destination } = result;
@@ -294,16 +302,35 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
                             {...provided.draggableProps}
                             className={`relative transition-all ${snapshot.isDragging ? "opacity-50" : ""}`}
                           >
-                            <button
-                              {...provided.dragHandleProps}
-                              onClick={() => setForm({ ...form, category: c.key })}
-                              className={`w-full flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
-                                form.category === c.key ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
-                              }`}
-                            >
-                              <span className="text-lg sm:text-xl">{c.emoji}</span>
-                              <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
-                            </button>
+                            <div>
+                              <button
+                                {...provided.dragHandleProps}
+                                onClick={() => setForm({ ...form, category: c.key })}
+                                className={`w-full flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
+                                  form.category === c.key ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
+                                }`}
+                              >
+                                <span className="text-lg sm:text-xl">{c.emoji}</span>
+                                <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
+                              </button>
+                              {/* Sub-categories */}
+                              {subCatsByParent[c.key]?.length > 0 && (
+                                <div className="mt-1.5 pl-1 space-y-1">
+                                  {subCatsByParent[c.key].map(sub => (
+                                    <button
+                                      key={sub.key}
+                                      onClick={() => setForm({ ...form, category: sub.key })}
+                                      className={`w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg border text-[8px] sm:text-[9px] font-medium transition-all ${
+                                        form.category === sub.key ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] bg-white text-[#4A5568] hover:border-[#CBD5E0]"
+                                      }`}
+                                    >
+                                      <span>{sub.emoji}</span>
+                                      <span className="truncate">{sub.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                             {snapshot.isDragging && (
                               <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-xl">
                                 <GripVertical className="w-4 h-4 text-[#FF6A00]" />
