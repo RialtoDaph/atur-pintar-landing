@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Plus, Trash2, CreditCard, CheckCircle } from "lucide-react";
 import AddDebtModal from "@/components/debts/AddDebtModal.jsx";
 import IOUSection from "@/components/splitbill/IOUSection";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const DEBT_TYPES = {
   kpr: { label: "KPR", emoji: "🏠" },
@@ -13,6 +14,7 @@ const DEBT_TYPES = {
 };
 
 export default function DebtsPage() {
+  const { t, formatCurrency } = useAppSettings();
   const [debts, setDebts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -54,8 +56,8 @@ export default function DebtsPage() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[#8FA4C8] text-sm font-medium">Manajemen</p>
-              <h1 className="text-white text-2xl font-bold mt-0.5">Utang & Kredit</h1>
+              <p className="text-[#8FA4C8] text-sm font-medium">{t('debts_management')}</p>
+              <h1 className="text-white text-2xl font-bold mt-0.5">{t('debts_title')}</h1>
             </div>
             <button
               onClick={() => setShowAdd(true)}
@@ -67,12 +69,12 @@ export default function DebtsPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-white/10 rounded-2xl p-4">
-              <p className="text-white/60 text-xs mb-1">Total Utang</p>
-              <p className="text-white font-bold text-lg">Rp {totalDebt.toLocaleString("id-ID")}</p>
+              <p className="text-white/60 text-xs mb-1">{t('debts_total')}</p>
+              <p className="text-white font-bold text-lg">{formatCurrency(totalDebt)}</p>
             </div>
             <div className="bg-white/10 rounded-2xl p-4">
-              <p className="text-white/60 text-xs mb-1">Cicilan/Bulan</p>
-              <p className="text-white font-bold text-lg">Rp {totalMonthly.toLocaleString("id-ID")}</p>
+              <p className="text-white/60 text-xs mb-1">{t('debts_monthly')}</p>
+              <p className="text-white font-bold text-lg">{formatCurrency(totalMonthly)}</p>
             </div>
           </div>
         </div>
@@ -85,8 +87,8 @@ export default function DebtsPage() {
         ) : activeDebts.length === 0 ? (
           <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
             <CreditCard className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
-            <p className="text-[#4A5568] font-semibold">Tidak ada utang aktif</p>
-            <p className="text-[#8FA4C8] text-sm mt-1">Tap + untuk mencatat utang atau kredit</p>
+            <p className="text-[#4A5568] font-semibold">{t('debts_empty_title')}</p>
+            <p className="text-[#8FA4C8] text-sm mt-1">{t('debts_empty_desc')}</p>
           </div>
         ) : (
           activeDebts.map(debt => {
@@ -105,7 +107,7 @@ export default function DebtsPage() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => markPaid(debt)} className="text-[#CBD5E0] hover:text-[#00C9A7] transition-colors" title="Tandai lunas">
+                    <button onClick={() => markPaid(debt)} className="text-[#CBD5E0] hover:text-[#00C9A7] transition-colors" title={t('debts_mark_paid_title')}>
                       <CheckCircle className="w-4 h-4" />
                     </button>
                     <button onClick={() => handleDelete(debt.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
@@ -114,13 +116,13 @@ export default function DebtsPage() {
                   </div>
                 </div>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="text-[#8FA4C8]">Sisa: <span className="text-[#FF6B6B] font-bold">Rp {debt.remaining_amount.toLocaleString("id-ID")}</span></span>
-                  {debt.monthly_payment && <span className="text-[#8FA4C8]">Cicilan: <span className="font-semibold text-[#1A1A1A]">Rp {debt.monthly_payment.toLocaleString("id-ID")}/bln</span></span>}
+                  <span className="text-[#8FA4C8]">{t('debts_remaining')}: <span className="text-[#FF6B6B] font-bold">{formatCurrency(debt.remaining_amount)}</span></span>
+                  {debt.monthly_payment && <span className="text-[#8FA4C8]">{t('debts_installment')}: <span className="font-semibold text-[#1A1A1A]">{formatCurrency(debt.monthly_payment)}/bln</span></span>}
                 </div>
                 <div className="w-full bg-[#F2F4F7] rounded-full h-2">
                   <div className="h-2 rounded-full bg-[#00C9A7] transition-all" style={{ width: `${progress}%` }} />
                 </div>
-                <p className="text-xs text-[#8FA4C8] mt-1">{Math.round(progress)}% sudah dibayar</p>
+                <p className="text-xs text-[#8FA4C8] mt-1">{Math.round(progress)}{t('debts_paid_pct')}</p>
               </div>
             );
           })
@@ -128,7 +130,7 @@ export default function DebtsPage() {
 
         {paidDebts.length > 0 && (
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <p className="text-sm font-semibold text-[#8FA4C8] mb-2">✅ Sudah Lunas ({paidDebts.length})</p>
+            <p className="text-sm font-semibold text-[#8FA4C8] mb-2">✅ {t('debts_paid')} ({paidDebts.length})</p>
             {paidDebts.map(debt => (
               <div key={debt.id} className="flex items-center justify-between py-2 border-t border-[#F2F4F7] first:border-0">
                 <span className="text-sm text-[#4A5568] line-through">{debt.name}</span>
