@@ -27,29 +27,31 @@ export default function Layout({ children, currentPageName }) {
     }
   }, [darkMode]);
 
+  const { t } = useAppSettings();
+
   const navItems = [
-    { name: "Dashboard", label: "Home", icon: LayoutDashboard, page: "Dashboard" },
-    { name: "Transactions", label: "Transaksi", icon: ArrowLeftRight, page: "Transactions" },
-    { name: "Goals", label: "Tujuan", icon: Target, page: "Goals" },
-    { name: "Budget", label: "Anggaran", icon: PiggyBank, page: "Budget" },
-    { name: "Debts", label: "Utang", icon: CreditCard, page: "Debts" },
-    { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
-    { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
-    { name: "Tips", label: "Tips", icon: Lightbulb, page: "Tips" },
+    { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
+    { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
+    { name: "Goals", label: t('nav_goals'), icon: Target, page: "Goals" },
+    { name: "Budget", label: t('nav_budget'), icon: PiggyBank, page: "Budget" },
+    { name: "Debts", label: t('nav_debts'), icon: CreditCard, page: "Debts" },
+    { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" },
+    { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
+    { name: "Tips", label: t('nav_tips'), icon: Lightbulb, page: "Tips" },
   ];
 
   const navSettingsItems = [
-    { name: "Reminders", label: "Pengingat", icon: Bell, page: "Reminders" },
-    { name: "Alerts", label: "Alerts", icon: Bell, page: "Alerts" },
-    { name: "Settings", label: "Pengaturan", icon: Settings, page: "Settings" },
+    { name: "Reminders", label: t('nav_reminders'), icon: Bell, page: "Reminders" },
+    { name: "Alerts", label: t('nav_alerts'), icon: Bell, page: "Alerts" },
+    { name: "Settings", label: t('nav_settings'), icon: Settings, page: "Settings" },
   ];
 
   // Mobile: only 4 main + "Lainnya"
   const mobileMainNav = [
-    { name: "Dashboard", label: "Home", icon: LayoutDashboard, page: "Dashboard" },
-    { name: "Transactions", label: "Transaksi", icon: ArrowLeftRight, page: "Transactions" },
-    { name: "Analytics", label: "Analitik", icon: BarChart2, page: "Analytics" },
-    { name: "Investments", label: "Investasi", icon: TrendingUp, page: "Investments" },
+    { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
+    { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
+    { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
+    { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" },
   ];
 
   const mobileMorePages = ["Goals", "Budget", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu"];
