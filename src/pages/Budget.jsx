@@ -47,6 +47,7 @@ export default function BudgetPage() {
   }
 
   async function handleDelete(id) {
+    if (!window.confirm(t('budget_confirm_delete'))) return;
     await base44.entities.Budget.delete(id);
     loadData();
   }
@@ -67,7 +68,7 @@ export default function BudgetPage() {
   const totalSpent = budgets.reduce((s, b) => s + (spendingByCategory[b.category] || 0), 0);
   const overallPercent = totalBudget > 0 ? Math.min((totalSpent / totalBudget) * 100, 100) : 0;
 
-  const monthLabel = new Date(currentMonth + "-01").toLocaleString("id-ID", { month: "long", year: "numeric" });
+  const monthLabel = new Date(currentMonth + "-01").toLocaleString(navigator.language, { month: "long", year: "numeric" });
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">

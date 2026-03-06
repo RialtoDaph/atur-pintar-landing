@@ -106,7 +106,7 @@ export default function Goals() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F6F3] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F2F4F7] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] border-t-transparent animate-spin" />
       </div>
     );
@@ -121,7 +121,7 @@ export default function Goals() {
     const remaining = Math.max(goal.target_amount - (goal.current_amount || 0), 0);
 
     return (
-      <div className="min-h-screen bg-[#F7F6F3] max-w-lg mx-auto px-4 py-8">
+      <div className="min-h-screen bg-[#F2F4F7] max-w-lg mx-auto px-4 py-8">
         <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> {t('goals_back')}
         </Link>
@@ -131,22 +131,22 @@ export default function Goals() {
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-3">
               <span className="text-4xl">{goal.icon || "💰"}</span>
-              <div>
-                <h1 className="text-xl font-bold text-[#1A1A1A]">{goal.name}</h1>
-                {goal.description && <p className="text-sm text-[#8FA4C8] mt-0.5">{goal.description}</p>}
+               <div>
+                 <h1 className="text-xl font-bold text-[#1A1A1A]">{goal.name}</h1>
+                 {goal.description && <p className="text-sm text-[#8FA4C8] mt-0.5">{goal.description}</p>}
+               </div>
               </div>
-            </div>
-            {goal.status === "completed" && (
-              <CheckCircle className="w-6 h-6 text-[#00C9A7]" />
-            )}
-          </div>
+              {goal.status === "completed" && (
+               <CheckCircle className="w-6 h-6 text-[#00C9A7]" />
+              )}
+              </div>
 
-          {/* Progress */}
-          <div className="mb-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="font-bold text-[#1A1A1A] text-2xl">
-                Rp {(goal.current_amount || 0).toLocaleString("id-ID")}
-              </span>
+              {/* Progress */}
+              <div className="mb-4">
+              <div className="flex justify-between text-sm mb-2">
+               <span className="font-bold text-[#1A1A1A] text-2xl">
+                 {formatCurrency(goal.current_amount || 0)}
+               </span>
               <span className="text-[#9B9B9B] self-end text-sm">dari {formatCurrency(goal.target_amount)}</span>
             </div>
             <div className="h-2 bg-[#F0F0EE] rounded-full overflow-hidden">
@@ -164,7 +164,7 @@ export default function Goals() {
           {/* Deadline */}
           {goal.deadline && (
             <p className="text-xs text-[#9B9B9B] mb-4">
-              🗓 Target: {new Date(goal.deadline).toLocaleDateString("id-ID", { month: "long", day: "numeric", year: "numeric" })}
+              🗓 Target: {new Date(goal.deadline).toLocaleDateString(navigator.language, { month: "long", day: "numeric", year: "numeric" })}
             </p>
           )}
 
@@ -213,14 +213,14 @@ export default function Goals() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#1A1A1A]">{tx.note || (tx.type === "deposit" ? "Deposit" : "Withdrawal")}</p>
-                    <p className="text-xs text-[#9B9B9B]">{new Date(tx.date).toLocaleDateString("id-ID", { month: "short", day: "numeric", year: "numeric" })}</p>
+                    <p className="text-xs text-[#9B9B9B]">{new Date(tx.date).toLocaleDateString(navigator.language, { month: "short", day: "numeric", year: "numeric" })}</p>
                   </div>
                 </div>
                 <span
                   className="text-sm font-bold"
                   style={{ color: tx.type === "deposit" ? "#34C87A" : "#FF5252" }}
                 >
-                  {tx.type === "deposit" ? "+" : "−"}Rp {tx.amount.toLocaleString("id-ID")}
+                  {tx.type === "deposit" ? "+" : "−"}{formatCurrency(tx.amount)}
                 </span>
               </div>
             ))}
@@ -330,7 +330,7 @@ export default function Goals() {
                   {suggestedMonthly && (
                     <div className={`flex items-center gap-1 ${isUrgent ? "text-[#FF6B6B]" : "text-[#8FA4C8]"}`}>
                       <Zap className="w-3.5 h-3.5" />
-                      Rp {suggestedMonthly.toLocaleString("id-ID")}/bln
+                      {formatCurrency(suggestedMonthly)}/bln
                     </div>
                   )}
                 </div>

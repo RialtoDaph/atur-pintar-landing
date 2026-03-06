@@ -143,7 +143,7 @@ export default function Reminders() {
                         </div>
                         <p className="text-xs text-[#8FA4C8] mt-0.5">
                           {cfg.label} · {t('reminders_due_day')} {r.due_day} {t('reminders_every_month')}
-                          {r.amount ? ` · ${formatRupiah(r.amount)}` : ""}
+                          {r.amount ? ` · ${formatCurrency(r.amount)}` : ""}
                         </p>
                         {r.notes && <p className="text-xs text-[#8FA4C8] mt-0.5 truncate">{r.notes}</p>}
                       </div>
@@ -181,7 +181,7 @@ export default function Reminders() {
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-[#0A0A0A] text-sm line-through">{r.title}</p>
-                        <p className="text-xs text-[#8FA4C8]">{r.amount ? formatRupiah(r.amount) : cfg.label}</p>
+                        <p className="text-xs text-[#8FA4C8]">{r.amount ? formatCurrency(r.amount) : cfg.label}</p>
                       </div>
                       <Check className="w-4 h-4 text-[#00C9A7]" />
                     </div>
