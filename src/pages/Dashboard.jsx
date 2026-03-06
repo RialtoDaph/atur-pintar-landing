@@ -142,7 +142,7 @@ export default function Dashboard() {
         {widgets.spendingChart && <SpendingChart transactions={thisMonthTx} loading={loading} />}
 
         {/* Portfolio Summary (Compact) */}
-        {widgets.portfolioSummary && <PortfolioSummary />
+        {widgets.portfolioSummary && <PortfolioSummary />}
 
         {/* Savings Goals */}
         {widgets.savingsGoals && (
