@@ -245,6 +245,20 @@ const TRANSLATIONS = {
     analytics_current_value: 'Nilai Sekarang',
     analytics_return: 'Return',
 
+    // Month names
+    month_jan: 'Januari',
+    month_feb: 'Februari',
+    month_mar: 'Maret',
+    month_apr: 'April',
+    month_may: 'Mei',
+    month_jun: 'Juni',
+    month_jul: 'Juli',
+    month_aug: 'Agustus',
+    month_sep: 'September',
+    month_oct: 'Oktober',
+    month_nov: 'November',
+    month_dec: 'Desember',
+
     // Pages - Settings
     settings_preferences: 'Preferensi',
     settings_title: 'Pengaturan',
@@ -558,6 +572,20 @@ const TRANSLATIONS = {
     analytics_initial_value: 'Initial Value',
     analytics_current_value: 'Current Value',
     analytics_return: 'Return',
+    
+    // Month names
+    month_jan: 'January',
+    month_feb: 'February',
+    month_mar: 'March',
+    month_apr: 'April',
+    month_may: 'May',
+    month_jun: 'June',
+    month_jul: 'July',
+    month_aug: 'August',
+    month_sep: 'September',
+    month_oct: 'October',
+    month_nov: 'November',
+    month_dec: 'December',
 
     // Pages - Settings
     settings_preferences: 'Preferences',
