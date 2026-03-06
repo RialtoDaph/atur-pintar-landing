@@ -21,9 +21,10 @@ function addInterval(dateStr, interval) {
   return d.toISOString().split("T")[0];
 }
 
-export async function processRecurringTransactions() {
+export async function processRecurringTransactions(userEmail) {
   const today = new Date().toISOString().split("T")[0];
-  const all = await base44.entities.Transaction.filter({ is_recurring: true });
+  const filter = userEmail ? { is_recurring: true, created_by: userEmail } : { is_recurring: true };
+  const all = await base44.entities.Transaction.filter(filter);
 
   for (const tx of all) {
     if (!tx.recurring_interval) continue;

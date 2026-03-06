@@ -128,7 +128,7 @@ export default function Dashboard() {
         {widgets.smartAlerts && <SmartAlerts transactions={transactions} loading={loading} />}
 
         {/* Cashflow Forecast */}
-        {widgets.cashflowForecast && <CashflowForecast transactions={transactions} loading={loading} />}
+        {widgets.cashflowForecast && <CashflowForecast transactions={transactions} loading={loading} user={user} />}
 
         {/* Subscription Detector */}
         {widgets.subscriptionDetector && <SubscriptionDetector transactions={transactions} loading={loading} />}
