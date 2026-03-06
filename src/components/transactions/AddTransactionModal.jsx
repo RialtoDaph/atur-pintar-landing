@@ -25,7 +25,7 @@ const DEFAULT_CATEGORIES = {
   ],
 };
 
-export default function AddTransactionModal({ onClose, onSave }) {
+export default function AddTransactionModal({ goals = [], onClose, onSave }) {
   const { t, formatCurrency, settings } = useAppSettings();
   const [tab, setTab] = useState("expense");
   const [form, setForm] = useState({
@@ -33,6 +33,7 @@ export default function AddTransactionModal({ onClose, onSave }) {
     category: "",
     note: "",
     date: new Date().toISOString().split("T")[0],
+    goal_id: "",
   });
   const [saving, setSaving] = useState(false);
   const [customCats, setCustomCats] = useState([]);
