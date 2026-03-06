@@ -117,11 +117,11 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
               </div>
 
               <div className="flex justify-between text-[10px] text-[#8FA4C8]">
-                <span>Rp {Math.round(b.spent).toLocaleString("id-ID")} dari Rp {Math.round(b.amount).toLocaleString("id-ID")}</span>
+                <span>{formatCurrency(b.spent)} dari {formatCurrency(b.amount)}</span>
                 <span style={{ color: isOver ? "#FF6B6B" : "#8FA4C8" }}>
                   {isOver
-                    ? `Lebih Rp ${Math.round(Math.abs(remaining)).toLocaleString("id-ID")}`
-                    : `Sisa Rp ${Math.round(remaining).toLocaleString("id-ID")}`}
+                    ? `Lebih ${formatCurrency(Math.abs(remaining))}`
+                    : `Sisa ${formatCurrency(remaining)}`}
                 </span>
               </div>
             </div>
