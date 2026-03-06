@@ -71,7 +71,7 @@ export default function CashflowForecast({ transactions, loading }) {
             <TrendingUp className="w-3 h-3 text-green-500" />
             <p className="text-[10px] text-[#9B9B9B]">Est. Masuk</p>
           </div>
-          <p className="text-xs font-bold text-[#1A1A1A]">{formatRupiah(projectedTotalIncome)}</p>
+          <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(projectedTotalIncome)}</p>
         </div>
         <div className="col-span-2 bg-[#F9F9F9] rounded-xl p-2.5">
           <div className="flex items-center gap-1 mb-0.5">
