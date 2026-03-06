@@ -29,33 +29,33 @@ function LayoutInner({ children, currentPageName }) {
   }, [darkMode]);
 
   const navItems = [
-    { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
-    { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
-    { name: "Goals", label: t('nav_goals'), icon: Target, page: "Goals" },
-    { name: "Budget", label: t('nav_budget'), icon: PiggyBank, page: "Budget" },
-    { name: "Debts", label: t('nav_debts'), icon: CreditCard, page: "Debts" },
-    { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" },
-    { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
-    { name: "Tips", label: t('nav_tips'), icon: Lightbulb, page: "Tips" },
-  ];
+  { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
+  { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
+  { name: "Goals", label: t('nav_goals'), icon: Target, page: "Goals" },
+  { name: "Budget", label: t('nav_budget'), icon: PiggyBank, page: "Budget" },
+  { name: "Debts", label: t('nav_debts'), icon: CreditCard, page: "Debts" },
+  { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" },
+  { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
+  { name: "Tips", label: t('nav_tips'), icon: Lightbulb, page: "Tips" }];
+
 
   const navSettingsItems = [
-    { name: "Reminders", label: t('nav_reminders'), icon: Bell, page: "Reminders" },
-    { name: "Alerts", label: t('nav_alerts'), icon: Bell, page: "Alerts" },
-    { name: "Settings", label: t('nav_settings'), icon: Settings, page: "Settings" },
-  ];
+  { name: "Reminders", label: t('nav_reminders'), icon: Bell, page: "Reminders" },
+  { name: "Alerts", label: t('nav_alerts'), icon: Bell, page: "Alerts" },
+  { name: "Settings", label: t('nav_settings'), icon: Settings, page: "Settings" }];
+
 
   // Mobile: only 4 main + "Lainnya"
   const mobileMainNav = [
-    { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
-    { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
-    { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
-    { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" },
-  ];
+  { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
+  { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
+  { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
+  { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" }];
+
 
   const mobileMorePages = ["Goals", "Budget", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu"];
 
-  const initials = user?.full_name ? user.full_name.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase() : "U";
+  const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
   return (
     <div className={`min-h-screen font-sans pb-20 sm:pb-0 transition-colors ${darkMode ? "bg-[#111] text-white" : "bg-[#F2F4F7]"}`}>
@@ -87,23 +87,23 @@ function LayoutInner({ children, currentPageName }) {
                 key={item.page}
                 to={createPageUrl(item.page)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-[#FF6A00] text-white shadow-sm"
-                    : "text-[#888] hover:text-white hover:bg-white/10"
-                }`}
-              >
+                active ?
+                "bg-[#FF6A00] text-white shadow-sm" :
+                "text-[#888] hover:text-white hover:bg-white/10"}`
+                }>
+
                 <item.icon className="w-4 h-4" />
                 {item.label}
-              </Link>
-            );
+              </Link>);
+
           })}
         </nav>
 
         {/* Search */}
         <button
           onClick={() => setShowSearch(true)}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full"
-        >
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full">
+
           <Search className="w-4 h-4" />
           {t('search_placeholder')}
         </button>
@@ -117,31 +117,31 @@ function LayoutInner({ children, currentPageName }) {
                 key={item.page}
                 to={createPageUrl(item.page)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-[#FF6A00] text-white shadow-sm"
-                    : "text-[#888] hover:text-white hover:bg-white/10"
-                }`}
-              >
+                active ?
+                "bg-[#FF6A00] text-white shadow-sm" :
+                "text-[#888] hover:text-white hover:bg-white/10"}`
+                }>
+
                 <item.icon className="w-4 h-4" />
                 {item.label}
-              </Link>
-            );
+              </Link>);
+
           })}
         </div>
 
         {/* Dark mode + Profile */}
         <div className="space-y-1 mt-2">
           <button
-            onClick={() => setDarkMode(d => !d)}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full"
-          >
+            onClick={() => setDarkMode((d) => !d)}
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full">
+
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             {darkMode ? t('light_mode') : t('dark_mode')}
           </button>
           <Link
             to={createPageUrl("Settings")}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors"
-          >
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors">
+
             <div className="w-5 h-5 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-[9px] font-bold">
               {initials}
             </div>
@@ -152,7 +152,7 @@ function LayoutInner({ children, currentPageName }) {
 
       {/* Mobile top header */}
       <div className="sm:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] flex items-center justify-between px-5 py-3 border-b border-white/10">
-        <p className="text-white font-bold text-lg tracking-tight">Atur.in</p>
+        <p className="text-white font-bold text-lg tracking-tight">Atur Pintar</p>
         <div className="flex items-center gap-2">
           <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white">
             <Search className="w-4 h-4" />
@@ -177,21 +177,21 @@ function LayoutInner({ children, currentPageName }) {
               key={item.page}
               to={createPageUrl(item.page)}
               className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors ${
-                active ? "text-[#FF6A00]" : "text-[#888]"
-              }`}
-            >
+              active ? "text-[#FF6A00]" : "text-[#888]"}`
+              }>
+
               <item.icon className="w-5 h-5" />
               {item.label}
-            </Link>
-          );
+            </Link>);
+
         })}
         {/* More button → goes to Menu page */}
         <Link
           to={createPageUrl("Menu")}
           className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors ${
-            mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"
-          }`}
-        >
+          mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"}`
+          }>
+
           <Grid3x3 className="w-5 h-5" />
           {t('nav_more')}
         </Link>
@@ -202,14 +202,14 @@ function LayoutInner({ children, currentPageName }) {
 
       {/* Global Search */}
       {showSearch && <GlobalSearch onClose={() => setShowSearch(false)} />}
-    </div>
-  );
+    </div>);
+
 }
 
 export default function Layout({ children, currentPageName }) {
   return (
     <AppSettingsProvider>
       <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
-    </AppSettingsProvider>
-  );
+    </AppSettingsProvider>);
+
 }
