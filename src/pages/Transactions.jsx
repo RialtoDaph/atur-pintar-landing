@@ -234,18 +234,57 @@ export default function Transactions() {
         )}
 
         {/* Filter tabs */}
-        <div className="flex bg-white rounded-xl p-1 shadow-sm">
-          {FILTER_TABS.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setFilter(tab.key)}
-              className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-                filter === tab.key ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="space-y-3">
+          <div className="flex bg-white rounded-xl p-1 shadow-sm">
+            {FILTER_TABS.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setFilter(tab.key)}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
+                  filter === tab.key ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" />
+            <input
+              type="text"
+              placeholder={t('search_transactions')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white"
+            />
+          </div>
+
+          {/* Goal filter */}
+          {goals.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              <button
+                onClick={() => setGoalFilter(null)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                  !goalFilter ? "bg-[#0A0A0A] text-white" : "bg-white border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
+                }`}
+              >
+                {t('all_goals')}
+              </button>
+              {goals.map(goal => (
+                <button
+                  key={goal.id}
+                  onClick={() => setGoalFilter(goal.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1 ${
+                    goalFilter === goal.id ? "bg-[#FF6A00] text-white" : "bg-white border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
+                  }`}
+                >
+                  {goal.icon} {goal.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {loading ? (
