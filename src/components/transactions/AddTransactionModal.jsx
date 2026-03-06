@@ -140,7 +140,7 @@ export default function AddTransactionModal({ onClose, onSave }) {
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
         <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto scroll-smooth">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-[#1A1A1A]">Add Transaction</h2>
+            <h2 className="text-lg font-bold text-[#1A1A1A]">{t('add_transaction')}</h2>
             <div className="flex items-center gap-2">
               <button onClick={() => fileRef.current?.click()} disabled={scanning}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F2F4F7] hover:bg-[#E2E8F0] transition-colors text-xs font-semibold text-[#4A5568]"
