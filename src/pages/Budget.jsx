@@ -47,6 +47,7 @@ export default function BudgetPage() {
   }
 
   async function handleDelete(id) {
+    if (!window.confirm(t('budget_delete_confirm') || "Hapus budget ini?")) return;
     await base44.entities.Budget.delete(id);
     loadData();
   }

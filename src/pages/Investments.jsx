@@ -50,6 +50,7 @@ export default function InvestmentsPage() {
   }
 
   async function handleDelete(id) {
+    if (!window.confirm(t('investments_delete_confirm') || "Hapus investasi ini?")) return;
     await base44.entities.Investment.delete(id);
     loadData();
   }

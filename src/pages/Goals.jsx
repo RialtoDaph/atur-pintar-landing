@@ -106,7 +106,7 @@ export default function Goals() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F6F3] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F2F4F7] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] border-t-transparent animate-spin" />
       </div>
     );
@@ -121,7 +121,7 @@ export default function Goals() {
     const remaining = Math.max(goal.target_amount - (goal.current_amount || 0), 0);
 
     return (
-      <div className="min-h-screen bg-[#F7F6F3] max-w-lg mx-auto px-4 py-8">
+      <div className="min-h-screen bg-[#F2F4F7] max-w-lg mx-auto px-4 py-8">
         <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> {t('goals_back')}
         </Link>
@@ -131,10 +131,10 @@ export default function Goals() {
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-3">
               <span className="text-4xl">{goal.icon || "💰"}</span>
-              <div>
-                <h1 className="text-xl font-bold text-[#1A1A1A]">{goal.name}</h1>
-                {goal.description && <p className="text-sm text-[#8FA4C8] mt-0.5">{goal.description}</p>}
-              </div>
+               <div className="flex-1">
+                 <h1 className="text-xl font-bold text-[#1A1A1A]">{goal.name}</h1>
+                 {goal.description && <p className="text-sm text-[#8FA4C8] mt-0.5">{goal.description}</p>}
+               </div>
             </div>
             {goal.status === "completed" && (
               <CheckCircle className="w-6 h-6 text-[#00C9A7]" />
@@ -145,7 +145,7 @@ export default function Goals() {
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-2">
               <span className="font-bold text-[#1A1A1A] text-2xl">
-                Rp {(goal.current_amount || 0).toLocaleString("id-ID")}
+                {formatCurrency(goal.current_amount || 0)}
               </span>
               <span className="text-[#9B9B9B] self-end text-sm">dari {formatCurrency(goal.target_amount)}</span>
             </div>
@@ -217,11 +217,11 @@ export default function Goals() {
                   </div>
                 </div>
                 <span
-                  className="text-sm font-bold"
-                  style={{ color: tx.type === "deposit" ? "#34C87A" : "#FF5252" }}
-                >
-                  {tx.type === "deposit" ? "+" : "−"}Rp {tx.amount.toLocaleString("id-ID")}
-                </span>
+                   className="text-sm font-bold"
+                   style={{ color: tx.type === "deposit" ? "#34C87A" : "#FF5252" }}
+                 >
+                   {tx.type === "deposit" ? "+" : "−"}{formatCurrency(tx.amount)}
+                 </span>
               </div>
             ))}
           </div>
@@ -312,9 +312,9 @@ export default function Goals() {
 
                 <div className="mb-3">
                   <div className="flex justify-between text-xs mb-1.5">
-                    <span className="text-[#4A5568] font-medium">Rp {(g.current_amount || 0).toLocaleString("id-ID")} dari Rp {g.target_amount.toLocaleString("id-ID")}</span>
-                    <span className="font-bold" style={{ color }}>{progress.toFixed(0)}%</span>
-                  </div>
+                     <span className="text-[#4A5568] font-medium">{formatCurrency(g.current_amount || 0)} dari {formatCurrency(g.target_amount)}</span>
+                     <span className="font-bold" style={{ color }}>{progress.toFixed(0)}%</span>
+                   </div>
                   <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
                     <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: color }} />
                   </div>
