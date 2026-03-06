@@ -2,6 +2,7 @@ import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb } from 
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function DashboardInsights({ transactions, goals }) {
+  const { formatCurrency } = useAppSettings();
   const now = new Date();
   const thisMonth = transactions.filter(t => {
     const d = new Date(t.date);
