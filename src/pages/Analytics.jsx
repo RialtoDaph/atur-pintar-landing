@@ -4,6 +4,8 @@ import { formatRupiah } from "@/components/utils/formatRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import FinancialCalendar from "@/components/analytics/FinancialCalendar";
 import DateRangeFilter from "@/components/analytics/DateRangeFilter";
+import DailySpendingCard from "@/components/analytics/DailySpendingCard";
+import RestaurantBarSpendingCard from "@/components/analytics/RestaurantBarSpendingCard";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, Area, AreaChart, CartesianGrid
@@ -257,6 +259,21 @@ export default function Analytics() {
 
         {/* Calendar Section */}
         <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
+
+        {/* Daily Spending Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <DailySpendingCard
+            transactions={transactions}
+            filterPeriod={filterPeriod}
+            customDateRange={customDateRange}
+          />
+          <RestaurantBarSpendingCard
+            transactions={transactions}
+            customCategories={customCategories}
+            filterPeriod={filterPeriod}
+            customDateRange={customDateRange}
+          />
+        </div>
 
         {/* Charts Grid - 1 on mobile, 2 on desktop */}
         <div className="space-y-5 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
