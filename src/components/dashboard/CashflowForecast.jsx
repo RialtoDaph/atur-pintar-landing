@@ -108,6 +108,12 @@ export default function CashflowForecast({ transactions, loading }) {
       <div className="flex items-center gap-2 mb-2.5">
         <Calendar className="w-4 h-4 text-[#FF6A00]" />
         <h2 className="font-bold text-[#0A0A0A] text-sm">{t('cashflow_title')}</h2>
+        {hasScheduled && (
+          <span className="ml-auto flex items-center gap-1 text-[9px] text-[#FF6A00] font-semibold bg-[#FF6A00]/10 px-2 py-0.5 rounded-full">
+            <RefreshCw className="w-2.5 h-2.5" />
+            {t('recurring') || 'Recurring'}
+          </span>
+        )}
       </div>
 
       {/* Month progress */}
