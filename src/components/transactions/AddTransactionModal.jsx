@@ -26,6 +26,7 @@ const DEFAULT_CATEGORIES = {
 };
 
 export default function AddTransactionModal({ onClose, onSave }) {
+  const { t, formatCurrency, settings } = useAppSettings();
   const [tab, setTab] = useState("expense");
   const [form, setForm] = useState({
     amount: "",

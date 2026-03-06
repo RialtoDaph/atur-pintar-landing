@@ -101,7 +101,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
 
         <div className="space-y-3 mb-6">
           <div>
-            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Cari Aset</label>
+            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('search_asset')}</label>
             <AssetSearch 
               type={form.type} 
               onSelect={(asset) => {
