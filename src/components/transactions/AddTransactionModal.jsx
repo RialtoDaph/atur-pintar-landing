@@ -9,19 +9,19 @@ import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
 
 const DEFAULT_CATEGORIES = {
   expense: [
-    { key: "housing", label: "Housing", emoji: "🏠", color: "#4F7CFF" },
-    { key: "food", label: "Food", emoji: "🍔", color: "#00C9A7" },
-    { key: "transport", label: "Transport", emoji: "🚗", color: "#F5A623" },
-    { key: "health", label: "Health", emoji: "❤️", color: "#FF6B6B" },
-    { key: "entertainment", label: "Entertainment", emoji: "🎬", color: "#9B59B6" },
-    { key: "shopping", label: "Shopping", emoji: "🛍️", color: "#E91E8C" },
-    { key: "subscriptions", label: "Subscriptions", emoji: "📱", color: "#1ABC9C" },
-    { key: "other", label: "Other", emoji: "📦", color: "#95A5A6" },
+    { key: "housing", i18nKey: "cat_housing", emoji: "🏠", color: "#4F7CFF" },
+    { key: "food", i18nKey: "cat_food", emoji: "🍔", color: "#00C9A7" },
+    { key: "transport", i18nKey: "cat_transport", emoji: "🚗", color: "#F5A623" },
+    { key: "health", i18nKey: "cat_health", emoji: "❤️", color: "#FF6B6B" },
+    { key: "entertainment", i18nKey: "cat_entertainment", emoji: "🎬", color: "#9B59B6" },
+    { key: "shopping", i18nKey: "cat_shopping", emoji: "🛍️", color: "#E91E8C" },
+    { key: "subscriptions", i18nKey: "cat_subscriptions", emoji: "📱", color: "#1ABC9C" },
+    { key: "other", i18nKey: "cat_other", emoji: "📦", color: "#95A5A6" },
   ],
   income: [
-    { key: "salary", label: "Salary", emoji: "💼", color: "#27AE60" },
-    { key: "freelance", label: "Freelance", emoji: "💻", color: "#2ECC71" },
-    { key: "other", label: "Other", emoji: "📦", color: "#95A5A6" },
+    { key: "salary", i18nKey: "cat_salary", emoji: "💼", color: "#27AE60" },
+    { key: "freelance", i18nKey: "cat_freelance", emoji: "💻", color: "#2ECC71" },
+    { key: "other", i18nKey: "cat_other", emoji: "📦", color: "#95A5A6" },
   ],
 };
 
@@ -133,7 +133,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
   const defaultCats = DEFAULT_CATEGORIES[tab] || [];
   const filteredCustom = customCats.filter(c => c.type === tab || c.type === "both");
   const allCats = [
-    ...defaultCats,
+    ...defaultCats.map(c => ({ ...c, label: t(c.i18nKey) })),
     ...filteredCustom.map(c => ({ key: `custom_${c.id}`, label: c.name, emoji: c.emoji, color: c.color || "#888" })),
   ];
 
@@ -256,14 +256,14 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
           {/* Category */}
           <div className="mb-5">
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">{t('category')}</label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {allCats.map((c) => (
                 <button key={c.key} onClick={() => setForm({ ...form, category: c.key })}
                   className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
                     form.category === c.key ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
                   }`}>
-                  <span className="text-xl">{c.emoji}</span>
-                  <span className="text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
+                  <span className="text-lg sm:text-xl">{c.emoji}</span>
+                  <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
                 </button>
               ))}
             </div>
