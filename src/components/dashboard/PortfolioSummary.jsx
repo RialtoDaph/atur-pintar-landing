@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const INVESTMENT_TYPES = {
   saham: { label: "Saham", emoji: "📈", color: "#4F7CFF" },
