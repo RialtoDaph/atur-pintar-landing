@@ -15,7 +15,7 @@ export default function BalanceCard({ income, expense, savings, loading }) {
     <div className="bg-[#161616] rounded-2xl p-4 border border-[#222]">
       <p className="text-[#8FA4C8] text-xs font-semibold uppercase tracking-widest mb-1">Total Saldo Bulan Ini</p>
       <p className={`text-3xl font-bold mb-4 ${balance >= 0 ? "text-white" : "text-red-400"}`}>
-        {balance >= 0 ? "" : "-"}{formatRupiah(Math.abs(balance))}
+        {balance >= 0 ? "" : "-"}{formatCurrency(Math.abs(balance))}
       </p>
 
       <div className="border-t border-[#2d2d2d] mb-3"></div>
