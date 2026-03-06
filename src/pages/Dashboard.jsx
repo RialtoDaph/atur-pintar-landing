@@ -10,7 +10,6 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
-import RecentTransactions from "@/components/dashboard/RecentTransactions";
 import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
 import SmartAlerts from "@/components/dashboard/SmartAlerts";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
@@ -21,6 +20,7 @@ import ReminderWidget from "@/components/reminders/ReminderWidget";
 import DashboardInsights from "@/components/dashboard/DashboardInsights";
 import PortfolioSummary from "@/components/dashboard/PortfolioSummary";
 import BudgetAlertWidget from "@/components/dashboard/BudgetAlertWidget";
+import BudgetWidget from "@/components/dashboard/BudgetWidget";
 import IncomeExpenseChart from "@/components/dashboard/IncomeExpenseChart";
 
 function getWidgets() {
@@ -116,6 +116,9 @@ export default function Dashboard() {
 
         {/* Reminder Widget */}
         <ReminderWidget />
+
+        {/* Budget Widget */}
+        <BudgetWidget />
 
         {/* Budget Alert Widget */}
         <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
