@@ -78,7 +78,7 @@ export default function CashflowForecast({ transactions, loading }) {
             <TrendingDown className="w-3 h-3 text-red-400" />
             <p className="text-[10px] text-[#9B9B9B]">Est. Keluar</p>
           </div>
-          <p className="text-xs font-bold text-[#1A1A1A]">{formatRupiah(projectedTotalExpense)}</p>
+          <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(projectedTotalExpense)}</p>
         </div>
       </div>
     </div>
