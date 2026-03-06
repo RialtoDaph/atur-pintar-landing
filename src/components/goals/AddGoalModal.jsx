@@ -13,9 +13,17 @@ const COLORS = [
   { name: "teal", hex: "#1ABC9C" },
 ];
 
-export default function AddGoalModal({ onClose, onSave }) {
+export default function AddGoalModal({ onClose, onSave, editingGoal = null }) {
   const { t, formatCurrency, settings } = useAppSettings();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(editingGoal ? {
+    name: editingGoal.name,
+    target_amount: formatCurrency(editingGoal.target_amount).replace(/[^0-9.,]/g, ""),
+    current_amount: formatCurrency(editingGoal.current_amount || 0).replace(/[^0-9.,]/g, ""),
+    icon: editingGoal.icon || "💰",
+    color: editingGoal.color || "blue",
+    deadline: editingGoal.deadline || "",
+    description: editingGoal.description || "",
+  } : {
     name: "",
     target_amount: "",
     current_amount: "",
@@ -41,7 +49,7 @@ export default function AddGoalModal({ onClose, onSave }) {
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-[#1A1A1A]">{t('add_goal')}</h2>
+          <h2 className="text-lg font-bold text-[#1A1A1A]">{editingGoal ? t('goals_edit') || 'Edit Goal' : t('add_goal')}</h2>
           <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors">
             <X className="w-5 h-5" />
           </button>
@@ -153,7 +161,7 @@ export default function AddGoalModal({ onClose, onSave }) {
           disabled={saving || !form.name || !form.target_amount}
           className="mt-6 w-full bg-[#FF6A00] text-white py-3.5 rounded-xl font-semibold text-sm disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
         >
-          {saving ? t('saving') : t('add_goal')}
+          {saving ? t('saving') : editingGoal ? (t('goals_edit') || 'Update Goal') : t('add_goal')}
         </button>
       </div>
     </div>
