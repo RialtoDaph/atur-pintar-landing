@@ -5,6 +5,7 @@ import { createPageUrl } from "@/utils";
 import { Plus, ChevronRight } from "lucide-react";
 import AddGoalModal from "@/components/goals/AddGoalModal";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
@@ -28,6 +29,7 @@ function getWidgets() {
 }
 
 export default function Dashboard() {
+  const { t } = useAppSettings();
   const [goals, setGoals] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [budgets, setBudgets] = useState([]);
@@ -87,8 +89,8 @@ export default function Dashboard() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-[#8FA4C8] text-xs font-medium">Halo 👋</p>
-              <h1 className="text-white text-xl font-bold mt-0.5">Keuanganmu</h1>
+              <p className="text-[#8FA4C8] text-xs font-medium">{t('dashboard_greeting')}</p>
+              <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
             </div>
             <button
               onClick={() => setShowAddTx(true)}
@@ -141,9 +143,9 @@ export default function Dashboard() {
         {widgets.recentTransactions && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-4 pt-4 pb-2">
-              <h2 className="font-bold text-[#0A0A0A] text-sm">Transaksi Terbaru</h2>
+              <h2 className="font-bold text-[#0A0A0A] text-sm">{t('recent_transactions')}</h2>
               <Link to={createPageUrl("Transactions")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
-                Lihat semua <ChevronRight className="w-3 h-3" />
+                {t('view_all')} <ChevronRight className="w-3 h-3" />
               </Link>
             </div>
             <RecentTransactions transactions={transactions.slice(0, 5)} loading={loading} onRefresh={loadData} />
@@ -157,19 +159,19 @@ export default function Dashboard() {
         {widgets.savingsGoals && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-4 pt-4 pb-2">
-              <h2 className="font-bold text-[#0A0A0A] text-sm">Tujuan Tabungan</h2>
+              <h2 className="font-bold text-[#0A0A0A] text-sm">{t('savings_goals')}</h2>
               <button
                 onClick={() => setShowAddGoal(true)}
                 className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5"
               >
-                + Tambah
+                {t('add_goal')}
               </button>
             </div>
             <GoalsMiniList goals={goals} loading={loading} />
             {goals.length > 0 && (
               <div className="px-4 pb-3">
                 <Link to={createPageUrl("Goals")} className="text-xs text-[#8FA4C8] flex items-center gap-0.5 hover:text-[#1B2559]">
-                  Lihat semua <ChevronRight className="w-3 h-3" />
+                  {t('view_all')} <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
             )}
