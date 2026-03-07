@@ -36,6 +36,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
 
   const [saving, setSaving] = useState(false);
   const [fetchingPrice, setFetchingPrice] = useState(false);
+  const [fetchingHistorical, setFetchingHistorical] = useState(false);
   const [manualName, setManualName] = useState(
     !SEARCHABLE_TYPES.includes(investment?.type || "reksa_dana") || !!investment?.name
   );
