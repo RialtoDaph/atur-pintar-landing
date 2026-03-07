@@ -120,23 +120,35 @@ export default function InvestmentDetail() {
 
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-white/60 mb-1">Modal Awal</p>
+                <p className="text-white/60 mb-1">{lang === 'en' ? 'Initial Amount' : 'Modal Awal'}</p>
                 <p className="text-white font-bold">{formatCurrency(investment.initial_amount)}</p>
               </div>
               <div>
-                <p className="text-white/60 mb-1">Lama Investasi</p>
-                <p className="text-white font-bold">{daysInvested} hari</p>
+                <p className="text-white/60 mb-1">{lang === 'en' ? 'Duration' : 'Lama Investasi'}</p>
+                <p className="text-white font-bold">{daysInvested} {lang === 'en' ? 'days' : 'hari'}</p>
               </div>
               {investment.quantity && (
                 <div>
-                  <p className="text-white/60 mb-1">Jumlah Unit</p>
-                  <p className="text-white font-bold">{investment.quantity} unit</p>
+                  <p className="text-white/60 mb-1">{unitLabel}</p>
+                  <p className="text-white font-bold">{investment.quantity} {unitLabel.toLowerCase()}</p>
+                </div>
+              )}
+              {investment.price_per_unit && (
+                <div>
+                  <p className="text-white/60 mb-1">
+                    {investment.type === 'emas'
+                      ? (lang === 'en' ? 'Price/Gram' : 'Harga/Gram')
+                      : (lang === 'en' ? 'Price/Unit' : 'Harga/Unit')}
+                  </p>
+                  <p className="text-white font-bold">{formatCurrency(investment.price_per_unit)}</p>
                 </div>
               )}
               {investment.purchase_date && (
                 <div>
-                  <p className="text-white/60 mb-1">Tanggal Beli</p>
-                  <p className="text-white font-bold">{new Date(investment.purchase_date).toLocaleDateString("id-ID")}</p>
+                  <p className="text-white/60 mb-1">{lang === 'en' ? 'Purchase Date' : 'Tanggal Beli'}</p>
+                  <p className="text-white font-bold">
+                    {new Date(investment.purchase_date).toLocaleDateString(lang === 'en' ? 'en-US' : 'id-ID')}
+                  </p>
                 </div>
               )}
             </div>
@@ -155,7 +167,7 @@ export default function InvestmentDetail() {
 
         {investment.notes && (
           <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-[#1A1A1A] mb-2">Catatan</h3>
+            <h3 className="text-sm font-bold text-[#1A1A1A] mb-2">{lang === 'en' ? 'Notes' : 'Catatan'}</h3>
             <p className="text-sm text-[#4A5568]">{investment.notes}</p>
           </div>
         )}
