@@ -115,9 +115,6 @@ export default function InvestmentsPage() {
         {/* Diversification pie */}
         <DiversificationChart investments={investments} totalValue={totalValue} formatCurrency={formatCurrency} />
 
-        <PerformanceMetrics investments={investments} totalValue={totalValue} totalInvested={totalInvested} formatCurrency={formatCurrency} />
-
-        <RiskProfileRecommendation investments={investments} />
         {loading ? (
           [...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-24 animate-pulse" />)
         ) : investments.length === 0 ? (
