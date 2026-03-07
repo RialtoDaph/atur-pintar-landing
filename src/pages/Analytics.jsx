@@ -182,8 +182,15 @@ export default function Analytics() {
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && t.type === "expense";
   });
 
+  // Filtered expenses based on selected period (for category breakdown)
+  const filteredExpenses = transactions.filter(t => {
+    if (t.type !== "expense") return false;
+    const d = new Date(t.date);
+    return d >= monthRange.start && d <= monthRange.end;
+  });
+
   const categoryMap = {};
-  thisMonthTx.forEach(t => {
+  filteredExpenses.forEach(t => {
     const cat = t.category || "other";
     categoryMap[cat] = (categoryMap[cat] || 0) + t.amount;
   });
