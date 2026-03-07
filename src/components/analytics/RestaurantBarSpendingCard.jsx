@@ -82,8 +82,8 @@ export default function RestaurantBarSpendingCard({
       );
     });
     
-    const restaurant = monthTx.filter(t => restaurantCatId && t.category === `custom_${restaurantCatId}`).reduce((s, t) => s + t.amount, 0);
-    const bar = monthTx.filter(t => barCatId && t.category === `custom_${barCatId}`).reduce((s, t) => s + t.amount, 0);
+    const restaurant = monthTx.filter(t => isRestaurant(t)).reduce((s, t) => s + t.amount, 0);
+    const bar = monthTx.filter(t => isBar(t)).reduce((s, t) => s + t.amount, 0);
     const total = monthTx.reduce((s, t) => s + t.amount, 0);
     
     return {
