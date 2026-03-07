@@ -99,7 +99,7 @@ export default function RestaurantBarSpendingCard({
   const totalDays = Math.ceil(
     (monthRange.end - monthRange.start) / (1000 * 60 * 60 * 24)
   ) + 1;
-  const currentTotal = currentMonthlyData.reduce((s, m) => s + m.value, 0);
+  const currentTotal = currentMonthlyData.reduce((s, m) => s + m.total, 0);
   const currentDailyAvg = currentTotal / totalDays;
 
   // Calculate previous period for trend
