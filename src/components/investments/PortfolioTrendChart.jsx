@@ -69,8 +69,8 @@ function CustomTooltip({ active, payload, formatCurrency }) {
   );
 }
 
-export default function PortfolioTrendChart({ investments, totalValue, totalInvested }) {
-  const { settings, formatCurrency, formatShortNumber } = useAppSettings();
+export default function PortfolioTrendChart({ investments, totalValue, totalInvested, darkMode = false }) {
+  const { settings, formatCurrency } = useAppSettings();
   const lang = settings.language;
   const isEn = lang === "en";
   const [period, setPeriod] = useState("6M");
@@ -86,17 +86,21 @@ export default function PortfolioTrendChart({ investments, totalValue, totalInve
 
   if (investments.length === 0) return null;
 
+  const isDark = darkMode;
+
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm">
+    <div className={isDark ? "px-0" : "bg-white rounded-2xl p-5 shadow-sm"}>
       {/* Header */}
       <div className="flex items-start justify-between mb-1">
         <div>
-          <p className="text-xs text-[#8FA4C8] font-medium mb-0.5">
+          <p className={`text-xs font-medium mb-0.5 ${isDark ? "text-white/40" : "text-[#8FA4C8]"}`}>
             {isEn ? "Portfolio Performance" : "Performa Portofolio"}
           </p>
-          <p className="text-2xl font-bold text-[#1A1A1A]">{formatCurrency(totalValue)}</p>
+          <p className={`text-2xl font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
+            {formatCurrency(totalValue)}
+          </p>
         </div>
-        <div className={`text-right`}>
+        <div className="text-right">
           <span className={`text-sm font-bold ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
             {isPositive ? "+" : ""}{gainPct}%
           </span>
@@ -107,18 +111,18 @@ export default function PortfolioTrendChart({ investments, totalValue, totalInve
       </div>
 
       {/* Chart */}
-      <div className="mt-4 -mx-2">
-        <ResponsiveContainer width="100%" height={160}>
+      <div className="mt-3 -mx-2">
+        <ResponsiveContainer width="100%" height={150}>
           <AreaChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="portfolioGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color} stopOpacity={0.18} />
+                <stop offset="5%" stopColor={color} stopOpacity={isDark ? 0.3 : 0.18} />
                 <stop offset="95%" stopColor={color} stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: "#8FA4C8" }}
+              tick={{ fontSize: 10, fill: isDark ? "rgba(255,255,255,0.35)" : "#8FA4C8" }}
               axisLine={false}
               tickLine={false}
               interval="preserveStartEnd"
@@ -126,10 +130,10 @@ export default function PortfolioTrendChart({ investments, totalValue, totalInve
             <YAxis hide domain={["auto", "auto"]} />
             <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
             <Area
-              type="monotone"
+              type="monotoneX"
               dataKey="value"
               stroke={color}
-              strokeWidth={2.5}
+              strokeWidth={2}
               fill="url(#portfolioGrad)"
               dot={false}
               activeDot={{ r: 4, fill: color, strokeWidth: 0 }}
@@ -139,15 +143,19 @@ export default function PortfolioTrendChart({ investments, totalValue, totalInve
       </div>
 
       {/* Period selector */}
-      <div className="flex gap-1 mt-3 justify-center">
+      <div className="flex gap-1 mt-2 justify-center">
         {periods.map((p) => (
           <button
             key={p.key}
             onClick={() => setPeriod(p.key)}
             className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
               period === p.key
-                ? "bg-[#1A1A1A] text-white"
-                : "text-[#8FA4C8] hover:text-[#1A1A1A]"
+                ? isDark
+                  ? "bg-white/20 text-white"
+                  : "bg-[#1A1A1A] text-white"
+                : isDark
+                  ? "text-white/40 hover:text-white"
+                  : "text-[#8FA4C8] hover:text-[#1A1A1A]"
             }`}
           >
             {p.label}
