@@ -386,12 +386,12 @@ export default function Analytics() {
                 <Area type="monotone" dataKey="Expense" stroke="#FF6B6B" fill="url(#colorExpense)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
-          </div>
+          </div>}
 
         </div>
 
         {/* Category Breakdown */}
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
+        {isCardVisible("category_breakdown") && <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
           <h2 className="font-bold text-[#0A0A0A] text-base mb-1">{t('analytics_category_breakdown')}</h2>
           <p className="text-xs text-[#8FA4C8] mb-4">{t('analytics_this_month')}</p>
 
