@@ -165,6 +165,8 @@ export function useFinancialContext() {
           net: thisIncome - thisExpense,
           expenseVsLastMonth: lastExpense ? Math.round(((thisExpense - lastExpense) / lastExpense) * 100) : null,
           categoryBreakdown: catBreakdown,
+          categoryAvg3M: catAvg3M,
+          spendingSpikes,
         },
         budgetStatus,
         debts: activeDebts.map((d) => ({
