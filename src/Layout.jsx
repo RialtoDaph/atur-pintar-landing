@@ -112,15 +112,8 @@ function LayoutInner({ children, currentPageName }) {
           })}
         </div>
 
-        {/* Dark mode + Profile */}
+        {/* Profile */}
         <div className="space-y-1 mt-2">
-          <button
-            onClick={() => setDarkMode((d) => !d)}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full">
-
-            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            {darkMode ? t('light_mode') : t('dark_mode')}
-          </button>
           <Link
             to={createPageUrl("Settings")}
             className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors">
