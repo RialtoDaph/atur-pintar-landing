@@ -17,14 +17,24 @@ export default function RestaurantBarSpendingCard({
   const { formatShortNumber } = useAppSettings();
   const now = new Date();
 
-  // Find restaurant and bar category IDs
-  const restaurantCatId = customCategories.find(
-    c => c.name?.toLowerCase().includes("restoran") || c.name?.toLowerCase().includes("restaurant")
-  )?.id;
-  
-  const barCatId = customCategories.find(
-    c => c.name?.toLowerCase().includes("bar") || c.name?.toLowerCase().includes("minuman")
-  )?.id;
+  // Find restaurant and bar category IDs (including sub-categories of food)
+  const restaurantCats = customCategories.filter(
+    c => c.name?.toLowerCase().includes("restoran") || c.name?.toLowerCase().includes("restaurant") ||
+         c.name?.toLowerCase().includes("makan")
+  );
+  const barCats = customCategories.filter(
+    c => c.name?.toLowerCase().includes("bar") || c.name?.toLowerCase().includes("minuman") ||
+         c.name?.toLowerCase().includes("kafe") || c.name?.toLowerCase().includes("cafe") ||
+         c.name?.toLowerCase().includes("coffee")
+  );
+
+  // Also include sub-categories whose parent is "food"
+  const foodSubCats = customCategories.filter(
+    c => c.parent_category_key === "food"
+  );
+
+  const restaurantCatId = restaurantCats[0]?.id;
+  const barCatId = barCats[0]?.id;
 
   const getMonthRange = () => {
     if (customDateRange) {
