@@ -102,6 +102,30 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
             </select>
           </div>
 
+          {/* Parent category picker */}
+          <div className="mb-3">
+            <label className="text-xs font-semibold text-[#9B9B9B] uppercase tracking-widest mb-1.5 block">Sub-kategori dari (opsional)</label>
+            <select
+              value={form.parent_category_key}
+              onChange={e => setForm(f => ({ ...f, parent_category_key: e.target.value }))}
+              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white"
+            >
+              <option value="">— Kategori Utama (bukan sub-kategori) —</option>
+              <optgroup label="Kategori Default">
+                {DEFAULT_CATEGORIES.map(c => (
+                  <option key={c.key} value={c.key}>{c.label}</option>
+                ))}
+              </optgroup>
+              {categories.filter(c => !c.parent_category_key).length > 0 && (
+                <optgroup label="Kategori Kustom">
+                  {categories.filter(c => !c.parent_category_key).map(c => (
+                    <option key={c.id} value={`custom_${c.id}`}>{c.emoji} {c.name}</option>
+                  ))}
+                </optgroup>
+              )}
+            </select>
+          </div>
+
           <button onClick={handleAdd} disabled={saving || !form.name.trim()}
             className="w-full py-2.5 rounded-xl bg-[#0A0A0A] text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-40 hover:bg-[#333] transition-colors">
             <Plus className="w-4 h-4" /> Add Category
