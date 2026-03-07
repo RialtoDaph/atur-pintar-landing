@@ -47,17 +47,11 @@ function LayoutInner({ children, currentPageName }) {
   const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
   return (
-    <div className={`min-h-screen font-sans sm:pb-0 transition-colors ${darkMode ? "bg-[#111] text-white" : "bg-[#F2F4F7]"}`} style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 64px)' }}>
+    <div className="min-h-screen font-sans bg-[#F2F4F7] sm:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 64px)' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         * { -webkit-font-smoothing: antialiased; }
-        .dark-app .dm-card { background: #1E1E1E !important; color: #fff !important; }
-        .dark-app .dm-bg { background: #111 !important; }
-        .dark-app .dm-text { color: #E2E8F0 !important; }
-        .dark-app .dm-muted { color: #8FA4C8 !important; }
-        .dark-app .dm-border { border-color: #2D2D2D !important; }
-        .dark-app .dm-input { background: #1E1E1E !important; border-color: #2D2D2D !important; color: #fff !important; }
       `}</style>
 
       {/* Desktop sidebar */}
