@@ -50,6 +50,9 @@ export default function Analytics() {
   const [filterPeriod, setFilterPeriod] = useState("6");
   const [customDateRange, setCustomDateRange] = useState(null);
   const [user, setUser] = useState(null);
+  const [analyticsCards, setAnalyticsCards] = useState(DEFAULT_ANALYTICS_CARDS);
+  const [appSettings, setAppSettings] = useState(null);
+  const [showCardManager, setShowCardManager] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {
