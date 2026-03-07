@@ -348,7 +348,8 @@ export default function Analytics() {
         <div className="space-y-5 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
 
           {/* Income vs Expense Bar Chart */}
-          {isCardVisible("income_expense_chart") && <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
+          {isCardVisible("income_expense_chart") && (
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_income_vs_expense')}</h2>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={trendData} barCategoryGap="30%">
