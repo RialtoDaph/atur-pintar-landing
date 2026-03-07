@@ -1,8 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Loader2, TrendingUp } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useAppSettings } from "@/components/utils/AppSettingsContext";
 
-export default function AssetSearch({ type, onSelect, placeholder = "Cari aset..." }) {
+export default function AssetSearch({ type, onSelect, placeholder }) {
+  const { settings } = useAppSettings();
+  const lang = settings.language === 'en' ? 'en' : 'id';
+  const defaultPlaceholder = placeholder || (lang === 'en' ? 'Search asset...' : 'Cari aset...');
+  const notFoundText = lang === 'en' ? 'Asset not found' : 'Aset tidak ditemukan';
+  const errorText = lang === 'en' ? 'Search failed. Try again.' : 'Pencarian gagal. Coba lagi.';
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
