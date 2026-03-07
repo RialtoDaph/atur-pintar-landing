@@ -253,9 +253,19 @@ export default function Analytics() {
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
       {/* Header */}
       <div className="bg-[#0A0A0A] px-5 pt-8 pb-6 sm:pt-10 sm:pb-8">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-[#8FA4C8] text-xs sm:text-sm font-medium">{t('analytics_overview')}</p>
-          <h1 className="text-white text-xl sm:text-2xl font-bold mt-1">{t('analytics_title')}</h1>
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div>
+            <p className="text-[#8FA4C8] text-xs sm:text-sm font-medium">{t('analytics_overview')}</p>
+            <h1 className="text-white text-xl sm:text-2xl font-bold mt-1">{t('analytics_title')}</h1>
+          </div>
+          <button
+            onClick={() => setShowCardManager(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white"
+            title="Kelola kartu"
+          >
+            <LayoutList className="w-4 h-4" />
+            <span className="text-xs font-medium hidden sm:block">Kelola</span>
+          </button>
         </div>
       </div>
 
