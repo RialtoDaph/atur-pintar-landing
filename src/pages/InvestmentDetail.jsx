@@ -68,7 +68,9 @@ export default function InvestmentDetail() {
     );
   }
 
-  const type = INVESTMENT_TYPES[investment.type] || INVESTMENT_TYPES.lainnya;
+  const type = INVESTMENT_TYPES_MAP[investment.type] || INVESTMENT_TYPES_MAP.lainnya;
+  const typeLabel = lang === 'en' ? type.label_en : type.label_id;
+  const unitLabel = UNIT_LABELS[investment.type]?.[lang] || (lang === 'en' ? 'Units' : 'Unit');
   const gain = investment.current_value - investment.initial_amount;
   const gainPct = investment.initial_amount > 0 ? ((gain / investment.initial_amount) * 100).toFixed(2) : 0;
   const isPositive = gain >= 0;
@@ -84,7 +86,7 @@ export default function InvestmentDetail() {
             to={createPageUrl("Investments")}
             className="flex items-center gap-2 text-[#FF6A00] font-medium mb-6"
           >
-            <ArrowLeft className="w-4 h-4" /> Kembali
+            <ArrowLeft className="w-4 h-4" /> {lang === 'en' ? 'Back' : 'Kembali'}
           </Link>
           <div className="flex items-start justify-between mb-6">
             <div>
