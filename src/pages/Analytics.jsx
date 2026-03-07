@@ -520,6 +520,15 @@ export default function Analytics() {
         )}
 
       </div>
+
+      {/* Card Manager Modal */}
+      {showCardManager && (
+        <AnalyticsCardManager
+          cards={analyticsCards}
+          onSave={handleSaveCards}
+          onClose={() => setShowCardManager(false)}
+        />
+      )}
     </div>
   );
 }
