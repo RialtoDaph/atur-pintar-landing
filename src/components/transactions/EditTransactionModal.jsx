@@ -39,6 +39,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
   const [showManage, setShowManage] = useState(false);
   const [catOrder, setCatOrder] = useState([]);
   const [appSettings, setAppSettings] = useState(null);
+  const [subCatPopup, setSubCatPopup] = useState(null);
 
   useEffect(() => {
     loadCustomCats();
