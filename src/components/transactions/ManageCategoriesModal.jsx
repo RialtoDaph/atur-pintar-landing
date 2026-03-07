@@ -139,19 +139,58 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
           <p className="text-center text-sm text-[#9B9B9B] py-4">No custom categories yet</p>
         ) : (
           <div className="space-y-2">
-            {categories.map(cat => (
-              <div key={cat.id} className="flex items-center justify-between bg-[#F7F6F3] rounded-xl px-4 py-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-base" style={{ backgroundColor: (cat.color || "#888") + "22" }}>
+            {/* Top-level categories first */}
+            {categories.filter(c => !c.parent_category_key).map(cat => (
+              <div key={cat.id}>
+                <div className="flex items-center justify-between bg-[#F7F6F3] rounded-xl px-4 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-base" style={{ backgroundColor: (cat.color || "#888") + "22" }}>
+                      {cat.emoji}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A1A1A]">{cat.name}</p>
+                      <p className="text-[10px] text-[#9B9B9B] capitalize">{cat.type}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => handleDelete(cat.id)} className="text-[#9B9B9B] hover:text-red-500 transition-colors">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                {/* Sub-categories under this parent */}
+                {categories.filter(c => c.parent_category_key === `custom_${cat.id}`).map(sub => (
+                  <div key={sub.id} className="flex items-center justify-between bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 ml-6 mt-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#CBD5E0] text-xs">↳</span>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: (sub.color || "#888") + "22" }}>
+                        {sub.emoji}
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-[#1A1A1A]">{sub.name}</p>
+                        <p className="text-[9px] text-[#9B9B9B] capitalize">{sub.type}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => handleDelete(sub.id)} className="text-[#9B9B9B] hover:text-red-500 transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ))}
+            {/* Sub-categories under default parents */}
+            {categories.filter(c => c.parent_category_key && !c.parent_category_key.startsWith("custom_")).map(cat => (
+              <div key={cat.id} className="flex items-center justify-between bg-white border border-[#E2E8F0] rounded-xl px-4 py-2.5 ml-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-[#CBD5E0] text-xs">↳</span>
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-sm" style={{ backgroundColor: (cat.color || "#888") + "22" }}>
                     {cat.emoji}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#1A1A1A]">{cat.name}</p>
-                    <p className="text-[10px] text-[#9B9B9B] capitalize">{cat.type}</p>
+                    <p className="text-xs font-semibold text-[#1A1A1A]">{cat.name}</p>
+                    <p className="text-[9px] text-[#9B9B9B] capitalize">Sub dari: {cat.parent_category_key} · {cat.type}</p>
                   </div>
                 </div>
                 <button onClick={() => handleDelete(cat.id)} className="text-[#9B9B9B] hover:text-red-500 transition-colors">
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
