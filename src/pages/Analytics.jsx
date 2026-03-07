@@ -204,7 +204,7 @@ export default function Analytics() {
     }))
     .sort((a, b) => b.value - a.value);
 
-  const totalExpenses = pieData.reduce((s, d) => s + d.value, 0);
+  const totalExpenses = filteredExpenses.reduce((s, t) => s + t.amount, 0);
 
   const areaChartMonthRange = parseInt(filterPeriod) >= 12 || customDateRange ? monthDiff + 1 : 12;
   const last12Months = Array.from({ length: Math.max(areaChartMonthRange, 12) }, (_, i) => {
