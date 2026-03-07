@@ -6,6 +6,7 @@ import { createPageUrl } from "@/utils";
 import AddInvestmentModal from "@/components/investments/AddInvestmentModal.jsx";
 import PerformanceMetrics from "@/components/investments/PerformanceMetrics";
 import DiversificationChart from "@/components/investments/DiversificationChart";
+import PortfolioTrendChart from "@/components/investments/PortfolioTrendChart";
 import RiskProfileRecommendation from "@/components/investments/RiskProfileRecommendation";
 import EducationResources from "@/components/investments/EducationResources";
 import { useAppSettings } from "@/components/utils/useAppSettings";
