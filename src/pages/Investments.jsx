@@ -98,8 +98,7 @@ export default function InvestmentsPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-5 mt-4 space-y-4">
-        {/* Trend chart — Trade Republic style */}
-        <PortfolioTrendChart investments={investments} totalValue={totalValue} totalInvested={totalInvested} />
+        {/* Diversification and assets below */}
 
         {/* Diversification pie */}
         <DiversificationChart investments={investments} totalValue={totalValue} formatCurrency={formatCurrency} />
