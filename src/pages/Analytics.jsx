@@ -437,10 +437,10 @@ export default function Analytics() {
               </div>
             </>
           )}
-        </div>
+        </div>}
 
         {/* Budget Section */}
-        {budgetData.length > 0 && (
+        {isCardVisible("budget_chart") && budgetData.length > 0 && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_budget_vs_spent')}</h2>
             <ResponsiveContainer width="100%" height={220}>
