@@ -97,6 +97,24 @@ export function useFinancialContext() {
         catBreakdown[c] = (catBreakdown[c] || 0) + t.amount;
       });
 
+      // Category breakdown last 3 months (average per month)
+      const catBreakdown3M = {};
+      prev3Months.forEach((m) => {
+        transactions.filter((t) => t.date?.startsWith(m) && t.type === "expense").forEach((t) => {
+          const c = t.category || "other";
+          catBreakdown3M[c] = (catBreakdown3M[c] || 0) + t.amount;
+        });
+      });
+      // Convert to monthly average
+      const catAvg3M = {};
+      Object.entries(catBreakdown3M).forEach(([k, v]) => { catAvg3M[k] = Math.round(v / 3); });
+
+      // Detect spending spikes: categories where this month > avg3M by >20%
+      const spendingSpikes = Object.entries(catBreakdown)
+        .filter(([k, v]) => catAvg3M[k] && v > catAvg3M[k] * 1.2)
+        .map(([k, v]) => ({ category: k, thisMonth: v, avg3M: catAvg3M[k], spikeRp: v - catAvg3M[k], spikePct: Math.round(((v - catAvg3M[k]) / catAvg3M[k]) * 100) }))
+        .sort((a, b) => b.spikeRp - a.spikeRp);
+
       // Budget status
       const thisMonthBudgets = budgets.filter((b) => b.month === thisMonth);
       const budgetStatus = thisMonthBudgets.map((b) => ({
