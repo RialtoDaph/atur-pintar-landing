@@ -316,80 +316,18 @@ export default function Goals() {
           <p className="text-[#8FA4C8] text-sm mt-1">{t('goals_empty_desc')}</p>
         </div>
       ) : (
-        goals.map((g) => {
-          const color = COLORS[g.color] || COLORS.blue;
-          const progress = g.target_amount > 0 ? Math.min(((g.current_amount || 0) / g.target_amount) * 100, 100) : 0;
-          const daysLeft = calculateDaysRemaining(g.deadline);
-          const suggestedMonthly = calculateSuggestedMonthly(g);
-          const isUrgent = daysLeft && daysLeft < 30;
-
-          const handleDeleteGoal = async () => {
-          if (!window.confirm(t('goals_delete_confirm'))) return;
-            await base44.entities.SavingsGoal.delete(g.id);
-            loadData();
-          };
-
-          return (
-            <div
-              key={g.id}
-              className="block bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all"
-            >
-              <Link
-                to={createPageUrl(`Goals?id=${g.id}`)}
-                className="block"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl" style={{ backgroundColor: `${color}20` }}>
-                      {g.icon || "💰"}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#1A1A1A] text-sm">{g.name}</p>
-                      {g.description && <p className="text-xs text-[#8FA4C8] mt-0.5">{g.description}</p>}
-                    </div>
-                  </div>
-                  {g.status === "completed" && <CheckCircle className="w-5 h-5 text-[#00C9A7]" />}
-                </div>
-
-                <div className="mb-3">
-                  <div className="flex justify-between text-xs mb-1.5">
-                     <span className="text-[#4A5568] font-medium">{formatCurrency(g.current_amount || 0)} dari {formatCurrency(g.target_amount)}</span>
-                     <span className="font-bold" style={{ color }}>{progress.toFixed(0)}%</span>
-                   </div>
-                  <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: color }} />
-                  </div>
-                </div>
-
-                <div className="flex gap-3 text-xs">
-                  {g.deadline && (
-                    <div className="flex items-center gap-1 text-[#8FA4C8]">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {daysLeft >= 0 ? `${daysLeft} ${t('goals_days_left')}` : t('goals_expired')}
-                    </div>
-                  )}
-                  {suggestedMonthly && (
-                    <div className={`flex items-center gap-1 ${isUrgent ? "text-[#FF6B6B]" : "text-[#8FA4C8]"}`}>
-                      <Zap className="w-3.5 h-3.5" />
-                      Rp {suggestedMonthly.toLocaleString("id-ID")}/bln
-                    </div>
-                  )}
-                </div>
-              </Link>
-
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleDeleteGoal();
-                }}
-                className="mt-3 text-xs text-red-400 hover:text-red-600 transition-colors flex items-center gap-1 w-full justify-center"
-              >
-                <Trash2 className="w-3.5 h-3.5" /> {t('goals_delete')}
-              </button>
-              </div>
-              );
-        })
+        goals.map((g) => (
+          <GoalCard
+            key={g.id}
+            goal={g}
+            onEdit={(goal) => { setEditingGoal(goal); setShowAddGoal(true); }}
+            onDelete={async (id) => {
+              if (!window.confirm(t('goals_delete_confirm'))) return;
+              await base44.entities.SavingsGoal.delete(id);
+              loadData();
+            }}
+          />
+        ))
       )}
     </div>
 
