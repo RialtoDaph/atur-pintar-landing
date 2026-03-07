@@ -214,6 +214,13 @@ const TRANSLATIONS = {
     budget_empty_title: 'Belum ada anggaran',
     budget_empty_desc: 'Tap + untuk menambahkan anggaran per kategori',
     budget_over: 'Melebihi anggaran',
+    budget_add_title: 'Tambah Anggaran',
+    budget_edit_title: 'Edit Anggaran',
+    budget_limit_label: 'Batas Anggaran (Rp)',
+    budget_all_set: 'Semua kategori sudah dianggarkan',
+    budget_save_new: 'Simpan Anggaran',
+    budget_save_edit: 'Perbarui Anggaran',
+    budget_delete_confirm: 'Hapus anggaran ini?',
 
     // Pages - Debts
     debts_management: 'Manajemen',

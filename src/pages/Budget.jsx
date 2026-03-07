@@ -1,65 +1,90 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, TrendingUp } from "lucide-react";
-import AddBudgetModal from "@/components/budget/AddBudgetModal.jsx";
+import { Plus, ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
+import AddBudgetModal from "@/components/budget/AddBudgetModal";
+import BudgetCard from "@/components/budget/BudgetCard";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
-const DEFAULT_CATEGORIES = {
-  housing: { label: "Housing", emoji: "🏠", color: "#4F7CFF" },
-  food: { label: "Food", emoji: "🍔", color: "#00C9A7" },
-  transport: { label: "Transport", emoji: "🚗", color: "#F5A623" },
-  health: { label: "Health", emoji: "❤️", color: "#FF6B6B" },
-  entertainment: { label: "Entertainment", emoji: "🎬", color: "#9B59B6" },
-  shopping: { label: "Shopping", emoji: "🛍️", color: "#E91E8C" },
-  subscriptions: { label: "Subscriptions", emoji: "📱", color: "#1ABC9C" },
-  other: { label: "Other", emoji: "📦", color: "#95A5A6" },
-};
+const DEFAULT_CATEGORIES = [
+  { key: "housing",       label_id: "Rumah/Sewa",         label_en: "Housing/Rent",    emoji: "🏠", color: "#4F7CFF" },
+  { key: "food",          label_id: "Makanan & Minuman",   label_en: "Food & Drinks",   emoji: "🍔", color: "#00C9A7" },
+  { key: "transport",     label_id: "Transportasi",        label_en: "Transport",       emoji: "🚗", color: "#F5A623" },
+  { key: "health",        label_id: "Kesehatan",           label_en: "Health",          emoji: "❤️", color: "#FF6B6B" },
+  { key: "entertainment", label_id: "Hiburan",             label_en: "Entertainment",   emoji: "🎬", color: "#9B59B6" },
+  { key: "shopping",      label_id: "Belanja",             label_en: "Shopping",        emoji: "🛍️", color: "#E91E8C" },
+  { key: "subscriptions", label_id: "Langganan",           label_en: "Subscriptions",   emoji: "📱", color: "#1ABC9C" },
+  { key: "other",         label_id: "Lainnya",             label_en: "Other",           emoji: "📦", color: "#95A5A6" },
+];
+
+function getMonthKey(offset = 0) {
+  const d = new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + offset);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
 
 export default function BudgetPage() {
-  const { t, formatCurrency } = useAppSettings();
+  const { t, formatCurrency, settings } = useAppSettings();
+  const lang = settings.language || "id";
+
+  const [monthOffset, setMonthOffset] = useState(0);
+  const currentMonth = getMonthKey(monthOffset);
+
   const [budgets, setBudgets] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [customCategories, setCustomCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [editingBudget, setEditingBudget] = useState(null);
   const [user, setUser] = useState(null);
-  const [currentMonth] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  });
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-    }).catch(() => {});
+    base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  useEffect(() => { if (user) loadData(); }, [user]);
+  useEffect(() => {
+    if (user) loadData();
+  }, [user, currentMonth]);
 
   async function loadData() {
     setLoading(true);
-    const [b, t] = await Promise.all([
+    const monthStart = `${currentMonth}-01`;
+    const [year, month] = currentMonth.split("-").map(Number);
+    const lastDay = new Date(year, month, 0).getDate();
+    const monthEnd = `${currentMonth}-${String(lastDay).padStart(2, "0")}`;
+
+    const [b, txAll, cats] = await Promise.all([
       base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }),
-      base44.entities.Transaction.filter({ created_by: user.email }, "-date", 200),
+      base44.entities.Transaction.filter({ created_by: user.email }, "-date", 500),
+      base44.entities.CustomCategory.list("-created_date"),
     ]);
+
+    // Filter transactions to selected month client-side (date range filtering)
+    const monthTx = txAll.filter(tx => {
+      return tx.date >= monthStart && tx.date <= monthEnd && tx.type === "expense";
+    });
+
     setBudgets(b);
-    setTransactions(t);
+    setTransactions(monthTx);
+    setCustomCategories(cats);
     setLoading(false);
   }
 
-  async function handleDelete(id) {
-    if (!window.confirm(t('budget_delete_confirm') || "Hapus budget ini?")) return;
-    await base44.entities.Budget.delete(id);
-    loadData();
-  }
-
-  const thisMonthTx = transactions.filter(t => {
-    const d = new Date(t.date);
-    const now = new Date();
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && t.type === "expense";
+  // Merge default + custom category metadata
+  const categoryMap = {};
+  DEFAULT_CATEGORIES.forEach(c => {
+    categoryMap[c.key] = { label: lang === "id" ? c.label_id : c.label_en, emoji: c.emoji, color: c.color };
+  });
+  customCategories.forEach(c => {
+    categoryMap[`custom_${c.id}`] = { label: c.name, emoji: c.emoji, color: c.color || "#95A5A6" };
   });
 
+  function getCategoryMeta(key) {
+    return categoryMap[key] || { label: key, emoji: "📦", color: "#95A5A6" };
+  }
+
   const spendingByCategory = {};
-  thisMonthTx.forEach(tx => {
+  transactions.forEach(tx => {
     const key = tx.category || "other";
     spendingByCategory[key] = (spendingByCategory[key] || 0) + tx.amount;
   });
@@ -68,29 +93,76 @@ export default function BudgetPage() {
   const totalSpent = budgets.reduce((s, b) => s + (spendingByCategory[b.category] || 0), 0);
   const overallPercent = totalBudget > 0 ? Math.min((totalSpent / totalBudget) * 100, 100) : 0;
 
-  const monthLabel = new Date(currentMonth + "-01").toLocaleString("id-ID", { month: "long", year: "numeric" });
+  const monthLabel = new Date(currentMonth + "-01").toLocaleString(
+    lang === "id" ? "id-ID" : "en-US",
+    { month: "long", year: "numeric" }
+  );
+
+  async function handleDelete(id) {
+    if (!window.confirm(t("budget_delete_confirm") || "Hapus budget ini?")) return;
+    await base44.entities.Budget.delete(id);
+    loadData();
+  }
+
+  async function handleSave(data) {
+    if (editingBudget) {
+      await base44.entities.Budget.update(editingBudget.id, { amount: data.amount });
+    } else {
+      await base44.entities.Budget.create({ ...data, month: currentMonth });
+    }
+    setShowAdd(false);
+    setEditingBudget(null);
+    loadData();
+  }
+
+  function openEdit(budget) {
+    setEditingBudget(budget);
+    setShowAdd(true);
+  }
+
+  function closeModal() {
+    setShowAdd(false);
+    setEditingBudget(null);
+  }
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
+      {/* Header */}
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-[#8FA4C8] text-sm font-medium">{monthLabel}</p>
-              <h1 className="text-white text-2xl font-bold mt-0.5">{t('budget_subtitle')}</h1>
+              <h1 className="text-white text-2xl font-bold mt-0.5">{t("budget_subtitle")}</h1>
             </div>
-            <button
-              onClick={() => setShowAdd(true)}
-              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
-            >
-              <Plus className="w-5 h-5 text-white" />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Month navigator */}
+              <button
+                onClick={() => setMonthOffset(o => o - 1)}
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setMonthOffset(o => Math.min(o + 1, 0))}
+                disabled={monthOffset === 0}
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-30"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setShowAdd(true)}
+                className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+              >
+                <Plus className="w-5 h-5 text-white" />
+              </button>
+            </div>
           </div>
 
-          {/* Overview Card */}
+          {/* Overview card */}
           <div className="bg-white/10 rounded-2xl p-5">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-white/70 text-sm">{t('budget_total')}</span>
+              <span className="text-white/70 text-sm">{t("budget_total")}</span>
               <span className="text-white font-bold text-lg">{formatCurrency(totalBudget)}</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-3 mb-2">
@@ -98,18 +170,20 @@ export default function BudgetPage() {
                 className="h-3 rounded-full transition-all"
                 style={{
                   width: `${overallPercent}%`,
-                  backgroundColor: overallPercent > 90 ? "#FF6B6B" : overallPercent > 70 ? "#F5A623" : "#00C9A7"
+                  backgroundColor:
+                    overallPercent > 90 ? "#FF6B6B" : overallPercent > 70 ? "#F5A623" : "#00C9A7",
                 }}
               />
             </div>
             <div className="flex justify-between text-xs text-white/60">
-              <span>{t('budget_spent')}: {formatCurrency(totalSpent)}</span>
-              <span>{t('budget_remaining')}: {formatCurrency(Math.max(totalBudget - totalSpent, 0))}</span>
+              <span>{t("budget_spent")}: {formatCurrency(totalSpent)}</span>
+              <span>{t("budget_remaining")}: {formatCurrency(Math.max(totalBudget - totalSpent, 0))}</span>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Budget list */}
       <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
         {loading ? (
           [...Array(3)].map((_, i) => (
@@ -118,64 +192,31 @@ export default function BudgetPage() {
         ) : budgets.length === 0 ? (
           <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
             <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
-            <p className="text-[#4A5568] font-semibold">{t('budget_empty_title')}</p>
-            <p className="text-[#8FA4C8] text-sm mt-1">{t('budget_empty_desc')}</p>
+            <p className="text-[#4A5568] font-semibold">{t("budget_empty_title")}</p>
+            <p className="text-[#8FA4C8] text-sm mt-1">{t("budget_empty_desc")}</p>
           </div>
         ) : (
-          budgets.map(budget => {
-            const cat = DEFAULT_CATEGORIES[budget.category] || { label: budget.category, emoji: "📦", color: "#95A5A6" };
-            const spent = spendingByCategory[budget.category] || 0;
-            const percent = Math.min((spent / budget.amount) * 100, 100);
-            const isOver = spent > budget.amount;
-            return (
-              <div key={budget.id} className="bg-white rounded-2xl p-5 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl" style={{ backgroundColor: cat.color + "20" }}>
-                      {cat.emoji}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#1A1A1A]">{cat.label}</p>
-                      <p className="text-xs text-[#8FA4C8]">{formatCurrency(spent)} / {formatCurrency(budget.amount)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm font-bold ${isOver ? "text-[#FF6B6B]" : "text-[#1A1A1A]"}`}>
-                      {Math.round(percent)}%
-                    </span>
-                    <button onClick={() => handleDelete(budget.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                <div className="w-full bg-[#F2F4F7] rounded-full h-2">
-                  <div
-                    className="h-2 rounded-full transition-all"
-                    style={{
-                      width: `${percent}%`,
-                      backgroundColor: isOver ? "#FF6B6B" : percent > 70 ? "#F5A623" : cat.color
-                    }}
-                  />
-                </div>
-                {isOver && (
-                  <p className="text-xs text-[#FF6B6B] mt-1.5 font-medium">⚠️ {t('budget_over')} {formatCurrency(spent - budget.amount)}</p>
-                )}
-              </div>
-            );
-          })
+          budgets.map(budget => (
+            <BudgetCard
+              key={budget.id}
+              budget={budget}
+              categoryMeta={getCategoryMeta(budget.category)}
+              spent={spendingByCategory[budget.category] || 0}
+              onEdit={openEdit}
+              onDelete={handleDelete}
+            />
+          ))
         )}
       </div>
 
+      {/* Modal */}
       {showAdd && (
         <AddBudgetModal
           existingCategories={budgets.map(b => b.category)}
           currentMonth={currentMonth}
-          onClose={() => setShowAdd(false)}
-          onSave={async (data) => {
-            await base44.entities.Budget.create({ ...data, month: currentMonth });
-            setShowAdd(false);
-            loadData();
-          }}
+          editBudget={editingBudget}
+          onClose={closeModal}
+          onSave={handleSave}
         />
       )}
     </div>
