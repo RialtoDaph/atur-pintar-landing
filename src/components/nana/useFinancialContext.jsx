@@ -24,7 +24,7 @@ export function useFinancialContext() {
 
       const [transactions, goals, budgets, debts, investments, reminders, riskProfile, preferences] =
         await Promise.all([
-          base44.entities.Transaction.list("-date", 200),
+          base44.entities.Transaction.list("-date", 500),
           base44.entities.SavingsGoal.list(),
           base44.entities.Budget.list(),
           base44.entities.Debt.list(),
