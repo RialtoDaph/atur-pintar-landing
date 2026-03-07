@@ -333,8 +333,8 @@ export default function Goals() {
 
     {showAddGoal && (
      <AddGoalModal
-       goal={null}
-       onClose={() => setShowAddGoal(false)}
+       goal={editingGoal || null}
+       onClose={() => { setShowAddGoal(false); setEditingGoal(null); }}
        onSave={handleAddGoal}
      />
     )}
