@@ -96,9 +96,13 @@ export default function RestaurantBarSpendingCard({
   });
 
   // Calculate daily average for current period
-  const totalDays = Math.ceil(
-    (monthRange.end - monthRange.start) / (1000 * 60 * 60 * 24)
-  ) + 1;
+  // Use actual elapsed days: from start of period to today (or end of range)
+  const periodEnd = monthRange.end > now ? now : monthRange.end;
+  const periodStart = monthRange.start;
+  const totalDays = Math.max(
+    Math.ceil((periodEnd - periodStart) / (1000 * 60 * 60 * 24)) + 1,
+    1
+  );
   const currentTotal = currentMonthlyData.reduce((s, m) => s + m.total, 0);
   const currentDailyAvg = currentTotal / totalDays;
 
@@ -128,9 +132,10 @@ export default function RestaurantBarSpendingCard({
     return monthTx.reduce((s, t) => s + t.amount, 0);
   });
 
-  const prevTotalDays = Math.ceil(
-    (prevMonthRange.end - prevMonthRange.start) / (1000 * 60 * 60 * 24)
-  ) + 1;
+  const prevTotalDays = Math.max(
+    Math.ceil((prevMonthRange.end - prevMonthRange.start) / (1000 * 60 * 60 * 24)) + 1,
+    1
+  );
   const prevTotal = prevMonthlyData.reduce((s, m) => s + m, 0);
   const prevDailyAvg = prevTotal / prevTotalDays;
 
