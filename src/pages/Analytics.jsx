@@ -481,7 +481,7 @@ export default function Analytics() {
         )}
 
         {/* Investments */}
-        {investments.length > 0 && (
+        {isCardVisible("investments") && investments.length > 0 && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_investment_summary')}</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
