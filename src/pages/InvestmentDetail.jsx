@@ -10,7 +10,8 @@ import TaxCalculator from "@/components/investments/TaxCalculator";
 import { INVESTMENT_TYPES_MAP, UNIT_LABELS } from "@/components/investments/investmentConstants";
 
 export default function InvestmentDetail() {
-  const { formatCurrency } = useAppSettings();
+  const { formatCurrency, t, settings } = useAppSettings();
+  const lang = settings.language === 'en' ? 'en' : 'id';
   const [params] = useSearchParams();
   const investmentId = params.get("id");
   const [investment, setInvestment] = useState(null);
@@ -29,12 +30,8 @@ export default function InvestmentDetail() {
 
   async function loadInvestment() {
     try {
-      const inv = await base44.entities.Investment.filter(
-        { created_by: user.email },
-        "-created_date"
-      );
-      const found = inv.find((i) => i.id === investmentId);
-      setInvestment(found);
+      const inv = await base44.entities.Investment.filter({ id: investmentId });
+      setInvestment(inv[0] || null);
     } catch (e) {
       console.error("Failed to load investment:", e);
     } finally {
