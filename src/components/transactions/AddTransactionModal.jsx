@@ -46,7 +46,6 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
   const [showSplitBill, setShowSplitBill] = useState(false);
   const [catOrder, setCatOrder] = useState([]); // Category drag order
   const [appSettings, setAppSettings] = useState(null);
-  const [subCatPopup, setSubCatPopup] = useState(null); // { parentKey, parentLabel, subs }
   const fileRef = useRef(null);
 
   useEffect(() => { 
@@ -171,16 +170,6 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
     ? catOrder.map(key => mainCats.find(c => c.key === key)).filter(Boolean)
     : mainCats;
   
-  const handleCategoryClick = (cat) => {
-    const subs = subCatsByParent[cat.key];
-    if (subs && subs.length > 0) {
-      // Has sub-categories: show popup, don't select parent directly
-      setSubCatPopup({ parentKey: cat.key, parentLabel: cat.label, parentEmoji: cat.emoji, subs });
-    } else {
-      setForm({ ...form, category: cat.key });
-    }
-  };
-
   const handleDragEnd = async (result) => {
     const { source, destination } = result;
     if (!destination || source.index === destination.index) return;
@@ -335,27 +324,31 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
                             <div>
                               <button
                                 {...provided.dragHandleProps}
-                                onClick={() => handleCategoryClick(c)}
-                                className={`w-full flex flex-col items-center gap-1 p-2 rounded-xl border transition-all relative ${
-                                  form.category === c.key || subCatsByParent[c.key]?.some(s => s.key === form.category)
-                                    ? "border-[#FF6A00] bg-[#FF6A00]/10"
-                                    : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
+                                onClick={() => setForm({ ...form, category: c.key })}
+                                className={`w-full flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
+                                  form.category === c.key ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
                                 }`}
                               >
                                 <span className="text-lg sm:text-xl">{c.emoji}</span>
                                 <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
-                                {subCatsByParent[c.key]?.length > 0 && (
-                                  <span className="absolute top-1 right-1 w-3 h-3 bg-[#FF6A00] rounded-full flex items-center justify-center">
-                                    <span className="text-white text-[7px] font-bold">▾</span>
-                                  </span>
-                                )}
-                                {subCatsByParent[c.key]?.some(s => s.key === form.category) && (
-                                  <span className="text-[8px] text-[#FF6A00] font-semibold truncate w-full text-center">
-                                    {subCatsByParent[c.key].find(s => s.key === form.category)?.emoji}{" "}
-                                    {subCatsByParent[c.key].find(s => s.key === form.category)?.label}
-                                  </span>
-                                )}
                               </button>
+                              {/* Sub-categories */}
+                              {subCatsByParent[c.key]?.length > 0 && (
+                                <div className="mt-1.5 pl-1 space-y-1">
+                                  {subCatsByParent[c.key].map(sub => (
+                                    <button
+                                      key={sub.key}
+                                      onClick={() => setForm({ ...form, category: sub.key })}
+                                      className={`w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg border text-[8px] sm:text-[9px] font-medium transition-all ${
+                                        form.category === sub.key ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] bg-white text-[#4A5568] hover:border-[#CBD5E0]"
+                                      }`}
+                                    >
+                                      <span>{sub.emoji}</span>
+                                      <span className="truncate">{sub.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                             {snapshot.isDragging && (
                               <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-xl">
@@ -459,50 +452,6 @@ export default function AddTransactionModal({ goals = [], onClose, onSave }) {
           onClose={() => setShowSplitBill(false)}
           onConfirm={handleSplitConfirm}
         />
-      )}
-
-      {/* Sub-category popup */}
-      {subCatPopup && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl w-full max-w-xs shadow-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{subCatPopup.parentEmoji}</span>
-                <div>
-                  <p className="text-xs text-[#8FA4C8] font-medium">Pilih sub-kategori</p>
-                  <p className="text-sm font-bold text-[#1A1A1A]">{subCatPopup.parentLabel}</p>
-                </div>
-              </div>
-              <button onClick={() => setSubCatPopup(null)} className="text-[#9B9B9B] hover:text-[#1A1A1A]">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {subCatPopup.subs.map(sub => (
-                <button
-                  key={sub.key}
-                  onClick={() => {
-                    setForm(f => ({ ...f, category: sub.key }));
-                    setSubCatPopup(null);
-                  }}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#FF6A00] hover:bg-[#FF6A00]/5 transition-all"
-                >
-                  <span className="text-2xl">{sub.emoji}</span>
-                  <span className="text-[10px] font-semibold text-[#4A5568] text-center leading-tight">{sub.label}</span>
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={() => {
-                setForm(f => ({ ...f, category: subCatPopup.parentKey }));
-                setSubCatPopup(null);
-              }}
-              className="mt-3 w-full py-2.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#8FA4C8] hover:border-[#CBD5E0] transition-colors"
-            >
-              Pilih "{subCatPopup.parentLabel}" saja (tanpa sub-kategori)
-            </button>
-          </div>
-        </div>
       )}
     </>
   );

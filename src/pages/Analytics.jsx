@@ -10,19 +10,6 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, Area, AreaChart, CartesianGrid
 } from "recharts";
-import { LayoutList } from "lucide-react";
-import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
-
-const DEFAULT_ANALYTICS_CARDS = [
-  { id: "daily_spending", visible: true },
-  { id: "restaurant_bar", visible: true },
-  { id: "income_expense_chart", visible: true },
-  { id: "spending_trend", visible: true },
-  { id: "category_breakdown", visible: true },
-  { id: "budget_chart", visible: true },
-  { id: "goals_progress", visible: true },
-  { id: "investments", visible: true },
-];
 
 const DEFAULT_CATEGORIES_FLAT = [
   { key: "housing", i18nKey: "cat_housing", emoji: "🏠", color: "#4F7CFF" },
@@ -50,9 +37,6 @@ export default function Analytics() {
   const [filterPeriod, setFilterPeriod] = useState("6");
   const [customDateRange, setCustomDateRange] = useState(null);
   const [user, setUser] = useState(null);
-  const [analyticsCards, setAnalyticsCards] = useState(DEFAULT_ANALYTICS_CARDS);
-  const [appSettings, setAppSettings] = useState(null);
-  const [showCardManager, setShowCardManager] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -68,21 +52,14 @@ export default function Analytics() {
         base44.entities.Budget.filter({ created_by: user.email }),
         base44.entities.Investment.filter({ created_by: user.email }),
         base44.entities.Debt.filter({ created_by: user.email }),
-        base44.entities.CustomCategory.list("-created_date"),
-        base44.entities.AppSettings.list()
-      ]).then(([t, g, b, i, d, cc, settings]) => {
+        base44.entities.CustomCategory.list("-created_date")
+      ]).then(([t, g, b, i, d, cc]) => {
         setTransactions(t);
         setGoals(g);
         setBudgets(b);
         setInvestments(i);
         setDebts(d);
         setCustomCategories(cc);
-        if (settings.length > 0) {
-          setAppSettings(settings[0]);
-          if (settings[0].analytics_cards && settings[0].analytics_cards.length > 0) {
-            setAnalyticsCards(settings[0].analytics_cards);
-          }
-        }
         setLoading(false);
       });
     }
@@ -120,21 +97,6 @@ export default function Analytics() {
   };
 
   const formatYAxisTick = useCallback((value) => formatShortNumber(value), [formatShortNumber]);
-
-  const isCardVisible = (id) => {
-    const card = analyticsCards.find(c => c.id === id);
-    return card ? card.visible : true;
-  };
-
-  const handleSaveCards = async (newCards) => {
-    setAnalyticsCards(newCards);
-    if (appSettings) {
-      await base44.entities.AppSettings.update(appSettings.id, { analytics_cards: newCards });
-    } else {
-      const created = await base44.entities.AppSettings.create({ analytics_cards: newCards });
-      setAppSettings(created);
-    }
-  };
 
   const formatPeriodLabel = (period) => {
     const months = parseInt(period);
@@ -253,19 +215,9 @@ export default function Analytics() {
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
       {/* Header */}
       <div className="bg-[#0A0A0A] px-5 pt-8 pb-6 sm:pt-10 sm:pb-8">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div>
-            <p className="text-[#8FA4C8] text-xs sm:text-sm font-medium">{t('analytics_overview')}</p>
-            <h1 className="text-white text-xl sm:text-2xl font-bold mt-1">{t('analytics_title')}</h1>
-          </div>
-          <button
-            onClick={() => setShowCardManager(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors text-white"
-            title="Kelola kartu"
-          >
-            <LayoutList className="w-4 h-4" />
-            <span className="text-xs font-medium hidden sm:block">Kelola</span>
-          </button>
+        <div className="max-w-4xl mx-auto">
+          <p className="text-[#8FA4C8] text-xs sm:text-sm font-medium">{t('analytics_overview')}</p>
+          <h1 className="text-white text-xl sm:text-2xl font-bold mt-1">{t('analytics_title')}</h1>
         </div>
       </div>
 
@@ -308,49 +260,25 @@ export default function Analytics() {
         {/* Calendar Section */}
         <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
 
-        {/* Daily Spending Cards Grid - ordered & toggled by user prefs */}
-        {(() => {
-          const orderedCards = analyticsCards.length > 0 ? analyticsCards : DEFAULT_ANALYTICS_CARDS;
-          const dailyVisible = orderedCards.find(c => c.id === "daily_spending")?.visible !== false;
-          const restVisible = orderedCards.find(c => c.id === "restaurant_bar")?.visible !== false;
-          const dailyFirst = orderedCards.findIndex(c => c.id === "daily_spending") <= orderedCards.findIndex(c => c.id === "restaurant_bar");
-
-          if (!dailyVisible && !restVisible) return null;
-
-          const dailyCard = dailyVisible ? (
-            <DailySpendingCard
-              key="daily_spending"
-              transactions={transactions}
-              filterPeriod={filterPeriod}
-              customDateRange={customDateRange}
-              onOpenSettings={() => setShowCardManager(true)}
-            />
-          ) : null;
-
-          const restCard = restVisible ? (
-            <RestaurantBarSpendingCard
-              key="restaurant_bar"
-              transactions={transactions}
-              customCategories={customCategories}
-              filterPeriod={filterPeriod}
-              customDateRange={customDateRange}
-              onOpenSettings={() => setShowCardManager(true)}
-            />
-          ) : null;
-
-          const cards = dailyFirst ? [dailyCard, restCard] : [restCard, dailyCard];
-          return (
-            <div className={`grid grid-cols-1 ${dailyVisible && restVisible ? "lg:grid-cols-2" : ""} gap-5`}>
-              {cards}
-            </div>
-          );
-        })()}
+        {/* Daily Spending Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <DailySpendingCard
+            transactions={transactions}
+            filterPeriod={filterPeriod}
+            customDateRange={customDateRange}
+          />
+          <RestaurantBarSpendingCard
+            transactions={transactions}
+            customCategories={customCategories}
+            filterPeriod={filterPeriod}
+            customDateRange={customDateRange}
+          />
+        </div>
 
         {/* Charts Grid - 1 on mobile, 2 on desktop */}
         <div className="space-y-5 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
 
           {/* Income vs Expense Bar Chart */}
-          {isCardVisible("income_expense_chart") && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_income_vs_expense')}</h2>
             <ResponsiveContainer width="100%" height={220}>
@@ -369,10 +297,9 @@ export default function Analytics() {
               <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#00C9A7]"/><span className="text-[#8FA4C8]">{t('analytics_income_label')}</span></div>
               <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#FF6B6B]"/><span className="text-[#8FA4C8]">{t('analytics_expense_label')}</span></div>
             </div>
-          </div>)}
+          </div>
 
           {/* Spending Trend Area Chart */}
-          {isCardVisible("spending_trend") && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_spending_trend')}</h2>
             <ResponsiveContainer width="100%" height={220}>
@@ -390,12 +317,11 @@ export default function Analytics() {
                 <Area type="monotone" dataKey="Expense" stroke="#FF6B6B" fill="url(#colorExpense)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
-          </div>)}
+          </div>
 
         </div>
 
         {/* Category Breakdown */}
-        {isCardVisible("category_breakdown") && (
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
           <h2 className="font-bold text-[#0A0A0A] text-base mb-1">{t('analytics_category_breakdown')}</h2>
           <p className="text-xs text-[#8FA4C8] mb-4">{t('analytics_this_month')}</p>
@@ -442,10 +368,10 @@ export default function Analytics() {
               </div>
             </>
           )}
-        </div>)}
+        </div>
 
         {/* Budget Section */}
-        {isCardVisible("budget_chart") && budgetData.length > 0 && (
+        {budgetData.length > 0 && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_budget_vs_spent')}</h2>
             <ResponsiveContainer width="100%" height={220}>
@@ -462,7 +388,7 @@ export default function Analytics() {
         )}
 
         {/* Goals Progress */}
-        {isCardVisible("goals_progress") && goalsData.length > 0 && (
+        {goalsData.length > 0 && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_goals_progress')}</h2>
             <div className="space-y-4">
@@ -486,7 +412,7 @@ export default function Analytics() {
         )}
 
         {/* Investments */}
-        {isCardVisible("investments") && investments.length > 0 && (
+        {investments.length > 0 && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
             <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_investment_summary')}</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
@@ -525,15 +451,6 @@ export default function Analytics() {
         )}
 
       </div>
-
-      {/* Card Manager Modal */}
-      {showCardManager && (
-        <AnalyticsCardManager
-          cards={analyticsCards}
-          onSave={handleSaveCards}
-          onClose={() => setShowCardManager(false)}
-        />
-      )}
     </div>
   );
 }

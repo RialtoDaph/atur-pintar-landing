@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
-import { ChevronRight, TrendingUp, TrendingDown, Settings } from "lucide-react";
+import { ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { formatRupiah } from "@/components/utils/formatRupiah";
@@ -10,8 +10,7 @@ export default function DailySpendingCard({
   transactions,
   filterPeriod,
   customDateRange,
-  onNavigateToDetail,
-  onOpenSettings
+  onNavigateToDetail
 }) {
   const navigate = useNavigate();
   const { formatShortNumber } = useAppSettings();
@@ -57,13 +56,9 @@ export default function DailySpendingCard({
   });
 
   // Calculate daily average for current period
-  // Use actual elapsed days: from start of period to today (or end of range)
-  const periodEnd = monthRange.end > now ? now : monthRange.end;
-  const periodStart = monthRange.start;
-  const totalDays = Math.max(
-    Math.ceil((periodEnd - periodStart) / (1000 * 60 * 60 * 24)) + 1,
-    1
-  );
+  const totalDays = Math.ceil(
+    (monthRange.end - monthRange.start) / (1000 * 60 * 60 * 24)
+  ) + 1;
   const currentTotal = currentMonthlyData.reduce((s, m) => s + m.value, 0);
   const currentDailyAvg = currentTotal / totalDays;
 
@@ -92,10 +87,9 @@ export default function DailySpendingCard({
     return monthTx.reduce((s, t) => s + t.amount, 0);
   });
 
-  const prevTotalDays = Math.max(
-    Math.ceil((prevMonthRange.end - prevMonthRange.start) / (1000 * 60 * 60 * 24)) + 1,
-    1
-  );
+  const prevTotalDays = Math.ceil(
+    (prevMonthRange.end - prevMonthRange.start) / (1000 * 60 * 60 * 24)
+  ) + 1;
   const prevTotal = prevMonthlyData.reduce((s, m) => s + m, 0);
   const prevDailyAvg = prevTotal / prevTotalDays;
 
@@ -108,14 +102,7 @@ export default function DailySpendingCard({
 
   return (
     <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-bold text-[#0A0A0A] text-base">Pengeluaran Harian</h2>
-        {onOpenSettings && (
-          <button onClick={onOpenSettings} className="text-[#8FA4C8] hover:text-[#0A0A0A] transition-colors" title="Kelola kartu analitik">
-            <Settings className="w-4 h-4" />
-          </button>
-        )}
-      </div>
+      <h2 className="font-bold text-[#0A0A0A] text-base mb-4">Pengeluaran Harian</h2>
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={180}>

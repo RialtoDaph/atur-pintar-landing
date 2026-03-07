@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ComposedChart, Line } from "recharts";
-import { ChevronRight, TrendingUp, TrendingDown, Settings } from "lucide-react";
+import { ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { formatRupiah } from "@/components/utils/formatRupiah";
@@ -11,31 +11,20 @@ export default function RestaurantBarSpendingCard({
   customCategories,
   filterPeriod,
   customDateRange,
-  onNavigateToDetail,
-  onOpenSettings
+  onNavigateToDetail
 }) {
   const navigate = useNavigate();
   const { formatShortNumber } = useAppSettings();
   const now = new Date();
 
-  // Find restaurant and bar category IDs (including sub-categories of food)
-  const restaurantCats = customCategories.filter(
-    c => c.name?.toLowerCase().includes("restoran") || c.name?.toLowerCase().includes("restaurant") ||
-         c.name?.toLowerCase().includes("makan")
-  );
-  const barCats = customCategories.filter(
-    c => c.name?.toLowerCase().includes("bar") || c.name?.toLowerCase().includes("minuman") ||
-         c.name?.toLowerCase().includes("kafe") || c.name?.toLowerCase().includes("cafe") ||
-         c.name?.toLowerCase().includes("coffee")
-  );
-
-  // Also include sub-categories whose parent is "food"
-  const foodSubCats = customCategories.filter(
-    c => c.parent_category_key === "food"
-  );
-
-  const restaurantCatId = restaurantCats[0]?.id;
-  const barCatId = barCats[0]?.id;
+  // Find restaurant and bar category IDs
+  const restaurantCatId = customCategories.find(
+    c => c.name?.toLowerCase().includes("restoran") || c.name?.toLowerCase().includes("restaurant")
+  )?.id;
+  
+  const barCatId = customCategories.find(
+    c => c.name?.toLowerCase().includes("bar") || c.name?.toLowerCase().includes("minuman")
+  )?.id;
 
   const getMonthRange = () => {
     if (customDateRange) {
@@ -54,19 +43,12 @@ export default function RestaurantBarSpendingCard({
     (monthRange.end.getFullYear() - monthRange.start.getFullYear()) * 12 +
     (monthRange.end.getMonth() - monthRange.start.getMonth());
 
-  // All relevant category keys
-  const restaurantKeys = new Set([
-    ...restaurantCats.map(c => `custom_${c.id}`),
-    ...foodSubCats.filter(c => c.name?.toLowerCase().match(/makan|restoran|restaurant/)).map(c => `custom_${c.id}`),
-  ]);
-  const barKeys = new Set([
-    ...barCats.map(c => `custom_${c.id}`),
-    ...foodSubCats.filter(c => c.name?.toLowerCase().match(/bar|minum|kafe|cafe|coffee/)).map(c => `custom_${c.id}`),
-  ]);
-
-  const isRestaurant = (tx) => restaurantKeys.has(tx.category);
-  const isBar = (tx) => barKeys.has(tx.category);
-  const isRestaurantBar = (tx) => isRestaurant(tx) || isBar(tx);
+  // Filter for restaurant + bar only
+  const isRestaurantBar = (tx) => {
+    if (restaurantCatId && tx.category === `custom_${restaurantCatId}`) return true;
+    if (barCatId && tx.category === `custom_${barCatId}`) return true;
+    return false;
+  };
 
   // Calculate monthly expenses for current period (with sub-category breakdown)
   const currentMonthlyData = Array.from({ length: monthDiff + 1 }, (_, i) => {
@@ -83,8 +65,8 @@ export default function RestaurantBarSpendingCard({
       );
     });
     
-    const restaurant = monthTx.filter(t => isRestaurant(t)).reduce((s, t) => s + t.amount, 0);
-    const bar = monthTx.filter(t => isBar(t)).reduce((s, t) => s + t.amount, 0);
+    const restaurant = monthTx.filter(t => restaurantCatId && t.category === `custom_${restaurantCatId}`).reduce((s, t) => s + t.amount, 0);
+    const bar = monthTx.filter(t => barCatId && t.category === `custom_${barCatId}`).reduce((s, t) => s + t.amount, 0);
     const total = monthTx.reduce((s, t) => s + t.amount, 0);
     
     return {
@@ -96,13 +78,12 @@ export default function RestaurantBarSpendingCard({
     };
   });
 
-  // Calculate daily average: total / actual elapsed days in period
-  const periodEnd = monthRange.end > now ? now : monthRange.end;
-  const periodStart = monthRange.start;
-  const msPerDay = 1000 * 60 * 60 * 24;
-  const totalDays = Math.max(Math.round((periodEnd - periodStart) / msPerDay) + 1, 1);
-  const currentTotal = currentMonthlyData.reduce((s, m) => s + m.total, 0);
-  const currentDailyAvg = Math.round(currentTotal / totalDays);
+  // Calculate daily average for current period
+  const totalDays = Math.ceil(
+    (monthRange.end - monthRange.start) / (1000 * 60 * 60 * 24)
+  ) + 1;
+  const currentTotal = currentMonthlyData.reduce((s, m) => s + m.value, 0);
+  const currentDailyAvg = currentTotal / totalDays;
 
   // Calculate previous period for trend
   const prevMonthRange = {
@@ -130,9 +111,11 @@ export default function RestaurantBarSpendingCard({
     return monthTx.reduce((s, t) => s + t.amount, 0);
   });
 
-  const prevTotalDays = Math.max(Math.round((prevMonthRange.end - prevMonthRange.start) / msPerDay) + 1, 1);
+  const prevTotalDays = Math.ceil(
+    (prevMonthRange.end - prevMonthRange.start) / (1000 * 60 * 60 * 24)
+  ) + 1;
   const prevTotal = prevMonthlyData.reduce((s, m) => s + m, 0);
-  const prevDailyAvg = Math.round(prevTotal / prevTotalDays);
+  const prevDailyAvg = prevTotal / prevTotalDays;
 
   const trendDiff = currentDailyAvg - prevDailyAvg;
   const isTrendPositive = trendDiff >= 0;
@@ -143,14 +126,7 @@ export default function RestaurantBarSpendingCard({
 
   return (
     <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-bold text-[#0A0A0A] text-base">Restaurant & Bar</h2>
-        {onOpenSettings && (
-          <button onClick={onOpenSettings} className="text-[#8FA4C8] hover:text-[#0A0A0A] transition-colors" title="Kelola kartu analitik">
-            <Settings className="w-4 h-4" />
-          </button>
-        )}
-      </div>
+      <h2 className="font-bold text-[#0A0A0A] text-base mb-4">Restaurant & Bar</h2>
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={180}>
