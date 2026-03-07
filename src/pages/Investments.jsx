@@ -207,6 +207,9 @@ export default function InvestmentsPage() {
             )}
           </div>
         )}
+
+        {/* Education resources — minimized at the bottom */}
+        <EducationResources />
       </div>
 
       {showAdd && (
