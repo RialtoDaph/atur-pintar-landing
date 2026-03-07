@@ -4,7 +4,6 @@ import { Plus, Trash2, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AddInvestmentModal from "@/components/investments/AddInvestmentModal.jsx";
-import PerformanceMetrics from "@/components/investments/PerformanceMetrics";
 import DiversificationChart from "@/components/investments/DiversificationChart";
 import PortfolioTrendChart from "@/components/investments/PortfolioTrendChart";
 import RiskProfileRecommendation from "@/components/investments/RiskProfileRecommendation";
