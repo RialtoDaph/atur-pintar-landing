@@ -323,6 +323,7 @@ export default function Analytics() {
               transactions={transactions}
               filterPeriod={filterPeriod}
               customDateRange={customDateRange}
+              onOpenSettings={() => setShowCardManager(true)}
             />
           ) : null;
 
@@ -333,6 +334,7 @@ export default function Analytics() {
               customCategories={customCategories}
               filterPeriod={filterPeriod}
               customDateRange={customDateRange}
+              onOpenSettings={() => setShowCardManager(true)}
             />
           ) : null;
 
