@@ -33,6 +33,7 @@ export default function BudgetPage() {
 
   const [budgets, setBudgets] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [transactions3M, setTransactions3M] = useState([]);
   const [customCategories, setCustomCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
