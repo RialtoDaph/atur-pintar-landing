@@ -398,12 +398,24 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
 
           {/* Purchase date */}
           <div>
-            <label className={labelCls}>{t("purchase_date")}</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className={labelCls.replace(" mb-1.5", "")}>{t("purchase_date")}</label>
+              {fetchingHistorical && (
+                <span className="flex items-center gap-1 text-[10px] text-[#FF6A00]">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  {lang === "en" ? "Fetching price..." : "Ambil harga historis..."}
+                </span>
+              )}
+            </div>
             <input
               type="date"
               className={inputCls}
               value={form.purchase_date}
-              onChange={e => setForm(f => ({ ...f, purchase_date: e.target.value }))}
+              onChange={e => {
+                const newDate = e.target.value;
+                setForm(f => ({ ...f, purchase_date: newDate }));
+                fetchHistoricalPrice(newDate);
+              }}
             />
           </div>
 
