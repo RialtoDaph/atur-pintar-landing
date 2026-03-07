@@ -136,12 +136,12 @@ export default function InvestmentsPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-[#1A1A1A]">{inv.name}</p>
-                      <p className="text-xs text-[#8FA4C8]">{type.label} · {portfolioWeight}{t('investments_portfolio_weight')}</p>
+                      <p className="text-xs text-[#8FA4C8]">{typeLabel} · {portfolioWeight}{t('investments_portfolio_weight')}</p>
                     </div>
                   </div>
                   <div className="flex gap-2" onClick={(e) => e.preventDefault()}>
                    <button onClick={() => handleEdit(inv)} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors">
-                     ✏️
+                     <Pencil className="w-4 h-4" />
                    </button>
                    <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
                      <Trash2 className="w-4 h-4" />
