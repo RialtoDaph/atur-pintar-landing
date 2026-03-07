@@ -68,14 +68,21 @@ export default function Analytics() {
         base44.entities.Budget.filter({ created_by: user.email }),
         base44.entities.Investment.filter({ created_by: user.email }),
         base44.entities.Debt.filter({ created_by: user.email }),
-        base44.entities.CustomCategory.list("-created_date")
-      ]).then(([t, g, b, i, d, cc]) => {
+        base44.entities.CustomCategory.list("-created_date"),
+        base44.entities.AppSettings.list()
+      ]).then(([t, g, b, i, d, cc, settings]) => {
         setTransactions(t);
         setGoals(g);
         setBudgets(b);
         setInvestments(i);
         setDebts(d);
         setCustomCategories(cc);
+        if (settings.length > 0) {
+          setAppSettings(settings[0]);
+          if (settings[0].analytics_cards && settings[0].analytics_cards.length > 0) {
+            setAnalyticsCards(settings[0].analytics_cards);
+          }
+        }
         setLoading(false);
       });
     }
