@@ -95,8 +95,20 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
   
   // Apply drag order if available
   const orderedCats = catOrder.length > 0 
-    ? catOrder.map(key => mainCats.find(c => c.key === key)).filter(Boolean)
+    ? [
+        ...catOrder.map(key => mainCats.find(c => c.key === key)).filter(Boolean),
+        ...mainCats.filter(c => !catOrder.includes(c.key))
+      ]
     : mainCats;
+
+  const handleCategoryClick = (cat) => {
+    const subs = subCatsByParent[cat.key];
+    if (subs && subs.length > 0) {
+      setSubCatPopup({ parentKey: cat.key, parentLabel: cat.label, parentEmoji: cat.emoji, subs });
+    } else {
+      setForm({ ...form, category: cat.key });
+    }
+  };
 
   const handleDragEnd = async (result) => {
     const { source, destination } = result;
