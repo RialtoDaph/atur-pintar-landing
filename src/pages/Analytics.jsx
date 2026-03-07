@@ -10,6 +10,19 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, Area, AreaChart, CartesianGrid
 } from "recharts";
+import { LayoutList } from "lucide-react";
+import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
+
+const DEFAULT_ANALYTICS_CARDS = [
+  { id: "daily_spending", visible: true },
+  { id: "restaurant_bar", visible: true },
+  { id: "income_expense_chart", visible: true },
+  { id: "spending_trend", visible: true },
+  { id: "category_breakdown", visible: true },
+  { id: "budget_chart", visible: true },
+  { id: "goals_progress", visible: true },
+  { id: "investments", visible: true },
+];
 
 const DEFAULT_CATEGORIES_FLAT = [
   { key: "housing", i18nKey: "cat_housing", emoji: "🏠", color: "#4F7CFF" },
