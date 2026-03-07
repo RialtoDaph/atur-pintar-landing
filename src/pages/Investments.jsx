@@ -13,7 +13,7 @@ import { INVESTMENT_TYPES_MAP } from "@/components/investments/investmentConstan
 import { Pencil } from "lucide-react";
 
 export default function InvestmentsPage() {
-  const { formatCurrency, t } = useAppSettings();
+  const { formatCurrency, t, settings } = useAppSettings();
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -117,7 +117,8 @@ export default function InvestmentsPage() {
           </div>
         ) : (
           investments.map(inv => {
-            const type = INVESTMENT_TYPES[inv.type] || INVESTMENT_TYPES.lainnya;
+            const type = INVESTMENT_TYPES_MAP[inv.type] || INVESTMENT_TYPES_MAP.lainnya;
+            const typeLabel = settings.language === 'en' ? type.label_en : type.label_id;
             const gain = inv.current_value - inv.initial_amount;
             const gainPct = inv.initial_amount > 0 ? ((gain / inv.initial_amount) * 100).toFixed(2) : 0;
             const isPositive = gain >= 0;
