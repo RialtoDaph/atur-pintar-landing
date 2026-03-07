@@ -225,6 +225,13 @@ export function useFinancialContext() {
       `- Net: ${fmt(snapshot.thisMonth.net)}${snapshot.thisMonth.expenseVsLastMonth !== null ? ` (pengeluaran ${snapshot.thisMonth.expenseVsLastMonth > 0 ? "+" : ""}${snapshot.thisMonth.expenseVsLastMonth}% vs bulan lalu)` : ""}`,
     ];
 
+    if (snapshot.thisMonth.spendingSpikes?.length > 0) {
+      lines.push(`\nLONJAKAN PENGELUARAN vs rata-rata 3 bulan lalu:`);
+      snapshot.thisMonth.spendingSpikes.forEach((s) => {
+        lines.push(`- ${s.category}: ${fmt(s.thisMonth)} bulan ini vs rata-rata ${fmt(s.avg3M)} (+${s.spikePct}%, lebih boros ${fmt(s.spikeRp)})`);
+      });
+    }
+
     if (snapshot.budgetStatus.length > 0) {
       lines.push(`\nSTATUS ANGGARAN:`);
       snapshot.budgetStatus.forEach((b) => {
