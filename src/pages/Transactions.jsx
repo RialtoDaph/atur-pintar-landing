@@ -41,6 +41,7 @@ export default function Transactions() {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [deleting, setDeleting] = useState(false);
+  const [showCSVImport, setShowCSVImport] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {

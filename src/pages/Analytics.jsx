@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { LayoutList } from "lucide-react";
 import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
+import NetWorthCard from "@/components/analytics/NetWorthCard";
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "daily_spending", visible: true },
