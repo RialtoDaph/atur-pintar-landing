@@ -431,6 +431,13 @@ export default function Transactions() {
           onSave={handleEdit}
         />
       )}
+
+      {showCSVImport && (
+        <CSVImportModal
+          onClose={() => setShowCSVImport(false)}
+          onSuccess={loadData}
+        />
+      )}
     </div>
   );
 }

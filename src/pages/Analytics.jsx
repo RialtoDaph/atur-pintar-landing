@@ -139,11 +139,11 @@ export default function Analytics() {
 
   const formatPeriodLabel = (period) => {
     const months = parseInt(period);
-    if (months === 1) return t('this_month') || 'This month';
-    if (months === 3) return 'Last 3 months';
-    if (months === 6) return 'Last 6 months';
-    if (months === 12) return 'Last 12 months';
-    return `Last ${months} months`;
+    if (months === 1) return t('this_month') || 'Bulan ini';
+    if (months === 3) return '3 bulan terakhir';
+    if (months === 6) return '6 bulan terakhir';
+    if (months === 12) return '12 bulan terakhir';
+    return `${months} bulan terakhir`;
   };
 
   const now = new Date();
