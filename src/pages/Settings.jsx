@@ -215,6 +215,24 @@ export default function Settings() {
           ))}
         </div>
 
+        {/* Feedback */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-5 pt-4 pb-2">
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Feedback</p>
+          </div>
+          <button
+            onClick={() => setShowFeedback(true)}
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]"
+            aria-label="Buka form feedback"
+          >
+            <MessageSquare className="w-5 h-5 text-[#FF6A00]" />
+            <div className="text-left">
+              <p className="font-medium text-[#1A1A1A] text-sm">Kirim Feedback</p>
+              <p className="text-xs text-[#8FA4C8]">Bantu kami untuk terus berkembang</p>
+            </div>
+          </button>
+        </div>
+
         {/* Akun */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-2">
@@ -223,6 +241,7 @@ export default function Settings() {
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#FFF5F5] transition-colors border-t border-[#F2F4F7] text-[#FF6B6B]"
+            aria-label="Keluar dari akun"
           >
             <LogOut className="w-5 h-5" />
             <span className="font-medium text-sm">{t('settings_logout')}</span>
