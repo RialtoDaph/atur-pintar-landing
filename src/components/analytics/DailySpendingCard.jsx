@@ -56,11 +56,11 @@ export default function DailySpendingCard({
   });
 
   // Calculate daily average for current period
-  // Use actual elapsed days: from start of period to today (or end of range)
-  const periodEnd = monthRange.end > now ? now : monthRange.end;
+  // Use full period days: from start to last day of end month
+  const fullPeriodEnd = new Date(monthRange.end.getFullYear(), monthRange.end.getMonth() + 1, 0);
   const periodStart = monthRange.start;
   const totalDays = Math.max(
-    Math.ceil((periodEnd - periodStart) / (1000 * 60 * 60 * 24)) + 1,
+    Math.ceil((fullPeriodEnd - periodStart) / (1000 * 60 * 60 * 24)) + 1,
     1
   );
   const currentTotal = currentMonthlyData.reduce((s, m) => s + m.value, 0);
