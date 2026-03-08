@@ -136,10 +136,13 @@ export default function DebtsPage() {
                     </div>
                   </div>
                   <div className="flex gap-0.5 flex-shrink-0">
-                    <button onClick={() => setPaymentModal(debt.id)} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors p-1.5" title={t('pay_debt') || "Make payment"}>
+                    <button onClick={() => setPaymentModal(debt.id)} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors p-1.5" title="Make payment">
                       <Plus className="w-4 h-4" />
                     </button>
-                    <button onClick={() => markPaid(debt)} className="text-[#CBD5E0] hover:text-[#00C9A7] transition-colors p-1.5" title={t('debts_mark_paid_title')}>
+                    <button onClick={() => setEditDebt(debt)} className="text-[#CBD5E0] hover:text-[#4F7CFF] transition-colors p-1.5" title="Edit">
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => setMarkPaidConfirm(debt)} className="text-[#CBD5E0] hover:text-[#00C9A7] transition-colors p-1.5" title={t('debts_mark_paid_title')}>
                       <CheckCircle className="w-4 h-4" />
                     </button>
                     <button onClick={() => setDeleteConfirm(debt.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors p-1.5">
