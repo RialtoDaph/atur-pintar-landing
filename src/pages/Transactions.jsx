@@ -177,6 +177,13 @@ export default function Transactions() {
     );
   }
 
+  // Reset page when filter changes
+  useEffect(() => { setPage(1); }, [filter, goalFilter, searchQuery]);
+
+  // Paginate
+  const paginatedFiltered = filtered.slice(0, page * PAGE_SIZE);
+  const hasMore = filtered.length > page * PAGE_SIZE;
+
   // Group by month
   const grouped = {};
   const locale = settings.locale || "id-ID";
