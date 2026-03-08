@@ -145,7 +145,9 @@ export default function Settings() {
             <button
               key={lang.code}
               onClick={() => selectLanguage(lang.code)}
-              className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7] first:border-0"
+              aria-pressed={language === lang.code}
+              aria-label={`Pilih bahasa ${lang.label}`}
+              className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7] first:border-0 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF6A00]"
             >
               <div className="flex items-center gap-3">
                 <span className="text-xl">{lang.flag}</span>
