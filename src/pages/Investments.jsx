@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, TrendingUp } from "lucide-react";
+import { Plus, Trash2, TrendingUp, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AddInvestmentModal from "@/components/investments/AddInvestmentModal.jsx";
@@ -10,7 +10,7 @@ import RiskProfileRecommendation from "@/components/investments/RiskProfileRecom
 import EducationResources from "@/components/investments/EducationResources";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { INVESTMENT_TYPES_MAP } from "@/components/investments/investmentConstants";
-import { Pencil } from "lucide-react";
+import ErrorState from "@/components/utils/ErrorState";
 
 export default function InvestmentsPage() {
   const { formatCurrency, t, settings } = useAppSettings();

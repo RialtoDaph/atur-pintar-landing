@@ -6,6 +6,7 @@ import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import IOUSection from "@/components/splitbill/IOUSection";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { parseRupiah } from "@/components/utils/parseRupiah";
+import ErrorState from "@/components/utils/ErrorState";
 
 const DEBT_TYPES = {
   kpr: { label: "KPR", emoji: "🏠" },

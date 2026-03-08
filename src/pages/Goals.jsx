@@ -7,6 +7,7 @@ import { createPageUrl } from "@/utils";
 import AddTransactionModal from "@/components/goals/AddTransactionModal";
 import AddGoalModal from "@/components/goals/AddGoalModal";
 import GoalCard from "@/components/goals/GoalCard";
+import ErrorState from "@/components/utils/ErrorState";
 
 const COLORS = {
   blue: "#4F7CFF",
