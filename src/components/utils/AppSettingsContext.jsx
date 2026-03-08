@@ -246,6 +246,11 @@ const TRANSLATIONS = {
     debts_mark_paid_confirm_msg: 'Tandai {name} sebagai lunas?',
     debts_delete_confirm: 'Hapus utang ini?',
 
+    // Analytics extra
+    net_flow: 'Arus Bersih',
+    savings_rate: 'Rasio Tabungan',
+    of_income: 'dari pemasukan',
+
     // Pages - Analytics
     analytics_overview: 'Overview',
     analytics_title: 'Analytics',
