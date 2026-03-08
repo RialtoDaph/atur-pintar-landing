@@ -32,6 +32,7 @@ export default function Goals() {
   const [showTxModal, setShowTxModal] = useState(null); // 'deposit' | 'withdrawal'
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [txFilter, setTxFilter] = useState("all"); // 'all' | 'deposit' | 'withdrawal'
+  const [error, setError] = useState(null);
 
   const goal = goals.find((g) => g.id === goalId) || null;
 
@@ -49,12 +50,13 @@ export default function Goals() {
 
   async function loadData() {
     setLoading(true);
-    const [g, t] = await Promise.all([
-      base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
-      goalId ? base44.entities.Transaction.filter({ goal_id: goalId, created_by: user.email }, "-created_date") : Promise.resolve([]),
+    setError(null);
+    const [g, txData] = await Promise.all([
+      base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date").catch(() => { setError(true); return []; }),
+      goalId ? base44.entities.Transaction.filter({ goal_id: goalId, created_by: user.email }, "-created_date").catch(() => []) : Promise.resolve([]),
     ]);
     setGoals(g);
-    setTransactions(t);
+    setTransactions(txData);
     setLoading(false);
   }
 
@@ -313,11 +315,20 @@ export default function Goals() {
     <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
       {loading ? (
         [...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-24 animate-pulse" />)
+      ) : error ? (
+        <ErrorState onRetry={loadData} />
       ) : goals.length === 0 ? (
-        <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
-          <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
+        <div className="bg-white rounded-2xl p-8 text-center shadow-sm" role="status">
+          <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" aria-hidden="true" />
           <p className="text-[#4A5568] font-semibold">{t('goals_empty_title')}</p>
           <p className="text-[#8FA4C8] text-sm mt-1">{t('goals_empty_desc')}</p>
+          <button
+            onClick={() => setShowAddGoal(true)}
+            className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#FF6A00] text-white rounded-xl text-sm font-semibold hover:bg-[#e05e00] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2"
+          >
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            {t('goals_empty_desc')}
+          </button>
         </div>
       ) : (
         goals.map((g) => (
