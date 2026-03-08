@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart } from "recharts";
+import { Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ComposedChart } from "recharts";
 import { ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
