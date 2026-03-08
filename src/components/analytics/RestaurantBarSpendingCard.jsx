@@ -160,8 +160,7 @@ export default function RestaurantBarSpendingCard({
             contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
           />
           <Bar dataKey="restaurant" fill="#FF6A00" radius={[6, 6, 0, 0]} stackId="a" />
-          <Bar dataKey="bar" fill="#FF8C42" radius={[6, 6, 0, 0]} stackId="a" />
-          <Line dataKey="total" stroke="#FF6A00" strokeDasharray="5,5" dot={false} strokeWidth={2} />
+          <Bar dataKey="bar" fill="#FF8C42" radius={[0, 0, 0, 0]} stackId="a" />
         </ComposedChart>
       </ResponsiveContainer>
 
