@@ -216,9 +216,10 @@ export default function AlertsPage() {
                     )}
                     <button
                       onClick={() => handleResendEmail(alert)}
-                      className="flex items-center gap-1.5 text-xs font-medium text-[#8FA4C8] hover:text-[#1A1A1A] transition-colors"
+                      disabled={alert.email_sent}
+                      className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${alert.email_sent ? "text-[#CBD5E0] cursor-not-allowed" : "text-[#8FA4C8] hover:text-[#1A1A1A]"}`}
                     >
-                      <Mail className="w-3.5 h-3.5" /> {t('alerts_email')}
+                      <Mail className="w-3.5 h-3.5" /> {alert.email_sent ? "Email Terkirim" : t('alerts_email')}
                     </button>
                     <button
                       onClick={() => handleDelete(alert.id)}
