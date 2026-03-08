@@ -364,7 +364,7 @@ export default function Analytics() {
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={formatYAxisTick} />
                 <Tooltip
-                  formatter={(value) => [formatRupiah(value), undefined]}
+                  formatter={(value) => [formatCurrency(value), undefined]}
                   contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
                 />
                 <Bar dataKey="Income" fill="#00C9A7" radius={[6, 6, 0, 0]} />
@@ -392,7 +392,7 @@ export default function Analytics() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} />
                 <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} tickFormatter={formatYAxisTick} />
-                <Tooltip formatter={(value) => [formatRupiah(value), undefined]} contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }} />
+                <Tooltip formatter={(value) => [formatCurrency(value), undefined]} contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }} />
                 <Area type="monotone" dataKey="Expense" stroke="#FF6B6B" fill="url(#colorExpense)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
@@ -427,7 +427,7 @@ export default function Analytics() {
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value) => [formatRupiah(value), undefined]}
+                    formatter={(value) => [formatCurrency(value), undefined]}
                     contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
                   />
                 </PieChart>
@@ -441,7 +441,7 @@ export default function Analytics() {
                     <div className="w-12 h-1 bg-[#F2F4F7] rounded-full overflow-hidden flex-shrink-0 hidden sm:block">
                       <div className="h-full rounded-full" style={{ width: `${(item.value / totalExpenses) * 100}%`, backgroundColor: item.color }} />
                     </div>
-                    <span className="font-semibold text-[#0A0A0A] flex-shrink-0 whitespace-nowrap">{formatRupiah(item.value)}</span>
+                    <span className="font-semibold text-[#0A0A0A] flex-shrink-0 whitespace-nowrap">{formatCurrency(item.value)}</span>
                     <span className="text-[10px] text-[#8FA4C8] flex-shrink-0 w-6 text-right">{((item.value / totalExpenses) * 100).toFixed(0)}%</span>
                   </div>
                 ))}
@@ -459,7 +459,7 @@ export default function Analytics() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} />
                 <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} tickFormatter={formatYAxisTick} />
-                <Tooltip formatter={(value) => [formatRupiah(value), undefined]} contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }} />
+                <Tooltip formatter={(value) => [formatCurrency(value), undefined]} contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }} />
                 <Bar dataKey="budget" fill="#4F7CFF" radius={[6, 6, 0, 0]} name={t('budget_total')} />
                 <Bar dataKey="spent" fill="#FF6B6B" radius={[6, 6, 0, 0]} name={t('budget_spent')} />
               </BarChart>

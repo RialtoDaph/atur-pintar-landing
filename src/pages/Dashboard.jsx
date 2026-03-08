@@ -126,8 +126,7 @@ export default function Dashboard() {
         {/* Smart Alerts Panel */}
         <SmartAlertsPanel />
 
-        {/* Smart Alerts */}
-        {widgets.smartAlerts && <SmartAlerts transactions={transactions} loading={loading} />}
+        {/* Smart Alerts (widget-controlled duplicate removed) */}
 
         {/* Cashflow Forecast */}
         {widgets.cashflowForecast && <CashflowForecast transactions={transactions} loading={loading} user={user} />}
