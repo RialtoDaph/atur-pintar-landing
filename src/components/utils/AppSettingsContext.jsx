@@ -243,6 +243,8 @@ const TRANSLATIONS = {
     debts_remaining: 'Sisa',
     debts_installment: 'Cicilan',
     debts_mark_paid_title: 'Tandai lunas',
+    debts_mark_paid_confirm_msg: 'Tandai {name} sebagai lunas?',
+    debts_delete_confirm: 'Hapus utang ini?',
 
     // Pages - Analytics
     analytics_overview: 'Overview',
