@@ -318,10 +318,18 @@ export default function Transactions() {
             {[1,2,3,4,5].map(i => <div key={i} className="h-16 bg-white rounded-2xl animate-pulse" />)}
           </div>
         ) : sortedGroups.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm p-12 text-center">
-            <p className="text-4xl mb-3">📭</p>
+          <div className="bg-white rounded-2xl shadow-sm p-12 text-center" role="status" aria-live="polite">
+            <p className="text-4xl mb-3" aria-hidden="true">📭</p>
             <p className="text-[#1A1A1A] font-semibold mb-1">{t('tx_empty_title')}</p>
-            <p className="text-[#8FA4C8] text-sm">{t('tx_empty_desc')}</p>
+            <p className="text-[#8FA4C8] text-sm mb-4">{t('tx_empty_desc')}</p>
+            {!searchQuery && (
+              <button
+                onClick={() => setShowAddTx(true)}
+                className="px-5 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-semibold hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2"
+              >
+                + Tambah Transaksi
+              </button>
+            )}
           </div>
         ) : (
           sortedGroups.map(key => {
