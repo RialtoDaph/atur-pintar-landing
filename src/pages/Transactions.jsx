@@ -412,6 +412,18 @@ export default function Transactions() {
             );
           })
         )}
+
+        {/* Load More */}
+        {hasMore && (
+          <div className="text-center py-2">
+            <button
+              onClick={() => setPage(p => p + 1)}
+              className="px-6 py-2.5 rounded-xl bg-white border border-[#E2E8F0] text-sm font-semibold text-[#4A5568] hover:bg-[#F2F4F7] transition-colors shadow-sm"
+            >
+              Muat lebih banyak ({filtered.length - paginatedFiltered.length} lagi)
+            </button>
+          </div>
+        )}
       </div>
 
       {showAddTx && (
