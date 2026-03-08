@@ -506,11 +506,11 @@ export default function Analytics() {
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
               <div className="bg-[#F2F4F7] rounded-xl p-3">
                 <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium mb-1">{t('analytics_initial_value')}</p>
-                <p className="text-sm sm:text-base font-bold text-[#0A0A0A]">{formatRupiah(totalInvested)}</p>
+                <p className="text-sm sm:text-base font-bold text-[#0A0A0A]">{formatCurrency(totalInvested)}</p>
               </div>
               <div className="bg-[#F2F4F7] rounded-xl p-3">
                 <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium mb-1">{t('analytics_current_value')}</p>
-                <p className="text-sm sm:text-base font-bold text-[#0A0A0A]">{formatRupiah(totalCurrentValue)}</p>
+                <p className="text-sm sm:text-base font-bold text-[#0A0A0A]">{formatCurrency(totalCurrentValue)}</p>
               </div>
               <div className={`rounded-xl p-3 ${investmentReturn >= 0 ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
                 <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium mb-1">{t('analytics_return')}</p>
