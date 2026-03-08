@@ -262,12 +262,14 @@ export default function Transactions() {
 
         {/* Filter tabs */}
         <div className="space-y-3">
-          <div className="flex bg-white rounded-xl p-1 shadow-sm">
+          <div className="flex bg-white rounded-xl p-1 shadow-sm" role="tablist" aria-label="Filter transaksi">
             {FILTER_TABS.map(tab => (
               <button
                 key={tab.key}
+                role="tab"
+                aria-selected={filter === tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF6A00] ${
                   filter === tab.key ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
                 }`}
               >
