@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, CreditCard, CheckCircle } from "lucide-react";
+import { Plus, Trash2, CreditCard, CheckCircle, Pencil } from "lucide-react";
 import AddDebtModal from "@/components/debts/AddDebtModal.jsx";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import IOUSection from "@/components/splitbill/IOUSection";
