@@ -218,6 +218,23 @@ export default function DebtsPage() {
         />
       )}
 
+      {markPaidConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+            <p className="text-sm font-semibold text-[#1A1A1A] mb-1">{t('debts_mark_paid_title')}</p>
+            <p className="text-xs text-[#8FA4C8] mb-4">Tandai <strong>{markPaidConfirm.name}</strong> sebagai lunas?</p>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setMarkPaidConfirm(null)} className="px-4 py-2 rounded-lg text-sm font-semibold text-[#8FA4C8] hover:bg-[#F2F4F7] transition-colors">
+                Batal
+              </button>
+              <button onClick={() => markPaid(markPaidConfirm)} className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#00C9A7] hover:bg-[#00b395] transition-colors">
+                ✅ Lunas
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
@@ -227,13 +244,13 @@ export default function DebtsPage() {
                 onClick={() => setDeleteConfirm(null)}
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-[#8FA4C8] hover:bg-[#F2F4F7] transition-colors"
               >
-                {t('cancel')}
+                Batal
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm)}
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#FF6B6B] hover:bg-[#FF5252] transition-colors"
               >
-                {t('delete')}
+                Hapus
               </button>
             </div>
           </div>
