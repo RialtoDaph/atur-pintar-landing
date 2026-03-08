@@ -176,7 +176,7 @@ function LayoutInner({ children, currentPageName }) {
           <Grid3x3 className="w-5 h-5" />
           {t('nav_more')}
         </Link>
-      </div>
+      </nav>
 
       {/* Nana Floating Chat */}
       {currentPageName !== "Nana" && <NanaFloatingChat />}
