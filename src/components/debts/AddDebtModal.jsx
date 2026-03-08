@@ -9,12 +9,15 @@ const DEBT_TYPES = [
   { key: "lainnya", label: "Lainnya", emoji: "📋" },
 ];
 
-export default function AddDebtModal({ onClose, onSave }) {
+export default function AddDebtModal({ onClose, onSave, debt }) {
   const [form, setForm] = useState({
-    name: "", type: "lainnya", total_amount: "", remaining_amount: "",
-    interest_rate: "", monthly_payment: "", due_date: "", icon: ""
+    name: debt?.name || "", type: debt?.type || "lainnya",
+    total_amount: debt?.total_amount || "", remaining_amount: debt?.remaining_amount || "",
+    interest_rate: debt?.interest_rate || "", monthly_payment: debt?.monthly_payment || "",
+    due_date: debt?.due_date || "", icon: debt?.icon || ""
   });
   const [saving, setSaving] = useState(false);
+  const isEdit = !!debt;
 
   async function handleSave() {
     if (!form.name || !form.total_amount || !form.remaining_amount) return;
