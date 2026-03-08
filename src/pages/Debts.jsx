@@ -222,13 +222,13 @@ export default function DebtsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
             <p className="text-sm font-semibold text-[#1A1A1A] mb-1">{t('debts_mark_paid_title')}</p>
-            <p className="text-xs text-[#8FA4C8] mb-4">Tandai <strong>{markPaidConfirm.name}</strong> sebagai lunas?</p>
+            <p className="text-xs text-[#8FA4C8] mb-4">{t('debts_mark_paid_confirm_msg', { name: markPaidConfirm.name })}</p>
             <div className="flex gap-2 justify-end">
               <button onClick={() => setMarkPaidConfirm(null)} className="px-4 py-2 rounded-lg text-sm font-semibold text-[#8FA4C8] hover:bg-[#F2F4F7] transition-colors">
-                Batal
+                {t('cancel')}
               </button>
               <button onClick={() => markPaid(markPaidConfirm)} className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#00C9A7] hover:bg-[#00b395] transition-colors">
-                ✅ Lunas
+                ✅ {t('debts_paid')}
               </button>
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function DebtsPage() {
                 onClick={() => setDeleteConfirm(null)}
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-[#8FA4C8] hover:bg-[#F2F4F7] transition-colors"
               >
-                Batal
+                {t('cancel')}
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirm)}
