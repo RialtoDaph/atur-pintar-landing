@@ -337,6 +337,12 @@ const TRANSLATIONS = {
     investments_watchlist_show: 'Tampilkan',
     investments_target: 'Target',
     investments_portfolio_weight: '% portofolio',
+    investments_delete_confirm: 'Hapus investasi ini?',
+    diversification_portfolio: 'Diversifikasi Portofolio',
+    diversification: 'Diversifikasi',
+    annualized_return: 'Return Tahunan',
+    no_purchase_date: 'Tidak Ada Data',
+    this_month: 'Bulan ini',
 
     // Pages - Tips
     tips_guide: 'Panduan',
