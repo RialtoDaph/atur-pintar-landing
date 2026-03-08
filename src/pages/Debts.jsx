@@ -197,6 +197,18 @@ export default function DebtsPage() {
         />
       )}
 
+      {editDebt && (
+        <AddDebtModal
+          debt={editDebt}
+          onClose={() => setEditDebt(null)}
+          onSave={async (data) => {
+            await base44.entities.Debt.update(editDebt.id, data);
+            setEditDebt(null);
+            loadData();
+          }}
+        />
+      )}
+
       {paymentModal && (
         <AddTransactionModal
           onClose={() => setPaymentModal(null)}
