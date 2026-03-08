@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, TrendingUp, Pencil } from "lucide-react";
+import { Plus, Trash2, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AddInvestmentModal from "@/components/investments/AddInvestmentModal.jsx";
@@ -10,7 +10,7 @@ import RiskProfileRecommendation from "@/components/investments/RiskProfileRecom
 import EducationResources from "@/components/investments/EducationResources";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { INVESTMENT_TYPES_MAP } from "@/components/investments/investmentConstants";
-import ErrorState from "@/components/utils/ErrorState";
+import { Pencil } from "lucide-react";
 
 export default function InvestmentsPage() {
   const { formatCurrency, t, settings } = useAppSettings();
@@ -21,7 +21,6 @@ export default function InvestmentsPage() {
   const [user, setUser] = useState(null);
   const [showWatchlist, setShowWatchlist] = useState(false);
   const [watchlist, setWatchlist] = useState([]);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -33,9 +32,8 @@ export default function InvestmentsPage() {
 
   async function loadData() {
     setLoading(true);
-    setError(null);
     const [inv, watch] = await Promise.all([
-      base44.entities.Investment.filter({ created_by: user.email }, "-created_date").catch(() => { setError(true); return []; }),
+      base44.entities.Investment.filter({ created_by: user.email }, "-created_date"),
       base44.entities.InvestmentWatchlist.filter({ created_by: user.email }, "-created_date").catch(() => []),
     ]);
     setInvestments(inv);
@@ -107,20 +105,11 @@ export default function InvestmentsPage() {
 
         {loading ? (
           [...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-24 animate-pulse" />)
-        ) : error ? (
-          <ErrorState onRetry={loadData} />
         ) : investments.length === 0 ? (
-          <div className="bg-white rounded-2xl p-8 text-center shadow-sm" role="status">
-            <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" aria-hidden="true" />
+          <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
+            <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
             <p className="text-[#4A5568] font-semibold">{t('investments_empty_title')}</p>
             <p className="text-[#8FA4C8] text-sm mt-1">{t('investments_empty_desc')}</p>
-            <button
-              onClick={() => setShowAdd(true)}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#FF6A00] text-white rounded-xl text-sm font-semibold hover:bg-[#e05e00] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2"
-            >
-              <Plus className="w-4 h-4" aria-hidden="true" />
-              {t('investments_empty_desc')}
-            </button>
           </div>
         ) : (
           investments.map(inv => {

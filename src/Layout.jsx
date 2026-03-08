@@ -48,7 +48,6 @@ function LayoutInner({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen font-sans bg-[#F2F4F7] sm:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 64px)' }}>
-      <a href="#main-content" className="skip-link">Skip to main content</a>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -65,7 +64,7 @@ function LayoutInner({ children, currentPageName }) {
           <p className="text-xs text-[#8FA4C8] mt-0.5">{t('nav_manage')}</p>
         </div>
 
-        <nav className="flex flex-col gap-1 flex-1" aria-label="Main navigation">
+        <nav className="flex flex-col gap-1 flex-1">
           {navItems.map((item) => {
             const active = currentPageName === item.page;
             return (
@@ -145,12 +144,12 @@ function LayoutInner({ children, currentPageName }) {
       </div>
 
       {/* Main content — add top padding on mobile for header */}
-      <div id="main-content" className="sm:ml-60 pt-14 sm:pt-0">
+      <div className="sm:ml-60 pt-14 sm:pt-0">
         {children}
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-40 border-t border-white/10" aria-label="Mobile navigation" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-40 border-t border-white/10" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {mobileMainNav.map((item) => {
           const active = currentPageName === item.page;
           return (
@@ -176,7 +175,7 @@ function LayoutInner({ children, currentPageName }) {
           <Grid3x3 className="w-5 h-5" />
           {t('nav_more')}
         </Link>
-      </nav>
+      </div>
 
       {/* Nana Floating Chat */}
       {currentPageName !== "Nana" && <NanaFloatingChat />}

@@ -360,24 +360,6 @@ const TRANSLATIONS = {
     menu_finance: 'Keuangan',
     menu_notifications: 'Notifikasi & Info',
     menu_account: 'Akun',
-
-    // Feedback
-    feedback_title: 'Kirim Feedback',
-    feedback_subtitle: 'Bantu kami untuk terus berkembang',
-    feedback_rating_label: 'Nilai pengalaman Anda',
-    feedback_message_label: 'Ceritakan pengalaman Anda',
-    feedback_message_placeholder: 'Apa yang bisa kami tingkatkan?',
-    feedback_send: 'Kirim Feedback',
-    feedback_sending: 'Mengirim...',
-    feedback_success_title: 'Terima kasih! 🙏',
-    feedback_success_desc: 'Feedback Anda sangat berarti bagi kami',
-    feedback_required: 'Tulis feedback sebelum mengirim',
-    close: 'Tutup',
-
-    // Error states
-    error_title: 'Gagal memuat data',
-    error_desc: 'Terjadi kesalahan. Silakan coba lagi.',
-    error_retry: 'Coba Lagi',
   },
 
   en: {
@@ -729,24 +711,6 @@ const TRANSLATIONS = {
     menu_finance: 'Finance',
     menu_notifications: 'Notifications & Info',
     menu_account: 'Account',
-
-    // Feedback
-    feedback_title: 'Send Feedback',
-    feedback_subtitle: 'Help us improve the app',
-    feedback_rating_label: 'Rate your experience',
-    feedback_message_label: 'Tell us your experience',
-    feedback_message_placeholder: 'What can we do better?',
-    feedback_send: 'Send Feedback',
-    feedback_sending: 'Sending...',
-    feedback_success_title: 'Thank you! 🙏',
-    feedback_success_desc: 'Your feedback means a lot to us',
-    feedback_required: 'Please write feedback before sending',
-    close: 'Close',
-
-    // Error states
-    error_title: 'Failed to load data',
-    error_desc: 'Something went wrong. Please try again.',
-    error_retry: 'Try Again',
   },
 
   de: {
@@ -1030,24 +994,6 @@ const TRANSLATIONS = {
     menu_finance: 'Finanzen',
     menu_notifications: 'Benachrichtigungen & Info',
     menu_account: 'Konto',
-
-    // Feedback
-    feedback_title: 'Feedback senden',
-    feedback_subtitle: 'Hilf uns, die App zu verbessern',
-    feedback_rating_label: 'Bewerte deine Erfahrung',
-    feedback_message_label: 'Erzähl uns von deiner Erfahrung',
-    feedback_message_placeholder: 'Was können wir besser machen?',
-    feedback_send: 'Feedback senden',
-    feedback_sending: 'Senden...',
-    feedback_success_title: 'Danke! 🙏',
-    feedback_success_desc: 'Dein Feedback bedeutet uns sehr viel',
-    feedback_required: 'Bitte schreibe Feedback bevor du sendest',
-    close: 'Schließen',
-
-    // Error states
-    error_title: 'Daten konnten nicht geladen werden',
-    error_desc: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.',
-    error_retry: 'Erneut versuchen',
   },
 };
 
