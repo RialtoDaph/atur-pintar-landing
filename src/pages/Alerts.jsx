@@ -52,7 +52,7 @@ export default function AlertsPage() {
 
   useEffect(() => {
     loadAlerts();
-  }, [filter]);
+  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function loadAlerts() {
     setLoading(true);
@@ -62,8 +62,9 @@ export default function AlertsPage() {
       setAlerts(data);
     } catch (error) {
       console.error("Error loading alerts:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function handleMarkAsRead(alertId) {
