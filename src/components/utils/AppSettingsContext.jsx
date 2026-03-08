@@ -360,6 +360,27 @@ const TRANSLATIONS = {
     menu_finance: 'Keuangan',
     menu_notifications: 'Notifikasi & Info',
     menu_account: 'Akun',
+
+    // Feedback
+    feedback_title: 'Kirim Feedback',
+    feedback_subtitle: 'Bantu kami untuk terus berkembang',
+    feedback_rating_label: 'Nilai pengalaman Anda',
+    feedback_message_label: 'Ceritakan pengalaman Anda',
+    feedback_message_placeholder: 'Apa yang bisa kami tingkatkan?',
+    feedback_send: 'Kirim Feedback',
+    feedback_sending: 'Mengirim...',
+    feedback_success_title: 'Terima kasih! 🙏',
+    feedback_success_desc: 'Feedback Anda sangat berarti bagi kami',
+    feedback_required: 'Tulis feedback sebelum mengirim',
+    close: 'Tutup',
+
+    // Error states
+    error_title: 'Gagal memuat data',
+    error_desc: 'Terjadi kesalahan. Silakan coba lagi.',
+    error_retry: 'Coba Lagi',
+
+    // Empty state CTAs
+    debts_add_cta: 'Catat Utang',
   },
 
   en: {
