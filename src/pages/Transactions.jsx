@@ -280,9 +280,10 @@ export default function Transactions() {
 
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" aria-hidden="true" />
             <input
-              type="text"
+              type="search"
+              aria-label={t('search_transactions')}
               placeholder={t('search_transactions')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
