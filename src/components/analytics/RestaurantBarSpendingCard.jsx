@@ -159,9 +159,9 @@ export default function RestaurantBarSpendingCard({
             formatter={(value) => [formatRupiah(value), undefined]}
             contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
           />
-          <Bar dataKey="restaurant" fill="#FF6A00" radius={[6, 6, 0, 0]} stackId="a" />
-          <Bar dataKey="bar" fill="#FF8C42" radius={[0, 0, 0, 0]} stackId="a" />
-          <Line type="monotone" dataKey="total" stroke="#00C9A7" strokeWidth={2} dot={false} />
+          <Bar dataKey="restaurant" fill="#FF6A00" radius={[6, 6, 0, 0]} />
+          <Bar dataKey="bar" fill="#FF8C42" radius={[6, 6, 0, 0]} />
+          <Line type="monotone" dataKey="total" stroke="#00C9A7" strokeWidth={2} dot={false} strokeDasharray="4 4" />
         </ComposedChart>
       </ResponsiveContainer>
 
