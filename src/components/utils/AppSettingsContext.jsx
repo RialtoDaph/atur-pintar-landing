@@ -694,6 +694,12 @@ const TRANSLATIONS = {
     investments_watchlist_show: 'Show',
     investments_target: 'Target',
     investments_portfolio_weight: '% portfolio',
+    investments_delete_confirm: 'Delete this investment?',
+    diversification_portfolio: 'Portfolio Diversification',
+    diversification: 'Diversification',
+    annualized_return: 'Annualized Return',
+    no_purchase_date: 'N/A',
+    this_month: 'This month',
 
     // Pages - Tips
     tips_guide: 'Guide',
