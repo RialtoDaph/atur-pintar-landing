@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { formatRupiah } from "@/components/utils/formatRupiah";
-import { Plus, Bell, Trash2, ToggleLeft, ToggleRight, Edit2, Check } from "lucide-react";
+import { Plus, Bell, Trash2, ToggleLeft, Edit2, Check } from "lucide-react";
 import AddReminderModal from "@/components/reminders/AddReminderModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
