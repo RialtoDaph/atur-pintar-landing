@@ -295,7 +295,8 @@ export default function Goals() {
           </div>
           <button
             onClick={() => setShowAddGoal(true)}
-            className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+            aria-label="Tambah tujuan baru"
+            className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 focus:ring-offset-[#0A0A0A]"
           >
             <Plus className="w-5 h-5 text-white" />
           </button>
