@@ -729,6 +729,24 @@ const TRANSLATIONS = {
     menu_finance: 'Finance',
     menu_notifications: 'Notifications & Info',
     menu_account: 'Account',
+
+    // Feedback
+    feedback_title: 'Send Feedback',
+    feedback_subtitle: 'Help us improve the app',
+    feedback_rating_label: 'Rate your experience',
+    feedback_message_label: 'Tell us your experience',
+    feedback_message_placeholder: 'What can we do better?',
+    feedback_send: 'Send Feedback',
+    feedback_sending: 'Sending...',
+    feedback_success_title: 'Thank you! 🙏',
+    feedback_success_desc: 'Your feedback means a lot to us',
+    feedback_required: 'Please write feedback before sending',
+    close: 'Close',
+
+    // Error states
+    error_title: 'Failed to load data',
+    error_desc: 'Something went wrong. Please try again.',
+    error_retry: 'Try Again',
   },
 
   de: {
