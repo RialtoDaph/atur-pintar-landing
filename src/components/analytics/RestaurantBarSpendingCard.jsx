@@ -161,7 +161,7 @@ export default function RestaurantBarSpendingCard({
           />
           <Bar dataKey="restaurant" fill="#FF6A00" radius={[6, 6, 0, 0]} stackId="a" />
           <Bar dataKey="bar" fill="#FF8C42" radius={[0, 0, 0, 0]} stackId="a" />
-        </ComposedChart>
+        </BarChart>
       </ResponsiveContainer>
 
       {/* Summary */}
