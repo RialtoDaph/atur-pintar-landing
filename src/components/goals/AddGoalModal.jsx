@@ -1,4 +1,5 @@
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { X } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { parseRupiah } from "@/components/utils/parseRupiah";
