@@ -378,9 +378,6 @@ const TRANSLATIONS = {
     error_title: 'Gagal memuat data',
     error_desc: 'Terjadi kesalahan. Silakan coba lagi.',
     error_retry: 'Coba Lagi',
-
-    // Empty state CTAs
-    debts_add_cta: 'Catat Utang',
   },
 
   en: {
