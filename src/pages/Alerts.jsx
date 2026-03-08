@@ -177,7 +177,7 @@ export default function AlertsPage() {
                                   : "bg-blue-100 text-blue-700"
                               }`}
                             >
-                              {alert.severity}
+                              {alert.severity === "high" ? "Tinggi" : alert.severity === "medium" ? "Sedang" : "Rendah"}
                             </span>
                           )}
                         </div>
