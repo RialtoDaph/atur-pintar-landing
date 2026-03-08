@@ -14,9 +14,15 @@ const TYPE_CONFIG = {
 
 function getDaysUntilDue(dueDay) {
   const today = new Date();
-  const thisMonth = new Date(today.getFullYear(), today.getMonth(), dueDay);
-  if (thisMonth < today) {
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, dueDay);
+  today.setHours(0, 0, 0, 0);
+  // Clamp dueDay to valid days in current month
+  const maxDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const clampedDay = Math.min(dueDay, maxDay);
+  const thisMonth = new Date(today.getFullYear(), today.getMonth(), clampedDay);
+  if (thisMonth <= today) {
+    const nextMaxDay = new Date(today.getFullYear(), today.getMonth() + 2, 0).getDate();
+    const nextDay = Math.min(dueDay, nextMaxDay);
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, nextDay);
     return Math.ceil((nextMonth - today) / (1000 * 60 * 60 * 24));
   }
   return Math.ceil((thisMonth - today) / (1000 * 60 * 60 * 24));
