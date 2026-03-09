@@ -443,27 +443,30 @@ export default function Transactions() {
       </div>
 
       {showAddTx && (
-        <AddTransactionModal
-          goals={goals}
-          onClose={() => setShowAddTx(false)}
-          onSave={async (data) => {
-            const tempId = `temp_${Date.now()}`;
-            const optimisticTx = { ...data, id: tempId, created_date: new Date().toISOString() };
-            setTransactions(prev => [optimisticTx, ...prev]);
-            setShowAddTx(false);
-            try {
-              await base44.entities.Transaction.create(data);
-              toast.success(t('tx_create_success'));
-              setTransactions(prev => prev.filter(t => t.id !== tempId));
-              loadData();
-            } catch (error) {
-              console.error("Create failed:", error);
-              toast.error(t('tx_create_error'));
-              setTransactions(prev => prev.filter(t => t.id !== tempId));
-            }
-          }}
-        />
-      )}
+         <AddTransactionModal
+           goals={goals}
+           onClose={() => setShowAddTx(false)}
+           onSave={async (data) => {
+             const tempId = `temp_${Date.now()}`;
+             const optimisticTx = { ...data, id: tempId, created_date: new Date().toISOString() };
+             setTransactions(prev => [optimisticTx, ...prev]);
+             setShowAddTx(false);
+             try {
+               if (!data || !data.amount || data.amount <= 0 || !data.type) {
+                 throw new Error("Invalid transaction data");
+               }
+               await base44.entities.Transaction.create(data);
+               toast.success(t('tx_create_success'));
+               setTransactions(prev => prev.filter(t => t.id !== tempId));
+               loadData();
+             } catch (error) {
+               console.error("Create transaction failed:", error);
+               toast.error(t('tx_create_error'));
+               setTransactions(prev => prev.filter(t => t.id !== tempId));
+             }
+           }}
+         />
+       )}
 
       {editingTx && (
         <EditTransactionModal
