@@ -138,6 +138,7 @@ export default function Goals() {
     const remaining = Math.max(goal.target_amount - (goal.current_amount || 0), 0);
 
     return (
+      <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-[#F2F4F7] max-w-lg mx-auto px-4 py-8">
         <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> {t('goals_back')}
@@ -287,6 +288,7 @@ export default function Goals() {
             onSave={handleAddGoal}
           />
         )}
+        </div>
         </div>
         </PullToRefresh>
         );
