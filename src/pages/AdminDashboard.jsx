@@ -92,7 +92,7 @@ export default function AdminDashboard() {
 
         {/* Charts */}
         {stats?.chartData && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="bg-white rounded-2xl p-5 shadow-sm">
               <p className="text-sm font-semibold text-[#1A1A1A] mb-4">Pertumbuhan Transaksi (6 Bulan)</p>
               <ResponsiveContainer width="100%" height={220}>
