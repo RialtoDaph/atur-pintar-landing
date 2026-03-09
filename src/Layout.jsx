@@ -1,5 +1,5 @@
 import { createPageUrl } from "@/utils";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Settings, MoreHorizontal, Bell, Lightbulb, Search, Grid3x3, ArrowLeft } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
@@ -14,6 +14,7 @@ function LayoutInner({ children, currentPageName }) {
   const [showSearch, setShowSearch] = useState(false);
   const { t } = useAppSettings();
   const location = useLocation();
+  const navigate = useNavigate();
   const scrollPositions = useRef({});
   const mainContentRef = useRef(null);
   const tabHistory = useRef({
@@ -28,11 +29,31 @@ function LayoutInner({ children, currentPageName }) {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Initialize dark mode from localStorage on mount
+  // Initialize dark mode with system preference detection and manual override support
   useEffect(() => {
-    const isDark = localStorage.getItem("darkMode") === "true";
-    if (isDark) document.documentElement.classList.add("dark");
+    const manualDarkMode = localStorage.getItem("darkMode");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    
+    // Respect manual override if set, otherwise use system preference
+    const shouldBeDark = manualDarkMode !== null ? manualDarkMode === "true" : prefersDark;
+    if (shouldBeDark) document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
+  }, []);
+
+  // Listen for system color scheme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      const manualDarkMode = localStorage.getItem("darkMode");
+      // Only apply system change if user hasn't manually overridden
+      if (manualDarkMode === null) {
+        if (e.matches) document.documentElement.classList.add("dark");
+        else document.documentElement.classList.remove("dark");
+      }
+    };
+    
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   const navItems = [
@@ -91,7 +112,7 @@ function LayoutInner({ children, currentPageName }) {
     }
   }, [currentPageName]);
 
-  // Handle tab clicks - navigate with history state for better back-button handling
+  // Handle tab clicks - navigate with React Router for soft navigation
   const handleTabClick = (tabName) => {
     const targetPage = tabHistory.current[tabName];
     if (currentPageName === targetPage) {
@@ -100,8 +121,8 @@ function LayoutInner({ children, currentPageName }) {
         mainContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
       }
     } else {
-      // Navigate to tab, clearing nested pages
-      window.location.href = createPageUrl(tabName);
+      // Navigate to tab using React Router for better history preservation
+      navigate(createPageUrl(tabName));
     }
   };
 
