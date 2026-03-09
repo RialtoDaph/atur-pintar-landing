@@ -97,17 +97,17 @@ export default function AdminLayout({ children, currentPage }) {
         <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="w-8 h-8 flex items-center justify-center text-white"
+            className="w-9 h-9 flex items-center justify-center bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 bg-[#FF6A00] rounded flex items-center justify-center">
-              <Shield className="w-3 h-3 text-white" />
+            <div className="w-6 h-6 bg-[#FF6A00] rounded-lg flex items-center justify-center">
+              <Shield className="w-3.5 h-3.5 text-white" />
             </div>
             <p className="text-white text-sm font-bold">Admin Panel</p>
           </div>
-          <div className="w-8" />
+          <div className="w-9" />
         </div>
       </div>
 
