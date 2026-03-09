@@ -13,6 +13,7 @@ export default function NanaFloatingChat() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
   const [preferences, setPreferences] = useState(null);
+  const [showEntryModal, setShowEntryModal] = useState(false);
   const bottomRef = useRef(null);
   const { context, formatContextForMessage } = useFinancialContext();
 
