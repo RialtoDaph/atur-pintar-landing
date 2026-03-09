@@ -60,8 +60,8 @@ function LayoutInner({ children, currentPageName }) {
       <div className="hidden sm:flex fixed left-0 top-0 h-full w-60 bg-[#0A0A0A] flex-col px-5 py-8 z-40">
         {/* Logo */}
         <div className="mb-8 px-2">
-          <p className="text-xl font-bold text-white tracking-tight">Atur.in</p>
-          <p className="text-xs text-[#8FA4C8] mt-0.5">{t('nav_manage')}</p>
+          <p className="text-xl font-bold text-white tracking-tight">Atur Pintar</p>
+          <p className="text-xs text-[#8FA4C8] mt-0.5">Financial Tracker</p>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
@@ -132,6 +132,7 @@ function LayoutInner({ children, currentPageName }) {
       <div className="sm:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] border-b border-white/10" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center justify-between px-5 py-3">
           <p className="text-white font-bold text-lg tracking-tight">Atur Pintar</p>
+
           <div className="flex items-center gap-2">
             <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white">
               <Search className="w-4 h-4" />
