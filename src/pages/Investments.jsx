@@ -31,21 +31,31 @@ export default function InvestmentsPage() {
   useEffect(() => { if (user) loadData(); }, [user]);
 
   async function loadData() {
-    setLoading(true);
-    const [inv, watch] = await Promise.all([
-      base44.entities.Investment.filter({ created_by: user.email }, "-created_date"),
-      base44.entities.InvestmentWatchlist.filter({ created_by: user.email }, "-created_date").catch(() => []),
-    ]);
-    setInvestments(inv);
-    setWatchlist(watch);
-    setLoading(false);
-  }
+     setLoading(true);
+     try {
+       const [inv, watch] = await Promise.all([
+         base44.entities.Investment.filter({ created_by: user.email }, "-created_date"),
+         base44.entities.InvestmentWatchlist.filter({ created_by: user.email }, "-created_date").catch(() => []),
+       ]);
+       setInvestments(inv);
+       setWatchlist(watch);
+     } catch (error) {
+       console.error("Failed to load investments:", error);
+     } finally {
+       setLoading(false);
+     }
+   }
 
   async function handleDelete(id) {
-    if (!window.confirm(t('investments_delete_confirm') || "Hapus investasi ini?")) return;
-    await base44.entities.Investment.delete(id);
-    loadData();
-  }
+     if (!window.confirm(t('investments_delete_confirm') || "Hapus investasi ini?")) return;
+     try {
+       setInvestments(prev => prev.filter(inv => inv.id !== id));
+       await base44.entities.Investment.delete(id);
+     } catch (error) {
+       console.error("Delete investment failed:", error);
+       loadData();
+     }
+   }
 
   function handleEdit(inv) {
     setEditingInv(inv);
@@ -53,15 +63,20 @@ export default function InvestmentsPage() {
   }
 
   async function handleSave(data) {
-    if (editingInv) {
-      await base44.entities.Investment.update(editingInv.id, data);
-    } else {
-      await base44.entities.Investment.create(data);
-    }
-    setShowAdd(false);
-    setEditingInv(null);
-    loadData();
-  }
+     try {
+       if (editingInv) {
+         await base44.entities.Investment.update(editingInv.id, data);
+       } else {
+         await base44.entities.Investment.create(data);
+       }
+       setShowAdd(false);
+       setEditingInv(null);
+       loadData();
+     } catch (error) {
+       console.error("Save investment failed:", error);
+       throw error;
+     }
+   }
 
   const totalInvested = investments.reduce((s, i) => s + i.initial_amount, 0);
   const totalValue = investments.reduce((s, i) => s + i.current_value, 0);
