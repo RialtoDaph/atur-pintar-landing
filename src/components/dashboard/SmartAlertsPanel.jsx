@@ -42,18 +42,17 @@ const ALERT_CONFIG = {
   }
 };
 
-export default function SmartAlertsPanel() {
+export default function SmartAlertsPanel({ user }) {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadAlerts();
-  }, []);
+    if (user?.email) loadAlerts();
+  }, [user?.email]);
 
   async function loadAlerts() {
     setLoading(true);
     try {
-      const user = await base44.auth.me();
       const allAlerts = await base44.entities.Alert.filter(
         { status: { $in: ["unread", "read"] }, created_by: user.email },
         "-created_date",
