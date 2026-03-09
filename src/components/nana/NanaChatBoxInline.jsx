@@ -80,6 +80,13 @@ export default function NanaChatBoxInline({ user }) {
             onKeyDown={handleKey}
           />
           <button
+            onClick={() => setShowEntryModal(true)}
+            className="w-7 h-7 rounded-full bg-[#2D2D2D] border border-[#FF6A00]/50 flex items-center justify-center flex-shrink-0 hover:bg-[#FF6A00]/20 transition-colors self-end"
+            title="Catat transaksi / investasi"
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-[#FF6A00]" />
+          </button>
+          <button
             onClick={sendMessage}
             disabled={!input.trim() || sending}
             className="w-7 h-7 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end"
