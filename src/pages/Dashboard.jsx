@@ -115,7 +115,7 @@ export default function Dashboard() {
       <div className="max-w-2xl mx-auto px-4 -mt-6 space-y-3">
 
         {/* Reminder Widget */}
-        <ReminderWidget />
+        <ReminderWidget user={user} />
 
         {/* Budget Alert Widget */}
         <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
@@ -124,7 +124,7 @@ export default function Dashboard() {
         {!loading && <DashboardInsights transactions={transactions} goals={goals} />}
 
         {/* Smart Alerts Panel */}
-        <SmartAlertsPanel />
+        <SmartAlertsPanel user={user} />
 
         {/* Smart Alerts (widget-controlled duplicate removed) */}
 
