@@ -95,12 +95,6 @@ export default function Dashboard() {
               <p className="text-[#8FA4C8] text-xs font-medium">{t('dashboard_greeting')}</p>
               <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
             </div>
-            <button
-              onClick={() => setShowAddTx(true)}
-              className="w-9 h-9 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
-            >
-              <Plus className="w-4 h-4 text-white" />
-            </button>
           </div>
 
           {/* Balance Card */}
