@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Send, Plus, X, AlertTriangle, TrendingDown, Target } from "lucide-react";
+import { Send, Plus, X, AlertTriangle, TrendingDown, Target, PlusCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useFinancialContext } from "./useFinancialContext";
+import NanaQuickEntryModal from "./NanaQuickEntryModal";
 
 export default function NanaFloatingChat() {
   const [open, setOpen] = useState(false);
