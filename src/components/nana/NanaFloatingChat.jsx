@@ -47,6 +47,8 @@ export default function NanaFloatingChat() {
 
   async function openChat() {
     setOpen(true);
+    setUnreadCount(0);
+    localStorage.setItem("nana_last_seen", Date.now().toString());
     if (activeConv) return;
     setLoading(true);
     const convs = await base44.agents.listConversations({ agent_name: "nana" });
