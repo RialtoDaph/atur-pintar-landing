@@ -34,9 +34,16 @@ export default function NanaFloatingChat() {
     if (!activeConv) return;
     const unsub = base44.agents.subscribeToConversation(activeConv.id, (data) => {
       setMessages(data.messages || []);
+      if (!open) {
+        const lastSeen = parseInt(localStorage.getItem("nana_last_seen") || "0");
+        const newAssistantMsgs = (data.messages || []).filter(
+          (m) => m.role === "assistant" && new Date(m.created_date).getTime() > lastSeen
+        );
+        setUnreadCount(newAssistantMsgs.length);
+      }
     });
     return unsub;
-  }, [activeConv?.id]);
+  }, [activeConv?.id, open]);
 
   async function openChat() {
     setOpen(true);
