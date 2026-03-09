@@ -16,25 +16,18 @@ const INVESTMENT_TYPES = {
   lainnya: { label: "Lainnya", emoji: "💼", color: "#95A5A6" },
 };
 
-export default function PortfolioSummary() {
+export default function PortfolioSummary({ user }) {
   const { formatCurrency, t } = useAppSettings();
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-    }).catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (user) {
+    if (user?.email) {
       base44.entities.Investment.filter({ created_by: user.email }, "-created_date", 50)
         .then(data => { setInvestments(data); setLoading(false); })
         .catch(() => setLoading(false));
     }
-  }, [user]);
+  }, [user?.email]);
 
   if (loading) {
     return <div className="bg-white rounded-2xl shadow-sm h-36 animate-pulse" />;
