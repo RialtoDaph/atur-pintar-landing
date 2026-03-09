@@ -17,6 +17,13 @@ function LayoutInner({ children, currentPageName }) {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  // Initialize dark mode from localStorage on mount
+  useEffect(() => {
+    const isDark = localStorage.getItem("darkMode") === "true";
+    if (isDark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+  }, []);
+
   const navItems = [
   { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
   { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
