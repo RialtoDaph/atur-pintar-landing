@@ -72,7 +72,11 @@ export default function Goals() {
         ? (goal.current_amount || 0) + amount
         : Math.max((goal.current_amount || 0) - amount, 0);
 
+    const previousGoals = goals;
+    const optimisticTx = { ...tx, id: `temp_${Date.now()}`, created_date: new Date().toISOString() };
     setGoals(prev => prev.map(g => g.id === goalId ? { ...g, current_amount: newAmount, status: newAmount >= g.target_amount ? "completed" : "active" } : g));
+    setTransactions(prev => [optimisticTx, ...prev]);
+    setShowTxModal(null);
     try {
       await Promise.all([
         base44.entities.Transaction.create(tx),
@@ -81,8 +85,9 @@ export default function Goals() {
           status: newAmount >= goal.target_amount ? "completed" : "active",
         }),
       ]);
-      setShowTxModal(null);
     } catch (error) {
+      setGoals(previousGoals);
+      setTransactions(prev => prev.filter(t => t.id !== optimisticTx.id));
       loadData();
     }
   }
@@ -140,7 +145,7 @@ export default function Goals() {
     return (
       <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-[#F2F4F7] max-w-lg mx-auto px-4 py-8">
-        <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-8 transition-colors">
+        <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-8 transition-colors tap-highlight-fix">
           <ArrowLeft className="w-4 h-4" /> {t('goals_back')}
         </Link>
 
@@ -193,14 +198,14 @@ export default function Goals() {
                  <button
                    onClick={() => setShowTxModal("deposit")}
                    aria-label="Tambah uang ke tujuan"
-                   className="flex items-center justify-center gap-2 bg-[#1A1A1A] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#333] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] focus:ring-offset-2"
+                   className="flex items-center justify-center gap-2 bg-[#1A1A1A] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#333] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] focus:ring-offset-2 tap-highlight-fix"
                  >
                    <Plus className="w-4 h-4" aria-hidden="true" /> {t('goals_add_money')}
                  </button>
                  <button
                    onClick={() => setShowTxModal("withdrawal")}
                    aria-label="Tarik uang dari tujuan"
-                   className="flex items-center justify-center gap-2 bg-[#F7F6F3] text-[#1A1A1A] py-3 rounded-xl text-xs font-semibold hover:bg-[#EFEFED] transition-colors border border-[#EFEFED] focus:outline-none focus:ring-2 focus:ring-[#EFEFED] focus:ring-offset-2"
+                   className="flex items-center justify-center gap-2 bg-[#F7F6F3] text-[#1A1A1A] py-3 rounded-xl text-xs font-semibold hover:bg-[#EFEFED] transition-colors border border-[#EFEFED] focus:outline-none focus:ring-2 focus:ring-[#EFEFED] focus:ring-offset-2 tap-highlight-fix"
                  >
                    <Minus className="w-4 h-4" aria-hidden="true" /> {t('goals_withdraw')}
                  </button>
@@ -208,7 +213,7 @@ export default function Goals() {
              )}
              <button
                onClick={() => setEditingGoal(goal)}
-               className="flex items-center justify-center gap-2 bg-[#FF6A00] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors"
+               className="flex items-center justify-center gap-2 bg-[#FF6A00] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors tap-highlight-fix"
              >
                ✏️ {t('edit')}
              </button>
@@ -218,7 +223,7 @@ export default function Goals() {
         {/* Transactions */}
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-semibold text-[#1A1A1A]">{t('goals_activity')}</h2>
-          <button onClick={handleDelete} className="text-xs text-red-400 hover:text-red-600 transition-colors flex items-center gap-1">
+          <button onClick={handleDelete} className="text-xs text-red-400 hover:text-red-600 transition-colors flex items-center gap-1 tap-highlight-fix">
             <Trash2 className="w-3.5 h-3.5" /> {t('goals_delete_goal')}
           </button>
         </div>
@@ -230,7 +235,7 @@ export default function Goals() {
               <button
                 key={f}
                 onClick={() => setTxFilter(f)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors tap-highlight-fix ${
                   txFilter === f ? "bg-[#1A1A1A] text-white" : "bg-[#F2F4F7] text-[#8FA4C8] hover:bg-[#E2E8F0]"
                 }`}
               >
@@ -307,7 +312,7 @@ export default function Goals() {
           <button
             onClick={() => setShowAddGoal(true)}
             aria-label="Tambah tujuan baru"
-            className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 focus:ring-offset-[#0A0A0A]"
+            className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] tap-highlight-fix"
           >
             <Plus className="w-5 h-5 text-white" />
           </button>
@@ -331,7 +336,7 @@ export default function Goals() {
           <p className="text-[#8FA4C8] text-sm mt-1 mb-4">{t('goals_empty_desc')}</p>
           <button
             onClick={() => setShowAddGoal(true)}
-            className="px-5 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-semibold hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2"
+            className="px-5 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-semibold hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 tap-highlight-fix"
           >
             + Buat Tujuan Pertama
           </button>
