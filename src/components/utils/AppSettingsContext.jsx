@@ -197,14 +197,14 @@ const TRANSLATIONS = {
     goals_days_left: 'hari',
     goals_expired: 'Kadaluarsa',
     goals_delete: 'Hapus',
-    goals_back: 'Back',
-    goals_add_money: 'Add Money',
-    goals_withdraw: 'Withdraw',
-    goals_activity: 'Activity',
-    goals_delete_goal: 'Delete goal',
-    goals_no_tx: 'No transactions yet',
+    goals_back: 'Kembali',
+    goals_add_money: 'Tambah Dana',
+    goals_withdraw: 'Tarik Dana',
+    goals_activity: 'Aktivitas',
+    goals_delete_goal: 'Hapus Tujuan',
+    goals_no_tx: 'Belum ada transaksi',
     goals_achieved_pct: '% tercapai',
-    goals_remaining: 'Sisa Rp',
+    goals_remaining: 'Sisa',
 
     // Pages - Budget
     budget_subtitle: 'Anggaran Bulanan',
@@ -301,6 +301,7 @@ const TRANSLATIONS = {
     // Pages - Reminders
     reminders_manage: 'Kelola',
     reminders_title: 'Pengingat',
+    reminders_delete_confirm: 'Hapus pengingat ini?',
     reminders_total_active: 'Total tagihan aktif bulan ini',
     reminders_active_count: 'pengingat aktif',
     reminders_empty: 'Belum ada pengingat',
@@ -320,7 +321,7 @@ const TRANSLATIONS = {
     alerts_unread: 'Belum dibaca',
     alerts_all: 'Semua',
     alerts_empty_title: 'Tidak ada alerts',
-    alerts_empty_desc: 'Anda semua catan dengan baik!',
+    alerts_empty_desc: 'Tidak ada peringatan saat ini!',
     alerts_mark_read: 'Tandai sudah dibaca',
     alerts_follow_up: 'Tindaklanjuti →',
     alerts_delete: 'Hapus',
@@ -658,6 +659,7 @@ const TRANSLATIONS = {
     // Pages - Reminders
     reminders_manage: 'Manage',
     reminders_title: 'Reminders',
+    reminders_delete_confirm: 'Delete this reminder?',
     reminders_total_active: 'Total active bills this month',
     reminders_active_count: 'active reminders',
     reminders_empty: 'No reminders yet',
@@ -956,6 +958,7 @@ const TRANSLATIONS = {
     settings_version: 'Atur.in v1.0 · Gemacht mit ❤️',
     reminders_manage: 'Verwalten',
     reminders_title: 'Erinnerungen',
+    reminders_delete_confirm: 'Diese Erinnerung löschen?',
     reminders_total_active: 'Aktive Rechnungen diesen Monat',
     reminders_active_count: 'aktive Erinnerungen',
     reminders_empty: 'Noch keine Erinnerungen',
@@ -1105,11 +1108,12 @@ export function AppSettingsProvider({ children }) {
 
   const formatShortNumber = (value) => {
     if (typeof value !== 'number') value = parseFloat(value) || 0;
+    const sign = value < 0 ? '-' : '';
     const absValue = Math.abs(value);
-    if (absValue >= 1000000000) return `${(absValue / 1000000000).toFixed(1)}M`;
-    if (absValue >= 1000000) return `${(absValue / 1000000).toFixed(0)}${settings.language === 'id' ? 'jt' : 'M'}`;
-    if (absValue >= 1000) return `${(absValue / 1000).toFixed(0)}${settings.language === 'id' ? 'rb' : 'K'}`;
-    return absValue.toString();
+    if (absValue >= 1000000000) return `${sign}${(absValue / 1000000000).toFixed(1)}${settings.language === 'id' ? 'M' : 'B'}`;
+    if (absValue >= 1000000) return `${sign}${(absValue / 1000000).toFixed(0)}${settings.language === 'id' ? 'jt' : 'M'}`;
+    if (absValue >= 1000) return `${sign}${(absValue / 1000).toFixed(0)}${settings.language === 'id' ? 'rb' : 'K'}`;
+    return `${sign}${absValue.toString()}`;
   };
 
   return (
