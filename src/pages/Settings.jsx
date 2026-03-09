@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Moon, Sun, LogOut, Check, MessageSquare } from "lucide-react";
+import { Moon, Sun, LogOut, Check, MessageSquare, ShieldCheck } from "lucide-react";
 import NanaPreferencesSettings from "@/components/settings/NanaPreferencesSettings";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 const LANGUAGES = [
   { code: "id", label: "Indonesia", flag: "🇮🇩" },
