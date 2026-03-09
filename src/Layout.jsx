@@ -1,17 +1,21 @@
 import { createPageUrl } from "@/utils";
-import { Link } from "react-router-dom";
-import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Settings, MoreHorizontal, Bell, Lightbulb, Search, Grid3x3 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, TrendingUp, Settings, MoreHorizontal, Bell, Lightbulb, Search, Grid3x3, ArrowLeft } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import NanaFloatingChat from "@/components/nana/NanaFloatingChat";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
+import { AnimatePresence, motion } from "framer-motion";
 
 function LayoutInner({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const { t } = useAppSettings();
+  const location = useLocation();
+  const scrollPositions = useRef({});
+  const mainContentRef = useRef(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -52,6 +56,24 @@ function LayoutInner({ children, currentPageName }) {
   const mobileMorePages = ["Goals", "Budget", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu"];
 
   const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
+
+  // Detect if we're on a nested page (detail view)
+  const mainPages = ["Dashboard", "Transactions", "Goals", "Budget", "Debts", "Investments", "Analytics", "Tips", "Reminders", "Alerts", "Settings", "Menu"];
+  const isNestedPage = !mainPages.includes(currentPageName);
+
+  // Save scroll position when leaving a page
+  useEffect(() => {
+    if (mainContentRef.current) {
+      scrollPositions.current[currentPageName] = mainContentRef.current.scrollTop;
+    }
+  }, [currentPageName]);
+
+  // Restore scroll position when returning to a page
+  useEffect(() => {
+    if (mainContentRef.current && scrollPositions.current[currentPageName]) {
+      mainContentRef.current.scrollTop = scrollPositions.current[currentPageName];
+    }
+  }, [currentPageName]);
 
   return (
     <div className="min-h-screen font-sans bg-[#F2F4F7] sm:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 64px)' }}>
@@ -138,13 +160,23 @@ function LayoutInner({ children, currentPageName }) {
       {/* Mobile top header */}
       <div className="sm:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] border-b border-white/10" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center justify-between px-5 py-3">
-          <p className="text-white font-bold text-lg tracking-tight">Atur Pintar</p>
+          {isNestedPage ? (
+            <button
+              onClick={() => window.history.back()}
+              className="flex items-center gap-2 text-white hover:bg-white/10 px-2 py-1 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="text-sm font-medium">{t('back')}</span>
+            </button>
+          ) : (
+            <p className="text-white font-bold text-lg tracking-tight">Atur Pintar</p>
+          )}
 
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white">
+            <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Search className="w-4 h-4" />
             </button>
-            <Link to={createPageUrl("Settings")} className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-xs font-bold">
+            <Link to={createPageUrl("Settings")} className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-xs font-bold tap-highlight-fix">
               {initials}
             </Link>
           </div>
@@ -152,8 +184,18 @@ function LayoutInner({ children, currentPageName }) {
       </div>
 
       {/* Main content — add top padding on mobile for header */}
-      <div className="sm:ml-60 pt-14 sm:pt-0">
-        {children}
+      <div ref={mainContentRef} className="sm:ml-60 pt-14 sm:pt-0 overflow-y-auto">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPageName}
+            initial={{ opacity: 0, x: isNestedPage ? 50 : -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: isNestedPage ? -50 : 50 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Mobile bottom nav */}
@@ -164,7 +206,7 @@ function LayoutInner({ children, currentPageName }) {
             <Link
               key={item.page}
               to={createPageUrl(item.page)}
-              className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors ${
+              className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix ${
               active ? "text-[#FF6A00]" : "text-[#888]"}`
               }>
 
@@ -176,7 +218,7 @@ function LayoutInner({ children, currentPageName }) {
         {/* More button → goes to Menu page */}
         <Link
           to={createPageUrl("Menu")}
-          className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors ${
+          className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix ${
           mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"}`
           }>
 
