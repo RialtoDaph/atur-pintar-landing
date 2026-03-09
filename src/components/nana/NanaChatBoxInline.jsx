@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Send, Sparkles } from "lucide-react";
+import { Send, Sparkles, PlusCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useFinancialContext } from "./useFinancialContext";
+import NanaQuickEntryModal from "./NanaQuickEntryModal";
 
 export default function NanaChatBoxInline({ user }) {
   const [input, setInput] = useState("");
