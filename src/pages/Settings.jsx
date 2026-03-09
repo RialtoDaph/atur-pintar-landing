@@ -138,30 +138,77 @@ export default function Settings() {
           </button>
         </div>
 
-        {/* Bahasa & Mata Uang — terkunci setelah onboarding */}
+        {/* Bahasa & Mata Uang */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="px-5 pt-4 pb-3 flex items-center justify-between">
             <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_language')} & {t('settings_currency')}</p>
-            <span className="text-[10px] font-semibold text-white bg-[#FF6A00] px-2 py-0.5 rounded-full">🔒 Terkunci</span>
+            {settings?.settings_unlocked
+              ? <span className="text-[10px] font-semibold text-white bg-green-500 px-2 py-0.5 rounded-full">🔓 Terbuka</span>
+              : <span className="text-[10px] font-semibold text-white bg-[#FF6A00] px-2 py-0.5 rounded-full">🔒 Terkunci</span>
+            }
           </div>
           <div className="px-5 pb-4 space-y-3">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-              <span className="text-xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
-              <div>
-                <p className="text-sm font-semibold text-[#1A1A1A]">{LANGUAGES.find(l => l.code === language)?.label}</p>
-                <p className="text-xs text-[#8FA4C8]">{t('settings_language')}</p>
+            {/* Language */}
+            {settings?.settings_unlocked ? (
+              <div className="flex flex-wrap gap-2">
+                {LANGUAGES.map(l => (
+                  <button
+                    key={l.code}
+                    onClick={() => selectLanguage(l.code)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-medium ${
+                      language === l.code
+                        ? 'border-[#FF6A00] bg-[#FF6A00]/5 text-[#FF6A00]'
+                        : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#1A1A1A] hover:border-[#FF6A00]/50'
+                    }`}
+                  >
+                    <span>{l.flag}</span> {l.label}
+                    {language === l.code && <Check className="w-3.5 h-3.5" />}
+                  </button>
+                ))}
               </div>
-              <Check className="w-4 h-4 text-[#FF6A00] ml-auto" />
-            </div>
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-              <span className="text-xl">{CURRENCIES.find(c => c.code === currency)?.flag}</span>
-              <div>
-                <p className="text-sm font-semibold text-[#1A1A1A]">{CURRENCIES.find(c => c.code === currency)?.label}</p>
-                <p className="text-xs text-[#8FA4C8]">{CURRENCIES.find(c => c.code === currency)?.symbol} · {currency}</p>
+            ) : (
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                <span className="text-xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+                <div>
+                  <p className="text-sm font-semibold text-[#1A1A1A]">{LANGUAGES.find(l => l.code === language)?.label}</p>
+                  <p className="text-xs text-[#8FA4C8]">{t('settings_language')}</p>
+                </div>
+                <Check className="w-4 h-4 text-[#FF6A00] ml-auto" />
               </div>
-              <Check className="w-4 h-4 text-[#FF6A00] ml-auto" />
-            </div>
-            <p className="text-xs text-[#8FA4C8]">Bahasa dan mata uang ditetapkan saat setup awal untuk menjaga konsistensi data keuanganmu.</p>
+            )}
+
+            {/* Currency */}
+            {settings?.settings_unlocked ? (
+              <div className="flex flex-wrap gap-2">
+                {CURRENCIES.map(c => (
+                  <button
+                    key={c.code}
+                    onClick={() => selectCurrency(c.code)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-medium ${
+                      currency === c.code
+                        ? 'border-[#FF6A00] bg-[#FF6A00]/5 text-[#FF6A00]'
+                        : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#1A1A1A] hover:border-[#FF6A00]/50'
+                    }`}
+                  >
+                    <span>{c.flag}</span> {c.label}
+                    {currency === c.code && <Check className="w-3.5 h-3.5" />}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                <span className="text-xl">{CURRENCIES.find(c => c.code === currency)?.flag}</span>
+                <div>
+                  <p className="text-sm font-semibold text-[#1A1A1A]">{CURRENCIES.find(c => c.code === currency)?.label}</p>
+                  <p className="text-xs text-[#8FA4C8]">{CURRENCIES.find(c => c.code === currency)?.symbol} · {currency}</p>
+                </div>
+                <Check className="w-4 h-4 text-[#FF6A00] ml-auto" />
+              </div>
+            )}
+
+            {!settings?.settings_unlocked && (
+              <p className="text-xs text-[#8FA4C8]">Bahasa dan mata uang ditetapkan saat setup awal. Hubungi admin untuk mengubah.</p>
+            )}
           </div>
         </div>
 
