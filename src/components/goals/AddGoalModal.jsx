@@ -28,22 +28,43 @@ export default function AddGoalModal({ onClose, onSave, goal = null }) {
   const [errors, setErrors] = useState({});
 
   async function handleSave() {
-    const newErrors = {};
-    if (!form.name?.trim()) newErrors.name = "Nama tujuan wajib diisi";
-    if (!form.target_amount || parseRupiah(form.target_amount) <= 0) newErrors.target_amount = "Target jumlah wajib diisi";
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-    setErrors({});
-    setSaving(true);
-    await onSave({
-      ...form,
-      target_amount: parseRupiah(form.target_amount),
-      current_amount: parseRupiah(form.current_amount) || 0,
-    });
-    setSaving(false);
-  }
+     const newErrors = {};
+     if (!form.name?.trim()) newErrors.name = t('goal_name_required') || "Nama tujuan wajib diisi";
+
+     const targetAmount = parseRupiah(form.target_amount);
+     if (!form.target_amount || targetAmount <= 0) {
+       newErrors.target_amount = t('goal_amount_required') || "Target jumlah wajib diisi";
+     }
+
+     const currentAmount = parseRupiah(form.current_amount) || 0;
+     if (currentAmount < 0) {
+       newErrors.current_amount = t('goal_amount_positive') || "Jumlah yang sudah ditabung tidak boleh negatif";
+     }
+
+     if (currentAmount > targetAmount) {
+       newErrors.current_amount = t('goal_amount_exceeds') || "Jumlah yang sudah ditabung tidak boleh melebihi target";
+     }
+
+     if (Object.keys(newErrors).length > 0) {
+       setErrors(newErrors);
+       return;
+     }
+
+     setErrors({});
+     setSaving(true);
+     try {
+       await onSave({
+         ...form,
+         target_amount: targetAmount,
+         current_amount: currentAmount,
+       });
+     } catch (error) {
+       console.error("Save goal failed:", error);
+       throw error;
+     } finally {
+       setSaving(false);
+     }
+   }
 
   function formatThousands(val) {
     const cleaned = val.replace(/[^0-9.,]/g, "");
