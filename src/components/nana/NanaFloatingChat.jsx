@@ -133,12 +133,19 @@ export default function NanaFloatingChat() {
       `}</style>
       {/* Floating button */}
       {!open &&
-      <div className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 rounded-[40px] bg-black border-2 border-[#FF6A00] overflow-hidden hover:opacity-90 transition-all active:scale-95 nana-float cursor-pointer" onClick={openChat}>
-        <img
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
-          alt="Nana AI"
-          className="w-full h-full object-cover"
-        />
+      <div className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 cursor-pointer" onClick={openChat}>
+        <div className="relative w-14 h-14 rounded-[40px] bg-black border-2 border-[#FF6A00] overflow-hidden hover:opacity-90 transition-all active:scale-95 nana-float">
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
+            alt="Nana AI"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        {unreadCount > 0 && (
+          <div className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-[#FF6A00] rounded-full flex items-center justify-center px-1 border-2 border-black">
+            <span className="text-white text-[10px] font-bold leading-none">{unreadCount > 9 ? "9+" : unreadCount}</span>
+          </div>
+        )}
       </div>
       }
 
