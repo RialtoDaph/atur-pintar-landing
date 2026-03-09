@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Send, Sparkles, PlusCircle } from "lucide-react";
+import { Send, Sparkles } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useFinancialContext } from "./useFinancialContext";
-import NanaQuickEntryModal from "./NanaQuickEntryModal";
+import InteractivePrompt from "./InteractivePrompt";
 
 export default function NanaChatBoxInline({ user }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [showEntryModal, setShowEntryModal] = useState(false);
+  const [messages, setMessages] = useState([]);
   const { context, formatContextForMessage } = useFinancialContext();
 
   async function getOrCreateConv() {
@@ -30,10 +30,10 @@ export default function NanaChatBoxInline({ user }) {
     setSending(false);
   }
 
-  async function sendFromModal(text) {
+  async function sendInteractiveResponse(displayText, responseValue) {
     const conv = await getOrCreateConv();
     const contextBlock = formatContextForMessage(context);
-    await base44.agents.addMessage(conv, { role: "user", content: text + contextBlock });
+    await base44.agents.addMessage(conv, { role: "user", content: displayText + contextBlock });
   }
 
   function handleKey(e) {
@@ -43,54 +43,58 @@ export default function NanaChatBoxInline({ user }) {
     }
   }
 
-  return (
-    <div className="bg-[#0A0A0A] rounded-2xl overflow-hidden px-4 py-3 flex items-center gap-3" style={{ boxShadow: '0 0 0 1.5px #FF6A00, 0 8px 32px rgba(255,106,0,0.35)' }}>
-      {showEntryModal && (
-        <NanaQuickEntryModal onClose={() => setShowEntryModal(false)} onSend={sendFromModal} />
-      )}
+  const lastMessage = messages[messages.length - 1];
+  const lastAssistantMsg = messages.findLast((m) => m.role === "assistant");
 
-      {/* Avatar */}
-      <div className="w-9 h-9 rounded-full bg-black border-2 border-[#2D2D2D] overflow-hidden flex-shrink-0">
-        <img
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
-          alt="Nana"
-          className="w-full h-full object-cover"
-        />
+  return (
+    <div className="bg-[#0A0A0A] rounded-2xl overflow-hidden px-4 py-3 flex flex-col gap-3" style={{ boxShadow: '0 0 0 1.5px #FF6A00, 0 8px 32px rgba(255,106,0,0.35)' }}>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-black border-2 border-[#2D2D2D] overflow-hidden flex-shrink-0">
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
+            alt="Nana"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white text-xs font-bold flex items-center gap-1">
+            Nana AI <Sparkles className="w-3 h-3 text-[#FF6A00]" />
+          </p>
+        </div>
       </div>
 
-      {/* Name + Input */}
-      <div className="flex-1 min-w-0">
-        <p className="text-white text-xs font-bold flex items-center gap-1 mb-1">
-          Nana AI <Sparkles className="w-3 h-3 text-[#FF6A00]" />
-        </p>
-        <div className="flex gap-2 bg-[#2D2D2D] rounded-xl border border-[#3D3D3D] px-3 py-1.5">
-          <textarea
-            className="flex-1 text-xs text-white resize-none outline-none bg-transparent placeholder:text-[#8FA4C8] max-h-16"
-            rows={1}
-            placeholder="Tanya atau catat transaksi..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKey}
+      {/* Interactive Prompt if present */}
+      {lastAssistantMsg?.metadata?.interactive_prompt && (
+        <div className="bg-[#1A1A1A] rounded-xl p-3">
+          <InteractivePrompt 
+            prompt={lastAssistantMsg.metadata.interactive_prompt}
+            onResponse={sendInteractiveResponse}
           />
-          <button
-            onClick={() => setShowEntryModal(true)}
-            className="w-7 h-7 rounded-full bg-[#2D2D2D] border border-[#FF6A00]/50 flex items-center justify-center flex-shrink-0 hover:bg-[#FF6A00]/20 transition-colors self-end"
-            title="Catat transaksi / investasi"
-          >
-            <PlusCircle className="w-3.5 h-3.5 text-[#FF6A00]" />
-          </button>
-          <button
-            onClick={sendMessage}
-            disabled={!input.trim() || sending}
-            className="w-7 h-7 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end"
-          >
-            {sending ? (
-              <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Send className="w-3 h-3 text-white" />
-            )}
-          </button>
         </div>
+      )}
+
+      {/* Input */}
+      <div className="flex gap-2 bg-[#2D2D2D] rounded-xl border border-[#3D3D3D] px-3 py-1.5">
+        <textarea
+          className="flex-1 text-xs text-white resize-none outline-none bg-transparent placeholder:text-[#8FA4C8] max-h-16"
+          rows={1}
+          placeholder="Tanya atau catat transaksi..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKey}
+        />
+        <button
+          onClick={sendMessage}
+          disabled={!input.trim() || sending}
+          className="w-7 h-7 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end"
+        >
+          {sending ? (
+            <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Send className="w-3 h-3 text-white" />
+          )}
+        </button>
       </div>
     </div>
   );

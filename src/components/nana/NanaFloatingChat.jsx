@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Send, Plus, X, AlertTriangle, TrendingDown, Target, PlusCircle } from "lucide-react";
+import { Send, Plus, X, AlertTriangle, TrendingDown, Target } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useFinancialContext } from "./useFinancialContext";
-import NanaQuickEntryModal from "./NanaQuickEntryModal";
+import InteractivePrompt from "./InteractivePrompt";
 
 export default function NanaFloatingChat() {
   const [open, setOpen] = useState(false);
@@ -13,7 +13,6 @@ export default function NanaFloatingChat() {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(false);
   const [preferences, setPreferences] = useState(null);
-  const [showEntryModal, setShowEntryModal] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const bottomRef = useRef(null);
   const { context, formatContextForMessage } = useFinancialContext();
@@ -69,7 +68,7 @@ export default function NanaFloatingChat() {
     setMessages([]);
   }
 
-  async function sendFromModal(text) {
+  async function sendInteractiveResponse(displayText, responseValue) {
     let conv = activeConv;
     if (!conv) {
       conv = await base44.agents.createConversation({
@@ -78,9 +77,8 @@ export default function NanaFloatingChat() {
       });
       setActiveConv(conv);
     }
-    if (!open) setOpen(true);
     const contextBlock = formatContextForMessage(context);
-    await base44.agents.addMessage(conv, { role: "user", content: text + contextBlock });
+    await base44.agents.addMessage(conv, { role: "user", content: displayText + contextBlock });
   }
 
   async function sendMessage() {
@@ -252,9 +250,25 @@ export default function NanaFloatingChat() {
             msg.role === "user" ? "bg-[#FF6A00] text-white" : "bg-[#2D2D2D] border border-[#3D3D3D] text-white"}`
             }>
                     {msg.role === "assistant" ?
-              <ReactMarkdown className="prose prose-xs max-w-none text-white [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2 [&>li]:mb-1 [&>strong]:font-semibold [&>code]:bg-black/30 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>pre]:bg-black/50 [&>pre]:p-2 [&>pre]:rounded [&>pre]:text-[10px] [&>pre]:overflow-x-auto [&>h3]:font-semibold [&>h3]:mt-2 [&>h3]:mb-1">
-                        {msg.content}
-                      </ReactMarkdown> :
+              <div>
+                <ReactMarkdown className="prose prose-xs max-w-none text-white [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2 [&>li]:mb-1 [&>strong]:font-semibold [&>code]:bg-black/30 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>pre]:bg-black/50 [&>pre]:p-2 [&>pre]:rounded [&>pre]:text-[10px] [&>pre]:overflow-x-auto [&>h3]:font-semibold [&>h3]:mt-2 [&>h3]:mb-1">
+                        {typeof msg.content === "string" && msg.content.startsWith("{") ? 
+                          (() => {
+                            try {
+                              const parsed = JSON.parse(msg.content);
+                              return parsed.content || msg.content;
+                            } catch {
+                              return msg.content;
+                            }
+                          })() : msg.content}
+                      </ReactMarkdown>
+                {msg.metadata?.interactive_prompt && (
+                  <InteractivePrompt 
+                    prompt={msg.metadata.interactive_prompt}
+                    onResponse={sendInteractiveResponse}
+                  />
+                )}
+              </div> :
               <p>{msg.content}</p>}
                   </div>
                 </div>
@@ -281,18 +295,11 @@ export default function NanaFloatingChat() {
 
           {/* Input */}
           <div className="px-3 py-2.5 bg-black border-t border-[#2D2D2D] flex-shrink-0">
-            <div className="flex gap-2 mb-1.5">
-              <button onClick={() => setShowEntryModal(true)}
-                className="flex items-center gap-1.5 text-[10px] text-[#FF6A00] border border-[#FF6A00]/40 bg-[#FF6A00]/10 rounded-lg px-2.5 py-1 hover:bg-[#FF6A00]/20 transition-colors font-medium">
-                <PlusCircle className="w-3 h-3" />
-                Catat Transaksi / Investasi / Utang
-              </button>
-            </div>
             <div className="flex gap-2 bg-[#2D2D2D] rounded-xl border border-[#3D3D3D] px-3 py-1.5">
               <textarea
               className="flex-1 text-xs text-white resize-none outline-none bg-transparent placeholder:text-[#8FA4C8] max-h-16"
               rows={1}
-              placeholder="Tanya Nana sesuatu..."
+              placeholder="Tanya atau catat transaksi..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKey} />
@@ -306,14 +313,8 @@ export default function NanaFloatingChat() {
               </button>
             </div>
           </div>
-        </div>
-      }
-      {showEntryModal && (
-        <NanaQuickEntryModal
-          onClose={() => setShowEntryModal(false)}
-          onSend={sendFromModal}
-        />
-      )}
+          </div>
+          }
     </>);
 
 }
