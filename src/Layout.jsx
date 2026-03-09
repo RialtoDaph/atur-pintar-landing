@@ -16,6 +16,13 @@ function LayoutInner({ children, currentPageName }) {
   const location = useLocation();
   const scrollPositions = useRef({});
   const mainContentRef = useRef(null);
+  const tabHistory = useRef({
+    Dashboard: "Dashboard",
+    Transactions: "Transactions",
+    Analytics: "Analytics",
+    Investments: "Investments",
+    Menu: "Menu",
+  });
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -60,6 +67,26 @@ function LayoutInner({ children, currentPageName }) {
   // Detect if we're on a nested page (detail view)
   const mainPages = ["Dashboard", "Transactions", "Goals", "Budget", "Debts", "Investments", "Analytics", "Tips", "Reminders", "Alerts", "Settings", "Menu"];
   const isNestedPage = !mainPages.includes(currentPageName);
+
+  // Update tab history when navigating to a main page
+  useEffect(() => {
+    const mobileMainNav = ["Dashboard", "Transactions", "Analytics", "Investments"];
+    const mobileMorePages = ["Goals", "Budget", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu"];
+    
+    if (mobileMainNav.includes(currentPageName)) {
+      tabHistory.current[currentPageName] = currentPageName;
+    } else if (mobileMorePages.includes(currentPageName)) {
+      tabHistory.current["Menu"] = currentPageName;
+    }
+  }, [currentPageName]);
+
+  // Handle tab clicks - reset to root if clicking active tab
+  const handleTabClick = (tabName) => {
+    if (currentPageName === tabName || currentPageName === tabHistory.current[tabName]) {
+      // Already on this tab, reset to root
+      window.location.href = createPageUrl(tabName);
+    }
+  };
 
   // Save scroll position when leaving a page
   useEffect(() => {
@@ -203,28 +230,26 @@ function LayoutInner({ children, currentPageName }) {
         {mobileMainNav.map((item) => {
           const active = currentPageName === item.page;
           return (
-            <Link
+            <button
               key={item.page}
-              to={createPageUrl(item.page)}
-              className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix ${
-              active ? "text-[#FF6A00]" : "text-[#888]"}`
-              }>
-
+              onClick={() => handleTabClick(item.page)}
+              className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
+              active ? "text-[#FF6A00]" : "text-[#888]"}`}
+            >
               <item.icon className="w-5 h-5" />
               {item.label}
-            </Link>);
-
+            </button>
+          );
         })}
         {/* More button → goes to Menu page */}
-        <Link
-          to={createPageUrl("Menu")}
-          className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix ${
-          mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"}`
-          }>
-
+        <button
+          onClick={() => handleTabClick("Menu")}
+          className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
+          mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"}`}
+        >
           <Grid3x3 className="w-5 h-5" />
           {t('nav_more')}
-        </Link>
+        </button>
       </div>
 
       {/* Nana Floating Chat */}
