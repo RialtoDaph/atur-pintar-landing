@@ -149,7 +149,7 @@ export default function NanaChatBoxInline({ user }) {
       const subCat = Object.values(subCatsByParent).flat().find((s) => s.key === txData.category);
       const catLabel = subCat?.label || catObj?.label || txData.category;
       const catEmoji = subCat?.emoji || catObj?.emoji || "📦";
-      setLastReply(`✅ Tercatat! ${catEmoji} ${txData.type === "income" ? "Pemasukan" : "Pengeluaran"} Rp ${fmt} untuk "${txData.note}" (${catLabel}) berhasil disimpan.`);
+      setLastReply({ content: `✅ Tercatat! ${catEmoji} ${txData.type === "income" ? "Pemasukan" : "Pengeluaran"} Rp ${fmt} untuk "${txData.note}" (${catLabel}) berhasil disimpan.`, interactivePrompt: null });
     } finally {
       setSending(false);
       setPendingTx(null);
