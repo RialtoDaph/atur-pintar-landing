@@ -14,7 +14,7 @@ const TRACKING_OPTIONS = ["Tidak mencatat", "Notes di HP", "Excel / Spreadsheet"
 const INTEREST_OPTIONS = ["Ya", "Mungkin", "Belum yakin"];
 
 const FEATURES = [
-  { icon: "💬", title: "Catat via Chat", desc: "Ketik 'seblak 20rb' dan Nana langsung mencatatnya otomatis" },
+  { icon: "💬", title: "Catat via Chat", desc: "Ketik 'Martabak 20rb' dan Nana langsung mencatatnya otomatis" },
   { icon: "📊", title: "Analisis Cerdas", desc: "Lihat pola pengeluaran dan rekomendasi personal tiap bulan" },
   { icon: "🎯", title: "Goals & Budget", desc: "Buat tujuan tabungan dan pantau anggaran dengan mudah" },
   { icon: "🤖", title: "AI Financial Advisor", desc: "Tanya apa saja soal keuangan, Nana siap membantu 24/7" },
@@ -382,7 +382,7 @@ export default function LandingPage() {
             <div className="card-dark rounded-2xl p-4 mb-5">
               <p className="text-xs text-white/40 mb-1">Total yang sudah bergabung</p>
               <p className="text-3xl font-black gradient-text">{count}</p>
-              <p className="text-xs text-white/40 mt-1">dari 100 slot</p>
+              <p className="text-xs text-white/40 mt-1">dari 500 slot</p>
             </div>
             <button
               onClick={() => { setShowForm(false); setSubmitted(false); }}
