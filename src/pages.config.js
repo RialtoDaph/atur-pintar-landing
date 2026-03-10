@@ -66,6 +66,7 @@ import Debts from './pages/Debts';
 import Goals from './pages/Goals';
 import InvestmentDetail from './pages/InvestmentDetail';
 import Investments from './pages/Investments';
+import LandingPage from './pages/LandingPage';
 import Menu from './pages/Menu';
 import Nana from './pages/Nana';
 import Reminders from './pages/Reminders';
@@ -73,7 +74,6 @@ import Settings from './pages/Settings';
 import SpendingDetail from './pages/SpendingDetail';
 import Tips from './pages/Tips';
 import Transactions from './pages/Transactions';
-import LandingPage from './pages/LandingPage';
 import __Layout from './Layout.jsx';
 
 
@@ -97,6 +97,7 @@ export const PAGES = {
     "Goals": Goals,
     "InvestmentDetail": InvestmentDetail,
     "Investments": Investments,
+    "LandingPage": LandingPage,
     "Menu": Menu,
     "Nana": Nana,
     "Reminders": Reminders,
@@ -104,11 +105,10 @@ export const PAGES = {
     "SpendingDetail": SpendingDetail,
     "Tips": Tips,
     "Transactions": Transactions,
-    "LandingPage": LandingPage,
 }
 
 export const pagesConfig = {
-    mainPage: "Dashboard",
+    mainPage: "LandingPage",
     Pages: PAGES,
     Layout: __Layout,
 };
