@@ -328,7 +328,7 @@ export default function LandingPage() {
 
               {/* Early access interest */}
               <div>
-                <label className="text-xs font-semibold text-white/60 mb-2 block">Jika aplikasi ini membantu, apakah kamu bersedia mencoba versi awal? <span className="text-white/30">(opsional)</span></label>
+                <label className="text-xs font-semibold text-white/60 mb-2 block">Jika aplikasi ini membantu, apakah kamu bersedia mencoba versi awal? <span className="text-white/30"></span></label>
                 <div className="flex gap-2">
                   {INTEREST_OPTIONS.map((opt) => (
                     <button
