@@ -251,23 +251,30 @@ export default function NanaFloatingChat() {
             }>
                     {msg.role === "assistant" ?
               <div>
-                <ReactMarkdown className="prose prose-xs max-w-none text-white [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2 [&>li]:mb-1 [&>strong]:font-semibold [&>code]:bg-black/30 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>pre]:bg-black/50 [&>pre]:p-2 [&>pre]:rounded [&>pre]:text-[10px] [&>pre]:overflow-x-auto [&>h3]:font-semibold [&>h3]:mt-2 [&>h3]:mb-1">
-                        {typeof msg.content === "string" && msg.content.startsWith("{") ? 
-                          (() => {
-                            try {
-                              const parsed = JSON.parse(msg.content);
-                              return parsed.content || msg.content;
-                            } catch {
-                              return msg.content;
-                            }
-                          })() : msg.content}
+                {(() => {
+                  let displayContent = msg.content;
+                  let interactivePrompt = msg.metadata?.interactive_prompt;
+                  if (typeof msg.content === "string" && msg.content.trim().startsWith("{")) {
+                    try {
+                      const parsed = JSON.parse(msg.content);
+                      if (parsed.content) displayContent = parsed.content;
+                      if (parsed.interactive_prompt) interactivePrompt = parsed.interactive_prompt;
+                    } catch {}
+                  }
+                  return (
+                    <>
+                      <ReactMarkdown className="prose prose-xs max-w-none text-white [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>ol]:my-2 [&>li]:mb-1 [&>strong]:font-semibold [&>code]:bg-black/30 [&>code]:px-1.5 [&>code]:py-0.5 [&>code]:rounded [&>pre]:bg-black/50 [&>pre]:p-2 [&>pre]:rounded [&>pre]:text-[10px] [&>pre]:overflow-x-auto [&>h3]:font-semibold [&>h3]:mt-2 [&>h3]:mb-1">
+                        {displayContent}
                       </ReactMarkdown>
-                {msg.metadata?.interactive_prompt && (
-                  <InteractivePrompt 
-                    prompt={msg.metadata.interactive_prompt}
-                    onResponse={sendInteractiveResponse}
-                  />
-                )}
+                      {interactivePrompt && (
+                        <InteractivePrompt
+                          prompt={interactivePrompt}
+                          onResponse={sendInteractiveResponse}
+                        />
+                      )}
+                    </>
+                  );
+                })()}
               </div> :
               <p>{msg.content}</p>}
                   </div>
