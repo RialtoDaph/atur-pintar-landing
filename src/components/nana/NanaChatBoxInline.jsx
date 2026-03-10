@@ -157,6 +157,15 @@ export default function NanaChatBoxInline({ user }) {
     }
   }
 
+  async function sendInteractiveResponse(displayText) {
+    if (sending) return;
+    setSending(true);
+    setLastReply(null);
+    const conv = await getOrCreateConv();
+    await base44.agents.addMessage(conv, { role: "user", content: displayText + formatContextForMessage(context) });
+    startPolling();
+  }
+
   async function sendToNana(text) {
     setSending(true);
     setLastReply(null);
