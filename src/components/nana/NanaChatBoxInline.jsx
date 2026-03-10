@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Send, Sparkles } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useFinancialContext } from "./useFinancialContext";
@@ -8,7 +8,29 @@ export default function NanaChatBoxInline({ user }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [conversationId, setConversationId] = useState(null);
+  const convRef = useRef(null);
   const { context, formatContextForMessage } = useFinancialContext();
+
+  // Initialize conversation on mount
+  useEffect(() => {
+    async function init() {
+      const conv = await getOrCreateConv();
+      convRef.current = conv;
+      setConversationId(conv.id);
+      if (conv.messages) setMessages(conv.messages);
+    }
+    init();
+  }, []);
+
+  // Subscribe to real-time conversation updates
+  useEffect(() => {
+    if (!conversationId) return;
+    const unsubscribe = base44.agents.subscribeToConversation(conversationId, (data) => {
+      setMessages(data.messages || []);
+    });
+    return () => unsubscribe();
+  }, [conversationId]);
 
   async function getOrCreateConv() {
     const convs = await base44.agents.listConversations({ agent_name: "nana" });
@@ -24,14 +46,16 @@ export default function NanaChatBoxInline({ user }) {
     setSending(true);
     const text = input;
     setInput("");
-    const conv = await getOrCreateConv();
+    const conv = convRef.current || await getOrCreateConv();
+    convRef.current = conv;
     const contextBlock = formatContextForMessage(context);
     await base44.agents.addMessage(conv, { role: "user", content: text + contextBlock });
     setSending(false);
   }
 
   async function sendInteractiveResponse(displayText, responseValue) {
-    const conv = await getOrCreateConv();
+    const conv = convRef.current || await getOrCreateConv();
+    convRef.current = conv;
     const contextBlock = formatContextForMessage(context);
     await base44.agents.addMessage(conv, { role: "user", content: displayText + contextBlock });
   }
@@ -43,8 +67,17 @@ export default function NanaChatBoxInline({ user }) {
     }
   }
 
-  const lastMessage = messages[messages.length - 1];
-  const lastAssistantMsg = messages.findLast((m) => m.role === "assistant");
+  // Find last assistant message
+  const lastAssistantMsg = [...messages].reverse().find((m) => m.role === "assistant");
+
+  // Extract interactive_prompt: check metadata first, then parse JSON from content
+  let interactivePrompt = lastAssistantMsg?.metadata?.interactive_prompt;
+  if (!interactivePrompt && lastAssistantMsg?.content) {
+    try {
+      const parsed = JSON.parse(lastAssistantMsg.content);
+      if (parsed?.interactive_prompt) interactivePrompt = parsed.interactive_prompt;
+    } catch {}
+  }
 
   return (
     <div className="bg-[#0A0A0A] rounded-2xl overflow-hidden px-4 py-3 flex flex-col gap-3" style={{ boxShadow: '0 0 0 1.5px #FF6A00, 0 8px 32px rgba(255,106,0,0.35)' }}>
@@ -65,10 +98,10 @@ export default function NanaChatBoxInline({ user }) {
       </div>
 
       {/* Interactive Prompt if present */}
-      {lastAssistantMsg?.metadata?.interactive_prompt && (
+      {interactivePrompt && (
         <div className="bg-[#1A1A1A] rounded-xl p-3">
-          <InteractivePrompt 
-            prompt={lastAssistantMsg.metadata.interactive_prompt}
+          <InteractivePrompt
+            prompt={interactivePrompt}
             onResponse={sendInteractiveResponse}
           />
         </div>
