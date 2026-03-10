@@ -219,8 +219,27 @@ export default function NanaChatBoxInline({ user }) {
 
         {/* Last reply preview */}
         {lastReply && !sending && (
-          <div className="bg-[#1A1A1A] rounded-xl px-3 py-2">
-            <p className="text-white text-xs leading-relaxed line-clamp-3">{lastReply}</p>
+          <div className="bg-[#1A1A1A] rounded-xl px-3 py-2 space-y-2">
+            {lastReply.content && (
+              <p className="text-white text-xs leading-relaxed line-clamp-3">{lastReply.content}</p>
+            )}
+            {lastReply.interactivePrompt && (
+              <div className="space-y-1.5">
+                {lastReply.interactivePrompt.question && (
+                  <p className="text-[#8FA4C8] text-[10px] font-medium">{lastReply.interactivePrompt.question}</p>
+                )}
+                {lastReply.interactivePrompt.type === "select_one" && lastReply.interactivePrompt.options?.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => sendInteractiveResponse(opt.label)}
+                    className="w-full text-left text-[10px] bg-[#2D2D2D] border border-[#3D3D3D] rounded-lg px-2.5 py-1.5 text-white hover:border-[#FF6A00] hover:bg-[#FF6A00]/10 transition-colors flex items-center justify-between group"
+                  >
+                    <span>{opt.label}</span>
+                    <ChevronRight className="w-3 h-3 text-[#8FA4C8] group-hover:text-[#FF6A00] flex-shrink-0" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
