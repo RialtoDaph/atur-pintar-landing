@@ -69,7 +69,7 @@ export default function LandingPage() {
     setErrors((e) => { const n = { ...e }; delete n[field]; return n; });
   };
 
-  const slotsLeft = count !== null ? Math.max(0, 100 - count) : null;
+  const slotsLeft = count !== null ? Math.max(0, 500 - count) : null;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white font-sans overflow-x-hidden">
