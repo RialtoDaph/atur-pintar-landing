@@ -224,7 +224,15 @@ export default function NanaChatBoxInline({ user }) {
 
     if (parsed) {
       setPendingTx(parsed);
-      if (parsed.category && subCatsByParent[parsed.category]?.length > 0) {
+      // Food always shows built-in subcategory picker
+      if (parsed.category === "food") {
+        setSubCatPopup({
+          parentKey: "food",
+          parentLabel: "Makanan & Minuman",
+          parentEmoji: "🍔",
+          subs: FOOD_SUBCATEGORIES,
+        });
+      } else if (parsed.category && subCatsByParent[parsed.category]?.length > 0) {
         const allCats = [...DEFAULT_CATS.expense, ...DEFAULT_CATS.income];
         const parentCat = allCats.find((c) => c.key === parsed.category);
         setSubCatPopup({
