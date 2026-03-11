@@ -74,7 +74,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white font-sans overflow-x-hidden">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://drive.google.com/file/d/1jB-I5n6Evd3XFzE8PWZzcop7Q5QeJpXe/view?usp=drive_link');
         * { font-family: 'Inter', sans-serif; }
         .gradient-text { background: linear-gradient(135deg, #FF6A00 0%, #FFB347 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
         .glow-orange { box-shadow: 0 0 40px rgba(255,106,0,0.3); }
