@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, TrendingUp, Crown } from "lucide-react";
+import { Link } from "react-router-dom";
 import AddBudgetModal from "@/components/budget/AddBudgetModal";
 import BudgetCard from "@/components/budget/BudgetCard";
 import SavingsRecommendationWidget from "@/components/budget/SavingsRecommendationWidget";
