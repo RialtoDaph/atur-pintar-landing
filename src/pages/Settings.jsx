@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Moon, Sun, Check, MessageSquare, ShieldCheck, Crown } from "lucide-react";
+import { Moon, Sun, Check, MessageSquare, ShieldCheck } from "lucide-react";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
@@ -208,29 +208,6 @@ export default function Settings() {
         {/* Integrasi & Export */}
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <IntegrationSettings />
-        </div>
-
-        {/* Widget Dashboard */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-5 pt-4 pb-2">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_widget_dashboard')}</p>
-            <p className="text-xs text-[#8FA4C8] mt-0.5">{t('settings_widget_desc')}</p>
-          </div>
-          {WIDGETS.map((w, i) =>
-          <button
-            key={w.key}
-            onClick={() => toggleWidget(w.key)}
-            className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]">
-
-              <div className="text-left">
-                <p className="font-medium text-[#1A1A1A] text-sm">{w.label}</p>
-                <p className="text-xs text-[#8FA4C8]">{w.desc}</p>
-              </div>
-              <div className={`w-11 h-6 rounded-full transition-colors relative ${widgets[w.key] ? "bg-[#FF6A00]" : "bg-[#E2E8F0]"}`}>
-                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${widgets[w.key] ? "left-5" : "left-0.5"}`} />
-              </div>
-            </button>
-          )}
         </div>
 
         {/* Feedback */}
