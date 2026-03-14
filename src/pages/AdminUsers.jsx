@@ -39,12 +39,6 @@ export default function AdminUsers() {
     setLoading(false);
   }
 
-  async function handleDelete(userId) {
-    // We can't actually delete users from the platform, so we flag them
-    setDeleteConfirm(null);
-    alert("Catatan: User tidak dapat dihapus langsung. Gunakan fitur deactivate di platform dashboard.");
-  }
-
   const filtered = users.filter(u => {
     const matchSearch = u.email?.toLowerCase().includes(search.toLowerCase()) ||
       u.full_name?.toLowerCase().includes(search.toLowerCase());
