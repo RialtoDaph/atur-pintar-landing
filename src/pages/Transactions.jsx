@@ -246,31 +246,36 @@ export default function Transactions() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 mt-4 space-y-4">
+      <div className="max-w-2xl mx-auto px-5 mt-4 space-y-3">
+        {/* AI Insights - di atas filter */}
+        {!loading && transactions.length > 0 && (
+          <DashboardInsights transactions={transactions} goals={goals} />
+        )}
+
         {/* Recurring Transactions Card */}
         <button
           onClick={() => setShowRecurringManager(true)}
-          className="w-full bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow text-left tap-highlight-fix"
+          className="w-full bg-white rounded-xl shadow-sm p-3 hover:shadow-md transition-shadow text-left tap-highlight-fix"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center flex-shrink-0">
-                <Repeat2 className="w-5 h-5 text-[#4F7CFF]" />
+              <div className="w-9 h-9 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center flex-shrink-0">
+                <Repeat2 className="w-4 h-4 text-[#4F7CFF]" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#1A1A1A]">{t('recurring_transactions') || 'Transaksi Berulang'}</p>
-                <p className="text-xs text-[#8FA4C8]">{t('manage_income_expenses') || 'Kelola pengeluaran dan pemasukan rutin'}</p>
+                <p className="text-sm font-semibold text-[#1A1A1A]">{t('recurring_transactions')}</p>
+                <p className="text-xs text-[#8FA4C8]">{t('manage_income_expenses')}</p>
               </div>
             </div>
             <div className="text-[#8FA4C8] hover:text-[#4F7CFF] transition-colors">
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" />
             </div>
           </div>
         </button>
 
         {/* Select mode action bar */}
         {selectMode && (
-          <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex items-center justify-between">
+          <div className="bg-white rounded-xl shadow-sm px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button onClick={selectAll} className="text-xs font-semibold text-[#FF6A00]">{t('tx_select_all')}</button>
               {selectedIds.size > 0 && <span className="text-xs text-[#8FA4C8]">({selectedIds.size} {t('tx_selected')})</span>}
@@ -297,15 +302,15 @@ export default function Transactions() {
         )}
 
         {/* Filter tabs */}
-        <div className="space-y-3">
-          <div className="flex bg-white rounded-xl p-1 shadow-sm" role="tablist" aria-label="Filter transaksi">
+        <div className="space-y-2">
+          <div className="flex bg-white rounded-xl p-0.5 shadow-sm" role="tablist" aria-label="Filter transaksi">
             {FILTER_TABS.map(tab => (
               <button
                 key={tab.key}
                 role="tab"
                 aria-selected={filter === tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF6A00] tap-highlight-fix ${
+                className={`flex-1 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF6A00] tap-highlight-fix ${
                     filter === tab.key ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
                   }`}
               >
@@ -323,16 +328,16 @@ export default function Transactions() {
               placeholder={t('search_transactions')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
+              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
             />
           </div>
 
           {/* Goal filter */}
           {goals.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-2">
+            <div className="flex gap-1.5 overflow-x-auto pb-1">
               <button
                 onClick={() => setGoalFilter(null)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors tap-highlight-fix ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors tap-highlight-fix ${
                   !goalFilter ? "bg-[#0A0A0A] text-white" : "bg-white border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
                 }`}
               >
@@ -342,7 +347,7 @@ export default function Transactions() {
                 <button
                   key={goal.id}
                   onClick={() => setGoalFilter(goal.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1 tap-highlight-fix ${
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1 tap-highlight-fix ${
                     goalFilter === goal.id ? "bg-[#FF6A00] text-white" : "bg-white border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
                   }`}
                 >
@@ -351,12 +356,7 @@ export default function Transactions() {
               ))}
             </div>
           )}
-        </div>
-
-        {/* AI Insights */}
-        {!loading && transactions.length > 0 && (
-          <DashboardInsights transactions={transactions} goals={goals} />
-        )}
+          </div>
 
         {loading ? (
           <div className="space-y-3">
