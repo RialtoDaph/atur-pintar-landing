@@ -101,10 +101,10 @@ export default function DashboardInsights({ transactions, goals }) {
           <p className={`text-xs leading-relaxed flex-1 ${ins.textColor}`}>{ins.text}</p>
           <button
             onClick={() => handleDismiss(ins.id)}
-            className="flex-shrink-0 ml-2 p-0.5 hover:bg-black/5 rounded transition-colors"
+            className="flex-shrink-0 ml-2 p-1 hover:bg-black/10 rounded-full transition-colors"
             aria-label="Dismiss"
           >
-            <X className="w-3 h-3" />
+            <X className="w-3.5 h-3.5 opacity-60 hover:opacity-100" />
           </button>
         </div>
       ))}
