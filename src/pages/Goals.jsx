@@ -314,13 +314,19 @@ export default function Goals() {
             <p className="text-[#8FA4C8] text-sm font-medium">{t('goals_plan')}</p>
             <h1 className="text-white text-2xl font-bold mt-0.5">{t('goals_title')}</h1>
           </div>
-          <button
-            onClick={() => setShowAddGoal(true)}
-            aria-label="Tambah tujuan baru"
-            className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] tap-highlight-fix"
-          >
-            <Plus className="w-5 h-5 text-white" />
-          </button>
+          {goalsLimitReached ? (
+            <Link to="/Subscription" className="w-10 h-10 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] transition-colors" title="Upgrade untuk goals lebih banyak">
+              <Crown className="w-5 h-5 text-white" />
+            </Link>
+          ) : (
+            <button
+              onClick={() => setShowAddGoal(true)}
+              aria-label="Tambah tujuan baru"
+              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] tap-highlight-fix"
+            >
+              <Plus className="w-5 h-5 text-white" />
+            </button>
+          )}
         </div>
 
         <div className="bg-white/10 rounded-2xl p-5">
