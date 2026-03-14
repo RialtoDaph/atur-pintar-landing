@@ -178,23 +178,39 @@ export default function Nana() {
 
       {/* Input */}
       <div className="px-4 pb-4 pt-2 bg-[#F2F4F7]">
-        <div className="flex gap-2 bg-white rounded-2xl border border-[#E2E8F0] px-4 py-2 shadow-sm">
-          <textarea
-            className="flex-1 text-sm text-[#1A1A1A] resize-none outline-none bg-transparent placeholder:text-[#C0C9D8] max-h-24"
-            rows={1}
-            placeholder={t('nana_input_placeholder')}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKey}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!input.trim() || sending}
-            className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end"
-          >
-            <Send className="w-3.5 h-3.5 text-white" />
-          </button>
-        </div>
+        {isLimitReached ? (
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] p-4 text-center shadow-sm">
+            <Crown className="w-5 h-5 text-[#FF6A00] mx-auto mb-2" />
+            <p className="text-xs font-semibold text-[#1A1A1A] mb-1">Batas pesan tercapai ({FREE_MSG_LIMIT}/bulan)</p>
+            <p className="text-[10px] text-[#8FA4C8] mb-3">Upgrade ke Premium untuk chat tanpa batas.</p>
+            <Link to="/Subscription" className="inline-block px-4 py-1.5 bg-[#FF6A00] text-white rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors">
+              Upgrade Premium
+            </Link>
+          </div>
+        ) : (
+          <>
+            {!isPremium && (
+              <p className="text-[10px] text-[#8FA4C8] text-center mb-2">{msgCount}/{FREE_MSG_LIMIT} pesan bulan ini</p>
+            )}
+            <div className="flex gap-2 bg-white rounded-2xl border border-[#E2E8F0] px-4 py-2 shadow-sm">
+              <textarea
+                className="flex-1 text-sm text-[#1A1A1A] resize-none outline-none bg-transparent placeholder:text-[#C0C9D8] max-h-24"
+                rows={1}
+                placeholder={t('nana_input_placeholder')}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKey}
+              />
+              <button
+                onClick={sendMessage}
+                disabled={!input.trim() || sending}
+                className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end"
+              >
+                <Send className="w-3.5 h-3.5 text-white" />
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
