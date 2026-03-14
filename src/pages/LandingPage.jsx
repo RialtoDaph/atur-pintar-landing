@@ -139,7 +139,7 @@ export default function LandingPage() {
           className="group inline-flex items-center gap-3 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow-orange hover:scale-105 active:scale-95"
         >
           <Users className="w-5 h-5" />
-          Gabung Waiting List
+          Amankan Slot Early Access
         </button>
 
         {/* Counter */}
