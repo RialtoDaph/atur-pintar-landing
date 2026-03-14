@@ -147,7 +147,7 @@ export default function AdminUsers() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3">
                       <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${u.role === "admin" ? "bg-[#FF6A00]/10 text-[#FF6A00]" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
                         {u.role || "user"}
                       </span>
