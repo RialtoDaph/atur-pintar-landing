@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Search, RefreshCw, Trash2, Eye, Users, UserCheck, Shield } from "lucide-react";
+import { Search, RefreshCw, Eye, Users, UserCheck, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
