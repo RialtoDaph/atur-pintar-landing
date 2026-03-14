@@ -77,10 +77,10 @@ function LayoutInner({ children, currentPageName }) {
   { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
   { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
   { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
-  { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" }];
+  { name: "Budget", label: t('nav_budget'), icon: PiggyBank, page: "Budget" }];
 
 
-  const mobileMorePages = ["Goals", "Budget", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu"];
+  const mobileMorePages = ["Goals", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu"];
 
   const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
