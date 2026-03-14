@@ -99,26 +99,20 @@ export default function DashboardInsights({ transactions, goals }) {
   if (filteredInsights.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div className="px-4 pt-4 pb-2 flex items-center gap-2">
-        <Lightbulb className="w-4 h-4 text-[#FF6A00]" />
-        <h2 className="font-bold text-[#0A0A0A] text-sm">{t('insight_title')}</h2>
-      </div>
-      <div className="px-4 pb-4 space-y-2">
-        {filteredInsights.map((ins) => (
-          <div key={ins.id} className={`flex items-start gap-3 rounded-xl px-3 py-2.5 border ${ins.color}`}>
-            <div className="flex-shrink-0 mt-0.5">{ins.icon}</div>
-            <p className={`text-xs leading-relaxed flex-1 ${ins.textColor}`}>{ins.text}</p>
-            <button
-              onClick={() => handleDismiss(ins.id)}
-              className="flex-shrink-0 ml-2 p-0.5 hover:bg-black/5 rounded transition-colors"
-              aria-label="Dismiss"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          </div>
-        ))}
-      </div>
+    <div className="space-y-2">
+      {filteredInsights.map((ins) => (
+        <div key={ins.id} className={`flex items-start gap-3 rounded-xl px-3 py-2.5 border ${ins.color}`}>
+          <div className="flex-shrink-0 mt-0.5">{ins.icon}</div>
+          <p className={`text-xs leading-relaxed flex-1 ${ins.textColor}`}>{ins.text}</p>
+          <button
+            onClick={() => handleDismiss(ins.id)}
+            className="flex-shrink-0 ml-2 p-0.5 hover:bg-black/5 rounded transition-colors"
+            aria-label="Dismiss"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      ))}
     </div>
   );
 }
