@@ -58,7 +58,7 @@ export default function AdminUsers() {
 
   return (
     <AdminLayout currentPage="AdminUsers">
-      <div className="p-8">
+      <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A1A]">User Management</h1>
