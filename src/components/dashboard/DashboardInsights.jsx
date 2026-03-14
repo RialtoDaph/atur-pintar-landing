@@ -88,9 +88,7 @@ export default function DashboardInsights({ transactions, goals }) {
   const filteredInsights = insights.filter(ins => !dismissedInsights.includes(ins.id));
 
   const handleDismiss = (id) => {
-    const updated = [...dismissedInsights, id];
-    setDismissedInsights(updated);
-    localStorage.setItem("dismissedInsights", JSON.stringify(updated));
+    setDismissedInsights(prev => [...prev, id]);
   };
 
   if (filteredInsights.length === 0) return null;
