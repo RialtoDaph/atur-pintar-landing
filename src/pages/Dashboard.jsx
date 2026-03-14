@@ -37,10 +37,7 @@ function getWidgets() {
 
 export default function Dashboard() {
   const { t } = useAppSettings();
-  const [goals, setGoals] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [budgets, setBudgets] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [showAddTx, setShowAddTx] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
@@ -56,26 +53,41 @@ export default function Dashboard() {
     }).catch(() => {});
   }, []);
 
-
   useEffect(() => {
     const onStorage = () => setWidgets(getWidgets());
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  useEffect(() => { if (user?.onboarding_completed) loadData(); }, [user]);
+  const enabled = !!user?.onboarding_completed;
+
+  const { data: goals = [], isLoading: goalsLoading } = useQuery({
+    queryKey: ["goals", user?.email],
+    queryFn: () => base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
+    enabled,
+    staleTime: 2 * 60 * 1000, // 2 menit cache
+  });
+
+  const { data: transactions = [], isLoading: txLoading } = useQuery({
+    queryKey: ["transactions_dashboard", user?.email],
+    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 100),
+    enabled,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
+    queryKey: ["budgets", user?.email],
+    queryFn: () => base44.entities.Budget.filter({ created_by: user.email }),
+    enabled,
+    staleTime: 5 * 60 * 1000, // 5 menit cache
+  });
+
+  const loading = goalsLoading || txLoading || budgetsLoading;
 
   async function loadData() {
-    setLoading(true);
-    const [g, t, b] = await Promise.all([
-      base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
-      base44.entities.Transaction.filter({ created_by: user.email }, "-date", 100),
-      base44.entities.Budget.filter({ created_by: user.email }),
-    ]);
-    setGoals(g);
-    setTransactions(t);
-    setBudgets(b);
-    setLoading(false);
+    await queryClient.invalidateQueries({ queryKey: ["goals", user?.email] });
+    await queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user?.email] });
+    await queryClient.invalidateQueries({ queryKey: ["budgets", user?.email] });
   }
 
   const now = new Date();
