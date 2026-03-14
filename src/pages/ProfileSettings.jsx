@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { LogOut, Trash2 } from "lucide-react";
+import { LogOut, Trash2, Crown, ChevronDown } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import NanaPreferencesSettings from "@/components/settings/NanaPreferencesSettings";
+import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
 
 export default function ProfileSettings() {
   const [user, setUser] = useState(null);
   const { t } = useAppSettings();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [expandedDropdown, setExpandedDropdown] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -54,6 +59,70 @@ export default function ProfileSettings() {
           </div>
         </div>
         }
+
+        {/* Subscription */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <button
+            onClick={() => setExpandedDropdown(expandedDropdown === 'subscription' ? null : 'subscription')}
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]">
+            <Crown className="w-5 h-5 text-[#FF6A00]" />
+            <div className="text-left flex-1">
+              <p className="font-medium text-[#1A1A1A] text-sm">Langganan</p>
+              <p className="text-xs text-[#8FA4C8]">
+                {user?.subscription_status === "active" ? `Premium aktif` : user?.subscription_status === "pending" ? "Menunggu konfirmasi" : "Paket Free"}
+              </p>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${expandedDropdown === 'subscription' ? 'rotate-180' : ''}`} />
+          </button>
+          {expandedDropdown === 'subscription' && (
+            <div className="px-5 py-3 border-t border-[#F2F4F7] bg-[#F8FAFC] space-y-2">
+              <Link
+                to={createPageUrl("Subscription")}
+                className="block text-sm text-[#FF6A00] hover:text-[#FF6A00]/80 font-medium"
+              >
+                Kelola Langganan →
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Nana AI Preferences Dropdown */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <button
+            onClick={() => setExpandedDropdown(expandedDropdown === 'nana' ? null : 'nana')}
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors">
+            <span className="text-lg">🤖</span>
+            <div className="text-left flex-1">
+              <p className="font-medium text-[#1A1A1A] text-sm">Preferensi Nana AI</p>
+              <p className="text-xs text-[#8FA4C8]">Sesuaikan cara Nana berbicara</p>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${expandedDropdown === 'nana' ? 'rotate-180' : ''}`} />
+          </button>
+          {expandedDropdown === 'nana' && (
+            <div className="px-5 py-4 border-t border-[#F2F4F7] bg-[#F8FAFC]">
+              <NanaPreferencesSettings />
+            </div>
+          )}
+        </div>
+
+        {/* Risk Profile Dropdown */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <button
+            onClick={() => setExpandedDropdown(expandedDropdown === 'risk' ? null : 'risk')}
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors">
+            <span className="text-lg">📊</span>
+            <div className="text-left flex-1">
+              <p className="font-medium text-[#1A1A1A] text-sm">Profil Risiko Investasi</p>
+              <p className="text-xs text-[#8FA4C8]">Tentukan toleransi risiko Anda</p>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${expandedDropdown === 'risk' ? 'rotate-180' : ''}`} />
+          </button>
+          {expandedDropdown === 'risk' && (
+            <div className="px-5 py-4 border-t border-[#F2F4F7] bg-[#F8FAFC]">
+              <RiskProfileAssessment />
+            </div>
+          )}
+        </div>
 
         {/* Account Management */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
