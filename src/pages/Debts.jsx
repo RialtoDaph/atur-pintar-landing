@@ -100,12 +100,18 @@ export default function DebtsPage() {
               <p className="text-[#8FA4C8] text-sm font-medium">{t('debts_management')}</p>
               <h1 className="text-white text-2xl font-bold mt-0.5">{t('debts_title')}</h1>
             </div>
-            <button
-              onClick={() => setShowAdd(true)}
-              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
-            >
-              <Plus className="w-5 h-5 text-white" />
-            </button>
+            {debtLimitReached ? (
+              <Link to="/Subscription" className="w-10 h-10 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] transition-colors" title="Upgrade untuk tambah lebih banyak utang">
+                <Crown className="w-5 h-5 text-white" />
+              </Link>
+            ) : (
+              <button
+                onClick={() => setShowAdd(true)}
+                className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+              >
+                <Plus className="w-5 h-5 text-white" />
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
