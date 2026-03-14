@@ -1,10 +1,9 @@
 import { Navigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
-const LANGUAGES = { id: "🇮🇩 Indonesia", en: "🇺🇸 English", de: "🇩🇪 Deutsch" };
-const CURRENCIES = { IDR: "🇮🇩 Rupiah (Rp)", USD: "🇺🇸 US Dollar ($)", EUR: "🇪🇺 Euro (€)" };
-
 export default function AdminPanel() {
+  return <Navigate to={createPageUrl("AdminUsers")} replace />;
+}
   const [currentUser, setCurrentUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
