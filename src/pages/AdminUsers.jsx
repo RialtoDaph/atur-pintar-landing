@@ -136,9 +136,9 @@ export default function AdminUsers() {
               <tbody className="divide-y divide-[#F2F4F7]">
                 {filtered.map(u => (
                   <tr key={u.id} className="hover:bg-[#F8FAFC] transition-colors">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-[#FF6A00] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                   <td className="px-4 py-3">
+                     <div className="flex items-center gap-3">
+                       <div className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                           {u.full_name?.[0]?.toUpperCase() || "U"}
                         </div>
                         <div>
