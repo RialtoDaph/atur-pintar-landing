@@ -57,8 +57,13 @@ export default function Nana() {
     setConversations(prev => [conv, ...prev]);
   }
 
+  const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const msgCount = user?.nana_message_month === currentMonth ? (user?.nana_message_count || 0) : 0;
+  const isLimitReached = !isPremium && msgCount >= FREE_MSG_LIMIT;
+
   async function sendMessage() {
-    if (!input.trim() || sending) return;
+    if (!input.trim() || sending || isLimitReached) return;
 
     let conv = activeConv;
     if (!conv) {
@@ -74,6 +79,14 @@ export default function Nana() {
     const text = input;
     setInput("");
     await base44.agents.addMessage(conv, { role: "user", content: text });
+
+    // Update message count for free users
+    if (!isPremium) {
+      const newCount = msgCount + 1;
+      await base44.auth.updateMe({ nana_message_count: newCount, nana_message_month: currentMonth });
+      setUser(u => ({ ...u, nana_message_count: newCount, nana_message_month: currentMonth }));
+    }
+
     setSending(false);
   }
 
