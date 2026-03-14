@@ -152,13 +152,13 @@ export default function AdminUsers() {
                         {u.role || "user"}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3">
                       <p className="text-sm text-[#1A1A1A]">{formatDate(u.created_date)}</p>
                     </td>
-                    <td className="px-5 py-4 text-right">
+                    <td className="px-4 py-3 text-right">
                       <span className="text-sm font-semibold text-[#1A1A1A]">{txCounts[u.email] || 0}</span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-4 py-3">
                      <div className="flex items-center justify-end gap-2">
                        <Link
                          to={`${createPageUrl("AdminUserSupport")}?email=${encodeURIComponent(u.email)}`}
