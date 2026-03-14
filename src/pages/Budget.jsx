@@ -166,12 +166,18 @@ export default function BudgetPage() {
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => setShowAdd(true)}
-                className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
-              >
-                <Plus className="w-5 h-5 text-white" />
-              </button>
+              {budgetLimitReached ? (
+                <Link to="/Subscription" className="w-10 h-10 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] transition-colors" title="Upgrade untuk tambah lebih banyak budget">
+                  <Crown className="w-5 h-5 text-white" />
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setShowAdd(true)}
+                  className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+                >
+                  <Plus className="w-5 h-5 text-white" />
+                </button>
+              )}
             </div>
           </div>
 
