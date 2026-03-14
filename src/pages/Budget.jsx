@@ -25,6 +25,8 @@ function getMonthKey(offset = 0) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 
+const FREE_BUDGET_LIMIT = 2;
+
 export default function BudgetPage() {
   const { t, formatCurrency, settings } = useAppSettings();
   const lang = settings.language || "id";
@@ -99,6 +101,9 @@ export default function BudgetPage() {
     const key = tx.category || "other";
     spendingByCategory[key] = (spendingByCategory[key] || 0) + tx.amount;
   });
+
+  const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
+  const budgetLimitReached = !isPremium && budgets.length >= FREE_BUDGET_LIMIT;
 
   const totalBudget = budgets.reduce((s, b) => s + b.amount, 0);
   const totalSpent = budgets.reduce((s, b) => s + (spendingByCategory[b.category] || 0), 0);
