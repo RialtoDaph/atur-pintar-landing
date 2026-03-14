@@ -7,14 +7,7 @@ import NanaFloatingChat from "@/components/nana/NanaFloatingChat";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
 import { AnimatePresence, motion } from "framer-motion";
-import LandingPage from "@/pages/LandingPage";
-
-const WAITING_LIST_MODE = false;
-
 function LayoutInner({ children, currentPageName }) {
-  if (WAITING_LIST_MODE) {
-    return <LandingPage />;
-  }
   const [user, setUser] = useState(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
