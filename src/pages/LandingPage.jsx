@@ -160,6 +160,31 @@ export default function LandingPage() {
         )}
       </section>
 
+      {/* Demo Chat */}
+      <section className="px-6 pb-16 max-w-lg mx-auto">
+        <p className="text-center text-white/30 text-xs font-semibold uppercase tracking-widest mb-3">Coba Demo Langsung</p>
+        <h2 className="text-center text-white font-bold text-lg mb-6">Ketik transaksi seperti chat biasa 👇</h2>
+        <NanaDemoChat />
+      </section>
+
+      {/* 3 Benefits */}
+      <section className="px-6 pb-16 max-w-lg mx-auto">
+        <div className="card-dark rounded-2xl px-7 py-6 space-y-4">
+          {[
+            "Catat pengeluaran cukup dengan chat",
+            "AI memberi insight keuangan otomatis",
+            "Lihat kemana uangmu pergi setiap bulan",
+          ].map((benefit, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-full bg-[#FF6A00]/15 border border-[#FF6A00]/30 flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-3 h-3 text-[#FF6A00]" />
+              </div>
+              <p className="text-white/80 text-sm font-medium">{benefit}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Features */}
       <section className="px-6 pb-20 max-w-4xl mx-auto">
         <p className="text-center text-white/30 text-xs font-semibold uppercase tracking-widest mb-8">Yang akan kamu dapatkan</p>
@@ -169,6 +194,47 @@ export default function LandingPage() {
               <div className="text-3xl mb-3">{f.icon}</div>
               <h3 className="font-bold text-white mb-1">{f.title}</h3>
               <p className="text-sm text-white/50 leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Why Atur Pintar */}
+      <section className="px-6 pb-20 max-w-2xl mx-auto text-center">
+        <p className="text-white/30 text-xs font-semibold uppercase tracking-widest mb-4">Kenapa Ada Atur Pintar</p>
+        <h2 className="text-2xl sm:text-3xl font-black text-white mb-4">Kenapa Atur Pintar dibuat?</h2>
+        <p className="text-white/50 text-sm mb-6">Karena banyak orang merasa:</p>
+        <div className="card-dark rounded-2xl p-6 text-left space-y-3 mb-6">
+          {["😮‍💨 Gaji cepat habis entah kemana", "😕 Tidak tahu uang pergi kemana", "😴 Malas mencatat pengeluaran satu per satu"].map((item, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <p className="text-white/70 text-sm">{item}</p>
+            </div>
+          ))}
+        </div>
+        <div className="bg-[#FF6A00]/8 border border-[#FF6A00]/20 rounded-2xl p-5">
+          <p className="text-white font-semibold text-sm leading-relaxed">
+            <span className="gradient-text font-black">Atur Pintar + NANA AI</span> dibuat untuk mempermudah itu semua.<br />
+            <span className="text-white/70">Tinggal chat, beres deh. 🙌</span>
+          </p>
+        </div>
+      </section>
+
+      {/* AI Insights Preview */}
+      <section className="px-6 pb-20 max-w-2xl mx-auto">
+        <p className="text-center text-white/30 text-xs font-semibold uppercase tracking-widest mb-4">Contoh Insight AI</p>
+        <h2 className="text-center text-2xl font-black text-white mb-8">💡 Insight dari NANA</h2>
+        <div className="space-y-4">
+          {[
+            { emoji: "📈", insight: "Pengeluaran makan kamu naik 18% minggu ini dibanding minggu lalu.", sub: "Kategori: Makanan & Minuman" },
+            { emoji: "⚠️", insight: "Kamu sudah menggunakan 70% budget makan bulan ini.", sub: "Budget tersisa: Rp 150.000" },
+            { emoji: "💰", insight: "Kamu berhasil hemat Rp 320.000 bulan ini dari target tabungan!", sub: "Progress tabungan: 68%" },
+          ].map((item, i) => (
+            <div key={i} className="card-dark rounded-2xl px-5 py-4 flex items-start gap-4 hover:border-[#FF6A00]/20 transition-colors">
+              <div className="text-2xl mt-0.5">{item.emoji}</div>
+              <div>
+                <p className="text-white text-sm font-medium leading-relaxed">"{item.insight}"</p>
+                <p className="text-white/35 text-xs mt-1">{item.sub}</p>
+              </div>
             </div>
           ))}
         </div>
