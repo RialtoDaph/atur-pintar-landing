@@ -79,8 +79,8 @@ export default function DashboardInsights({ transactions, goals }) {
     insights.push({
       id: "urgent_goals",
       icon: <AlertTriangle className="w-4 h-4 text-[#FF6A00]" />,
-      color: "bg-[#FF6A00]/10 border-[#FF6A00]/20",
-      textColor: "text-[#FF6A00]",
+      color: "bg-[#FF6A00]/15 border-[#FF6A00]/50",
+        textColor: "text-[#FF6A00]",
       text: `${urgentGoals.length} tujuan tabungan mendekati deadline — "${urgentGoals[0].name}" dalam ${Math.ceil((new Date(urgentGoals[0].deadline) - now) / (1000 * 60 * 60 * 24))} hari.`,
     });
   }
