@@ -247,6 +247,27 @@ export default function Transactions() {
       </div>
 
       <div className="max-w-2xl mx-auto px-5 mt-4 space-y-4">
+        {/* Recurring Transactions Card */}
+        <button
+          onClick={() => setShowRecurringManager(true)}
+          className="w-full bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow text-left tap-highlight-fix"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center flex-shrink-0">
+                <Repeat2 className="w-5 h-5 text-[#4F7CFF]" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[#1A1A1A]">{t('recurring_transactions') || 'Transaksi Berulang'}</p>
+                <p className="text-xs text-[#8FA4C8]">{t('manage_income_expenses') || 'Kelola pengeluaran dan pemasukan rutin'}</p>
+              </div>
+            </div>
+            <div className="text-[#8FA4C8] hover:text-[#4F7CFF] transition-colors">
+              <Plus className="w-5 h-5" />
+            </div>
+          </div>
+        </button>
+
         {/* Select mode action bar */}
         {selectMode && (
           <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex items-center justify-between">
