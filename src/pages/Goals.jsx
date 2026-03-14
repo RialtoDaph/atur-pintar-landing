@@ -338,6 +338,16 @@ export default function Goals() {
     </div>
 
     <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
+      {goalsLimitReached && (
+        <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3 border border-[#FF6A00]/20">
+          <Crown className="w-5 h-5 text-[#FF6A00] flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[#1A1A1A]">Batas {FREE_GOALS_LIMIT} tujuan tercapai</p>
+            <p className="text-xs text-[#8FA4C8]">Upgrade Premium untuk goals unlimited.</p>
+          </div>
+          <Link to="/Subscription" className="px-3 py-1.5 bg-[#FF6A00] text-white rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors flex-shrink-0">Upgrade</Link>
+        </div>
+      )}
       {loading ? (
         [...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-24 animate-pulse" />)
       ) : goals.length === 0 ? (
