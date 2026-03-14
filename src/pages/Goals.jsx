@@ -8,7 +8,6 @@ import AddTransactionModal from "@/components/goals/AddTransactionModal";
 import AddGoalModal from "@/components/goals/AddGoalModal";
 import GoalCard from "@/components/goals/GoalCard";
 import PullToRefresh from "@/components/utils/PullToRefresh";
-import { Link } from "react-router-dom";
 
 const FREE_GOALS_LIMIT = 2;
 
