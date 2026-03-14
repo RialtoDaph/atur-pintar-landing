@@ -133,29 +133,45 @@ export default function Dashboard() {
         <ReminderWidget user={user} />
 
         {/* Budget Alert Widget */}
-        <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+        <Suspense fallback={<LazyFallback />}>
+          <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+        </Suspense>
 
         {/* Personal Insights */}
-        {!loading && <DashboardInsights transactions={transactions} goals={goals} />}
+        {!loading && (
+          <Suspense fallback={<LazyFallback />}>
+            <DashboardInsights transactions={transactions} goals={goals} />
+          </Suspense>
+        )}
 
         {/* Smart Alerts Panel */}
         <SmartAlertsPanel user={user} />
 
-        {/* Smart Alerts (widget-controlled duplicate removed) */}
-
         {/* Cashflow Forecast */}
-        {widgets.cashflowForecast && <CashflowForecast transactions={transactions} loading={loading} user={user} />}
+        {widgets.cashflowForecast && (
+          <Suspense fallback={<LazyFallback />}>
+            <CashflowForecast transactions={transactions} loading={loading} user={user} />
+          </Suspense>
+        )}
 
         {/* Subscription Detector */}
-        {widgets.subscriptionDetector && <SubscriptionDetector transactions={transactions} loading={loading} />}
-
-
+        {widgets.subscriptionDetector && (
+          <Suspense fallback={<LazyFallback />}>
+            <SubscriptionDetector transactions={transactions} loading={loading} />
+          </Suspense>
+        )}
 
         {/* Spending breakdown */}
-        {widgets.spendingChart && <SpendingChart transactions={thisMonthTx} loading={loading} />}
+        {widgets.spendingChart && (
+          <Suspense fallback={<LazyFallback />}>
+            <SpendingChart transactions={thisMonthTx} loading={loading} />
+          </Suspense>
+        )}
 
         {/* Portfolio Summary */}
-        <PortfolioSummary user={user} />
+        <Suspense fallback={<LazyFallback />}>
+          <PortfolioSummary user={user} />
+        </Suspense>
 
         {/* Savings Goals */}
         {widgets.savingsGoals && (
