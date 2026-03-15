@@ -103,22 +103,16 @@ export default function NanaChatBoxInline({ user }) {
 
     if (parsed) {
       setPendingTx(parsed);
-      // Check built-in subcategories first (e.g., food)
-      if (BUILTIN_SUBCATEGORIES[parsed.category]) {
+      // Check custom subcategories first, then built-in
+      const hasSubs = subCatsByParent[parsed.category]?.length > 0 || BUILTIN_SUBCATEGORIES[parsed.category];
+      if (hasSubs) {
         const { emoji, label } = formatCategory(parsed.category);
+        const subs = subCatsByParent[parsed.category] || BUILTIN_SUBCATEGORIES[parsed.category] || [];
         setSubCatPopup({
           parentKey: parsed.category,
           parentLabel: label,
           parentEmoji: emoji,
-          subs: BUILTIN_SUBCATEGORIES[parsed.category],
-        });
-      } else if (parsed.category && subCatsByParent[parsed.category]?.length > 0) {
-        const { emoji, label } = formatCategory(parsed.category);
-        setSubCatPopup({
-          parentKey: parsed.category,
-          parentLabel: label,
-          parentEmoji: emoji,
-          subs: subCatsByParent[parsed.category],
+          subs,
         });
       } else {
         await handleCreateTransaction(parsed);
