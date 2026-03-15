@@ -18,11 +18,14 @@ export default function NanaFloatingChat() {
   const { context, formatContextForMessage } = useFinancialContext();
 
   useEffect(() => {
+    let isMounted = true;
     base44.auth.me().then((user) => {
+      if (!isMounted) return;
       base44.entities.NanaPreferences.filter({ created_by: user.email }).then((prefs) => {
-        if (prefs?.length > 0) setPreferences(prefs[0]);
-      });
+        if (isMounted && prefs?.length > 0) setPreferences(prefs[0]);
+      }).catch(() => {});
     }).catch(() => {});
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {

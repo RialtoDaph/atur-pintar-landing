@@ -100,8 +100,12 @@ export default function Dashboard() {
   const monthExpense = thisMonthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
   const totalSaved = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
 
+  const handleRefresh = async () => {
+    await loadData();
+  };
+
   return (
-    <PullToRefresh onRefresh={loadData}>
+    <PullToRefresh onRefresh={handleRefresh}>
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
       {user && <RecurringManager userEmail={user.email} />}
       {/* Top Header */}

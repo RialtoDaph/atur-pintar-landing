@@ -38,11 +38,13 @@ export default function Transactions() {
   const PAGE_SIZE = 50;
 
   useEffect(() => {
+    let isMounted = true;
     base44.auth.me().then(u => {
-      setUser(u);
+      if (isMounted) setUser(u);
     }).catch((err) => {
-      console.error("Failed to authenticate user:", err);
+      if (isMounted) console.error("Failed to authenticate user:", err);
     });
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => { if (user) loadData(); }, [user]);

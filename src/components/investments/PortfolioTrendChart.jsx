@@ -62,7 +62,7 @@ export default function PortfolioTrendChart({ investments, totalValue, totalInve
 
   useEffect(() => {
     fetchHistory();
-  }, [fetchHistory]);
+  }, [period]);
 
   // Re-fetch when price refresh completes (refreshKey goes from true→false)
   useEffect(() => {
