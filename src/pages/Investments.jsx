@@ -164,6 +164,8 @@ export default function InvestmentsPage() {
             const gainPct = inv.initial_amount > 0 ? ((gain / inv.initial_amount) * 100).toFixed(2) : 0;
             const isPositive = gain >= 0;
             const portfolioWeight = totalValue > 0 ? ((inv.current_value / totalValue) * 100).toFixed(1) : 0;
+            const hasDailyChange = inv.daily_change_pct !== undefined && inv.daily_change_pct !== null && ["saham","crypto"].includes(inv.type);
+            const dailyIsPositive = (inv.daily_change_pct || 0) >= 0;
             return (
               <Link
                 key={inv.id}
