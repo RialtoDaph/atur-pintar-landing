@@ -2,25 +2,59 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
 const FINNHUB_API_KEY = Deno.env.get("FINNHUB_API_KEY");
 
-// Common crypto name → symbol mapping
-const CRYPTO_NAME_MAP = {
-  "bitcoin": "BTC", "btc": "BTC",
-  "ethereum": "ETH", "eth": "ETH",
-  "binance coin": "BNB", "bnb": "BNB",
-  "solana": "SOL", "sol": "SOL",
-  "ripple": "XRP", "xrp": "XRP",
-  "cardano": "ADA", "ada": "ADA",
-  "dogecoin": "DOGE", "doge": "DOGE",
-  "polygon": "MATIC", "matic": "MATIC",
-  "chainlink": "LINK", "link": "LINK",
-  "avalanche": "AVAX", "avax": "AVAX",
-  "litecoin": "LTC", "ltc": "LTC",
-  "polkadot": "DOT", "dot": "DOT",
-  "shiba inu": "SHIB", "shib": "SHIB",
-  "tron": "TRX", "trx": "TRX",
+// Common crypto name → CoinGecko ID mapping
+const CRYPTO_COINGECKO_MAP = {
+  "bitcoin": "bitcoin", "btc": "bitcoin",
+  "ethereum": "ethereum", "eth": "ethereum",
+  "binance coin": "binancecoin", "bnb": "binancecoin",
+  "solana": "solana", "sol": "solana",
+  "ripple": "ripple", "xrp": "ripple",
+  "cardano": "cardano", "ada": "cardano",
+  "dogecoin": "dogecoin", "doge": "dogecoin",
+  "polygon": "matic-network", "matic": "matic-network",
+  "chainlink": "chainlink", "link": "chainlink",
+  "avalanche": "avalanche-2", "avax": "avalanche-2",
+  "litecoin": "litecoin", "ltc": "litecoin",
+  "polkadot": "polkadot", "dot": "polkadot",
+  "shiba inu": "shiba-inu", "shib": "shiba-inu",
+  "tron": "tron", "trx": "tron",
+  "tether": "tether", "usdt": "tether",
+  "usd coin": "usd-coin", "usdc": "usd-coin",
 };
 
-// Use Finnhub symbol search to find ticker for a given name
+// Get current USD → IDR exchange rate
+async function getUsdToIdr() {
+  try {
+    const res = await fetch("https://api.frankfurter.app/latest?from=USD&to=IDR");
+    const data = await res.json();
+    return data?.rates?.IDR || 16000; // fallback rate
+  } catch {
+    return 16000; // fallback
+  }
+}
+
+// Fetch crypto price in IDR via CoinGecko
+async function fetchCryptoPriceIDR(name) {
+  const lower = name.toLowerCase().trim();
+  const coinId = CRYPTO_COINGECKO_MAP[lower] || lower;
+  try {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(coinId)}&vs_currencies=idr&include_24hr_change=true`
+    );
+    const data = await res.json();
+    if (data[coinId]?.idr) {
+      return {
+        priceIDR: data[coinId].idr,
+        dailyChangePct: data[coinId].idr_24h_change || 0,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// Use Finnhub symbol search to find ticker
 async function searchStockSymbol(name) {
   try {
     const res = await fetch(
@@ -28,7 +62,6 @@ async function searchStockSymbol(name) {
     );
     const data = await res.json();
     if (data.result && data.result.length > 0) {
-      // Prefer exact symbol match, otherwise first result
       const exact = data.result.find(r =>
         r.symbol?.toUpperCase() === name.toUpperCase() ||
         r.displaySymbol?.toUpperCase() === name.toUpperCase()
@@ -48,7 +81,7 @@ async function fetchFinnhubQuote(symbol) {
     );
     const data = await res.json();
     if (data.c && data.c > 0) {
-      return { price: data.c, previousClose: data.pc || data.c };
+      return { priceUSD: data.c, previousClose: data.pc || data.c };
     }
     return null;
   } catch {
@@ -56,41 +89,30 @@ async function fetchFinnhubQuote(symbol) {
   }
 }
 
-async function fetchCryptoPrice(nameCleaned) {
-  // Resolve symbol from name map or treat as-is
-  const lower = nameCleaned.toLowerCase().trim();
-  const symbol = CRYPTO_NAME_MAP[lower] || nameCleaned.toUpperCase();
-  const finnhubSymbol = `BINANCE:${symbol}USDT`;
-  try {
-    const res = await fetch(
-      `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(finnhubSymbol)}&token=${FINNHUB_API_KEY}`
-    );
-    const data = await res.json();
-    if (data.c && data.c > 0) {
-      return { price: data.c, previousClose: data.pc || data.c, symbol };
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchStockPrice(name) {
-  // If it looks like a ticker already (short, all caps), use directly
+// Fetch stock price, return in IDR
+async function fetchStockPriceIDR(name, usdToIdr) {
   const trimmed = name.trim();
   const looksLikeTicker = trimmed.length <= 6 && trimmed === trimmed.toUpperCase();
-  
   let symbol = looksLikeTicker ? trimmed : await searchStockSymbol(trimmed);
   if (!symbol) return null;
 
-  return await fetchFinnhubQuote(symbol);
+  // Indonesian stock (.JK suffix) — price is already in IDR
+  const isIndonesian = symbol.endsWith(".JK") || symbol.endsWith(".JK");
+  const quote = await fetchFinnhubQuote(symbol);
+  if (!quote) return null;
+
+  const priceIDR = isIndonesian ? quote.priceUSD : quote.priceUSD * usdToIdr;
+  const dailyChangePct = quote.previousClose > 0
+    ? ((quote.priceUSD - quote.previousClose) / quote.previousClose) * 100
+    : 0;
+
+  return { priceIDR, dailyChangePct };
 }
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Allow both authenticated users and scheduled automation (service role)
     let targetEmail = null;
     try {
       const user = await base44.auth.me();
@@ -114,35 +136,39 @@ Deno.serve(async (req) => {
     const toUpdate = investments.filter(inv =>
       ["saham", "crypto"].includes(inv.type) &&
       inv.name &&
-      (inv.quantity > 0 || inv.quantity != null)
+      inv.quantity != null
     );
+
+    // Fetch exchange rate once for all stocks
+    const usdToIdr = await getUsdToIdr();
 
     const results = { updated: 0, failed: 0, skipped: 0, details: [] };
 
     for (const inv of toUpdate) {
-      let priceData = null;
+      let result = null;
 
-      if (inv.type === "saham") {
-        priceData = await fetchStockPrice(inv.name);
-      } else if (inv.type === "crypto") {
-        priceData = await fetchCryptoPrice(inv.name);
+      if (inv.type === "crypto") {
+        result = await fetchCryptoPriceIDR(inv.name);
+      } else if (inv.type === "saham") {
+        result = await fetchStockPriceIDR(inv.name, usdToIdr);
       }
 
-      if (priceData && priceData.price > 0) {
+      if (result && result.priceIDR > 0) {
         const qty = inv.quantity || 1;
-        const newCurrentValue = priceData.price * qty;
-        const dailyChangePct = priceData.previousClose > 0
-          ? ((priceData.price - priceData.previousClose) / priceData.previousClose) * 100
-          : 0;
+        const newCurrentValue = result.priceIDR * qty;
 
         await base44.asServiceRole.entities.Investment.update(inv.id, {
-          current_value: Math.round(newCurrentValue * 100) / 100,
-          price_per_unit: Math.round(priceData.price * 100) / 100,
+          current_value: Math.round(newCurrentValue),
+          price_per_unit: Math.round(result.priceIDR),
           last_price_update: new Date().toISOString().split("T")[0],
-          daily_change_pct: Math.round(dailyChangePct * 100) / 100,
+          daily_change_pct: Math.round(result.dailyChangePct * 100) / 100,
         });
         results.updated++;
-        results.details.push({ name: inv.name, price: priceData.price, change: dailyChangePct.toFixed(2) });
+        results.details.push({
+          name: inv.name,
+          priceIDR: Math.round(result.priceIDR),
+          change: result.dailyChangePct.toFixed(2),
+        });
       } else {
         results.failed++;
         results.details.push({ name: inv.name, error: "price not found" });
@@ -157,6 +183,7 @@ Deno.serve(async (req) => {
       updated: results.updated,
       failed: results.failed,
       skipped: results.skipped,
+      usdToIdr: Math.round(usdToIdr),
       details: results.details,
     });
   } catch (error) {
