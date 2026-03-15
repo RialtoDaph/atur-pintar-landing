@@ -2,40 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Send, Sparkles, X, ChevronRight } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useFinancialContext } from "./useFinancialContext";
-import { DEFAULT_CATEGORIES, BUILTIN_SUBCATEGORIES, CATEGORY_KEYWORDS } from "@/components/utils/categoryConfig";
-
-function detectCategory(text) {
-  const lower = text.toLowerCase();
-  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (keywords.some((kw) => lower.includes(kw))) return cat;
-  }
-  return null;
-}
-
-function parseTransaction(text) {
-  // Match amount: number possibly with k/ribu/juta suffix
-  const amountRegex = /(\d[\d.,]*)\s*(ribu|rb|k|juta|jt|miliar|mil)?\b/gi;
-  const matches = [...text.matchAll(amountRegex)];
-  let amount = null;
-  let amountStr = null;
-  for (const m of matches) {
-    const num = parseFloat(m[1].replace(/\./g, "").replace(/,/g, "."));
-    const suffix = (m[2] || "").toLowerCase();
-    let value = num;
-    if (["ribu", "rb", "k"].includes(suffix)) value = num * 1000;
-    else if (["juta", "jt"].includes(suffix)) value = num * 1000000;
-    else if (["miliar", "mil"].includes(suffix)) value = num * 1000000000;
-    if (value >= 100) { amount = value; amountStr = m[0]; break; }
-  }
-  if (!amount) return null;
-
-  const note = text.replace(amountStr, "").trim().replace(/\s+/g, " ") || "Transaksi";
-  const incomeKW = ["terima", "dapat", "gaji", "masuk", "income", "pemasukan", "salary"];
-  const isIncome = incomeKW.some((kw) => text.toLowerCase().includes(kw));
-  const category = detectCategory(text);
-
-  return { amount, note, type: isIncome ? "income" : "expense", category };
-}
+import { useCategoryManager } from "@/components/utils/useCategoryManager";
+import { BUILTIN_SUBCATEGORIES } from "@/components/utils/categoryConfig";
 
 export default function NanaChatBoxInline({ user }) {
   const [input, setInput] = useState("");
