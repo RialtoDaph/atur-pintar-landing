@@ -436,7 +436,7 @@ export default function Transactions() {
                           onClick={() => setPage(p => p + 1)}
                           className="px-5 py-2 rounded-xl bg-[#F2F4F7] text-xs font-semibold text-[#4A5568] hover:bg-[#E2E8F0] transition-colors tap-highlight-fix"
                         >
-                          {t('view_all')} ({remainingCount})
+                          {t('tx_load_more') || `Muat lebih banyak`} ({remainingCount})
                         </button>
                       </div>
                     )}
