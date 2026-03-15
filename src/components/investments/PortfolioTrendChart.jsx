@@ -58,7 +58,7 @@ export default function PortfolioTrendChart({ investments, totalValue, totalInve
     } finally {
       setLoading(false);
     }
-  }, [period, investments]);
+  }, [period]);
 
   useEffect(() => {
     fetchHistory();
