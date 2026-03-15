@@ -378,7 +378,7 @@ export default function Transactions() {
                               {monthExpense > 0 && <span className="text-[#FF6B6B] font-semibold">−{formatCurrency(monthExpense)}</span>}
                             </div>
                           </div>
-                          {group.items.map(tx => {
+                          {group.items.sort((a, b) => new Date(b.date) - new Date(a.date)).map(tx => {
                             const cat = getCategoryConfig(tx.category);
                             const isIncome = tx.type === "income";
                             const linkedGoal = goals.find(g => g.id === tx.goal_id);
