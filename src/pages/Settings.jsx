@@ -174,6 +174,12 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Round-Up Otomatis */}
+        <div>
+          <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-2 px-1">Fitur Tabungan</p>
+          <RoundUpSettings />
+        </div>
+
         {/* Integrasi & Export */}
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <IntegrationSettings />
