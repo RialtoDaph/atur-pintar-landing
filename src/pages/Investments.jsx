@@ -22,6 +22,7 @@ export default function InvestmentsPage() {
   const [user, setUser] = useState(null);
   const [showWatchlist, setShowWatchlist] = useState(false);
   const [watchlist, setWatchlist] = useState([]);
+  const [refreshingPrices, setRefreshingPrices] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {
