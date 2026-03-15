@@ -179,7 +179,10 @@ export default function InvestmentsPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-[#1A1A1A]">{inv.name}</p>
-                      <p className="text-xs text-[#8FA4C8]">{typeLabel} · {portfolioWeight}{t('investments_portfolio_weight')}</p>
+                      <p className="text-xs text-[#8FA4C8]">
+                        {typeLabel} · {portfolioWeight}{t('investments_portfolio_weight')}
+                        {inv.last_price_update && <span className="ml-1 text-[#CBD5E0]">· {inv.last_price_update}</span>}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2" onClick={(e) => e.preventDefault()}>
