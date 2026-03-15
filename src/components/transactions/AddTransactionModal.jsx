@@ -270,7 +270,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
       {showManage && (
         <ManageCategoriesModal
           onClose={() => setShowManage(false)}
-          onUpdated={() => { loadCustomCats(); }}
+          onUpdated={() => setShowManage(false)}
         />
       )}
 
