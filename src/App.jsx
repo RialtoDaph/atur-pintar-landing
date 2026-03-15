@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -10,12 +9,10 @@ import Subscription from '@/pages/Subscription';
 import AdminSubscriptions from '@/pages/AdminSubscriptions';
 import Dashboard from '@/pages/Dashboard';
 import ProfileSettings from '@/pages/ProfileSettings';
+import Layout from './Layout';
 
-const { Pages, Layout } = pagesConfig;
-
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+const LayoutWrapper = ({ children, currentPageName }) => 
+  <Layout currentPageName={currentPageName}>{children}</Layout>;
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -50,17 +47,7 @@ const AuthenticatedApp = () => {
           <Dashboard />
         </LayoutWrapper>
       } />
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
-      ))}
+
       <Route path="/Subscription" element={<LayoutWrapper currentPageName="Subscription"><Subscription /></LayoutWrapper>} />
       <Route path="/AdminSubscriptions" element={<LayoutWrapper currentPageName="AdminSubscriptions"><AdminSubscriptions /></LayoutWrapper>} />
       <Route path="/ProfileSettings" element={<LayoutWrapper currentPageName="ProfileSettings"><ProfileSettings /></LayoutWrapper>} />
