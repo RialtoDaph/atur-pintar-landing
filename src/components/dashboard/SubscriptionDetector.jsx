@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
-import { RefreshCw, Plus } from "lucide-react";
+import { RefreshCw, Plus, Pencil, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
+import EditContractModal from "./EditContractModal";
 
 export default function SubscriptionDetector({ user }) {
   const { formatCurrency } = useAppSettings();
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -20,6 +22,19 @@ export default function SubscriptionDetector({ user }) {
     const all = await base44.entities.Transaction.filter({ is_recurring: true, created_by: user.email });
     setTemplates(all.filter(t => !t.is_recurring_child && t.category === "subscriptions"));
     setLoading(false);
+  }
+
+  async function handleDelete(id) {
+    if (confirm("Hapus langganan ini?")) {
+      await base44.entities.Transaction.delete(id);
+      loadTemplates();
+    }
+  }
+
+  async function handleUpdate(data) {
+    await base44.entities.Transaction.update(editingId, data);
+    setEditingId(null);
+    loadTemplates();
   }
 
   const totalMonthly = templates.reduce((s, t) => {
@@ -54,8 +69,8 @@ export default function SubscriptionDetector({ user }) {
         ) : (
           <div className="space-y-0">
             {templates.map((tx) => (
-              <div key={tx.id} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
-                <div className="flex items-center gap-2">
+              <div key={tx.id} className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-[#F8FAFC] group border-b border-[#F5F5F5] last:border-0">
+                <div className="flex items-center gap-2 flex-1">
                   <div className="w-7 h-7 rounded-full bg-purple-50 flex items-center justify-center">
                     <RefreshCw className="w-3.5 h-3.5 text-purple-500" />
                   </div>
@@ -67,7 +82,21 @@ export default function SubscriptionDetector({ user }) {
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(tx.amount)}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(tx.amount)}</span>
+                  <button
+                    onClick={() => setEditingId(tx.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1 text-[#8FA4C8] hover:text-[#FF6A00] transition-all"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(tx.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1 text-[#8FA4C8] hover:text-[#FF6B6B] transition-all"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -84,6 +113,14 @@ export default function SubscriptionDetector({ user }) {
             setShowAdd(false);
             loadTemplates();
           }}
+        />
+      )}
+
+      {editingId && (
+        <EditContractModal
+          contract={templates.find(t => t.id === editingId)}
+          onClose={() => setEditingId(null)}
+          onSave={handleUpdate}
         />
       )}
     </>
