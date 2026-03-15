@@ -15,11 +15,12 @@ import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
 import RecurringManager from "@/components/transactions/RecurringManager";
 import ReminderWidget from "@/components/reminders/ReminderWidget";
 import NanaChatBoxInline from "@/components/nana/NanaChatBoxInline";
+import ContractPaymentsCard from "@/components/dashboard/ContractPaymentsCard";
+import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
 
 // Lazy load heavy components
 const SpendingChart = lazy(() => import("@/components/dashboard/SpendingChart"));
 const CashflowForecast = lazy(() => import("@/components/dashboard/CashflowForecast"));
-const SubscriptionDetector = lazy(() => import("@/components/dashboard/SubscriptionDetector"));
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const PortfolioSummary = lazy(() => import("@/components/dashboard/PortfolioSummary"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
