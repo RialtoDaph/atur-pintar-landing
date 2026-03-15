@@ -64,14 +64,6 @@ export default function Settings() {
     await updateSettings({ ...settings, language: code });
   }
 
-  function toggleWidget(key) {
-    const next = { ...widgets, [key]: !widgets[key] };
-    setWidgets(next);
-    localStorage.setItem("widgets", JSON.stringify(next));
-  }
-
-
-
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-8">
