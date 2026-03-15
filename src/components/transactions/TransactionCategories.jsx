@@ -3,24 +3,7 @@ import { GripVertical } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-
-const DEFAULT_CATEGORIES = {
-  expense: [
-    { key: "housing", i18nKey: "cat_housing", emoji: "🏠", color: "#4F7CFF" },
-    { key: "food", i18nKey: "cat_food", emoji: "🍔", color: "#00C9A7" },
-    { key: "transport", i18nKey: "cat_transport", emoji: "🚗", color: "#F5A623" },
-    { key: "health", i18nKey: "cat_health", emoji: "❤️", color: "#FF6B6B" },
-    { key: "entertainment", i18nKey: "cat_entertainment", emoji: "🎬", color: "#9B59B6" },
-    { key: "shopping", i18nKey: "cat_shopping", emoji: "🛍️", color: "#E91E8C" },
-    { key: "subscriptions", i18nKey: "cat_subscriptions", emoji: "📱", color: "#1ABC9C" },
-    { key: "other", i18nKey: "cat_other", emoji: "📦", color: "#95A5A6" },
-  ],
-  income: [
-    { key: "salary", i18nKey: "cat_salary", emoji: "💼", color: "#27AE60" },
-    { key: "freelance", i18nKey: "cat_freelance", emoji: "💻", color: "#2ECC71" },
-    { key: "other", i18nKey: "cat_other", emoji: "📦", color: "#95A5A6" },
-  ],
-};
+import { DEFAULT_CATEGORIES } from "@/components/utils/categoryConfig";
 
 export default function TransactionCategories({ tab, form, setForm, onShowSubCatPopup }) {
   const { t } = useAppSettings();

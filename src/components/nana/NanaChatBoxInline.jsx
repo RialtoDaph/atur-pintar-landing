@@ -2,78 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Send, Sparkles, X, ChevronRight } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useFinancialContext } from "./useFinancialContext";
-
-const DEFAULT_CATS = {
-  expense: [
-    { key: "housing", label: "Rumah", emoji: "🏠" },
-    { key: "food", label: "Makanan", emoji: "🍔" },
-    { key: "transport", label: "Transportasi", emoji: "🚗" },
-    { key: "health", label: "Kesehatan", emoji: "❤️" },
-    { key: "entertainment", label: "Hiburan", emoji: "🎬" },
-    { key: "shopping", label: "Belanja", emoji: "🛍️" },
-    { key: "subscriptions", label: "Langganan", emoji: "📱" },
-    { key: "other", label: "Lainnya", emoji: "📦" },
-  ],
-  income: [
-    { key: "salary", label: "Gaji", emoji: "💼" },
-    { key: "freelance", label: "Freelance", emoji: "💻" },
-    { key: "other", label: "Lainnya", emoji: "📦" },
-  ],
-};
-
-const FOOD_SUBCATEGORIES = [
-  { key: "food_street", label: "🥘 Makanan Jalanan", emoji: "🥘", description: "Seblak, Martabak, Batagor, Siomay, dll" },
-  { key: "food_restaurant", label: "🍽️ Restoran / Cafe", emoji: "🍽️", description: "Makan dine-in, kafe" },
-  { key: "food_delivery", label: "🛵 Delivery / Pesan Antar", emoji: "🛵", description: "GoFood, GrabFood, ShopeeFood" },
-  { key: "food_grocery", label: "🛒 Groceries / Belanja Bahan", emoji: "🛒", description: "Indomaret, Alfamart, pasar, supermarket" },
-];
-
-const CATEGORY_KEYWORDS = {
-  food: [
-    // Generic
-    "makan", "minum", "makanan", "minuman", "snack", "jajan", "kuliner",
-    // Indonesian street food & dishes
-    "nasi", "ayam", "mie", "mi", "bakso", "baso", "soto", "rendang", "sate", "satay",
-    "martabak", "terang bulan", "gado-gado", "gadogado", "pecel", "lontong",
-    "ketoprak", "batagor", "siomay", "cilok", "cimol", "cireng", "cuanki",
-    "empek-empek", "pempek", "otak-otak", "seblak", "mie ayam", "mie goreng",
-    "mie rebus", "mie kuah", "kwetiau", "bihun", "nasi goreng", "nasi uduk",
-    "nasi padang", "nasi kuning", "nasi liwet", "nasi pecel", "nasi campur",
-    "nasi bakar", "bubur ayam", "bubur", "ketupat", "opor", "rawon",
-    "gulai", "tongseng", "semur", "garang asem", "pindang", "ikan bakar",
-    "ayam geprek", "geprek", "ayam goreng", "ayam bakar", "bebek goreng",
-    "bebek betutu", "pepes", "tempe", "tahu", "tofu", "gado",
-    "rujak", "asinan", "kerupuk", "krupuk", "emping", "rempeyek",
-    "lumpia", "risoles", "kroket", "lemper", "klepon", "onde-onde",
-    "dadar gulung", "kue", "donat", "doughnut", "roti", "toast",
-    "sandwich", "burger", "pizza", "pasta", "steak", "hotdog",
-    "sushi", "ramen", "dimsum", "dim sum", "shabu", "bbq",
-    // Drinks & beverages
-    "kopi", "coffee", "espresso", "latte", "cappuccino", "americano",
-    "teh", "boba", "bubble tea", "thai tea", "susu", "milk",
-    "jus", "juice", "smoothie", "minuman", "es teh", "es jeruk",
-    "es campur", "es cendol", "cendol", "segar",
-    // Restaurants & delivery
-    "cafe", "kafe", "restoran", "warung", "warteg", "kedai", "depot",
-    "kantin", "foodcourt", "food court", "gofood", "grabfood", "shopeefood",
-    "shopee food", "traveloka food", "delivery", "ojek makan",
-    // Snacks & desserts
-    "indomie", "indomaret", "alfamart", "superindo", "chiki", "chitato",
-    "cheetos", "oreo", "wafer", "permen", "coklat", "chocolate",
-    "ice cream", "es krim", "gelato", "pudding", "puding",
-    // Specific well-known brands/places
-    "mcd", "mcdonalds", "kfc", "wendy", "burger king", "a&w", "j.co",
-    "starbucks", "chatime", "tiger sugar", "koi", "janji jiwa", "kopi kenangan",
-  ],
-  transport: ["gojek", "grab", "taxi", "taksi", "ojek", "bensin", "bbm", "parkir", "tol", "busway", "mrt", "lrt", "kereta", "angkot", "bus", "commuter", "transjakarta", "maxim"],
-  shopping: ["shopee", "tokopedia", "lazada", "baju", "sepatu", "tas", "pakaian", "fashion", "belanja"],
-  health: ["dokter", "rumah sakit", "obat", "apotek", "klinik", "periksa", "gym", "fitness"],
-  entertainment: ["bioskop", "film", "movie", "game", "konser", "tiket", "hiburan"],
-  subscriptions: ["netflix", "spotify", "youtube premium", "icloud", "disney", "langganan"],
-  housing: ["listrik", "air", "pdam", "wifi", "internet", "sewa", "kost", "kontrakan", "gas"],
-  salary: ["gaji", "salary", "upah", "honor"],
-  freelance: ["freelance", "proyek", "project", "fee"],
-};
+import { DEFAULT_CATEGORIES, BUILTIN_SUBCATEGORIES, CATEGORY_KEYWORDS } from "@/components/utils/categoryConfig";
 
 function detectCategory(text) {
   const lower = text.toLowerCase();
@@ -186,7 +115,7 @@ export default function NanaChatBoxInline({ user }) {
         date: new Date().toISOString().split("T")[0],
       });
       const fmt = new Intl.NumberFormat("id-ID").format(txData.amount);
-      const allCats = [...DEFAULT_CATS.expense, ...DEFAULT_CATS.income];
+      const allCats = [...DEFAULT_CATEGORIES.expense, ...DEFAULT_CATEGORIES.income];
       const catObj = allCats.find((c) => c.key === txData.category);
       const subCat = Object.values(subCatsByParent).flat().find((s) => s.key === txData.category);
       const catLabel = subCat?.label || catObj?.label || txData.category;
@@ -224,16 +153,18 @@ export default function NanaChatBoxInline({ user }) {
 
     if (parsed) {
       setPendingTx(parsed);
-      // Food always shows built-in subcategory picker
-      if (parsed.category === "food") {
+      // Check built-in subcategories first (e.g., food)
+      if (BUILTIN_SUBCATEGORIES[parsed.category]) {
+        const allCats = [...DEFAULT_CATEGORIES.expense, ...DEFAULT_CATEGORIES.income];
+        const parentCat = allCats.find((c) => c.key === parsed.category);
         setSubCatPopup({
-          parentKey: "food",
-          parentLabel: "Makanan & Minuman",
-          parentEmoji: "🍔",
-          subs: FOOD_SUBCATEGORIES,
+          parentKey: parsed.category,
+          parentLabel: parentCat?.label || parsed.category,
+          parentEmoji: parentCat?.emoji || "📦",
+          subs: BUILTIN_SUBCATEGORIES[parsed.category],
         });
       } else if (parsed.category && subCatsByParent[parsed.category]?.length > 0) {
-        const allCats = [...DEFAULT_CATS.expense, ...DEFAULT_CATS.income];
+        const allCats = [...DEFAULT_CATEGORIES.expense, ...DEFAULT_CATEGORIES.income];
         const parentCat = allCats.find((c) => c.key === parsed.category);
         setSubCatPopup({
           parentKey: parsed.category,
