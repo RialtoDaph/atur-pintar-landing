@@ -61,23 +61,16 @@ export default function NanaChatBoxInline({ user }) {
 
   useEffect(() => () => stopPolling(), []);
 
-  async function createTransaction(txData) {
+  async function handleCreateTransaction(txData) {
     setSending(true);
     try {
-      await base44.entities.Transaction.create({
-        amount: txData.amount,
-        type: txData.type,
-        category: txData.category || "other",
-        note: txData.note,
-        date: new Date().toISOString().split("T")[0],
-      });
+      await createTransaction(txData);
       const fmt = new Intl.NumberFormat("id-ID").format(txData.amount);
-      const allCats = [...DEFAULT_CATEGORIES.expense, ...DEFAULT_CATEGORIES.income];
-      const catObj = allCats.find((c) => c.key === txData.category);
-      const subCat = Object.values(subCatsByParent).flat().find((s) => s.key === txData.category);
-      const catLabel = subCat?.label || catObj?.label || txData.category;
-      const catEmoji = subCat?.emoji || catObj?.emoji || "📦";
-      setLastReply({ content: `✅ Tercatat! ${catEmoji} ${txData.type === "income" ? "Pemasukan" : "Pengeluaran"} Rp ${fmt} untuk "${txData.note}" (${catLabel}) berhasil disimpan.`, interactivePrompt: null });
+      const { emoji, label } = formatCategory(txData.category || "other");
+      setLastReply({
+        content: `✅ Tercatat! ${emoji} ${txData.type === "income" ? "Pemasukan" : "Pengeluaran"} Rp ${fmt} untuk "${txData.note}" (${label}) berhasil disimpan.`,
+        interactivePrompt: null,
+      });
     } finally {
       setSending(false);
       setPendingTx(null);
