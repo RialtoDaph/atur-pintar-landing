@@ -33,21 +33,21 @@ export default function EditContractModal({ contract, onClose, onSave }) {
           <div>
             <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Jenis</label>
             <div className="flex gap-2 bg-[#F2F4F7] rounded-lg p-1 mb-4">
-              {["expense", "income"].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setData({ ...data, type })}
-                  className={`flex-1 py-2 rounded-md text-sm font-semibold transition-all ${
-                    data.type === type
-                      ? type === "expense"
-                        ? "bg-[#FF6B6B] text-white"
-                        : "bg-[#00C9A7] text-white"
-                      : "text-[#8FA4C8]"
-                  }`}
-                >
+              {["expense", "income"].map((type) =>
+              <button
+                key={type}
+                onClick={() => setData({ ...data, type })}
+                className={`flex-1 py-2 rounded-md text-sm font-semibold transition-all ${
+                data.type === type ?
+                type === "expense" ?
+                "bg-[#FF6B6B] text-white" :
+                "bg-[#00C9A7] text-white" :
+                "text-[#8FA4C8]"}`
+                }>
+
                   {type === "expense" ? "- Pengeluaran" : "+ Pemasukan"}
                 </button>
-              ))}
+              )}
             </div>
           </div>
 
@@ -56,10 +56,10 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <input
               type="text"
               value={data.note || ""}
-              onChange={(e) => setData({ ...data, note: e.target.value })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
-              placeholder="Nama kontrak/tagihan"
-            />
+              onChange={(e) => setData({ ...data, note: e.target.value })} className="bg-slate-50 text-slate-950 px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+
+              placeholder="Nama kontrak/tagihan" />
+
           </div>
 
           <div>
@@ -67,10 +67,10 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <input
               type="number"
               value={data.amount || 0}
-              onChange={(e) => setData({ ...data, amount: parseFloat(e.target.value) || 0 })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
-              placeholder="0"
-            />
+              onChange={(e) => setData({ ...data, amount: parseFloat(e.target.value) || 0 })} className="bg-slate-50 text-slate-950 px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+
+              placeholder="0" />
+
           </div>
 
           <div>
@@ -78,33 +78,33 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <select
               value={data.recurring_interval || "monthly"}
               onChange={(e) => setData({ ...data, recurring_interval: e.target.value })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] capitalize"
-            >
-              {INTERVALS.map((i) => (
-                <option key={i} value={i} className="capitalize">
+              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] capitalize">
+
+              {INTERVALS.map((i) =>
+              <option key={i} value={i} className="capitalize">
                   {i}
                 </option>
-              ))}
+              )}
             </select>
           </div>
 
           <div className="flex gap-2 pt-4">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 rounded-lg bg-[#F2F4F7] text-[#1A1A1A] font-semibold text-sm hover:bg-[#E2E8F0] transition-colors"
-            >
+              className="flex-1 px-4 py-2 rounded-lg bg-[#F2F4F7] text-[#1A1A1A] font-semibold text-sm hover:bg-[#E2E8F0] transition-colors">
+
               Batal
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 px-4 py-2 rounded-lg bg-[#FF6A00] text-white font-semibold text-sm hover:bg-[#e05e00] disabled:opacity-50 transition-colors"
-            >
+              className="flex-1 px-4 py-2 rounded-lg bg-[#FF6A00] text-white font-semibold text-sm hover:bg-[#e05e00] disabled:opacity-50 transition-colors">
+
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
