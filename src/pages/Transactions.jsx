@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, Pencil, CheckSquare, Square, X, Repeat2, Target, Search, Upload, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Pencil, CheckSquare, Square, Repeat2, Target, Search, Upload, ChevronDown } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { toast } from "sonner";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
@@ -47,7 +47,7 @@ export default function Transactions() {
   const [deleting, setDeleting] = useState(false);
   const [showCSVImport, setShowCSVImport] = useState(false);
   const [page, setPage] = useState(1);
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(true);
   const PAGE_SIZE = 50;
 
   useEffect(() => {
@@ -422,11 +422,11 @@ export default function Transactions() {
                                 </span>
                                 {!selectMode && (
                                   <>
-                                    <button onClick={() => setEditingTx(tx)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[#CBD5E0] hover:text-[#4F7CFF]">
-                                      <Pencil className="w-3 h-3" />
+                                    <button onClick={() => setEditingTx(tx)} className="text-[#CBD5E0] hover:text-[#4F7CFF] active:text-[#4F7CFF] p-1 tap-highlight-fix">
+                                      <Pencil className="w-3.5 h-3.5" />
                                     </button>
-                                    <button onClick={() => handleDelete(tx.id)} disabled={deleting} className="opacity-0 group-hover:opacity-100 transition-opacity text-[#CBD5E0] hover:text-[#FF6B6B] disabled:opacity-50">
-                                      <Trash2 className="w-3 h-3" />
+                                    <button onClick={() => handleDelete(tx.id)} disabled={deleting} className="text-[#CBD5E0] hover:text-[#FF6B6B] active:text-[#FF6B6B] p-1 disabled:opacity-50 tap-highlight-fix">
+                                      <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                   </>
                                 )}
