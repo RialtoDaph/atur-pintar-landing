@@ -131,6 +131,16 @@ export default function InvestmentsPage() {
             </div>
           </div>
 
+          {/* Performance metrics */}
+          {investments.length > 0 && (
+            <PerformanceMetrics
+              investments={investments}
+              totalValue={totalValue}
+              totalInvested={totalInvested}
+              formatCurrency={formatCurrency}
+            />
+          )}
+
           {/* Portfolio trend chart embedded in dark header */}
           {investments.length > 0 && (
             <PortfolioTrendChart
@@ -138,6 +148,7 @@ export default function InvestmentsPage() {
               totalValue={totalValue}
               totalInvested={totalInvested}
               darkMode={true}
+              refreshKey={refreshingPrices}
             />
           )}
         </div>
