@@ -64,6 +64,18 @@ export default function InvestmentsPage() {
     setShowAdd(true);
   }
 
+  async function handleRefreshPrices() {
+    setRefreshingPrices(true);
+    try {
+      await base44.functions.invoke("updateInvestmentPrices", {});
+      await loadData();
+    } catch (error) {
+      console.error("Price refresh failed:", error);
+    } finally {
+      setRefreshingPrices(false);
+    }
+  }
+
   async function handleSave(data) {
      try {
        if (editingInv) {
