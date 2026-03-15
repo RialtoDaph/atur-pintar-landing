@@ -180,10 +180,7 @@ export default function NanaFloatingChat() {
               </div> :
           visibleMessages.length === 0 ?
           <div className="flex flex-col items-center justify-center h-full text-center gap-2 pt-4">
-               <div className="w-20 h-20 rounded-full overflow-hidden">
-                    <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png" alt="Nana" className="w-full h-full object-contain" />
-                 </div>
-                <p className="text-white font-bold text-sm">Nana AI</p>
+               <p className="text-white font-bold text-sm">Nana AI</p>
                 <p className="text-[#8FA4C8] text-xs max-w-[220px]">Tanya apa saja soal keuanganmu!</p>
                 {/* Proactive alerts from financial context */}
                 {context && (() => {
