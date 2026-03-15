@@ -93,7 +93,7 @@ export default function DebtsPage() {
   return (
     <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
-        <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
+        <div className="bg-[#0A0A0A] px-5 pt-16 pb-20">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -127,7 +127,7 @@ export default function DebtsPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
+      <div className="max-w-2xl mx-auto px-5 -mt-14 space-y-3">
         {debtLimitReached && (
           <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3 border border-[#FF6A00]/20">
             <Crown className="w-5 h-5 text-[#FF6A00] flex-shrink-0" />
