@@ -32,12 +32,13 @@ export async function processRecurringTransactions(userEmail) {
     let nextDate = addInterval(lastGen, tx.recurring_interval);
 
     if (nextDate <= today) {
-      // Generate all missing occurrences up to today
+      // Collect all missing occurrences up to today
       let current = nextDate;
       let latestGenerated = lastGen;
+      const toCreate = [];
 
       while (current <= today) {
-        await base44.entities.Transaction.create({
+        toCreate.push({
           amount: tx.amount,
           type: tx.type,
           category: tx.category,
@@ -50,9 +51,13 @@ export async function processRecurringTransactions(userEmail) {
         current = addInterval(current, tx.recurring_interval);
       }
 
-      await base44.entities.Transaction.update(tx.id, {
-        recurring_last_generated: latestGenerated,
-      });
+      // Bulk create + update parent in parallel
+      await Promise.all([
+        base44.entities.Transaction.bulkCreate(toCreate),
+        base44.entities.Transaction.update(tx.id, {
+          recurring_last_generated: latestGenerated,
+        }),
+      ]);
     }
   }
 }
