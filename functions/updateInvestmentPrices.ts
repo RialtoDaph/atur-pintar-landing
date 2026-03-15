@@ -46,7 +46,7 @@ const CRYPTO_COINGECKO_MAP = {
 // Get current USD → IDR exchange rate
 async function getUsdToIdr() {
   try {
-    const res = await fetch("https://api.frankfurter.app/latest?from=USD&to=IDR");
+    const res = await fetch("https://api.frankfurter.app/latest?from=USD&to=IDR", { signal: AbortSignal.timeout(5000) });
     const data = await res.json();
     return data?.rates?.IDR || 16000; // fallback rate
   } catch {
@@ -60,7 +60,8 @@ async function fetchCryptoPriceIDR(name) {
   const coinId = CRYPTO_COINGECKO_MAP[lower] || lower;
   try {
     const res = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(coinId)}&vs_currencies=idr&include_24hr_change=true`
+      `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(coinId)}&vs_currencies=idr&include_24hr_change=true`,
+      { signal: AbortSignal.timeout(5000) }
     );
     const data = await res.json();
     if (data[coinId]?.idr) {
@@ -79,7 +80,8 @@ async function fetchCryptoPriceIDR(name) {
 async function searchStockSymbol(name) {
   try {
     const res = await fetch(
-      `https://finnhub.io/api/v1/search?q=${encodeURIComponent(name)}&token=${FINNHUB_API_KEY}`
+      `https://finnhub.io/api/v1/search?q=${encodeURIComponent(name)}&token=${FINNHUB_API_KEY}`,
+      { signal: AbortSignal.timeout(5000) }
     );
     const data = await res.json();
     if (data.result && data.result.length > 0) {
@@ -98,7 +100,8 @@ async function searchStockSymbol(name) {
 async function fetchFinnhubQuote(symbol) {
   try {
     const res = await fetch(
-      `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_API_KEY}`
+      `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_API_KEY}`,
+      { signal: AbortSignal.timeout(5000) }
     );
     const data = await res.json();
     if (data.c && data.c > 0) {
