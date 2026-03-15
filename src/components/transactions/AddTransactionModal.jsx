@@ -3,6 +3,7 @@ import { X, Settings2, Camera, Loader2, Scissors, GripVertical } from "lucide-re
 import { base44 } from "@/api/base44Client";
 import { parseRupiah } from "@/components/utils/parseRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { applyRoundUp } from "@/components/roundup/useRoundUp";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import SplitBillModal from "./SplitBillModal";
 import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
