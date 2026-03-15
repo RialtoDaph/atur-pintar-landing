@@ -356,7 +356,7 @@ export default function Transactions() {
                 </button>
               )}
             </div>
-          ) : (
+          ) : historyOpen ? (
             <>
               {sortedGroups.map(key => {
                 const group = grouped[key];
