@@ -184,13 +184,21 @@ Deno.serve(async (req) => {
     );
 
     // Build chart data: for each date point, sum portfolio value
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const isLatestPoint = (date) => date.getTime() === today.getTime();
+
     const chartData = datePoints.map((date) => {
       const targetTs = date.getTime();
       let totalValue = 0;
       let hasRealData = false;
+      const isLatest = isLatestPoint(date);
 
       for (const { priceHistory, quantity, current_value } of investmentHistories) {
-        if (priceHistory && priceHistory.length > 0) {
+        // For today's date, always use current_value from database (already updated)
+        if (isLatest) {
+          totalValue += current_value;
+        } else if (priceHistory && priceHistory.length > 0) {
           const price = findClosestPrice(priceHistory, targetTs);
           if (price !== null) {
             totalValue += price * quantity;
