@@ -79,7 +79,7 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
         </Link>
       </div>
 
-      <div className="px-4 pb-4 flex gap-4 overflow-x-auto pb-2">
+      <div className="px-4 pb-4 flex gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {allBudgets.map(b => {
           const cat = DEFAULT_CATEGORIES[b.category] || { label: b.category, emoji: "📦", color: "#95A5A6" };
           const isOver = b.percent > 100;
