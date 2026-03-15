@@ -40,14 +40,9 @@ export default function DebtsPage() {
 
   async function loadData() {
     setLoading(true);
-    try {
-      const d = await base44.entities.Debt.filter({ created_by: user.email }, "-created_date");
-      setDebts(d);
-    } catch (error) {
-      console.error("Failed to load debts:", error);
-    } finally {
-      setLoading(false);
-    }
+    const d = await base44.entities.Debt.filter({ created_by: user.email }, "-created_date");
+    setDebts(d);
+    setLoading(false);
   }
 
   async function handlePayment(amount) {

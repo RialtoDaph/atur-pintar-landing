@@ -53,18 +53,13 @@ export default function Goals() {
 
   async function loadData() {
     setLoading(true);
-    try {
-      const [g, goalTxs] = await Promise.all([
-        base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
-        goalId ? base44.entities.Transaction.filter({ goal_id: goalId, created_by: user.email }, "-created_date") : Promise.resolve([]),
-      ]);
-      setGoals(g);
-      setTransactions(goalTxs);
-    } catch (error) {
-      console.error("Failed to load goals:", error);
-    } finally {
-      setLoading(false);
-    }
+    const [g, goalTxs] = await Promise.all([
+      base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
+      goalId ? base44.entities.Transaction.filter({ goal_id: goalId, created_by: user.email }, "-created_date") : Promise.resolve([]),
+    ]);
+    setGoals(g);
+    setTransactions(goalTxs);
+    setLoading(false);
   }
 
   async function handleTransaction(amount, type, note) {

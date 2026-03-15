@@ -33,7 +33,7 @@ export default function Menu() {
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
       {/* Header */}
-      <div className="bg-[#0A0A0A] px-5 pt-10 pb-6" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 40px)' }}>
+      <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto">
           <p className="text-[#8FA4C8] text-sm font-medium">{t('menu_nav')}</p>
           <h1 className="text-white text-2xl font-bold mt-0.5">{t('menu_title')}</h1>
@@ -54,9 +54,10 @@ export default function Menu() {
                   }`}
                 >
                   <div
-                   className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
+                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
+                    style={{ backgroundColor: item.color + "18" }}
                   >
-                   {item.emoji}
+                    {item.emoji}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-[#1A1A1A]">{item.label}</p>
