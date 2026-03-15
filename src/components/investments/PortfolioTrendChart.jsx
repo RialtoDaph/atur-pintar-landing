@@ -29,7 +29,7 @@ function CustomTooltip({ active, payload, formatCurrency }) {
   );
 }
 
-export default function PortfolioTrendChart({ investments, totalValue, totalInvested, darkMode = false }) {
+export default function PortfolioTrendChart({ investments, totalValue, totalInvested, darkMode = false, refreshKey }) {
   const { settings, formatCurrency } = useAppSettings();
   const lang = settings.language;
   const isEn = lang === "en";
