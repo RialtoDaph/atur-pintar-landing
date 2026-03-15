@@ -3,7 +3,6 @@ import { base44 } from "@/api/base44Client";
 import { Moon, Sun, Check, MessageSquare, ShieldCheck } from "lucide-react";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
-import RoundUpSettings from "@/components/roundup/RoundUpSettings";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -172,12 +171,6 @@ export default function Settings() {
               <p className="text-xs text-[#8FA4C8]">Bahasa dan mata uang ditetapkan saat setup awal. Hubungi admin untuk mengubah.</p>
             )}
           </div>
-        </div>
-
-        {/* Round-Up Otomatis */}
-        <div>
-          <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-2 px-1">Fitur Tabungan</p>
-          <RoundUpSettings />
         </div>
 
         {/* Integrasi & Export */}

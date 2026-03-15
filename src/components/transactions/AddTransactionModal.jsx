@@ -3,7 +3,6 @@ import { X, Settings2, Camera, Loader2, Scissors, GripVertical } from "lucide-re
 import { base44 } from "@/api/base44Client";
 import { parseRupiah } from "@/components/utils/parseRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import { applyRoundUp } from "@/components/roundup/useRoundUp";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import SplitBillModal from "./SplitBillModal";
 import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
@@ -173,11 +172,6 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         recurring_last_generated: recurring ? form.date : undefined,
         goal_id: form.goal_id || undefined,
       });
-
-      // Apply round-up rule silently after expense is saved
-      if (tab === "expense") {
-        applyRoundUp(amount, form.date, form.note).catch(() => {});
-      }
     } catch (error) {
       console.error("Save transaction failed:", error);
       throw error;
