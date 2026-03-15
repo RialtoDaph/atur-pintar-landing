@@ -18,14 +18,7 @@ export const DEFAULT_CATEGORIES = {
 };
 
 // Built-in subcategories for specific categories
-export const BUILTIN_SUBCATEGORIES = {
-  food: [
-    { key: "food_street", label: "🥘 Makanan Jalanan", emoji: "🥘", description: "Seblak, Martabak, Batagor, Siomay, dll" },
-    { key: "food_restaurant", label: "🍽️ Restoran / Cafe", emoji: "🍽️", description: "Makan dine-in, kafe" },
-    { key: "food_delivery", label: "🛵 Delivery / Pesan Antar", emoji: "🛵", description: "GoFood, GrabFood, ShopeeFood" },
-    { key: "food_grocery", label: "🛒 Groceries / Belanja Bahan", emoji: "🛒", description: "Indomaret, Alfamart, pasar, supermarket" },
-  ],
-};
+export const BUILTIN_SUBCATEGORIES = {};
 
 export const CATEGORY_KEYWORDS = {
   food: [
