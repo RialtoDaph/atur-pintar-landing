@@ -54,10 +54,9 @@ export default function Menu() {
                   }`}
                 >
                   <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
-                    style={{ backgroundColor: item.color + "18" }}
+                   className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
                   >
-                    {item.emoji}
+                   {item.emoji}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-[#1A1A1A]">{item.label}</p>
