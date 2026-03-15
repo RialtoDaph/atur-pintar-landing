@@ -21,7 +21,6 @@ export const DEFAULT_CATEGORIES = {
 export const BUILTIN_SUBCATEGORIES = {};
 
 export const CATEGORY_KEYWORDS = {
-  // Default categories
   food: [
     "makan", "minum", "makanan", "minuman", "snack", "jajan", "kuliner",
     "nasi", "ayam", "mie", "mi", "bakso", "baso", "soto", "rendang", "sate", "satay",
@@ -97,8 +96,4 @@ export const CATEGORY_KEYWORDS = {
   housing: ["listrik", "air", "pdam", "wifi", "internet", "sewa", "kost", "kontrakan", "gas"],
   salary: ["gaji", "salary", "upah", "honor"],
   freelance: ["freelance", "proyek", "project", "fee"],
-  
-  // Custom categories keywords
-  custom_69ac186f201301f4999a0b2e: ["restoran", "restaurant", "resto", "rumah makan", "makan", "makan di", "dining"],
-  custom_69ab6bd34542c7090abca572: ["bar", "kopi", "coffee", "teh", "minuman", "jus", "juice", "kafe", "kedai kopi"],
 };
