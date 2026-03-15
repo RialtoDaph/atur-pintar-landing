@@ -145,7 +145,9 @@ export default function Nana() {
           visibleMessages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} gap-2`}>
               {msg.role === "assistant" && (
-                <div className="w-7 h-7 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">N</div>
+                <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 mt-0.5">
+                  <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png" alt="Nana" className="w-full h-full object-cover" />
+                </div>
               )}
               <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm ${
                 msg.role === "user"
@@ -165,7 +167,9 @@ export default function Nana() {
         )}
         {sending && (
           <div className="flex justify-start gap-2">
-            <div className="w-7 h-7 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">N</div>
+            <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+              <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png" alt="Nana" className="w-full h-full object-cover" />
+            </div>
             <div className="bg-white dark:bg-[#1A1E25] border border-[#E2E8F0] dark:border-[#2D2D2D] rounded-2xl px-3.5 py-2.5 flex gap-1 items-center">
               {[0,1,2].map(i => (
                 <div key={i} className="w-1.5 h-1.5 bg-[#8FA4C8] rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
