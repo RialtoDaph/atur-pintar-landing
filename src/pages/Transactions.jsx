@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, Pencil, CheckSquare, Square, X, Repeat2, Target, Search, Upload, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Pencil, CheckSquare, Square, X, Repeat2, Target, Search, Upload } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { toast } from "sonner";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import EditTransactionModal from "@/components/transactions/EditTransactionModal";
 import CSVImportModal from "@/components/transactions/CSVImportModal";
-import RecurringTransactionManager from "@/components/transactions/RecurringTransactionManager";
 import PullToRefresh from "@/components/utils/PullToRefresh";
 import DashboardInsights from "@/components/dashboard/DashboardInsights";
 
@@ -45,8 +44,6 @@ export default function Transactions() {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [deleting, setDeleting] = useState(false);
   const [showCSVImport, setShowCSVImport] = useState(false);
-  const [showRecurringManager, setShowRecurringManager] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 50;
 
@@ -222,14 +219,6 @@ export default function Transactions() {
               {selectMode ? t('tx_cancel') : t('tx_select')}
             </button>
             <button
-              onClick={() => setShowRecurringManager(true)}
-              aria-label="Kelola transaksi berulang"
-              className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 tap-highlight-fix"
-              title="Transaksi berulang"
-            >
-              <Repeat2 className="w-4 h-4 text-white" aria-hidden="true" />
-            </button>
-            <button
               onClick={() => setShowCSVImport(true)}
               aria-label="Import dari file CSV"
               className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 tap-highlight-fix"
@@ -247,128 +236,95 @@ export default function Transactions() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 mt-4 space-y-3">
-        {/* AI Insights */}
-        {!loading && transactions.length > 0 && (
-          <DashboardInsights transactions={transactions} goals={goals} />
-        )}
-
-        {/* Recurring Transactions Card */}
-        <button
-          onClick={() => setShowRecurringManager(true)}
-          className="w-full bg-white rounded-xl shadow-sm p-3 hover:shadow-md transition-shadow text-left tap-highlight-fix"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center flex-shrink-0">
-                <Repeat2 className="w-4 h-4 text-[#4F7CFF]" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-[#1A1A1A]">{t('recurring_transactions')}</p>
-                <p className="text-xs text-[#8FA4C8]">{t('manage_income_expenses')}</p>
-              </div>
+      <div className="max-w-2xl mx-auto px-5 mt-4 space-y-4">
+        {/* Select mode action bar */}
+        {selectMode && (
+          <div className="bg-white rounded-xl shadow-sm px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button onClick={selectAll} className="text-xs font-semibold text-[#FF6A00]">{t('tx_select_all')}</button>
+              {selectedIds.size > 0 && <span className="text-xs text-[#8FA4C8]">({selectedIds.size} {t('tx_selected')})</span>}
             </div>
-            <div className="text-[#8FA4C8] hover:text-[#4F7CFF] transition-colors">
-              <Plus className="w-4 h-4" />
+            <div className="flex items-center gap-2">
+              {selectedIds.size > 0 && (
+                <button
+                  onClick={handleDeleteSelected}
+                  disabled={deleting}
+                  className="px-3 py-1.5 rounded-lg bg-[#FF6B6B] text-white text-xs font-bold disabled:opacity-50"
+                >
+                  {deleting ? t('tx_deleting') : `${t('tx_delete_selected')} (${selectedIds.size})`}
+                </button>
+              )}
+              <button
+                onClick={handleDeleteAll}
+                disabled={deleting || filtered.length === 0}
+                className="px-3 py-1.5 rounded-lg bg-[#0A0A0A] text-white text-xs font-bold disabled:opacity-50"
+              >
+                {t('tx_delete_all')}
+              </button>
             </div>
           </div>
-        </button>
+        )}
 
-        {/* Collapsible Filters Section */}
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="w-full bg-white rounded-xl shadow-sm px-4 py-3 hover:shadow-md transition-all text-left flex items-center justify-between tap-highlight-fix"
-        >
-          <p className="text-sm font-semibold text-[#1A1A1A]">{t('tx_title')}</p>
-          <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-        </button>
+        {/* Filter tabs */}
+        <div className="space-y-3">
+          <div className="flex bg-white rounded-xl p-1 shadow-sm" role="tablist" aria-label="Filter transaksi">
+            {FILTER_TABS.map(tab => (
+              <button
+                key={tab.key}
+                role="tab"
+                aria-selected={filter === tab.key}
+                onClick={() => setFilter(tab.key)}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-all focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF6A00] tap-highlight-fix ${
+                    filter === tab.key ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
+                  }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Filters - Collapsible */}
-        {showFilters && (
-          <div className="bg-white rounded-xl shadow-sm p-4 space-y-3">
-            {/* Select mode action bar */}
-            {selectMode && (
-              <div className="px-2 py-2 flex items-center justify-between border-b border-[#E2E8F0]">
-                <div className="flex items-center gap-2">
-                  <button onClick={selectAll} className="text-xs font-semibold text-[#FF6A00]">{t('tx_select_all')}</button>
-                  {selectedIds.size > 0 && <span className="text-xs text-[#8FA4C8]">({selectedIds.size} {t('tx_selected')})</span>}
-                </div>
-                <div className="flex items-center gap-2">
-                  {selectedIds.size > 0 && (
-                    <button
-                      onClick={handleDeleteSelected}
-                      disabled={deleting}
-                      className="px-3 py-1.5 rounded-lg bg-[#FF6B6B] text-white text-xs font-bold disabled:opacity-50"
-                    >
-                      {deleting ? t('tx_deleting') : `${t('tx_delete_selected')} (${selectedIds.size})`}
-                    </button>
-                  )}
-                  <button
-                    onClick={handleDeleteAll}
-                    disabled={deleting || filtered.length === 0}
-                    className="px-3 py-1.5 rounded-lg bg-[#0A0A0A] text-white text-xs font-bold disabled:opacity-50"
-                  >
-                    {t('tx_delete_all')}
-                  </button>
-                </div>
-              </div>
-            )}
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" aria-hidden="true" />
+            <input
+              type="search"
+              aria-label={t('search_transactions')}
+              placeholder={t('search_transactions')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
+            />
+          </div>
 
-            {/* Filter tabs */}
-            <div className="flex bg-[#F8FAFC] rounded-lg p-0.5" role="tablist" aria-label="Filter transaksi">
-              {FILTER_TABS.map(tab => (
+          {/* Goal filter */}
+          {goals.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              <button
+                onClick={() => setGoalFilter(null)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors tap-highlight-fix ${
+                  !goalFilter ? "bg-[#0A0A0A] text-white" : "bg-white border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
+                }`}
+              >
+                {t('all_goals')}
+              </button>
+              {goals.map(goal => (
                 <button
-                  key={tab.key}
-                  role="tab"
-                  aria-selected={filter === tab.key}
-                  onClick={() => setFilter(tab.key)}
-                  className={`flex-1 py-1.5 rounded text-xs font-semibold capitalize transition-all focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#FF6A00] tap-highlight-fix ${
-                      filter === tab.key ? "bg-white text-[#0A0A0A] shadow-sm" : "text-[#8FA4C8] hover:text-[#0A0A0A]"
-                    }`}
+                  key={goal.id}
+                  onClick={() => setGoalFilter(goal.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1 tap-highlight-fix ${
+                    goalFilter === goal.id ? "bg-[#FF6A00] text-white" : "bg-white border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
+                  }`}
                 >
-                  {tab.label}
+                  {goal.icon} {goal.name}
                 </button>
               ))}
             </div>
+          )}
+        </div>
 
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" aria-hidden="true" />
-              <input
-                type="search"
-                aria-label={t('search_transactions')}
-                placeholder={t('search_transactions')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full border border-[#E2E8F0] rounded-lg pl-10 pr-4 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
-              />
-            </div>
-
-            {/* Goal filter */}
-            {goals.length > 0 && (
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                <button
-                  onClick={() => setGoalFilter(null)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors tap-highlight-fix ${
-                    !goalFilter ? "bg-[#0A0A0A] text-white" : "bg-[#F8FAFC] border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
-                  }`}
-                >
-                  {t('all_goals')}
-                </button>
-                {goals.map(goal => (
-                  <button
-                    key={goal.id}
-                    onClick={() => setGoalFilter(goal.id)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1 tap-highlight-fix ${
-                      goalFilter === goal.id ? "bg-[#FF6A00] text-white" : "bg-[#F8FAFC] border border-[#E2E8F0] text-[#8FA4C8] hover:border-[#CBD5E0]"
-                    }`}
-                  >
-                    {goal.icon} {goal.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* AI Insights */}
+        {!loading && transactions.length > 0 && (
+          <DashboardInsights transactions={transactions} goals={goals} />
         )}
 
         {loading ? (
@@ -531,13 +487,6 @@ export default function Transactions() {
         <CSVImportModal
           onClose={() => setShowCSVImport(false)}
           onSuccess={loadData}
-        />
-      )}
-
-      {showRecurringManager && (
-        <RecurringTransactionManager
-          onClose={() => setShowRecurringManager(false)}
-          onRefresh={loadData}
         />
       )}
       </div>
