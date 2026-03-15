@@ -53,12 +53,12 @@ export default function Goals() {
 
   async function loadData() {
     setLoading(true);
-    const [g, t] = await Promise.all([
+    const [g, goalTxs] = await Promise.all([
       base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
       goalId ? base44.entities.Transaction.filter({ goal_id: goalId, created_by: user.email }, "-created_date") : Promise.resolve([]),
     ]);
     setGoals(g);
-    setTransactions(t);
+    setTransactions(goalTxs);
     setLoading(false);
   }
 
