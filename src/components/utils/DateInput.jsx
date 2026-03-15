@@ -44,15 +44,7 @@ export default function DateInput({ value, onChange, label, required = false }) 
         />
       </div>
 
-      {showPicker && (
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="block sm:hidden mt-2 w-full py-2 text-sm font-semibold text-[#FF6A00] bg-[#FF6A00]/10 rounded-lg"
-        >
-          Buka Kalender
-        </button>
-      )}
+
     </div>
   );
 }
