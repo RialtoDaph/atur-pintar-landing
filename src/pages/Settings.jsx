@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Moon, Sun, Check, MessageSquare, ShieldCheck } from "lucide-react";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
+import RoundUpSettings from "@/components/roundup/RoundUpSettings";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";

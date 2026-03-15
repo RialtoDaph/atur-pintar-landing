@@ -173,6 +173,11 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         recurring_last_generated: recurring ? form.date : undefined,
         goal_id: form.goal_id || undefined,
       });
+
+      // Apply round-up rule silently after expense is saved
+      if (tab === "expense") {
+        applyRoundUp(amount, form.date, form.note).catch(() => {});
+      }
     } catch (error) {
       console.error("Save transaction failed:", error);
       throw error;
