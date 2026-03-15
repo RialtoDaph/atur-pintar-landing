@@ -56,7 +56,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <input
               type="text"
               value={data.note || ""}
-              onChange={(e) => setData({ ...data, note: e.target.value })} className="bg-slate-50 text-slate-950 px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+              onChange={(e) => setData({ ...data, note: e.target.value })} className="bg-white text-black px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
 
               placeholder="Nama kontrak/tagihan" />
 
@@ -67,7 +67,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <input
               type="number"
               value={data.amount || 0}
-              onChange={(e) => setData({ ...data, amount: parseFloat(e.target.value) || 0 })} className="bg-slate-50 text-slate-950 px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+              onChange={(e) => setData({ ...data, amount: parseFloat(e.target.value) || 0 })} className="bg-white text-black px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
 
               placeholder="0" />
 
@@ -78,7 +78,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <select
               value={data.recurring_interval || "monthly"}
               onChange={(e) => setData({ ...data, recurring_interval: e.target.value })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] capitalize">
+              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] capitalize bg-white text-black">
 
               {INTERVALS.map((i) =>
               <option key={i} value={i} className="capitalize">
