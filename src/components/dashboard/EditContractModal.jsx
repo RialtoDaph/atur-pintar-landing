@@ -52,33 +52,33 @@ export default function EditContractModal({ contract, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Nama</label>
+            <label className="block text-xs font-semibold text-[#1A1A1A] dark:text-white mb-2">Nama</label>
             <input
               type="text"
               value={data.note || ""}
               onChange={(e) => setData({ ...data, note: e.target.value })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+              className="w-full border border-[#E2E8F0] dark:border-[#353B47] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-white dark:bg-[#1A1E25] text-[#1A1A1A] dark:text-white"
               placeholder="Nama kontrak/tagihan"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Nominal</label>
+            <label className="block text-xs font-semibold text-[#1A1A1A] dark:text-white mb-2">Nominal</label>
             <input
               type="number"
               value={data.amount || 0}
               onChange={(e) => setData({ ...data, amount: parseFloat(e.target.value) || 0 })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+              className="w-full border border-[#E2E8F0] dark:border-[#353B47] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-white dark:bg-[#1A1E25] text-[#1A1A1A] dark:text-white"
               placeholder="0"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Interval</label>
+            <label className="block text-xs font-semibold text-[#1A1A1A] dark:text-white mb-2">Interval</label>
             <select
               value={data.recurring_interval || "monthly"}
               onChange={(e) => setData({ ...data, recurring_interval: e.target.value })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] capitalize"
+              className="w-full border border-[#E2E8F0] dark:border-[#353B47] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-white dark:bg-[#1A1E25] text-[#1A1A1A] dark:text-white capitalize"
             >
               {INTERVALS.map((i) => (
                 <option key={i} value={i} className="capitalize">
