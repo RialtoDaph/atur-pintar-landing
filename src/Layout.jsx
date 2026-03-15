@@ -293,9 +293,6 @@ function LayoutInner({ children, currentPageName }) {
         </button>
       </div>
 
-      {/* Nana Floating Chat */}
-      {currentPageName !== "Nana" && <NanaFloatingChat />}
-
       {/* Global Search */}
       {showSearch && <GlobalSearch onClose={() => setShowSearch(false)} />}
     </div>);
