@@ -276,7 +276,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
                   </div>
                 </div>
               </div>
-              <NavButtons onPrev={prev} onNext={next} onSkip={() => {setMonthlyIncome("");setMonthlyExpense("");next();}} />
+              <NavButtons onPrev={prev} onNext={next} />
             </div>
           }
 
