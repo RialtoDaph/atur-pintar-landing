@@ -61,6 +61,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
          icon: form.icon || undefined,
          notes: form.notes?.trim() || undefined,
          is_active: form.is_active,
+         create_recurring_tx: form.create_recurring_tx && amount > 0,
        });
      } catch (error) {
        console.error("Save reminder failed:", error);
