@@ -64,25 +64,28 @@ export default function OnboardingQuestionnaire({ onClose }) {
 
     const promises = [];
 
-    // Save income transaction for current month
+    // Save opening balance (saldo awal) as a one-time income transaction
+    if (monthlyExpense) {
+      promises.push(base44.entities.Transaction.create({
+        amount: parseFloat(monthlyExpense),
+        type: "income",
+        category: "opening_balance",
+        note: "Saldo Awal",
+        date: TODAY,
+        is_recurring: false,
+      }));
+    }
+
+    // Save monthly income as a RECURRING transaction template
     if (monthlyIncome) {
       promises.push(base44.entities.Transaction.create({
         amount: parseFloat(monthlyIncome),
         type: "income",
         category: "salary",
         note: "Pendapatan bulanan",
-        date: TODAY
-      }));
-    }
-
-    // Save expense transaction for current month
-    if (monthlyExpense) {
-      promises.push(base44.entities.Transaction.create({
-        amount: parseFloat(monthlyExpense),
-        type: "expense",
-        category: "other",
-        note: "Pengeluaran bulanan",
-        date: TODAY
+        date: TODAY,
+        is_recurring: true,
+        recurring_interval: "monthly",
       }));
     }
 
