@@ -153,6 +153,26 @@ export function useFinancialContext() {
       const totalInvested = investments.reduce((s, i) => s + (i.initial_amount || 0), 0);
       const totalCurrentValue = investments.reduce((s, i) => s + (i.current_value || 0), 0);
 
+      // Recurring transaction templates (contracts, bills, subscriptions)
+      const recurringTemplates = transactions.filter(t => t.is_recurring && !t.is_recurring_child);
+      const recurringExpenses = recurringTemplates.filter(t => t.type === "expense");
+      const recurringIncome = recurringTemplates.filter(t => t.type === "income" && t.category !== "opening_balance");
+      const totalMonthlyRecurringExpense = recurringExpenses.reduce((s, t) => {
+        if (t.recurring_interval === "yearly") return s + t.amount / 12;
+        if (t.recurring_interval === "weekly") return s + t.amount * 4.33;
+        if (t.recurring_interval === "daily") return s + t.amount * 30;
+        return s + t.amount;
+      }, 0);
+      const totalMonthlyRecurringIncome = recurringIncome.reduce((s, t) => {
+        if (t.recurring_interval === "yearly") return s + t.amount / 12;
+        if (t.recurring_interval === "weekly") return s + t.amount * 4.33;
+        if (t.recurring_interval === "daily") return s + t.amount * 30;
+        return s + t.amount;
+      }, 0);
+
+      // Opening balance
+      const openingBalanceTx = transactions.find(t => t.category === "opening_balance");
+
       const snapshot = {
         date: now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
         user: { name: user.full_name },
