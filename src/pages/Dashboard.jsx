@@ -208,7 +208,7 @@ export default function Dashboard() {
 
       {showOnboarding && (
         <OnboardingQuestionnaire onClose={async () => {
-          setShowOnboarding(false);
+          setShowOnboarding(true);
           localStorage.setItem("onboarding_done", "true");
           await base44.auth.updateMe({ onboarding_completed: true });
           loadData();
