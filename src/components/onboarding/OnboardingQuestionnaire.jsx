@@ -278,7 +278,8 @@ export default function OnboardingQuestionnaire({ onClose }) {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Saldo Anda Saat Ini</label>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Saldo Awal (Total Uang Saat Ini)</label>
+                  <p className="text-[10px] text-[#8FA4C8] mb-1.5">Jumlah total uang yang kamu miliki sekarang (tunai + rekening)</p>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium">Rp</span>
                     <input
@@ -287,7 +288,6 @@ export default function OnboardingQuestionnaire({ onClose }) {
                     placeholder="0"
                     value={monthlyExpense}
                     onChange={(e) => setMonthlyExpense(e.target.value)} />
-
                   </div>
                 </div>
               </div>
