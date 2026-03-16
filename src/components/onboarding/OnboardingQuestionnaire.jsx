@@ -389,7 +389,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
                 )}
                 </div>
               </div>
-              <NavButtons onPrev={prev} onNext={next} />
+              <NavButtons onPrev={prev} onNext={next} showSkip onSkip={next} />
             </div>
           }
 
