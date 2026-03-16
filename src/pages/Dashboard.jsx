@@ -41,6 +41,7 @@ export default function Dashboard() {
   const [showAddTx, setShowAddTx] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
