@@ -305,7 +305,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
                   </div>
                 </div>
             }
-              <NavButtons onPrev={prev} onNext={next} onSkip={() => { setHasGoal(false); next(); }} canNext={hasGoal === false || hasGoal && goalName && goalTarget} />
+              <NavButtons onPrev={prev} onNext={next} canNext={hasGoal === false || hasGoal && goalName && goalTarget} />
             </div>
           }
 
@@ -347,7 +347,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
                   </div>
                 </div>
             }
-              <NavButtons onPrev={prev} onNext={next} onSkip={() => { setHasDebt(false); next(); }} canNext={hasDebt === false || hasDebt && debtName && debtRemaining} />
+              <NavButtons onPrev={prev} onNext={next} canNext={hasDebt === false || hasDebt && debtName && debtRemaining} />
             </div>
           }
 
@@ -420,7 +420,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
               placeholder="Tanggal jatuh tempo (1-31)" value={reminderDay} onChange={(e) => setReminderDay(e.target.value)} />
                 </div>
             }
-              <NavButtons onPrev={prev} onNext={next} onSkip={() => { setHasReminder(false); next(); }} canNext={hasReminder === false || hasReminder && reminderTitle && reminderDay} />
+              <NavButtons onPrev={prev} onNext={next} canNext={hasReminder === false || hasReminder && reminderTitle && reminderDay} />
             </div>
           }
 
@@ -449,17 +449,12 @@ export default function OnboardingQuestionnaire({ onClose }) {
 
 }
 
-function NavButtons({ onPrev, onNext, onSkip, canNext = true }) {
+function NavButtons({ onPrev, onNext, canNext = true }) {
   return (
     <div className="flex gap-3">
       <button onClick={onPrev} className="w-10 h-10 flex items-center justify-center rounded-xl border border-[#E2E8F0] text-[#4A5568] hover:bg-[#F8FAFC] transition-colors flex-shrink-0">
         <ArrowLeft className="w-4 h-4" />
       </button>
-      {onSkip && (
-        <button onClick={onSkip} className="px-4 py-2.5 rounded-xl border border-[#E2E8F0] text-[#8FA4C8] text-sm font-medium hover:bg-[#F8FAFC] transition-colors">
-          Lewati
-        </button>
-      )}
       <button onClick={onNext} disabled={!canNext}
       className="flex-1 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors disabled:opacity-40 flex items-center justify-center gap-2">
         Lanjut <ArrowRight className="w-4 h-4" />
