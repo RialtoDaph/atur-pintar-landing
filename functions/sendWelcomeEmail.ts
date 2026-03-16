@@ -5,21 +5,17 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const payload = await req.json();
 
-    // Called from entity automation: payload.data contains AppSettings data
-    // created_by = email of the user who just completed onboarding
     const entityData = payload?.data;
     const userEmail = entityData?.created_by;
+    const userName = entityData?.full_name || 'Pengguna';
 
     if (!userEmail) {
       return Response.json({ error: 'No email found in payload' }, { status: 400 });
     }
 
-    // Use name from payload if available, skip User entity query to avoid timeout
-    const userName = entityData?.full_name || 'Pengguna';
-
     const emailBody = `
       <html>
-      <body style="font-family: 'Inter', Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #F2F4F7;">
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #F2F4F7;">
         <div style="max-width: 600px; margin: 40px auto; background: #F2F4F7; padding: 24px; border-radius: 16px;">
           
           <div style="text-align: center; margin-bottom: 32px;">
