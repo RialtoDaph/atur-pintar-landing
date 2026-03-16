@@ -4,6 +4,15 @@ import { Plus, Bell, Trash2, ToggleLeft, Edit2, Check } from "lucide-react";
 import AddReminderModal from "@/components/reminders/AddReminderModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
+// Helper: find recurring transaction template linked to a reminder by note match
+async function findLinkedRecurringTx(title, userEmail) {
+  const all = await base44.entities.Transaction.filter({
+    is_recurring: true,
+    created_by: userEmail,
+  });
+  return all.find(t => !t.is_recurring_child && t.note === title && t.type === "expense");
+}
+
 const TYPE_CONFIG = {
   tagihan:   { label: "Tagihan",   emoji: "🧾", color: "#FF6B6B" },
   cicilan:   { label: "Cicilan",   emoji: "🏦", color: "#4F7CFF" },
