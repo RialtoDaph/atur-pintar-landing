@@ -461,11 +461,11 @@ function NavButtons({ onPrev, onNext, canNext = true, showSkip = false, onSkip }
           Lanjut <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-      {showSkip && (
-        <button onClick={onSkip} className="text-xs text-[#8FA4C8] hover:text-[#4A5568] transition-colors text-center py-1">
+      {showSkip &&
+      <button onClick={onSkip} className="text-[#ff1a1a] py-1 text-xs text-center hover:text-[#4A5568] transition-colors">
           Lewati langkah ini
         </button>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
