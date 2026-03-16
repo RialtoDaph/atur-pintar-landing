@@ -221,6 +221,22 @@ export function useFinancialContext() {
           dueDay: r.due_day,
           daysUntilDue: r.due_day - dayOfMonth,
         })),
+        recurringExpenses: recurringExpenses.map(t => ({
+          note: t.note,
+          amount: t.amount,
+          interval: t.recurring_interval,
+          category: t.category,
+        })),
+        recurringIncome: recurringIncome.map(t => ({
+          note: t.note,
+          amount: t.amount,
+          interval: t.recurring_interval,
+        })),
+        recurringMonthly: {
+          totalExpense: Math.round(totalMonthlyRecurringExpense),
+          totalIncome: Math.round(totalMonthlyRecurringIncome),
+        },
+        openingBalance: openingBalanceTx ? openingBalanceTx.amount : null,
       };
 
       setContext(snapshot);
