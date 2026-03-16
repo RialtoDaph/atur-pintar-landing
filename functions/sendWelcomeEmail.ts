@@ -14,12 +14,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No email found in payload' }, { status: 400 });
     }
 
-    // Fetch user's full name from User entity
-    let userName = 'Pengguna';
-    try {
-      const users = await base44.asServiceRole.entities.User?.filter({ email: userEmail });
-      if (users && users.length > 0) userName = users[0].full_name || 'Pengguna';
-    } catch {}
+    // Use name from payload if available, skip User entity query to avoid timeout
+    const userName = entityData?.full_name || 'Pengguna';
 
     const emailBody = `
       <html>
