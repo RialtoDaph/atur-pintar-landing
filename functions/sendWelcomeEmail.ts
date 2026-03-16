@@ -5,14 +5,21 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const payload = await req.json();
 
-    // Called from entity automation: payload.data contains user data
-    const userData = payload?.data;
-    const userEmail = userData?.email;
-    const userName = userData?.full_name || 'Pengguna';
+    // Called from entity automation: payload.data contains AppSettings data
+    // created_by = email of the user who just completed onboarding
+    const entityData = payload?.data;
+    const userEmail = entityData?.created_by;
 
     if (!userEmail) {
       return Response.json({ error: 'No email found in payload' }, { status: 400 });
     }
+
+    // Fetch user's full name from User entity
+    let userName = 'Pengguna';
+    try {
+      const users = await base44.asServiceRole.entities.User?.filter({ email: userEmail });
+      if (users && users.length > 0) userName = users[0].full_name || 'Pengguna';
+    } catch {}
 
     const emailBody = `
       <html>
