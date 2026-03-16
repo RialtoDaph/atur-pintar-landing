@@ -303,6 +303,26 @@ export function useFinancialContext() {
       });
     }
 
+    if (snapshot.recurringExpenses?.length > 0) {
+      lines.push(`\nPENGELUARAN BERULANG (kontrak/tagihan/langganan):`);
+      snapshot.recurringExpenses.forEach((t) => {
+        lines.push(`- ${t.note} [${t.category}]: ${fmt(t.amount)}/${t.interval}`);
+      });
+      lines.push(`Total setara bulanan: ${fmt(snapshot.recurringMonthly.totalExpense)}`);
+    }
+
+    if (snapshot.recurringIncome?.length > 0) {
+      lines.push(`\nPENDAPATAN BERULANG:`);
+      snapshot.recurringIncome.forEach((t) => {
+        lines.push(`- ${t.note}: ${fmt(t.amount)}/${t.interval}`);
+      });
+      lines.push(`Total setara bulanan: ${fmt(snapshot.recurringMonthly.totalIncome)}`);
+    }
+
+    if (snapshot.openingBalance) {
+      lines.push(`\nSALDO AWAL (saat onboarding): ${fmt(snapshot.openingBalance)}`);
+    }
+
     lines.push(`[/FINANCIAL_CONTEXT]\n---`);
     return lines.filter(Boolean).join("\n");
   }
