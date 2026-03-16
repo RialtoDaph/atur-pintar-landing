@@ -127,16 +127,33 @@ export default function OnboardingQuestionnaire({ onClose }) {
       }));
     }
 
-    // Save reminder
+    // Save reminder AND create a recurring transaction for it
     if (hasReminder && reminderTitle && reminderDay) {
+      const reminderAmt = reminderAmount ? parseFloat(reminderAmount) : undefined;
       promises.push(base44.entities.Reminder.create({
         title: reminderTitle,
         type: "tagihan",
-        amount: reminderAmount ? parseFloat(reminderAmount) : undefined,
+        amount: reminderAmt,
         due_day: parseInt(reminderDay),
         is_active: true,
         icon: "🔔"
       }));
+      // Also create a recurring expense transaction template
+      if (reminderAmt) {
+        // Build a date with the correct due day in current month
+        const dueDate = new Date(TODAY);
+        dueDate.setDate(parseInt(reminderDay));
+        const dueDateStr = dueDate.toISOString().split("T")[0];
+        promises.push(base44.entities.Transaction.create({
+          amount: reminderAmt,
+          type: "expense",
+          category: "bills",
+          note: reminderTitle,
+          date: dueDateStr,
+          is_recurring: true,
+          recurring_interval: "monthly",
+        }));
+      }
     }
 
     // Save language & currency settings
