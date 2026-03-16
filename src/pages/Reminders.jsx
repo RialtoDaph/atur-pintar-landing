@@ -268,10 +268,36 @@ export default function Reminders() {
           reminder={editing}
           onClose={() => { setShowAdd(false); setEditing(null); }}
           onSave={async (data) => {
+            const { create_recurring_tx, ...reminderData } = data;
             if (editing) {
-              await base44.entities.Reminder.update(editing.id, data);
+              await base44.entities.Reminder.update(editing.id, reminderData);
+              // Sync amount change to linked recurring transaction
+              if (reminderData.amount && user?.email) {
+                const linkedTx = await findLinkedRecurringTx(editing.title, user.email);
+                if (linkedTx) {
+                  await base44.entities.Transaction.update(linkedTx.id, {
+                    amount: reminderData.amount,
+                    note: reminderData.title,
+                  });
+                }
+              }
             } else {
-              await base44.entities.Reminder.create(data);
+              await base44.entities.Reminder.create(reminderData);
+              // Create linked recurring expense transaction if requested
+              if (create_recurring_tx && reminderData.amount) {
+                const now = new Date();
+                const dueDate = new Date(now.getFullYear(), now.getMonth(), reminderData.due_day);
+                if (dueDate < now) dueDate.setMonth(dueDate.getMonth() + 1);
+                await base44.entities.Transaction.create({
+                  amount: reminderData.amount,
+                  type: "expense",
+                  category: "bills",
+                  note: reminderData.title,
+                  date: dueDate.toISOString().split("T")[0],
+                  is_recurring: true,
+                  recurring_interval: "monthly",
+                });
+              }
             }
             setShowAdd(false);
             setEditing(null);
