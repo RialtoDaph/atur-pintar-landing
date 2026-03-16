@@ -223,6 +223,24 @@ export default function BudgetPage() {
             <Link to="/Subscription" className="px-3 py-1.5 bg-[#FF6A00] text-white rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors flex-shrink-0">Upgrade</Link>
           </div>
         )}
+        {/* Proactive Nana AI Budget Alerts */}
+        {!loading && budgets.length > 0 && (
+          <BudgetNanaPanel
+            budgets={budgets}
+            spendingByCategory={spendingByCategory}
+            goals={goals}
+          />
+        )}
+
+        {/* Background alert checker */}
+        {!loading && monthOffset === 0 && (
+          <BudgetAlertChecker
+            user={user}
+            budgets={budgets}
+            spendingByCategory={spendingByCategory}
+          />
+        )}
+
         {!loading && Object.keys(spendingByCategory).length > 0 && (
           <SavingsRecommendationWidget
             spendingByCategory={spendingByCategory}
