@@ -72,6 +72,14 @@ export default function Reminders() {
   }
 
   async function deleteReminder(id) {
+    const reminder = reminders.find(r => r.id === id);
+    // Also delete linked recurring transaction if exists
+    if (reminder && user?.email) {
+      const linkedTx = await findLinkedRecurringTx(reminder.title, user.email);
+      if (linkedTx) {
+        await base44.entities.Transaction.delete(linkedTx.id);
+      }
+    }
     await base44.entities.Reminder.delete(id);
     setDeleteConfirm(null);
     load();
