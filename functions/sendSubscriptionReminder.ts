@@ -175,11 +175,11 @@ Deno.serve(async (req) => {
         content,
       });
 
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      await resend.emails.send({
+        from: 'Atur Pintar <admin@aturpintar.id>',
         to: user.email,
         subject: `⏰ 7 Hari Lagi — Perpanjang Langganan Atur Pintar Kamu`,
-        body: emailBody,
-        from_name: 'Atur Pintar',
+        html: emailBody,
       });
 
       await base44.asServiceRole.entities.User.update(user.id, {

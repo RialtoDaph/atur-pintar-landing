@@ -200,11 +200,11 @@ Deno.serve(async (req) => {
           content,
         });
 
-        await base44.asServiceRole.integrations.Core.SendEmail({
+        await resend.emails.send({
+          from: 'Nana AI <nana.ai@aturpintar.id>',
           to: user.email,
           subject: `📊 Laporan Keuangan ${monthName} Kamu — Atur Pintar`,
-          body: emailBody,
-          from_name: 'Atur Pintar',
+          html: emailBody,
         });
 
         sent++;
