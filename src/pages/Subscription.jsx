@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Check, Crown, Upload, X, Clock, CheckCircle2, Zap } from "lucide-react";
+import { Check, Crown, X, Clock, CheckCircle2, Zap } from "lucide-react";
 
 const PLANS = [
   {
