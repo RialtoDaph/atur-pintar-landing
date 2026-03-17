@@ -162,11 +162,11 @@ Deno.serve(async (req) => {
       content,
     });
 
-    await base44.asServiceRole.integrations.Core.SendEmail({
+    await resend.emails.send({
+      from: 'Nana AI <nana.ai@aturpintar.id>',
       to: createdBy,
       subject: `${sc.icon} ${alertData.title} — Atur Pintar`,
-      body: emailBody,
-      from_name: 'Atur Pintar',
+      html: emailBody,
     });
 
     await base44.asServiceRole.entities.Alert.update(alertData.id, { email_sent: true });

@@ -236,13 +236,13 @@ Deno.serve(async (req) => {
       content: isSuccess ? successContent : failedContent,
     });
 
-    await base44.asServiceRole.integrations.Core.SendEmail({
+    await resend.emails.send({
+      from: 'Atur Pintar <admin@aturpintar.id>',
       to: userEmail,
       subject: isSuccess
         ? `✅ Premium Aktif! Selamat, ${userName} — Atur Pintar`
         : `❌ Pembayaran Gagal — Atur Pintar`,
-      body: emailBody,
-      from_name: 'Atur Pintar',
+      html: emailBody,
     });
 
     return Response.json({ success: true, message: `Billing email sent to ${userEmail}` });
