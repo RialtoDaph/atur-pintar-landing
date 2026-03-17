@@ -74,7 +74,6 @@ function emailLayout({ previewText, content }) {
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
     const payload = await req.json();
 
     const entityData = payload?.data;
