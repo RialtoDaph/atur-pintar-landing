@@ -57,8 +57,8 @@ export default function Dashboard() {
         u?.subscription_plan !== "premium_monthly" &&
         u?.subscription_plan !== "premium_yearly"
       ) {
-        // Delay slightly so layout renders first
-        setTimeout(() => setShowTour(true), 800);
+        // Delay to ensure layout + DOM elements are fully rendered
+        setTimeout(() => setShowTour(true), 1800);
       }
     }).catch(() => {});
   }, []);
