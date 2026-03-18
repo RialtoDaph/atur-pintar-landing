@@ -218,6 +218,7 @@ export default function Transactions() {
                 <Upload className="w-4 h-4 text-white" aria-hidden="true" />
               </button>
               <button
+                data-tour="add-transaction-btn"
                 onClick={() => setShowAddTx(true)}
                 aria-label={t('add_transaction')}
                 className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] tap-highlight-fix"

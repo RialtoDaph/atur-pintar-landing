@@ -48,7 +48,7 @@ export default function SubscriptionDetector({ user }) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm p-4">
+      <div data-tour="subscription-detector-card" className="bg-white rounded-2xl shadow-sm p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="font-bold text-[#0A0A0A] text-sm">📱 Langganan</h2>
