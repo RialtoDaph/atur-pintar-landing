@@ -12,6 +12,7 @@ function LayoutInner({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const { t } = useAppSettings();
   const location = useLocation();
   const navigate = useNavigate();
