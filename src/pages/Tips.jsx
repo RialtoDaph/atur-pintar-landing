@@ -193,7 +193,7 @@ export default function Tips() {
   })).filter(cat => cat.items.length > 0);
 
   return (
-    <div className="min-h-screen bg-[#F2F4F7] pb-10">
+    <div data-tour="tips-page-hint" className="min-h-screen bg-[#F2F4F7] pb-10">
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-8">
         <div className="max-w-2xl mx-auto">
           <p className="text-[#8FA4C8] text-sm font-medium">{t('tips_guide')}</p>
