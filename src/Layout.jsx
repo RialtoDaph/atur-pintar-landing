@@ -311,6 +311,14 @@ function LayoutInner({ children, currentPageName }) {
 
       {/* Global Search */}
       {showSearch && <GlobalSearch onClose={() => setShowSearch(false)} />}
+
+      {/* Tour Guide - lives in Layout so it persists across page navigations */}
+      {showTour && (
+        <TourGuide onComplete={async () => {
+          setShowTour(false);
+          await base44.auth.updateMe({ tour_completed: true });
+        }} />
+      )}
     </div>);
 
 }
