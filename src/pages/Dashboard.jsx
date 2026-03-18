@@ -229,7 +229,24 @@ export default function Dashboard() {
       )}
 
       {showNanaIntro && (
-        <NanaIntroModal onClose={() => setShowNanaIntro(false)} />
+        <NanaIntroModal onClose={() => {
+          setShowNanaIntro(false);
+          const u = user;
+          if (
+            u?.subscription_plan !== "premium_monthly" &&
+            u?.subscription_plan !== "premium_yearly" &&
+            !localStorage.getItem("tour_completed")
+          ) {
+            setTimeout(() => setShowTour(true), 600);
+          }
+        }} />
+      )}
+
+      {showTour && (
+        <TourGuide onComplete={() => {
+          setShowTour(false);
+          localStorage.setItem("tour_completed", "true");
+        }} />
       )}
 
 
