@@ -223,16 +223,6 @@ export default function Dashboard() {
         }} />
       )}
 
-      {showAddTx && (
-        <AddTransactionModal
-          onClose={() => setShowAddTx(false)}
-          onSave={async (data) => {
-            await base44.entities.Transaction.create(data);
-            setShowAddTx(false);
-            loadData();
-          }}
-        />
-      )}
       </div>
     </PullToRefresh>
   );
