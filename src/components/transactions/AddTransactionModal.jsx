@@ -181,14 +181,24 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
           {/* Receipt preview + Split Bill CTA */}
           {receiptData && (
-            <div className="mb-5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4">
+            <div className="mb-5 bg-gradient-to-br from-[#FF6A00]/5 to-[#F8FAFC] border border-[#FF6A00]/20 rounded-2xl p-4">
+              <div className="flex items-center gap-1.5 mb-3">
+                <Sparkles className="w-3.5 h-3.5 text-[#FF6A00]" />
+                <span className="text-xs font-bold text-[#FF6A00]">AI Berhasil Membaca Struk</span>
+              </div>
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-xs text-[#8FA4C8] font-medium">{t('receipt_detected')}</p>
                   <p className="text-sm font-bold text-[#1A1A1A]">{receiptData.store_name}</p>
-                  {receiptData.tax_amount > 0 && (
-                    <p className="text-xs text-[#8FA4C8]">{t('tax')}: {formatCurrency(receiptData.tax_amount)}</p>
-                  )}
+                  <div className="flex items-center gap-2 mt-1">
+                    {receiptData.category && (
+                      <span className="text-[10px] bg-[#FF6A00]/10 text-[#FF6A00] font-semibold px-2 py-0.5 rounded-full capitalize">
+                        {receiptData.category}
+                      </span>
+                    )}
+                    {receiptData.tax_amount > 0 && (
+                      <span className="text-[10px] text-[#8FA4C8]">Pajak: {formatCurrency(receiptData.tax_amount)}</span>
+                    )}
+                  </div>
                 </div>
                 <p className="text-sm font-bold text-[#FF6A00]">
                   {formatCurrency(receiptData.total_amount)}
