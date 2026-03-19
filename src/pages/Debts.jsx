@@ -45,27 +45,34 @@ export default function DebtsPage() {
     setLoading(false);
   }
 
-  async function handlePayment(amount) {
+  async function handlePayment({ amount, note, date }) {
     const debt = debts.find(d => d.id === paymentModal);
     if (!debt) return;
-    
+
     const newRemaining = Math.max(debt.remaining_amount - amount, 0);
-    setDebts(prev => prev.map(d => d.id === debt.id ? { ...d, remaining_amount: newRemaining, status: newRemaining <= 0 ? "paid" : "active" } : d));
+    const newStatus = newRemaining <= 0 ? "paid" : "active";
+
+    setDebts(prev => prev.map(d => d.id === debt.id ? { ...d, remaining_amount: newRemaining, status: newStatus } : d));
     try {
       await Promise.all([
         base44.entities.Transaction.create({
           amount,
           type: "expense",
-          category: "other",
-          note: `Payment for ${debt.name}`,
-          date: new Date().toISOString().split("T")[0],
+          category: "cicilan",
+          note: note || `Cicilan ${debt.name}`,
+          date: date || new Date().toISOString().split("T")[0],
+          debt_id: debt.id,
         }),
         base44.entities.Debt.update(debt.id, {
           remaining_amount: newRemaining,
-          status: newRemaining <= 0 ? "paid" : "active",
+          status: newStatus,
         }),
       ]);
       setPaymentModal(null);
+      toast.success(`Pembayaran cicilan ${debt.name} berhasil dicatat!`);
+      if (newStatus === "paid") {
+        toast.success(`🎉 ${debt.name} telah lunas!`);
+      }
     } catch (error) {
       loadData();
     }
