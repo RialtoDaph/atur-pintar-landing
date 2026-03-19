@@ -178,6 +178,10 @@ export default function OnboardingQuestionnaire({ onClose }) {
     promises.push(base44.auth.updateMe({ onboarding_completed: true }));
 
     await Promise.all(promises);
+
+    // Seed sample data so charts & analytics are visible immediately
+    await seedSampleData();
+
     setSaving(false);
     onClose();
   }
