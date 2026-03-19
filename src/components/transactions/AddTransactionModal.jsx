@@ -151,29 +151,30 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
         <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto scroll-smooth">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-[#1A1A1A]">{t('add_transaction')}</h2>
+            <div>
+              <h2 className="text-lg font-bold text-[#1A1A1A]">{t('add_transaction')}</h2>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <button onClick={() => cameraRef.current?.click()} disabled={scanning}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#FF6A00]/10 hover:bg-[#FF6A00]/20 transition-colors text-[10px] font-semibold text-[#FF6A00] tap-highlight-fix"
+                  title="Foto Struk">
+                  {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
+                  Kamera
+                </button>
+                <button onClick={() => fileRef.current?.click()} disabled={scanning}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#F2F4F7] hover:bg-[#E2E8F0] transition-colors text-[10px] font-semibold text-[#4A5568] tap-highlight-fix"
+                  title="Upload dari Galeri">
+                  <Upload className="w-3 h-3" />
+                  Galeri
+                </button>
+                <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleScanReceipt} />
+                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleScanReceipt} />
+              </div>
+            </div>
             <div className="flex items-center gap-2">
-              {/* Camera capture */}
-              <button onClick={() => cameraRef.current?.click()} disabled={scanning}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#FF6A00]/10 hover:bg-[#FF6A00]/20 transition-colors text-xs font-semibold text-[#FF6A00]"
-                title="Foto Struk">
-                {scanning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
-                {scanning ? "Scanning..." : "Kamera"}
-              </button>
-              {/* Gallery upload */}
-              <button onClick={() => fileRef.current?.click()} disabled={scanning}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#F2F4F7] hover:bg-[#E2E8F0] transition-colors text-xs font-semibold text-[#4A5568]"
-                title="Upload dari Galeri">
-                <Upload className="w-3.5 h-3.5" />
-                Galeri
-              </button>
-              {/* Hidden inputs */}
-              <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleScanReceipt} />
-              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleScanReceipt} />
-              <button onClick={() => setShowManage(true)} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors" title={t('manage_categories')}>
+              <button onClick={() => setShowManage(true)} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors tap-highlight-fix" title={t('manage_categories')}>
                 <Settings2 className="w-4 h-4" />
               </button>
-              <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors">
+              <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors tap-highlight-fix">
                 <X className="w-5 h-5" />
               </button>
             </div>
