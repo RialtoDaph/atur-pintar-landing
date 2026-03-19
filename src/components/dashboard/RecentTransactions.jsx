@@ -1,4 +1,5 @@
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { RefreshCw } from "lucide-react";
 
 const CATEGORY_CONFIG = {
   housing: { emoji: "🏠", color: "#4F7CFF" },
