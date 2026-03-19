@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
+  const [showSampleBanner, setShowSampleBanner] = useState(hasSampleData);
 
   useEffect(() => {
     base44.auth.me().then(u => {
