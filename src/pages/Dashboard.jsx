@@ -134,6 +134,14 @@ export default function Dashboard() {
 
 
 
+        {/* Sample Data Banner */}
+        {showSampleBanner && (
+          <SampleDataBanner onDismiss={() => {
+            setShowSampleBanner(false);
+            loadData();
+          }} />
+        )}
+
         {/* Reminder Widget */}
         <ReminderWidget user={user} />
 
