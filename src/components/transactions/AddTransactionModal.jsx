@@ -34,6 +34,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   const [subCatPopup, setSubCatPopup] = useState(null); // { parentKey, parentLabel, subs }
   const [showGoalSelect, setShowGoalSelect] = useState(false);
   const fileRef = useRef(null);
+  const cameraRef = useRef(null);
 
   // Removed - now handled in TransactionCategories component
 
