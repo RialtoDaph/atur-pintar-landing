@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { RefreshCw, Plus, Pencil, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import EditContractModal from "./EditContractModal";
 
 export default function SubscriptionDetector({ user }) {
