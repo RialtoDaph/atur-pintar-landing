@@ -73,6 +73,9 @@ Pastikan total_amount TIDAK PERNAH 0 kecuali struk benar-benar menunjukkan 0.`,
     // Jika total belum termasuk pajak, tambahkan
     const finalTotal = total > 0 ? total : 0;
 
+    const validCategories = ["food", "transport", "shopping", "health", "entertainment", "education", "utilities", "other"];
+    const category = validCategories.includes(extracted.category) ? extracted.category : "other";
+
     return Response.json({
       status: "success",
       data: {
@@ -80,6 +83,7 @@ Pastikan total_amount TIDAK PERNAH 0 kecuali struk benar-benar menunjukkan 0.`,
         date: extracted.date || today,
         total_amount: finalTotal,
         tax_amount: tax,
+        category,
         receipt_image_url: file_url,
         items
       }
