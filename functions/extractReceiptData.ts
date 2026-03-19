@@ -26,6 +26,7 @@ Yang harus diekstrak:
 3. total_amount: Jumlah TOTAL yang dibayar (cari kata: TOTAL, GRAND TOTAL, JUMLAH, BAYAR). WAJIB berupa number, bukan 0 kecuali memang 0.
 4. tax_amount: Pajak/PPN (cari: PPN, TAX, PAJAK). Jika tidak ada gunakan 0.
 5. items: Semua item yang dibeli dengan name (nama item), price (harga per unit dalam Rupiah), quantity (jumlah)
+6. category: Kategori pengeluaran berdasarkan nama toko dan item. Pilih SATU dari: food, transport, shopping, health, entertainment, education, utilities, other. Contoh: restoran/warung/kafe → food, grab/gojek/parkir → transport, alfamart/indomaret/mall → shopping, apotek/klinik/rumah sakit → health, bioskop/game → entertainment, listrik/air/internet → utilities.
 
 Jika struk tidak terbaca dengan jelas, tetap coba ekstrak sebanyak mungkin informasi yang terlihat.
 Pastikan total_amount TIDAK PERNAH 0 kecuali struk benar-benar menunjukkan 0.`,
@@ -37,6 +38,7 @@ Pastikan total_amount TIDAK PERNAH 0 kecuali struk benar-benar menunjukkan 0.`,
           date: { type: "string" },
           total_amount: { type: "number" },
           tax_amount: { type: "number" },
+          category: { type: "string" },
           items: {
             type: "array",
             items: {
@@ -50,7 +52,7 @@ Pastikan total_amount TIDAK PERNAH 0 kecuali struk benar-benar menunjukkan 0.`,
             }
           }
         },
-        required: ["store_name", "date", "total_amount", "items"]
+        required: ["store_name", "date", "total_amount", "category", "items"]
       }
     });
 
