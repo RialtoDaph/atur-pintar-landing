@@ -16,6 +16,8 @@ import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
 import RecurringManager from "@/components/transactions/RecurringManager";
 import ReminderWidget from "@/components/reminders/ReminderWidget";
+import ContractPaymentsCard from "@/components/dashboard/ContractPaymentsCard";
+import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
 
 // Lazy load heavy components
 const SpendingChart = lazy(() => import("@/components/dashboard/SpendingChart"));
