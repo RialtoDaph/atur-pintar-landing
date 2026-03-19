@@ -40,6 +40,7 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
