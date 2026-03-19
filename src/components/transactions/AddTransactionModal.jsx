@@ -57,8 +57,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
           amount: extracted.total_amount ? String(Math.round(extracted.total_amount)) : f.amount,
           date: extracted.date || f.date,
           note: extracted.store_name || f.note,
-          category: "food",
+          category: extracted.category || "other",
         }));
+        toast.success("Struk berhasil dipindai! Data telah diisi otomatis.");
       } else {
         toast.error("Gagal membaca struk. Silakan coba lagi.");
       }
