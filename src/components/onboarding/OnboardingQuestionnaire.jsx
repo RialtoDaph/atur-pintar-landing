@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, ArrowLeft, X, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { seedSampleData } from "@/components/onboarding/SampleDataManager";
 
 const TODAY = new Date().toISOString().split("T")[0];
 

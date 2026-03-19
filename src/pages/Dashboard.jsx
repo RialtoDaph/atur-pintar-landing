@@ -9,6 +9,7 @@ import AddGoalModal from "@/components/goals/AddGoalModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
 import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
+import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
