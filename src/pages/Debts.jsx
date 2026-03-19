@@ -245,11 +245,10 @@ export default function DebtsPage() {
       )}
 
       {paymentModal && (
-        <AddTransactionModal
+        <PayDebtModal
+          debt={debts.find(d => d.id === paymentModal)}
           onClose={() => setPaymentModal(null)}
-          onSave={async (data) => {
-            await handlePayment(parseRupiah(data.amount));
-          }}
+          onConfirm={handlePayment}
         />
       )}
 
