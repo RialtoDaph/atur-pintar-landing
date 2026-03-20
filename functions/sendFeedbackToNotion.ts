@@ -5,9 +5,23 @@ const NOTION_DATABASE_ID = "328cdc1062bc8054a582d6cd777e3f63";
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const { rating, message, userName, userEmail } = await req.json();
+    const body = await req.json();
 
     const { accessToken } = await base44.asServiceRole.connectors.getConnection("notion");
+
+    // Fetch database schema to check property names
+    if (body._check_schema) {
+      const dbRes = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}`, {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Notion-Version": "2022-06-28"
+        }
+      });
+      const dbData = await dbRes.json();
+      return Response.json({ properties: Object.keys(dbData.properties || {}), raw: dbData.properties });
+    }
+
+    const { rating, message, userName, userEmail } = body;
 
     const body = {
       parent: { database_id: NOTION_DATABASE_ID },
