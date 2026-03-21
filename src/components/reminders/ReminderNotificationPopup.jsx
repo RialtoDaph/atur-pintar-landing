@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bell, X, Check, ChevronRight } from "lucide-react";
+import { X, Check, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppSettings } from "@/components/utils/useAppSettings";
