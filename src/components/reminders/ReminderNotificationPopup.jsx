@@ -79,6 +79,26 @@ export default function ReminderNotificationPopup({ user }) {
       if (upcomingList.length > 0) {
         setVisible(true);
 
+        // Generate Nana AI message
+        try {
+          const urgentItems = upcomingList.filter(r => r.daysLeft <= 3);
+          const topItem = upcomingList[0];
+          const prompt = `Kamu adalah Nana, asisten keuangan pribadi yang ramah, suportif, dan penuh semangat. 
+Buat pesan pengingat singkat (maksimal 2 kalimat) untuk pengguna tentang tagihan/pembayaran yang akan jatuh tempo.
+Gunakan bahasa Indonesia yang santai dan personal. Tambahkan 1 emoji yang relevan di awal.
+Jangan mulai dengan "Hei" atau "Hai".
+
+Data pengingat:
+${upcomingList.slice(0, 3).map(r => `- ${r.title}: ${r.daysLeft === 0 ? "HARI INI!" : r.daysLeft === 1 ? "besok" : r.daysLeft + " hari lagi"}${r.amount ? " ("+formatCurrency(r.amount)+")" : ""}`).join("\n")}
+
+Total: ${upcomingList.length} pengingat aktif${urgentItems.length > 0 ? ", " + urgentItems.length + " mendesak" : ""}.`;
+
+          const message = await base44.integrations.Core.InvokeLLM({ prompt });
+          setNanaMessage(message);
+        } catch (e) {
+          setNanaMessage("Ada beberapa tagihan yang perlu kamu perhatikan nih! 🔔");
+        }
+
         // Push browser notifications for urgent ones (≤ 3 days)
         const alreadyAsked = localStorage.getItem(PUSH_ASKED_KEY);
         if (!alreadyAsked && "Notification" in window && Notification.permission === "default") {
