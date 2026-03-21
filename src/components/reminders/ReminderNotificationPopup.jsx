@@ -152,24 +152,38 @@ Total: ${upcomingList.length} pengingat aktif${urgentItems.length > 0 ? ", " + u
           className="fixed top-16 sm:top-4 right-4 z-50 w-80 max-w-[calc(100vw-2rem)]"
         >
           <div className="bg-white rounded-2xl shadow-2xl border border-[#F2F4F7] overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-[#FF6A00]">
-              <div className="flex items-center gap-2">
-                <Bell className="w-4 h-4 text-white" />
-                <span className="text-white text-sm font-bold">Pengingat Pembayaran</span>
+            {/* Nana Header */}
+            <div className="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[#F2F4F7]">
+              <div className="flex items-start gap-3">
+                {/* Nana Avatar */}
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FF6A00] to-[#FF9A3C] flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm">
+                  N
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-[#FF6A00]">Nana AI</p>
+                  {nanaMessage ? (
+                    <p className="text-xs text-[#1A1A1A] leading-relaxed mt-0.5 max-w-[200px]">{nanaMessage}</p>
+                  ) : (
+                    <div className="flex items-center gap-1 mt-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </div>
+                  )}
+                </div>
               </div>
-              <button onClick={dismissAll} className="text-white/80 hover:text-white transition-colors">
+              <button onClick={dismissAll} className="text-[#8FA4C8] hover:text-[#1A1A1A] transition-colors mt-0.5">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Items */}
-            <div className="divide-y divide-[#F2F4F7] max-h-72 overflow-y-auto">
+            <div className="divide-y divide-[#F2F4F7] max-h-52 overflow-y-auto">
               {upcoming.map(r => {
                 const urgent = r.daysLeft <= 3;
                 return (
-                  <div key={r.id} className={`flex items-center gap-3 px-4 py-3 ${urgent ? "bg-[#FF6B6B]/5" : ""}`}>
-                    <span className="text-xl flex-shrink-0">{r.icon || TYPE_EMOJI[r.type] || "📌"}</span>
+                  <div key={r.id} className={`flex items-center gap-3 px-4 py-2.5 ${urgent ? "bg-[#FF6B6B]/5" : ""}`}>
+                    <span className="text-lg flex-shrink-0">{r.icon || TYPE_EMOJI[r.type] || "📌"}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#0A0A0A] truncate">{r.title}</p>
                       <p className="text-xs text-[#8FA4C8]">
