@@ -7,7 +7,7 @@ import { createPageUrl } from "@/utils";
 const TOUR_STEPS = [
   {
     id: "add-transaction-btn",
-    page: "Transactions",
+    page: "Dashboard",
     title: "Tambah Transaksi ➕",
     desc: "Ketuk tombol + untuk catat pemasukan atau pengeluaran baru.",
     placement: "bottom-left",
