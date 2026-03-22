@@ -11,6 +11,7 @@ const STEPS = [
 { id: "income" },
 { id: "savings_goal" },
 { id: "debt" },
+{ id: "risk" },
 { id: "done" }];
 
 
