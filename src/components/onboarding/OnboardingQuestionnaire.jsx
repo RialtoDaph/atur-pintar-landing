@@ -76,7 +76,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
     // Save opening balance (saldo awal) as a one-time income transaction
     if (monthlyExpense) {
       promises.push(base44.entities.Transaction.create({
-        amount: parseFloat(monthlyExpense),
+        amount: parseFloat(parseNumber(monthlyExpense)),
         type: "income",
         category: "opening_balance",
         note: "Saldo Awal",
