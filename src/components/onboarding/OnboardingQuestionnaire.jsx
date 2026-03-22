@@ -88,7 +88,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
     // Save monthly income as a RECURRING transaction template
     if (monthlyIncome) {
       promises.push(base44.entities.Transaction.create({
-        amount: parseFloat(monthlyIncome),
+        amount: parseFloat(parseNumber(monthlyIncome)),
         type: "income",
         category: "salary",
         note: "Pendapatan bulanan",
