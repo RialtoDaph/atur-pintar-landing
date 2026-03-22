@@ -27,6 +27,10 @@ export default function RiskProfileAssessment() {
     try {
       const profiles = await base44.entities.UserRiskProfile.filter({ created_by: user.email });
       if (profiles && profiles.length > 0) {
+        // Cleanup duplicates: keep first, delete the rest
+        if (profiles.length > 1) {
+          await Promise.all(profiles.slice(1).map(p => base44.entities.UserRiskProfile.delete(p.id)));
+        }
         setProfile(profiles[0]);
       } else {
         setProfile({
@@ -49,16 +53,20 @@ export default function RiskProfileAssessment() {
   async function saveProfile() {
     setSaving(true);
     try {
+      const today = new Date().toISOString().split('T')[0];
       if (profile.id) {
+        // Upsert: update existing record
         await base44.entities.UserRiskProfile.update(profile.id, {
           ...profile,
-          last_assessment_date: new Date().toISOString().split('T')[0]
+          last_assessment_date: today,
         });
       } else {
-        await base44.entities.UserRiskProfile.create({
+        // No existing record: create one
+        const created = await base44.entities.UserRiskProfile.create({
           ...profile,
-          last_assessment_date: new Date().toISOString().split('T')[0]
+          last_assessment_date: today,
         });
+        setProfile(created);
       }
       await loadProfile();
     } catch (error) {
