@@ -8,15 +8,16 @@ import { DEFAULT_CATEGORIES } from "@/components/utils/categoryConfig";
 export default function TransactionCategories({ tab, form, setForm, onShowSubCatPopup }) {
   const { t } = useAppSettings();
   const [customCats, setCustomCats] = useState([]);
+  const [globalCats, setGlobalCats] = useState([]);
   const [catOrder, setCatOrder] = useState([]);
   const [appSettings, setAppSettings] = useState(null);
 
   useEffect(() => {
-    loadCustomCats();
+    loadCats();
     loadAppSettings();
     
     const unsubscribe = base44.entities.CustomCategory.subscribe(() => {
-      loadCustomCats();
+      loadCats();
     });
     
     return () => unsubscribe();
@@ -34,12 +35,16 @@ export default function TransactionCategories({ tab, form, setForm, onShowSubCat
     }
   }
 
-  async function loadCustomCats() {
+  async function loadCats() {
     try {
-      const cats = await base44.entities.CustomCategory.list("-created_date");
-      setCustomCats(cats);
+      const [custom, global] = await Promise.all([
+        base44.entities.CustomCategory.list("-created_date"),
+        base44.entities.GlobalCategory.list(),
+      ]);
+      setCustomCats(custom);
+      setGlobalCats(global.filter(g => g.is_active !== false));
     } catch (error) {
-      console.error("Failed to load custom categories:", error);
+      console.error("Failed to load categories:", error);
     }
   }
 
