@@ -144,14 +144,31 @@ export default function TourGuide({ onComplete }) {
       const rect = measureElement(currentStep.id);
       if (rect) {
         clearInterval(retryRef.current);
-        // Scroll element into view then measure
         const el = document.querySelector(`[data-tour="${currentStep.id}"]`);
         if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "center" });
-          setTimeout(() => {
+          // Scroll into view using the actual scroll container (layout uses sm:ml-60 overflow-y-auto div)
+          const scrollContainer = document.querySelector(".overflow-y-auto") || document.documentElement;
+          const elRect = el.getBoundingClientRect();
+          const containerRect = scrollContainer.getBoundingClientRect ? scrollContainer.getBoundingClientRect() : { top: 0 };
+          const scrollOffset = elRect.top - containerRect.top + scrollContainer.scrollTop - (window.innerHeight / 2) + elRect.height / 2;
+          scrollContainer.scrollTo({ top: scrollOffset, behavior: "smooth" });
+          // Poll until position stabilizes
+          let lastTop = -1;
+          let stable = 0;
+          const pollScroll = setInterval(() => {
             const r = measureElement(currentStep.id);
-            setTargetRect(r);
-          }, 800);
+            if (r && Math.abs(r.top - lastTop) < 2) {
+              stable++;
+              if (stable >= 3) {
+                clearInterval(pollScroll);
+                setTargetRect(r);
+              }
+            } else {
+              stable = 0;
+            }
+            lastTop = r?.top ?? lastTop;
+          }, 80);
+          setTimeout(() => { clearInterval(pollScroll); setTargetRect(measureElement(currentStep.id)); }, 1500);
         } else {
           setTargetRect(rect);
         }
