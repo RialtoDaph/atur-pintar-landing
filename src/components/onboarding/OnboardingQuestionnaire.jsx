@@ -129,7 +129,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
       promises.push(base44.entities.UserRiskProfile.create({
         risk_tolerance: riskTolerance || "moderate",
         financial_goal: financialGoal || "wealth_building",
-        monthly_income: monthlyIncome ? parseFloat(monthlyIncome) : undefined,
+        monthly_income: monthlyIncome ? parseFloat(parseNumber(monthlyIncome)) : undefined,
         last_assessment_date: TODAY,
         investment_experience: "beginner",
         investment_horizon: "medium_term"
