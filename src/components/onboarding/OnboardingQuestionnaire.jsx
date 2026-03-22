@@ -116,9 +116,9 @@ export default function OnboardingQuestionnaire({ onClose }) {
       promises.push(base44.entities.Debt.create({
         name: debtName,
         type: debtType,
-        total_amount: parseFloat(debtRemaining),
-        remaining_amount: parseFloat(debtRemaining),
-        monthly_payment: debtMonthly ? parseFloat(debtMonthly) : 0,
+        total_amount: parseFloat(parseNumber(debtRemaining)),
+        remaining_amount: parseFloat(parseNumber(debtRemaining)),
+        monthly_payment: debtMonthly ? parseFloat(parseNumber(debtMonthly)) : 0,
         status: "active",
         icon: "💳"
       }));
