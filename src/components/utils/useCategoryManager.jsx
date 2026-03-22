@@ -13,35 +13,54 @@ export function useCategoryManager() {
   const [allCatsMap, setAllCatsMap] = useState({});
   const [subCatsByParent, setSubCatsByParent] = useState({});
 
-  // Load custom categories
+  // Load custom + global categories
   useEffect(() => {
-    loadCustomCats();
+    loadAllCats();
     const unsubscribe = base44.entities.CustomCategory.subscribe(() => {
-      loadCustomCats();
+      loadAllCats();
     });
     return () => unsubscribe();
   }, []);
 
-  async function loadCustomCats() {
+  async function loadAllCats() {
     try {
-      const cats = await base44.entities.CustomCategory.list("-created_date");
-      setCustomCats(cats);
-      buildCategoryMaps(cats);
+      const [customCatsData, globalCatsData] = await Promise.all([
+        base44.entities.CustomCategory.list("-created_date"),
+        base44.entities.GlobalCategory.filter({ is_active: true }),
+      ]);
+      setCustomCats(customCatsData);
+      buildCategoryMaps(customCatsData, globalCatsData);
     } catch (error) {
-      console.error("Failed to load custom categories:", error);
+      console.error("Failed to load categories:", error);
     }
   }
 
-  function buildCategoryMaps(cats) {
+  function buildCategoryMaps(cats, globalCats = []) {
     const allCats = {};
     const subCats = {};
 
-    // Add all default categories
+    // 1. Lowest priority: built-in static DEFAULT_CATEGORIES
     [...DEFAULT_CATEGORIES.expense, ...DEFAULT_CATEGORIES.income].forEach(cat => {
       allCats[cat.key] = { ...cat, label: t(cat.i18nKey) };
     });
 
-    // Add custom categories
+    // 2. Mid priority: GlobalCategory from admin (overrides defaults with same key if name matches)
+    globalCats.forEach(cat => {
+      // GlobalCategories use their own keys prefixed with "global_" to avoid conflicts
+      // BUT if they have the same name as a default key, map them to that key
+      const matchingDefault = [...DEFAULT_CATEGORIES.expense, ...DEFAULT_CATEGORIES.income]
+        .find(d => d.key === cat.name?.toLowerCase().replace(/\s+/g, "_"));
+      const key = matchingDefault ? matchingDefault.key : `global_${cat.id}`;
+      allCats[key] = {
+        key,
+        label: cat.name,
+        emoji: cat.emoji,
+        color: cat.color || "#95A5A6",
+        type: cat.type,
+      };
+    });
+
+    // 3. Highest priority: user's CustomCategory (always wins)
     cats.forEach(cat => {
       const key = `custom_${cat.id}`;
       allCats[key] = {
