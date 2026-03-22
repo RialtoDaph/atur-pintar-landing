@@ -71,11 +71,12 @@ const TOUR_STEPS = [
   },
 ];
 
+const TOOLTIP_WIDTH = 280;
+const TOOLTIP_HEIGHT = 150;
+
 function getTooltipStyle(rect, placement) {
   if (!rect) return {};
   const padding = 12;
-  const tooltipWidth = 280;
-  const tooltipHeight = 140;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
@@ -84,23 +85,30 @@ function getTooltipStyle(rect, placement) {
   if (placement === "bottom" || placement === "bottom-left") {
     top = rect.bottom + padding;
     left = placement === "bottom-left"
-      ? Math.max(8, rect.right - tooltipWidth)
-      : rect.left + rect.width / 2 - tooltipWidth / 2;
+      ? rect.right - TOOLTIP_WIDTH
+      : rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
   } else if (placement === "top" || placement === "top-left") {
-    top = rect.top - tooltipHeight - padding;
+    top = rect.top - TOOLTIP_HEIGHT - padding;
     left = placement === "top-left"
-      ? Math.max(8, rect.right - tooltipWidth)
-      : rect.left + rect.width / 2 - tooltipWidth / 2;
+      ? rect.right - TOOLTIP_WIDTH
+      : rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
   } else {
     top = rect.bottom + padding;
-    left = rect.left + rect.width / 2 - tooltipWidth / 2;
+    left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
   }
 
   // Clamp to viewport
-  left = Math.max(8, Math.min(left, vw - tooltipWidth - 8));
-  top = Math.max(8, Math.min(top, vh - tooltipHeight - 8));
+  left = Math.max(8, Math.min(left, vw - TOOLTIP_WIDTH - 8));
+  top = Math.max(8, Math.min(top, vh - TOOLTIP_HEIGHT - 8));
 
-  return { top, left, width: tooltipWidth };
+  return { top, left, width: TOOLTIP_WIDTH };
+}
+
+function measureElement(id) {
+  const el = document.querySelector(`[data-tour="${id}"]`);
+  if (!el) return null;
+  const rect = el.getBoundingClientRect();
+  return { top: rect.top, left: rect.left, width: rect.width, height: rect.height, bottom: rect.bottom, right: rect.right };
 }
 
 export default function TourGuide({ onComplete }) {
@@ -108,25 +116,56 @@ export default function TourGuide({ onComplete }) {
   const [targetRect, setTargetRect] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const observerRef = useRef(null);
   const rafRef = useRef(null);
+  const scrollTimeoutRef = useRef(null);
 
   const currentStep = TOUR_STEPS[stepIndex];
   const isLast = stepIndex === TOUR_STEPS.length - 1;
 
-  const measureTarget = useCallback(() => {
-    const el = document.querySelector(`[data-tour="${currentStep.id}"]`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => {
-        const rect = el.getBoundingClientRect();
-        setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height, bottom: rect.bottom, right: rect.right });
-      }, 400);
-    } else {
-      setTargetRect(null);
-    }
+  // Measure using rAF for accuracy
+  const measure = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      const rect = measureElement(currentStep.id);
+      setTargetRect(rect);
+    });
   }, [currentStep.id]);
 
-  // Navigate to page if needed
+  // Scroll to element, wait for scroll to finish, then measure
+  const scrollAndMeasure = useCallback(() => {
+    const el = document.querySelector(`[data-tour="${currentStep.id}"]`);
+    if (!el) {
+      setTargetRect(null);
+      return;
+    }
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    // Wait for smooth scroll to finish (~500ms), then measure
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(measure, 500);
+  }, [currentStep.id, measure]);
+
+  // Attach ResizeObserver + scroll listener to keep tooltip in sync
+  useEffect(() => {
+    // Disconnect previous observer
+    if (observerRef.current) observerRef.current.disconnect();
+
+    const el = document.querySelector(`[data-tour="${currentStep.id}"]`);
+    if (!el) return;
+
+    observerRef.current = new ResizeObserver(measure);
+    observerRef.current.observe(el);
+
+    // Also re-measure on any scroll in page
+    window.addEventListener("scroll", measure, { passive: true });
+    return () => {
+      observerRef.current?.disconnect();
+      window.removeEventListener("scroll", measure);
+    };
+  }, [currentStep.id, measure]);
+
+  // Navigate to correct page when step changes
   useEffect(() => {
     if (currentStep.noNavigate) return;
     const targetPath = `/${currentStep.page}`;
@@ -135,11 +174,20 @@ export default function TourGuide({ onComplete }) {
     }
   }, [stepIndex]);
 
-  // Measure after navigation / render
+  // Scroll & measure after navigation/render settles
   useEffect(() => {
-    const timer = setTimeout(measureTarget, 600);
+    const timer = setTimeout(scrollAndMeasure, 300);
     return () => clearTimeout(timer);
-  }, [stepIndex, location.pathname, measureTarget]);
+  }, [stepIndex, location.pathname]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      observerRef.current?.disconnect();
+    };
+  }, []);
 
   function handleNext() {
     if (isLast) {
@@ -193,7 +241,6 @@ export default function TourGuide({ onComplete }) {
           fill="rgba(0,0,0,0.65)"
           mask="url(#spotlight-mask)"
         />
-        {/* Spotlight border glow */}
         {spotlight && (
           <rect
             x={spotlight.left}
