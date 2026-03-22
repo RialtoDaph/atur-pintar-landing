@@ -26,7 +26,7 @@ export function useCategoryManager() {
     try {
       const [customCatsData, globalCatsData] = await Promise.all([
         base44.entities.CustomCategory.list("-created_date"),
-        base44.entities.GlobalCategory.filter({ is_active: true }),
+        base44.entities.GlobalCategory.list(),
       ]);
       setCustomCats(customCatsData);
       buildCategoryMaps(customCatsData, globalCatsData);

@@ -25,7 +25,7 @@ export default function RiskProfileAssessment() {
   async function loadProfile() {
     setLoading(true);
     try {
-      const profiles = await base44.entities.UserRiskProfile.filter({ created_by: user.email });
+      const profiles = await base44.entities.UserRiskProfile.list();
       if (profiles && profiles.length > 0) {
         // Cleanup duplicates: keep first, delete the rest
         if (profiles.length > 1) {
