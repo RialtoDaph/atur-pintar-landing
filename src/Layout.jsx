@@ -75,7 +75,7 @@ function LayoutInner({ children, currentPageName }) {
   { name: "Debts", label: t('nav_debts'), icon: CreditCard, page: "Debts" },
   { name: "Investments", label: t('nav_investments'), icon: TrendingUp, page: "Investments" },
   { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
-  { name: "Tips", label: t('nav_tips'), icon: Lightbulb, page: "Tips" }];
+  { name: "Tips", label: t('nav_tips'), icon: Lightbulb, page: "Tips", tourId: "tips-nav-link" }];
 
 
   const navSettingsItems = [
