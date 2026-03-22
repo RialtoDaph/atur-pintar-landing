@@ -12,7 +12,6 @@ const STEPS = [
 { id: "savings_goal" },
 { id: "debt" },
 { id: "risk" },
-{ id: "reminder" },
 { id: "done" }];
 
 
