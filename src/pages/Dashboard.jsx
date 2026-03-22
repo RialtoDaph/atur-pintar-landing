@@ -121,6 +121,7 @@ export default function Dashboard() {
               <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
             </div>
             <button
+              data-tour="add-transaction-btn"
               onClick={() => setShowAddTransaction(true)}
               className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors tap-highlight-fix"
             >
