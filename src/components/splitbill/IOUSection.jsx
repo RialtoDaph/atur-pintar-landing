@@ -6,12 +6,17 @@ import { formatRupiah } from "@/components/utils/formatRupiah";
 export default function IOUSection() {
   const [ious, setIous] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
-  useEffect(() => {loadIOUs();}, []);
+  useEffect(() => {
+    base44.auth.me().then(u => setUser(u)).catch(() => {});
+  }, []);
+
+  useEffect(() => { if (user) loadIOUs(); }, [user]);
 
   async function loadIOUs() {
     setLoading(true);
-    const data = await base44.entities.SplitIOU.list("-created_date");
+    const data = await base44.entities.SplitIOU.filter({ created_by: user.email }, "-created_date");
     setIous(data);
     setLoading(false);
   }
