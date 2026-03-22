@@ -172,7 +172,12 @@ export default function BudgetPage() {
                 <ChevronRight className="w-4 h-4" />
               </button>
               {budgetLimitReached ? (
-                <Link to="/Subscription" className="w-10 h-10 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] transition-colors" title="Upgrade untuk tambah lebih banyak budget">
+                <Link
+                  to="/Subscription"
+                  data-tour="add-budget-btn"
+                  className="w-10 h-10 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] transition-colors"
+                  title="Upgrade untuk tambah lebih banyak budget"
+                >
                   <Crown className="w-5 h-5 text-white" />
                 </Link>
               ) : (
