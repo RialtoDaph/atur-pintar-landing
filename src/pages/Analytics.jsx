@@ -289,35 +289,6 @@ export default function Analytics() {
           user={user}
         />
 
-        {/* Summary Cards - 4 column grid, responsive to 2 or 1 on mobile */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border-l-4 border-[#00C9A7]">
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium uppercase tracking-widest mb-1.5">{t('analytics_income_label')}</p>
-            <p className="text-base sm:text-lg lg:text-xl font-bold text-[#00C9A7]">{formatShortNumber(totalIncome)}</p>
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] mt-1">{formatPeriodLabel(filterPeriod)}</p>
-          </div>
-
-          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border-l-4 border-[#FF6B6B]">
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium uppercase tracking-widest mb-1.5">{t('analytics_expense_label')}</p>
-            <p className="text-base sm:text-lg lg:text-xl font-bold text-[#FF6B6B]">{formatShortNumber(periodExpenses)}</p>
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] mt-1">{formatPeriodLabel(filterPeriod)}</p>
-          </div>
-
-          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border-l-4" style={{ borderLeftColor: netCashflow >= 0 ? "#00C9A7" : "#FF6B6B" }}>
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium uppercase tracking-widest mb-1.5">{t('net_flow')}</p>
-            <p className="text-base sm:text-lg lg:text-xl font-bold" style={{ color: netCashflow >= 0 ? "#00C9A7" : "#FF6B6B" }}>
-              {netCashflow >= 0 ? "+" : ""}{formatShortNumber(netCashflow)}
-            </p>
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] mt-1">{formatPeriodLabel(filterPeriod)}</p>
-          </div>
-
-          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm border-l-4 border-[#4F7CFF]">
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium uppercase tracking-widest mb-1.5">{t('savings_rate')}</p>
-            <p className="text-base sm:text-lg lg:text-xl font-bold text-[#4F7CFF]">{savingsRate}%</p>
-            <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] mt-1">{t('of_income')}</p>
-          </div>
-        </div>
-
         {/* Calendar Section */}
         <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
 

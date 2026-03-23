@@ -149,7 +149,7 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
           </div>
 
           {/* Metrics strip */}
-          <div className="grid grid-cols-3 gap-2 px-4 sm:px-5 mt-4 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 px-4 sm:px-5 mt-4 mb-4">
             <div className="bg-[#F2F4F7] rounded-xl p-3 text-center">
               <p className="text-[10px] text-[#8FA4C8] mb-0.5">Pemasukan</p>
               <p className="text-sm font-bold text-[#00C9A7]">{formatShortNumber(totalIncome)}</p>
@@ -163,6 +163,10 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
               <p className={`text-sm font-bold ${netFlow >= 0 ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
                 {netFlow >= 0 ? "+" : ""}{formatShortNumber(netFlow)}
               </p>
+            </div>
+            <div className="bg-[#4F7CFF]/10 rounded-xl p-3 text-center">
+              <p className="text-[10px] text-[#8FA4C8] mb-0.5">Rasio Tabungan</p>
+              <p className="text-sm font-bold text-[#4F7CFF]">{savingsRate}%</p>
             </div>
           </div>
 
