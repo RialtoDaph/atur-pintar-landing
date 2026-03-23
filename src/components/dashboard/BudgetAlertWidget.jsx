@@ -85,8 +85,9 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
           const isOver = b.percent > 100;
           const isNear = b.percent >= 80 && !isOver;
 
+          const riskColor = isOver ? "#FF6B6B" : b.percent >= 80 ? "#F5A623" : "#00C9A7";
           const pieData = [
-            { value: Math.min(b.spent, b.amount), color: isOver ? "#FF6B6B" : isNear ? "#F5A623" : cat.color },
+            { value: Math.min(b.spent, b.amount), color: riskColor },
             { value: Math.max(0, b.amount - b.spent), color: "#E8EEF7" }
           ];
 
@@ -110,11 +111,8 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
                   {cat.emoji}
                 </span>
               </div>
-              <p className="text-xs font-medium text-[#1A1A1A] text-center group-hover:text-[#FF6A00] transition-colors whitespace-nowrap">
-                {cat.label}
-              </p>
-            </Link>
-          );
+              </Link>
+              );
         })}
         <Link
           to={createPageUrl("Budget")}
