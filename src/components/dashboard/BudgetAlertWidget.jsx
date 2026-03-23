@@ -118,10 +118,9 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
           to={createPageUrl("Budget")}
           className="flex flex-col items-center flex-shrink-0 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-full bg-[#F2F4F7] group-hover:bg-[#E8EEF7] transition-colors flex items-center justify-center text-lg text-[#8FA4C8] mb-2">
+          <div className="w-10 h-10 rounded-full bg-[#F2F4F7] group-hover:bg-[#E8EEF7] transition-colors flex items-center justify-center text-lg text-[#8FA4C8]">
             +
           </div>
-          <p className="text-xs font-medium text-[#8FA4C8] group-hover:text-[#FF6A00] transition-colors">Tambah</p>
         </Link>
       </div>
     </div>
