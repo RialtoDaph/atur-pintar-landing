@@ -175,7 +175,7 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
             {!narrative && !loading && (
               <button
                 onClick={generateNarrative}
-                className="w-full flex items-center justify-center gap-2 py-4 text-sm font-semibold text-[#FF6A00] hover:bg-[#FF6A00]/5 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-4 text-sm font-semibold text-[#7C3AED] hover:bg-[#7C3AED]/5 transition-colors"
               >
                 <Sparkles className="w-4 h-4" />
                 Analisis dengan AI
