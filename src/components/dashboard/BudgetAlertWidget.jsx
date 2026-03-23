@@ -81,22 +81,23 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
 
       <div className="px-4 pb-4 flex gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {allBudgets.map(b => {
-          const cat = DEFAULT_CATEGORIES[b.category] || { label: b.category, emoji: "📦", color: "#95A5A6" };
-          const isOver = b.percent > 100;
-          const isNear = b.percent >= 80 && !isOver;
+           const cat = DEFAULT_CATEGORIES[b.category] || { label: b.category, emoji: "📦", color: "#95A5A6" };
+           const isOver = b.percent > 100;
+           const isNear = b.percent >= 80 && !isOver;
+           const ringColor = isOver ? "#FF6B6B" : isNear ? "#F5A623" : "#00C9A7";
 
-          const pieData = [
-            { value: Math.min(b.spent, b.amount), color: isOver ? "#FF6B6B" : isNear ? "#F5A623" : cat.color },
-            { value: Math.max(0, b.amount - b.spent), color: "#E8EEF7" }
-          ];
+           const pieData = [
+             { value: Math.min(b.spent, b.amount), color: isOver ? "#FF6B6B" : isNear ? "#F5A623" : cat.color },
+             { value: Math.max(0, b.amount - b.spent), color: "#E8EEF7" }
+           ];
 
-          return (
-            <Link
-              key={b.id}
-              to={createPageUrl("Budget")}
-              className="flex flex-col items-center flex-shrink-0 cursor-pointer group"
-            >
-              <div className="relative w-10 h-10 mb-2">
+           return (
+             <Link
+               key={b.id}
+               to={createPageUrl("Budget")}
+               className="flex flex-col items-center flex-shrink-0 cursor-pointer group"
+             >
+              <div className="relative w-10 h-10 mb-2" style={{ outline: `2px solid ${ringColor}`, borderRadius: "50%" }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={pieData} dataKey="value" cx="50%" cy="50%" innerRadius={12} outerRadius={20} startAngle={90} endAngle={-270}>
@@ -110,9 +111,6 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
                   {cat.emoji}
                 </span>
               </div>
-              <p className="text-xs font-medium text-[#1A1A1A] text-center group-hover:text-[#FF6A00] transition-colors whitespace-nowrap">
-                {cat.label}
-              </p>
             </Link>
           );
         })}
