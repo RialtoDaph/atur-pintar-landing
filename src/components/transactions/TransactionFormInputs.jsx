@@ -1,7 +1,7 @@
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import DateInput from "@/components/utils/DateInput";
 
-export default function TransactionFormInputs({ form, setForm, t }) {
+export default function TransactionFormInputs({ form, setForm, t, onNoteChange }) {
   const { settings } = useAppSettings();
 
   const formatCurrencyInput = (val) => {
@@ -45,7 +45,7 @@ export default function TransactionFormInputs({ form, setForm, t }) {
             className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] tap-highlight-fix"
             placeholder={t('note_placeholder')}
             value={form.note}
-            onChange={(e) => setForm({ ...form, note: e.target.value })}
+            onChange={(e) => onNoteChange ? onNoteChange(e.target.value) : setForm({ ...form, note: e.target.value })}
           />
         </div>
         <DateInput
