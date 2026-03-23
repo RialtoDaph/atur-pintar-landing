@@ -9,7 +9,6 @@ import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
 import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
 import SmartBudgetSuggestion from "@/components/analytics/SmartBudgetSuggestion";
-import FinancialForecast from "@/components/analytics/FinancialForecast";
 import AnomalyDetector from "@/components/analytics/AnomalyDetector";
 import FinancialCalendar from "@/components/analytics/FinancialCalendar";
 import DateRangeFilter from "@/components/analytics/DateRangeFilter";
@@ -301,14 +300,6 @@ export default function Analytics() {
         <AnomalyDetector
           transactions={transactions}
           allCategoriesConfig={allCategoriesConfig}
-        />
-
-        {/* Financial Forecast */}
-        <FinancialForecast
-          trendData={trendData}
-          totalIncome={totalIncome}
-          totalExpenses={periodExpenses}
-          savingsRate={savingsRate}
         />
 
         {/* Smart Budget Suggestion */}
