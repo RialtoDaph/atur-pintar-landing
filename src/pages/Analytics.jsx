@@ -324,31 +324,6 @@ export default function Analytics() {
           );
         })()}
 
-        {/* Charts Grid - 1 on mobile, 2 on desktop */}
-        <div className="space-y-5 lg:grid lg:grid-cols-2 lg:gap-5 lg:space-y-0">
-
-          {/* Income vs Expense Bar Chart */}
-          {isCardVisible("income_expense_chart") && (
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
-            <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_income_vs_expense')}</h2>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={trendData} barCategoryGap="30%">
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={formatYAxisTick} />
-                <Tooltip
-                  formatter={(value) => [formatCurrency(value), undefined]}
-                  contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
-                />
-                <Bar dataKey="Income" fill="#00C9A7" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="Expenses" fill="#FF6B6B" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex gap-4 mt-3 justify-center text-xs">
-              <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#00C9A7]"/><span className="text-[#8FA4C8]">{t('analytics_income_label')}</span></div>
-              <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-[#FF6B6B]"/><span className="text-[#8FA4C8]">{t('analytics_expense_label')}</span></div>
-            </div>
-          </div>)}
-
         {/* Budget Section */}
         {isCardVisible("budget_chart") && budgetData.length > 0 && (
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
