@@ -73,20 +73,6 @@ Kembalikan HANYA JSON berikut (tanpa markdown):
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between p-4 sm:p-5">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F7CFF] to-[#8B5CF6] flex items-center justify-center flex-shrink-0">
-            <TrendingUp className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-[#1A1A1A]">Prediksi Keuangan AI</p>
-            <p className="text-xs text-[#8FA4C8]">Proyeksi 3 bulan ke depan</p>
-          </div>
-        </div>
-        <button onClick={() => setExpanded(e => !e)} className="text-[#8FA4C8] hover:text-[#1A1A1A] transition-colors tap-highlight-fix">
-          {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-        </button>
-      </div>
 
       {expanded && (
         <div className="px-4 sm:px-5 pb-5">
