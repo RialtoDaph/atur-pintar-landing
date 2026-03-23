@@ -296,21 +296,27 @@ export default function Analytics() {
         />
 
         {/* Net Worth Card */}
-        <NetWorthCard
-          goals={goals}
-          investments={investments}
-          debts={debts}
-          transactions={transactions}
-        />
+        {isCardVisible("net_worth") && (
+          <NetWorthCard
+            goals={goals}
+            investments={investments}
+            debts={debts}
+            transactions={transactions}
+          />
+        )}
 
         {/* Anomaly Detector */}
-        <AnomalyDetector
-          transactions={transactions}
-          allCategoriesConfig={allCategoriesConfig}
-        />
+        {isCardVisible("anomaly_detector") && (
+          <AnomalyDetector
+            transactions={transactions}
+            allCategoriesConfig={allCategoriesConfig}
+          />
+        )}
 
         {/* Calendar Section */}
-        <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
+        {isCardVisible("financial_calendar") && (
+          <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
+        )}
 
         {/* Daily Spending Card */}
         {(() => {
