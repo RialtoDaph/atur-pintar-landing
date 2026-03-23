@@ -292,6 +292,7 @@ export default function Analytics() {
         <AIFinancialNarrative
           trendData={trendData}
           pieData={pieData}
+          budgets={budgetData}
           totalIncome={totalIncome}
           totalExpenses={periodExpenses}
           savingsRate={savingsRate}
