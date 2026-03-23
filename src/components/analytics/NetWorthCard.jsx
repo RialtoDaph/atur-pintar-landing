@@ -10,12 +10,10 @@ export default function NetWorthCard({ goals, investments, debts, transactions }
   const totalSavings = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
   const totalInvestments = investments.reduce((s, i) => s + (i.current_value || 0), 0);
 
-  // Cash on hand: sum of all income - expenses
-  const cashBalance = transactions.reduce((s, tx) => {
-    if (tx.type === "income") return s + tx.amount;
-    if (tx.type === "expense") return s - tx.amount;
-    return s;
-  }, 0);
+  // Cash on hand: sum of all income - expenses (all time, not filtered by period)
+  const allIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const allExpenses = transactions.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+  const cashBalance = Math.max(allIncome - allExpenses, 0);
 
   const totalAssets = Math.max(cashBalance, 0) + totalSavings + totalInvestments;
 
