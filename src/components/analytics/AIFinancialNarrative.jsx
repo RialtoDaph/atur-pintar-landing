@@ -184,7 +184,7 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
 
             {loading && (
               <div className="flex items-center justify-center gap-2 py-5 text-sm text-[#8FA4C8]">
-                <Loader2 className="w-4 h-4 animate-spin text-[#FF6A00]" />
+                <Loader2 className="w-4 h-4 animate-spin text-[#7C3AED]" />
                 Nana sedang menganalisis data kamu...
               </div>
             )}
