@@ -3,6 +3,17 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from '@tanstack/react-query';
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import PremiumGate from "@/components/subscription/PremiumGate";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { LayoutList } from "lucide-react";
+import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
+import NetWorthCard from "@/components/analytics/NetWorthCard";
+import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
+import SmartBudgetSuggestion from "@/components/analytics/SmartBudgetSuggestion";
+import FinancialForecast from "@/components/analytics/FinancialForecast";
+import AnomalyDetector from "@/components/analytics/AnomalyDetector";
+import FinancialCalendar from "@/components/analytics/FinancialCalendar";
+import DateRangeFilter from "@/components/analytics/DateRangeFilter";
+import DailySpendingCard from "@/components/analytics/DailySpendingCard";
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "daily_spending", visible: true },
