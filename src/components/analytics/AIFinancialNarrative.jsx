@@ -149,24 +149,24 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
           </div>
 
           {/* Metrics strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 px-4 sm:px-5 mt-4 mb-4">
-            <div className="bg-[#F2F4F7] rounded-xl p-3 text-center">
-              <p className="text-[10px] text-[#8FA4C8] mb-0.5">Pemasukan</p>
-              <p className="text-sm font-bold text-[#00C9A7]">{formatShortNumber(totalIncome)}</p>
+          <div className="grid grid-cols-4 gap-1.5 px-4 sm:px-5 mt-3 mb-3">
+            <div className="bg-[#F2F4F7] rounded-lg p-2 text-center">
+              <p className="text-[9px] text-[#8FA4C8] mb-0.5">Pemasukan</p>
+              <p className="text-xs font-bold text-[#00C9A7]">{formatShortNumber(totalIncome)}</p>
             </div>
-            <div className="bg-[#F2F4F7] rounded-xl p-3 text-center">
-              <p className="text-[10px] text-[#8FA4C8] mb-0.5">Pengeluaran</p>
-              <p className="text-sm font-bold text-[#FF6B6B]">{formatShortNumber(totalExpenses)}</p>
+            <div className="bg-[#F2F4F7] rounded-lg p-2 text-center">
+              <p className="text-[9px] text-[#8FA4C8] mb-0.5">Pengeluaran</p>
+              <p className="text-xs font-bold text-[#FF6B6B]">{formatShortNumber(totalExpenses)}</p>
             </div>
-            <div className={`rounded-xl p-3 text-center ${netFlow >= 0 ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
-              <p className="text-[10px] text-[#8FA4C8] mb-0.5">Net Flow</p>
-              <p className={`text-sm font-bold ${netFlow >= 0 ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+            <div className={`rounded-lg p-2 text-center ${netFlow >= 0 ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
+              <p className="text-[9px] text-[#8FA4C8] mb-0.5">Net Flow</p>
+              <p className={`text-xs font-bold ${netFlow >= 0 ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
                 {netFlow >= 0 ? "+" : ""}{formatShortNumber(netFlow)}
               </p>
             </div>
-            <div className="bg-[#4F7CFF]/10 rounded-xl p-3 text-center">
-              <p className="text-[10px] text-[#8FA4C8] mb-0.5">Rasio Tabungan</p>
-              <p className="text-sm font-bold text-[#4F7CFF]">{savingsRate}%</p>
+            <div className="bg-[#4F7CFF]/10 rounded-lg p-2 text-center">
+              <p className="text-[9px] text-[#8FA4C8] mb-0.5">Tabungan</p>
+              <p className="text-xs font-bold text-[#4F7CFF]">{savingsRate}%</p>
             </div>
           </div>
 
