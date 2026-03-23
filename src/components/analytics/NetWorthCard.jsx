@@ -1,8 +1,10 @@
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function NetWorthCard({ goals, investments, debts, transactions }) {
   const { formatCurrency } = useAppSettings();
+  const [expanded, setExpanded] = useState(true);
 
   // Assets
   const totalSavings = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
@@ -46,64 +48,72 @@ export default function NetWorthCard({ goals, investments, debts, transactions }
     : { label: "Perlu Perhatian", color: "#FF6B6B" };
 
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h2 className="font-bold text-[#0A0A0A] text-base">Kekayaan Bersih</h2>
-          <p className="text-xs text-[#8FA4C8] mt-0.5">Aset dikurangi utang aktif</p>
-        </div>
-        <div className="text-right">
-          <div className={`text-xs font-bold px-3 py-1.5 rounded-full`} style={{ backgroundColor: scoreLabel.color + "20", color: scoreLabel.color }}>
-            Skor {score} · {scoreLabel.label}
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 sm:p-5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4F7CFF] to-[#9B59B6] flex items-center justify-center flex-shrink-0">
+            {isPositive
+              ? <TrendingUp className="w-4 h-4 text-white" />
+              : <TrendingDown className="w-4 h-4 text-white" />
+            }
+          </div>
+          <div>
+            <p className="text-sm font-bold text-[#1A1A1A]">Kekayaan Bersih</p>
+            <p className="text-xs text-[#8FA4C8]">Aset dikurangi utang aktif</p>
           </div>
         </div>
+        <button
+          onClick={() => setExpanded(e => !e)}
+          className="text-[#8FA4C8] hover:text-[#1A1A1A] transition-colors tap-highlight-fix"
+        >
+          {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        </button>
       </div>
 
-      {/* Net Worth Big Number */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${isPositive ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
-          {isPositive
-            ? <TrendingUp className="w-6 h-6 text-[#00C9A7]" />
-            : <TrendingDown className="w-6 h-6 text-[#FF6B6B]" />
-          }
-        </div>
-        <div>
-          <p className="text-xs text-[#8FA4C8] font-medium">Total Kekayaan Bersih</p>
-          <p className={`text-2xl font-bold ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-            {isPositive ? "" : "-"}{formatCurrency(Math.abs(netWorth))}
-          </p>
-        </div>
-      </div>
+      {expanded && (
+        <div className="px-4 sm:px-5 pb-5 space-y-4">
+          {/* Net Worth Big Number */}
+          <div className="flex items-center gap-3">
+            <div className={`px-3 py-1.5 rounded-full text-xs font-bold`} style={{ backgroundColor: scoreLabel.color + "20", color: scoreLabel.color }}>
+              Skor {score} · {scoreLabel.label}
+            </div>
+            <p className={`text-xl font-bold ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+              {isPositive ? "" : "-"}{formatCurrency(Math.abs(netWorth))}
+            </p>
+          </div>
 
-      {/* Health score bar */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between mb-1.5">
-          <p className="text-xs text-[#8FA4C8]">Skor Kesehatan Finansial</p>
-          <p className="text-xs font-bold" style={{ color: scoreLabel.color }}>{score}/100</p>
-        </div>
-        <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{ width: `${score}%`, backgroundColor: scoreLabel.color }}
-          />
-        </div>
-      </div>
+          {/* Health score bar */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-[#8FA4C8]">Kesehatan Finansial</p>
+              <p className="text-xs font-bold" style={{ color: scoreLabel.color }}>{score}/100</p>
+            </div>
+            <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${score}%`, backgroundColor: scoreLabel.color }}
+              />
+            </div>
+          </div>
 
-      {/* Breakdown */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[#F8FAFC] rounded-xl p-3 text-center">
-          <p className="text-[10px] text-[#8FA4C8] mb-1">Tabungan</p>
-          <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalSavings)}</p>
+          {/* Breakdown */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-[#F2F4F7] rounded-xl p-2.5 text-center">
+              <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Tabungan</p>
+              <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalSavings)}</p>
+            </div>
+            <div className="bg-[#F2F4F7] rounded-xl p-2.5 text-center">
+              <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Investasi</p>
+              <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalInvestments)}</p>
+            </div>
+            <div className="bg-[#FF6B6B]/10 rounded-xl p-2.5 text-center">
+              <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Utang</p>
+              <p className="text-xs font-bold text-[#FF6B6B]">-{formatCurrency(totalDebts)}</p>
+            </div>
+          </div>
         </div>
-        <div className="bg-[#F8FAFC] rounded-xl p-3 text-center">
-          <p className="text-[10px] text-[#8FA4C8] mb-1">Investasi</p>
-          <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalInvestments)}</p>
-        </div>
-        <div className="bg-[#FF6B6B]/5 rounded-xl p-3 text-center">
-          <p className="text-[10px] text-[#8FA4C8] mb-1">Utang Aktif</p>
-          <p className="text-xs font-bold text-[#FF6B6B]">-{formatCurrency(totalDebts)}</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
