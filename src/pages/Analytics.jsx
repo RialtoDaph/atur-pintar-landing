@@ -13,6 +13,8 @@ import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
 import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
 import SmartBudgetSuggestion from "@/components/analytics/SmartBudgetSuggestion";
+import FinancialForecast from "@/components/analytics/FinancialForecast";
+import AnomalyDetector from "@/components/analytics/AnomalyDetector";
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "daily_spending", visible: true },
@@ -278,6 +280,20 @@ export default function Analytics() {
           totalExpenses={periodExpenses}
           savingsRate={savingsRate}
           periodLabel={formatPeriodLabel(filterPeriod)}
+        />
+
+        {/* Anomaly Detector */}
+        <AnomalyDetector
+          transactions={transactions}
+          allCategoriesConfig={allCategoriesConfig}
+        />
+
+        {/* Financial Forecast */}
+        <FinancialForecast
+          trendData={trendData}
+          totalIncome={totalIncome}
+          totalExpenses={periodExpenses}
+          savingsRate={savingsRate}
         />
 
         {/* Smart Budget Suggestion */}

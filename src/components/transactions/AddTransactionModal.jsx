@@ -24,6 +24,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
     goal_id: "",
   });
   const [saving, setSaving] = useState(false);
+  const [aiCatSuggestion, setAiCatSuggestion] = useState(null);
+  const [aiCatLoading, setAiCatLoading] = useState(false);
+  const aiCatTimer = useRef(null);
   const [customCats, setCustomCats] = useState([]);
   const [showManage, setShowManage] = useState(false);
 
@@ -38,6 +41,29 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   const cameraRef = useRef(null);
 
   // Removed - now handled in TransactionCategories component
+
+  // AI category suggestion when user types a note
+  async function suggestCategory(noteValue) {
+    if (!noteValue || noteValue.length < 3) { setAiCatSuggestion(null); return; }
+    setAiCatLoading(true);
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: `Tentukan kategori transaksi keuangan untuk deskripsi berikut: "${noteValue}". Pilih SATU dari: housing, food, transport, health, entertainment, shopping, subscriptions, salary, freelance, savings, other. Kembalikan HANYA key kategorinya saja, tanpa teks lain.`,
+      });
+      const suggested = typeof res === 'string' ? res.trim().toLowerCase() : '';
+      const validKeys = ['housing','food','transport','health','entertainment','shopping','subscriptions','salary','freelance','savings','other'];
+      if (validKeys.includes(suggested)) setAiCatSuggestion(suggested);
+    } catch (e) {}
+    setAiCatLoading(false);
+  }
+
+  function handleNoteChange(val) {
+    setForm(f => ({ ...f, note: val }));
+    clearTimeout(aiCatTimer.current);
+    if (!form.category) {
+      aiCatTimer.current = setTimeout(() => suggestCategory(val), 700);
+    }
+  }
 
   async function handleScanReceipt(e) {
     const file = e.target.files[0];
@@ -278,7 +304,28 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
             form={form} 
             setForm={setForm}
             t={t}
+            onNoteChange={handleNoteChange}
           />
+
+          {/* AI Category Suggestion */}
+          {!form.category && aiCatSuggestion && (
+            <div className="mb-4 flex items-center gap-2 bg-[#4F7CFF]/5 border border-[#4F7CFF]/20 rounded-xl px-3 py-2.5">
+              <span className="text-xs text-[#4F7CFF]">✨ AI saran kategori:</span>
+              <button
+                onClick={() => { setForm(f => ({ ...f, category: aiCatSuggestion })); setAiCatSuggestion(null); }}
+                className="text-xs font-bold text-white bg-[#4F7CFF] px-3 py-1 rounded-lg hover:bg-[#3D6AE8] transition-colors tap-highlight-fix capitalize"
+              >
+                {aiCatSuggestion}
+              </button>
+              <button onClick={() => setAiCatSuggestion(null)} className="ml-auto text-[#8FA4C8] hover:text-[#4A5568] tap-highlight-fix text-xs">✕</button>
+            </div>
+          )}
+          {aiCatLoading && !form.category && (
+            <div className="mb-3 text-xs text-[#8FA4C8] flex items-center gap-1.5">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              AI mendeteksi kategori...
+            </div>
+          )}
 
           {/* Linked Goal (if any savings goals exist) */}
           {goals && goals.length > 0 && (
