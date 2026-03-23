@@ -12,6 +12,7 @@ import { LayoutList } from "lucide-react";
 import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
 import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
+import SmartBudgetSuggestion from "@/components/analytics/SmartBudgetSuggestion";
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "daily_spending", visible: true },
@@ -277,6 +278,15 @@ export default function Analytics() {
           totalExpenses={periodExpenses}
           savingsRate={savingsRate}
           periodLabel={formatPeriodLabel(filterPeriod)}
+        />
+
+        {/* Smart Budget Suggestion */}
+        <SmartBudgetSuggestion
+          transactions={transactions}
+          budgets={budgets}
+          allCategoriesConfig={allCategoriesConfig}
+          currentMonth={`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`}
+          user={user}
         />
 
         {/* Summary Cards - 4 column grid, responsive to 2 or 1 on mobile */}
