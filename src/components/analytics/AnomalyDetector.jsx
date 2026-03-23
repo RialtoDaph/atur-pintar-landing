@@ -5,7 +5,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 export default function AnomalyDetector({ transactions, allCategoriesConfig }) {
   const { formatCurrency } = useAppSettings();
   const [anomalies, setAnomalies] = useState([]);
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     if (!transactions || transactions.length === 0) return;
