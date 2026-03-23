@@ -295,6 +295,14 @@ export default function Analytics() {
           periodLabel={formatPeriodLabel(filterPeriod)}
         />
 
+        {/* Net Worth Card */}
+        <NetWorthCard
+          goals={goals}
+          investments={investments}
+          debts={debts}
+          transactions={transactions}
+        />
+
         {/* Anomaly Detector */}
         <AnomalyDetector
           transactions={transactions}
@@ -339,14 +347,6 @@ export default function Analytics() {
             </ResponsiveContainer>
           </div>
         )}
-
-        {/* Net Worth Card */}
-        <NetWorthCard
-          goals={goals}
-          investments={investments}
-          debts={debts}
-          transactions={transactions}
-        />
 
         {/* Goals Progress */}
         {isCardVisible("goals_progress") && goalsData.length > 0 && (
