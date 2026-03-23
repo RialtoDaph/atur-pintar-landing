@@ -62,7 +62,12 @@ export function useCategoryManager() {
 
     // 3. Highest priority: user's CustomCategory (always wins)
     cats.forEach(cat => {
-      const key = `custom_${cat.id}`;
+      // Check if this custom cat has the same name as an existing category (to avoid duplicates)
+      const normalizedName = cat.name?.toLowerCase().replace(/\s+/g, "_");
+      const matchingKey = Object.keys(allCats).find(
+        k => allCats[k].label?.toLowerCase().replace(/\s+/g, "_") === normalizedName
+      );
+      const key = matchingKey || `custom_${cat.id}`;
       allCats[key] = {
         key,
         label: cat.name,
