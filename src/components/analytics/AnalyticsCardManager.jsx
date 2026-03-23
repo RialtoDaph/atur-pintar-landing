@@ -4,10 +4,6 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const ALL_CARDS = [
   { id: "daily_spending", label: "Pengeluaran Harian", emoji: "📊" },
-  { id: "restaurant_bar", label: "Restaurant & Bar", emoji: "🍽️" },
-  { id: "income_expense_chart", label: "Grafik Pemasukan vs Pengeluaran", emoji: "📈" },
-  { id: "spending_trend", label: "Tren Pengeluaran", emoji: "📉" },
-  { id: "category_breakdown", label: "Kategori Pengeluaran", emoji: "🥧" },
   { id: "budget_chart", label: "Anggaran vs Pengeluaran", emoji: "💰" },
   { id: "goals_progress", label: "Progress Tujuan", emoji: "🎯" },
   { id: "investments", label: "Investasi", emoji: "📦" },
