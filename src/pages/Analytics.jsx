@@ -13,6 +13,7 @@ import {
 import { LayoutList } from "lucide-react";
 import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
+import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "daily_spending", visible: true },
@@ -289,6 +290,16 @@ export default function Analytics() {
         <div className="relative">
           <DateRangeFilter onFilterChange={handleFilterChange} defaultPeriod="6" />
         </div>
+
+        {/* AI Financial Narrative */}
+        <AIFinancialNarrative
+          trendData={trendData}
+          pieData={pieData}
+          totalIncome={totalIncome}
+          totalExpenses={periodExpenses}
+          savingsRate={savingsRate}
+          periodLabel={formatPeriodLabel(filterPeriod)}
+        />
 
         {/* Summary Cards - 4 column grid, responsive to 2 or 1 on mobile */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
