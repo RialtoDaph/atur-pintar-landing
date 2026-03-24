@@ -160,7 +160,7 @@ function LayoutInner({ children, currentPageName }) {
       <div className="hidden sm:flex fixed left-0 top-0 h-full w-60 bg-[#0A0A0A] flex-col px-5 py-8 z-40">
         {/* Logo */}
         <div className="mb-8 px-2 flex items-center gap-2">
-          <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-6 h-6" />
+          <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-10 h10" />
           <div>
             <p className="text-xl font-bold text-white tracking-tight">Atur Pintar</p>
             <p className="text-xs text-[#8FA4C8] mt-0.5">Financial Tracker</p>
