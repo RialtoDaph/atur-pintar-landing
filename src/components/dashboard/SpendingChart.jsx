@@ -17,9 +17,12 @@ const DEFAULT_CONFIG = {
   other: { label: "Other", color: "#95A5A6", emoji: "📦" },
 };
 
+const INITIAL_VISIBLE = 4;
+
 export default function SpendingChart({ transactions, loading }) {
   const { formatCurrency } = useAppSettings();
   const [customCats, setCustomCats] = useState([]);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -73,7 +76,7 @@ export default function SpendingChart({ transactions, loading }) {
         </ResponsiveContainer>
       </div>
       <div className="mt-3 space-y-2">
-        {data.map((d) => (
+        {(showAll ? data : data.slice(0, INITIAL_VISIBLE)).map((d) => (
           <div key={d.key} className="flex items-center gap-2 min-w-0">
             <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: d.color }} />
             <span className="text-xs text-[#4A5568] flex-1 min-w-0 truncate">{d.emoji} {d.label}</span>
@@ -81,6 +84,14 @@ export default function SpendingChart({ transactions, loading }) {
             <span className="text-[10px] text-[#8FA4C8] flex-shrink-0 w-8 text-right whitespace-nowrap">{total > 0 ? ((d.value / total) * 100).toFixed(0) : 0}%</span>
           </div>
         ))}
+        {data.length > INITIAL_VISIBLE && (
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="w-full text-center text-xs text-[#FF6A00] font-medium pt-1 hover:opacity-75 transition-opacity"
+          >
+            {showAll ? "Sembunyikan ▲" : `Lihat ${data.length - INITIAL_VISIBLE} kategori lainnya ▼`}
+          </button>
+        )}
       </div>
     </div>
   );
