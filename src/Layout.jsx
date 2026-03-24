@@ -244,9 +244,9 @@ function LayoutInner({ children, currentPageName }) {
               <span className="text-sm font-medium">{t('back')}</span>
             </button> :
 
-          <div className="flex items-center gap-2">
-              <img src={import.meta.env.VITE_LOGO_URL || "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/54148c256_85F10F30-6B5D-4EA2-865F-C1C5AC4C4170.PNG"} alt="Logo" className="mx-1 w-6 h-6" />
-              <p className="text-white text-sm font-bold tracking-tight">Atur Pintar</p>
+          <div className="flex items-center gap-1.5">
+              <img src={import.meta.env.VITE_LOGO_URL || "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/54148c256_85F10F30-6B5D-4EA2-865F-C1C5AC4C4170.PNG"} alt="Logo" className="w-6 h-6 flex-shrink-0" />
+              <p className="text-white text-base font-bold tracking-tight">Atur Pintar</p>
             </div>
           }
 
