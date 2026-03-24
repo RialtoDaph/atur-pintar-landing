@@ -23,11 +23,11 @@ function LayoutInner({ children, currentPageName }) {
     Transactions: "Transactions",
     Analytics: "Analytics",
     Investments: "Investments",
-    Menu: "Menu",
+    Menu: "Menu"
   });
 
   useEffect(() => {
-    base44.auth.me().then(u => {
+    base44.auth.me().then((u) => {
       setUser(u);
       if (u?.onboarding_completed && !u?.tour_completed) {
         setTimeout(() => setShowTour(true), 1800);
@@ -39,11 +39,11 @@ function LayoutInner({ children, currentPageName }) {
   useEffect(() => {
     const manualDarkMode = localStorage.getItem("darkMode");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    
+
     // Respect manual override if set, otherwise use system preference
     const shouldBeDark = manualDarkMode !== null ? manualDarkMode === "true" : prefersDark;
-    if (shouldBeDark) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    if (shouldBeDark) document.documentElement.classList.add("dark");else
+    document.documentElement.classList.remove("dark");
   }, []);
 
   // Listen for system color scheme changes
@@ -53,11 +53,11 @@ function LayoutInner({ children, currentPageName }) {
       const manualDarkMode = localStorage.getItem("darkMode");
       // Only apply system change if user hasn't manually overridden
       if (manualDarkMode === null) {
-        if (e.matches) document.documentElement.classList.add("dark");
-        else document.documentElement.classList.remove("dark");
+        if (e.matches) document.documentElement.classList.add("dark");else
+        document.documentElement.classList.remove("dark");
       }
     };
-    
+
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
@@ -110,7 +110,7 @@ function LayoutInner({ children, currentPageName }) {
   useEffect(() => {
     const mobileMainNav = ["Dashboard", "Transactions", "Analytics", "Investments"];
     const mobileMorePages = ["Goals", "Budget", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu"];
-    
+
     if (mobileMainNav.includes(currentPageName)) {
       tabHistory.current[currentPageName] = currentPageName;
     } else if (mobileMorePages.includes(currentPageName)) {
@@ -235,20 +235,20 @@ function LayoutInner({ children, currentPageName }) {
       {/* Mobile top header */}
       <div className="sm:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] border-b border-white/10" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
         <div className="flex items-center justify-between px-5 py-3">
-          {isNestedPage ? (
-            <button
-              onClick={() => window.history.back()}
-              className="flex items-center gap-2 text-white hover:bg-white/10 px-2 py-1 rounded-lg transition-colors tap-highlight-fix"
-            >
+          {isNestedPage ?
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center gap-2 text-white hover:bg-white/10 px-2 py-1 rounded-lg transition-colors tap-highlight-fix">
+            
               <ArrowLeft className="w-5 h-5" />
               <span className="text-sm font-medium">{t('back')}</span>
-            </button>
-          ) : (
-            <div className="flex items-center gap-2">
-              <img src={import.meta.env.VITE_LOGO_URL || "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/54148c256_85F10F30-6B5D-4EA2-865F-C1C5AC4C4170.PNG"} alt="Logo" className="w-6 h-6" />
-              <p className="text-white font-bold text-lg tracking-tight">Atur Pintar</p>
+            </button> :
+
+          <div className="flex items-center gap-2">
+              <img src={import.meta.env.VITE_LOGO_URL || "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/54148c256_85F10F30-6B5D-4EA2-865F-C1C5AC4C4170.PNG"} alt="Logo" className="mx-1 w-6 h-6" />
+              <p className="text-white text-sm font-bold tracking-tight">Atur Pintar</p>
             </div>
-          )}
+          }
 
           <div className="flex items-center gap-2">
             <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
@@ -269,8 +269,8 @@ function LayoutInner({ children, currentPageName }) {
             initial={{ opacity: 0, x: isNestedPage ? 50 : -50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: isNestedPage ? -50 : 50 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
+            transition={{ duration: 0.3, ease: "easeInOut" }}>
+            
             {children}
           </motion.div>
         </AnimatePresence>
@@ -279,18 +279,18 @@ function LayoutInner({ children, currentPageName }) {
       {/* Mobile bottom nav */}
       <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-40 border-t border-white/10" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {mobileMainNav.map((item) => {
-           const active = currentPageName === item.page;
-           return (
-             <button
-               key={`tab-${item.page}`}
-               onClick={() => handleTabClick(item.page)}
+          const active = currentPageName === item.page;
+          return (
+            <button
+              key={`tab-${item.page}`}
+              onClick={() => handleTabClick(item.page)}
               className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
-              active ? "text-[#FF6A00]" : "text-[#888]"}`}
-            >
+              active ? "text-[#FF6A00]" : "text-[#888]"}`}>
+              
               <item.icon className="w-5 h-5" />
               {item.label}
-            </button>
-          );
+            </button>);
+
         })}
         {/* More button → goes to Menu page */}
         <button
@@ -298,8 +298,8 @@ function LayoutInner({ children, currentPageName }) {
           data-tour="mobile-more-tab"
           onClick={() => handleTabClick("Menu")}
           className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
-          mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"}`}
-        >
+          mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"}`}>
+          
           <Grid3x3 className="w-5 h-5" />
           {t('nav_more')}
         </button>
@@ -315,12 +315,12 @@ function LayoutInner({ children, currentPageName }) {
       {showSearch && <GlobalSearch onClose={() => setShowSearch(false)} />}
 
       {/* Tour Guide - lives in Layout so it persists across page navigations */}
-      {showTour && (
-        <TourGuide onComplete={async () => {
-          setShowTour(false);
-          await base44.auth.updateMe({ tour_completed: true });
-        }} />
-      )}
+      {showTour &&
+      <TourGuide onComplete={async () => {
+        setShowTour(false);
+        await base44.auth.updateMe({ tour_completed: true });
+      }} />
+      }
     </div>);
 
 }
