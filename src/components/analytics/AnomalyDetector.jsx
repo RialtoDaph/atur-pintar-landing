@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AlertTriangle, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
-export default function AnomalyDetector({ transactions, allCategoriesConfig }) {
+export default function AnomalyDetector({ transactions, allCategoriesConfig = {} }) {
   const { formatCurrency } = useAppSettings();
   const [anomalies, setAnomalies] = useState([]);
   const [expanded, setExpanded] = useState(false);
