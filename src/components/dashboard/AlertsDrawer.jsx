@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import DashboardInsights from "@/components/dashboard/DashboardInsights";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
+import AnomalyDetector from "@/components/analytics/AnomalyDetector";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function AlertsDrawer({ onClose, user }) {
@@ -67,6 +68,7 @@ export default function AlertsDrawer({ onClose, user }) {
             ) : (
               <>
                 <SmartAlertsPanel user={user} />
+                <AnomalyDetector transactions={transactions} />
                 <DashboardInsights transactions={transactions} goals={goals} />
               </>
             )}
