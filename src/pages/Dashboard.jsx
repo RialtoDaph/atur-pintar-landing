@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import PullToRefresh from "@/components/utils/PullToRefresh";
+import NanaDashboardChat from "@/components/nana/NanaDashboardChat";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -178,6 +179,8 @@ export default function Dashboard() {
           </Suspense>
         )}
 
+        {/* Nana AI Chat */}
+        <NanaDashboardChat />
 
         <div className="h-2" />
 
