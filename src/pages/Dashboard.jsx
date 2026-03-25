@@ -2,17 +2,13 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import PullToRefresh from "@/components/utils/PullToRefresh";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import { Plus, ChevronRight } from "lucide-react";
-import AddGoalModal from "@/components/goals/AddGoalModal";
+import { Plus } from "lucide-react";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
 import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
 import BalanceCard from "@/components/dashboard/BalanceCard";
-import GoalsMiniList from "@/components/dashboard/GoalsMiniList";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
 import RecurringManager from "@/components/transactions/RecurringManager";
 import ReminderWidget from "@/components/reminders/ReminderWidget";
@@ -21,7 +17,7 @@ import ReminderWidget from "@/components/reminders/ReminderWidget";
 const SpendingChart = lazy(() => import("@/components/dashboard/SpendingChart"));
 const CashflowForecast = lazy(() => import("@/components/dashboard/CashflowForecast"));
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
-const PortfolioSummary = lazy(() => import("@/components/dashboard/PortfolioSummary"));
+
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
 
 const LazyFallback = () => (
@@ -38,9 +34,8 @@ function getWidgets() {
 export default function Dashboard() {
   const { t } = useAppSettings();
   const queryClient = useQueryClient();
-  const [showAddGoal, setShowAddGoal] = useState(false);
-  const [widgets, setWidgets] = useState(getWidgets());
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [widgets, setWidgets] = useState(getWidgets());
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
@@ -183,47 +178,10 @@ export default function Dashboard() {
           </Suspense>
         )}
 
-        {/* Portfolio Summary */}
-        <Suspense fallback={<LazyFallback />}>
-          <PortfolioSummary user={user} />
-        </Suspense>
 
-        {/* Savings Goals */}
-        {widgets.savingsGoals && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 pt-4 pb-2">
-              <h2 className="font-bold text-[#0A0A0A] text-sm">{t('savings_goals')}</h2>
-              <button
-                onClick={() => setShowAddGoal(true)}
-                className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5"
-              >
-                {t('add_goal')}
-              </button>
-            </div>
-            <GoalsMiniList goals={goals} loading={loading} />
-            {goals.length > 0 && (
-              <div className="px-4 pb-3">
-                <Link to={createPageUrl("Goals")} className="text-xs text-[#8FA4C8] flex items-center gap-0.5 hover:text-[#1B2559]">
-                  {t('view_all')} <ChevronRight className="w-3 h-3" />
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
         <div className="h-2" />
 
       </div>
-
-      {showAddGoal && (
-        <AddGoalModal
-          onClose={() => setShowAddGoal(false)}
-          onSave={async (data) => {
-            await base44.entities.SavingsGoal.create(data);
-            setShowAddGoal(false);
-            loadData();
-          }}
-        />
-      )}
 
       {showAddTransaction && (
         <AddTransactionModal

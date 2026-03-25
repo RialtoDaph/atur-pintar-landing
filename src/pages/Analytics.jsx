@@ -4,7 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import PremiumGate from "@/components/subscription/PremiumGate";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { LayoutList } from "lucide-react";
+import { LayoutList, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Suspense, lazy } from "react";
+const PortfolioSummary = lazy(() => import("@/components/dashboard/PortfolioSummary"));
+const GoalsMiniList = lazy(() => import("@/components/dashboard/GoalsMiniList"));
 import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
 import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
@@ -337,7 +342,23 @@ export default function Analytics() {
           );
         })()}
 
+        {/* Portfolio Summary */}
+        <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+          <PortfolioSummary user={user} />
+        </Suspense>
 
+        {/* Savings Goals */}
+        <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+              <h2 className="font-bold text-[#0A0A0A] text-sm">{t('savings_goals')}</h2>
+              <Link to={createPageUrl("Goals")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
+                {t('view_all')} <ChevronRight className="w-3 h-3" />
+              </Link>
+            </div>
+            <GoalsMiniList goals={goals} loading={loading} />
+          </div>
+        </Suspense>
 
       </div>
 
