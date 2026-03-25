@@ -94,14 +94,7 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
               >
                 📈 Tren
               </button>
-              <button
-                onClick={() => setActiveChart("pie")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  activeChart === "pie" ? "bg-white text-[#1A1A1A] shadow-sm" : "text-[#8FA4C8]"
-                }`}
-              >
-                🥧 Kategori
-              </button>
+
               <button
                 onClick={() => setActiveChart("goals")}
                 className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
