@@ -112,9 +112,9 @@ export default function NanaDashboardChat() {
   ];
 
   return (
-    <div className="bg-[#0A0A0A] rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E2E8F0]">
         <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-[#FF6A00]/50">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
@@ -124,28 +124,29 @@ export default function NanaDashboardChat() {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
-            <p className="text-white font-bold text-sm">Nana AI</p>
+            <p className="text-[#0A0A0A] font-bold text-sm">Nana AI</p>
             <Sparkles className="w-3 h-3 text-[#FF6A00]" />
           </div>
           <p className="text-[#8FA4C8] text-[10px]">Asisten Keuangan Pribadi</p>
+
         </div>
         <button
           onClick={newConversation}
-          className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors tap-highlight-fix"
+          className="w-7 h-7 rounded-full bg-[#F2F4F7] flex items-center justify-center hover:bg-[#E2E8F0] transition-colors tap-highlight-fix"
           title="Obrolan baru"
         >
-          <Plus className="w-3.5 h-3.5 text-white" />
+          <Plus className="w-3.5 h-3.5 text-[#0A0A0A]" />
         </button>
         <Link
           to={createPageUrl("Nana")}
-          className="text-[10px] text-[#8FA4C8] hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
+          className="text-[10px] text-[#8FA4C8] hover:text-[#0A0A0A] transition-colors px-2 py-1 rounded-lg hover:bg-[#F2F4F7]"
         >
           Buka full →
         </Link>
       </div>
 
       {/* Messages */}
-      <div className="h-64 overflow-y-auto px-3 py-3 space-y-3 bg-[#0A0A0A]">
+      <div className="h-64 overflow-y-auto px-3 py-3 space-y-3 bg-white">
         {loading ? (
           <div className="flex justify-center pt-10">
             <div className="w-5 h-5 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
@@ -195,7 +196,7 @@ export default function NanaDashboardChat() {
             <p className="text-[10px] text-[#8FA4C8] font-medium">💬 Mulai dari sini</p>
             {quickPrompts.map((s) => (
               <button key={s} onClick={() => setInput(s)}
-                className="w-full text-left text-xs bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white hover:border-[#FF6A00]/50 hover:bg-[#FF6A00]/10 transition-colors">
+                className="w-full text-left text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#1A1A1A] hover:border-[#FF6A00]/50 hover:bg-[#FF6A00]/5 transition-colors">
                 {s}
               </button>
             ))}
@@ -211,7 +212,7 @@ export default function NanaDashboardChat() {
               <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs ${
                 msg.role === "user"
                   ? "bg-[#FF6A00] text-white"
-                  : "bg-white/8 border border-white/10 text-white"
+                  : "bg-[#F2F4F7] border border-[#E2E8F0] text-[#1A1A1A]"
               }`}>
                 {msg.role === "assistant" ? (() => {
                   let displayContent = msg.content;
@@ -225,7 +226,7 @@ export default function NanaDashboardChat() {
                   }
                   return (
                     <>
-                      <ReactMarkdown className="prose prose-xs max-w-none text-white [&>p]:mb-1 [&>p:last-child]:mb-0 [&>ul]:my-1 [&>li]:mb-0.5 [&>strong]:font-semibold">
+                      <ReactMarkdown className="prose prose-xs max-w-none text-[#1A1A1A] [&>p]:mb-1 [&>p:last-child]:mb-0 [&>ul]:my-1 [&>li]:mb-0.5 [&>strong]:font-semibold">
                         {displayContent}
                       </ReactMarkdown>
                       {interactivePrompt && (
@@ -243,7 +244,7 @@ export default function NanaDashboardChat() {
             <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0">
               <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png" alt="Nana" className="w-full h-full object-contain" />
             </div>
-            <div className="bg-white/8 border border-white/10 rounded-2xl px-3 py-2 flex gap-1 items-center">
+            <div className="bg-[#F2F4F7] border border-[#E2E8F0] rounded-2xl px-3 py-2 flex gap-1 items-center">
               {[0, 1, 2].map((i) => (
                 <div key={i} className="w-1.5 h-1.5 bg-[#8FA4C8] rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
               ))}
@@ -254,10 +255,10 @@ export default function NanaDashboardChat() {
       </div>
 
       {/* Input */}
-      <div className="px-3 py-2.5 border-t border-white/10">
-        <div className="flex gap-2 bg-white/5 rounded-xl border border-white/10 px-3 py-1.5">
+      <div className="px-3 py-2.5 border-t border-[#E2E8F0]">
+        <div className="flex gap-2 bg-[#F2F4F7] rounded-xl border border-[#E2E8F0] px-3 py-1.5">
           <textarea
-            className="flex-1 text-xs text-white resize-none outline-none bg-transparent placeholder:text-[#8FA4C8] max-h-16"
+            className="flex-1 text-xs text-[#1A1A1A] resize-none outline-none bg-transparent placeholder:text-[#8FA4C8] max-h-16"
             rows={1}
             placeholder="Tanya atau catat transaksi..."
             value={input}
