@@ -18,9 +18,6 @@ const DEFAULT_ANALYTICS_CARDS = [
   { id: "anomaly_detector", visible: true },
   { id: "financial_calendar", visible: true },
   { id: "daily_spending", visible: true },
-  { id: "budget_chart", visible: true },
-  { id: "goals_progress", visible: true },
-  { id: "investments", visible: true },
 ];
 
 const DEFAULT_CATEGORIES_FLAT = [
@@ -340,85 +337,7 @@ export default function Analytics() {
           );
         })()}
 
-        {/* Budget Section */}
-        {isCardVisible("budget_chart") && budgetData.length > 0 && (
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
-            <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_budget_vs_spent')}</h2>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={budgetData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} />
-                <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} tickFormatter={formatYAxisTick} />
-                <Tooltip formatter={(value) => [formatCurrency(value), undefined]} contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }} />
-                <Bar dataKey="budget" fill="#4F7CFF" radius={[6, 6, 0, 0]} name={t('budget_total')} />
-                <Bar dataKey="spent" fill="#FF6B6B" radius={[6, 6, 0, 0]} name={t('budget_spent')} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
 
-        {/* Goals Progress */}
-        {isCardVisible("goals_progress") && goalsData.length > 0 && (
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
-            <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_goals_progress')}</h2>
-            <div className="space-y-4">
-              {goalsData.map((goal, i) => (
-                <div key={i} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs sm:text-sm">
-                    <span className="font-medium text-[#0A0A0A]">{goal.name}</span>
-                    <span className="font-semibold text-[#8FA4C8]">{goal.progress.toFixed(0)}%</span>
-                  </div>
-                  <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(goal.progress, 100)}%`, backgroundColor: goal.color }}/>
-                  </div>
-                  <div className="flex justify-between text-xs text-[#8FA4C8]">
-                    <span>{formatCurrency(goal.current)}</span>
-                    <span>{formatCurrency(goal.target)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Investments */}
-        {isCardVisible("investments") && investments.length > 0 && (
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
-            <h2 className="font-bold text-[#0A0A0A] text-base mb-4">{t('analytics_investment_summary')}</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-              <div className="bg-[#F2F4F7] rounded-xl p-3">
-                <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium mb-1">{t('analytics_initial_value')}</p>
-                <p className="text-sm sm:text-base font-bold text-[#0A0A0A]">{formatCurrency(totalInvested)}</p>
-              </div>
-              <div className="bg-[#F2F4F7] rounded-xl p-3">
-                <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium mb-1">{t('analytics_current_value')}</p>
-                <p className="text-sm sm:text-base font-bold text-[#0A0A0A]">{formatCurrency(totalCurrentValue)}</p>
-              </div>
-              <div className={`rounded-xl p-3 ${investmentReturn >= 0 ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
-                <p className="text-[9px] sm:text-[10px] text-[#8FA4C8] font-medium mb-1">{t('analytics_return')}</p>
-                <p className={`text-sm sm:text-base font-bold ${investmentReturn >= 0 ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                  {investmentReturn >= 0 ? "+" : ""}{formatCurrency(investmentReturn)}
-                </p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              {investments.map((inv, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-[#F2F4F7] rounded-lg text-xs sm:text-sm">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[#0A0A0A] truncate">{inv.name}</p>
-                    <p className="text-[10px] text-[#8FA4C8]">{inv.type}</p>
-                  </div>
-                  <div className="text-right flex-shrink-0 ml-2">
-                    <p className="font-bold text-[#0A0A0A]">{formatCurrency(inv.current_value)}</p>
-                    <p className={`text-[10px] font-medium ${inv.current_value >= inv.initial_amount ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                       {inv.current_value >= inv.initial_amount ? "+" : ""}{formatCurrency(inv.current_value - inv.initial_amount)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
       </div>
 
