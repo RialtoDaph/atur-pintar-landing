@@ -14,6 +14,7 @@ function LayoutInner({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
   const [showAlertsDrawer, setShowAlertsDrawer] = useState(false);
+  const [unreadAlertCount, setUnreadAlertCount] = useState(0);
   const [showTour, setShowTour] = useState(false);
   const { t } = useAppSettings();
   const location = useLocation();
@@ -34,6 +35,10 @@ function LayoutInner({ children, currentPageName }) {
       if (u?.onboarding_completed && !u?.tour_completed) {
         setTimeout(() => setShowTour(true), 1800);
       }
+      // Fetch unread alerts count
+      base44.entities.Alert.filter({ created_by: u.email, status: "unread" }).then((alerts) => {
+        setUnreadAlertCount(alerts?.length || 0);
+      }).catch(() => {});
     }).catch(() => {});
   }, []);
 
@@ -253,8 +258,13 @@ function LayoutInner({ children, currentPageName }) {
           }
 
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowAlertsDrawer(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
+            <button onClick={() => { setShowAlertsDrawer(true); setUnreadAlertCount(0); }} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Bell className="w-4 h-4" />
+              {unreadAlertCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF6A00] text-white text-[9px] font-bold flex items-center justify-center">
+                  {unreadAlertCount > 9 ? "9+" : unreadAlertCount}
+                </span>
+              )}
             </button>
             <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Search className="w-4 h-4" />
