@@ -320,6 +320,9 @@ function LayoutInner({ children, currentPageName }) {
         </button>
       </div>
 
+      {/* Nana Floating Chat */}
+      <NanaFloatingChat />
+
       {/* Reminder Notification Popup */}
       <ReminderNotificationPopup user={user} />
 
