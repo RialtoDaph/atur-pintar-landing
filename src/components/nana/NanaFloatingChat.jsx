@@ -135,18 +135,24 @@ export default function NanaFloatingChat() {
       {/* Floating button */}
       {!open &&
       <div data-tour="nana-chat" className="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 cursor-pointer" onClick={openChat}>
-        <div className="relative w-14 h-14 rounded-[40px] bg-black border-2 border-[#FF6A00] overflow-hidden hover:opacity-90 transition-all active:scale-95 nana-float">
-          <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
-            alt="Nana AI"
-            className="w-full h-full object-contain"
-          />
-        </div>
-        {unreadCount > 0 && (
-          <div className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-[#FF6A00] rounded-full flex items-center justify-center px-1 border-2 border-black">
-            <span className="text-white text-[10px] font-bold leading-none">{unreadCount > 9 ? "9+" : unreadCount}</span>
+        <div className="relative flex items-center gap-2 bg-[#0A0A0A] border border-[#FF6A00] rounded-2xl px-3 py-2 shadow-lg hover:bg-[#1A1A1A] transition-all active:scale-95 nana-float">
+          <div className="w-8 h-8 rounded-xl overflow-hidden flex-shrink-0 border border-[#FF6A00]/40">
+            <img
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
+              alt="Nana AI"
+              className="w-full h-full object-contain"
+            />
           </div>
-        )}
+          <div>
+            <p className="text-white text-xs font-bold leading-tight">Nana AI</p>
+            <p className="text-[#8FA4C8] text-[10px] leading-tight">Chat sekarang ✨</p>
+          </div>
+          {unreadCount > 0 && (
+            <div className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] bg-[#FF6A00] rounded-full flex items-center justify-center px-1 border-2 border-[#0A0A0A]">
+              <span className="text-white text-[9px] font-bold leading-none">{unreadCount > 9 ? "9+" : unreadCount}</span>
+            </div>
+          )}
+        </div>
       </div>
       }
 
