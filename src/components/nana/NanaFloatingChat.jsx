@@ -122,15 +122,11 @@ export default function NanaFloatingChat() {
   return (
     <>
       <style>{`
-        @keyframes float-bounce {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-8px) rotate(2deg); }
-        }
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 4px 20px rgba(255,106,0,0.3); }
-          50% { box-shadow: 0 4px 30px rgba(255,106,0,0.6); }
+          0%, 100% { box-shadow: 0 4px 16px rgba(255,106,0,0.2); }
+          50% { box-shadow: 0 4px 22px rgba(255,106,0,0.4); }
         }
-        .nana-float { animation: float-bounce 3s ease-in-out infinite, pulse-glow 2s ease-in-out infinite; }
+        .nana-float { animation: pulse-glow 3s ease-in-out infinite; }
       `}</style>
       {/* Floating button */}
       {!open &&
