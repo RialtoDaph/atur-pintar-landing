@@ -13,7 +13,7 @@ const GoalsMiniList = lazy(() => import("@/components/dashboard/GoalsMiniList"))
 import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
 import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
-import AnomalyDetector from "@/components/analytics/AnomalyDetector";
+
 import FinancialCalendar from "@/components/analytics/FinancialCalendar";
 import DateRangeFilter from "@/components/analytics/DateRangeFilter";
 import DailySpendingCard from "@/components/analytics/DailySpendingCard";
@@ -21,12 +21,10 @@ import SpendingChart from "@/components/dashboard/SpendingChart";
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "net_worth", visible: true },
-  { id: "anomaly_detector", visible: true },
   { id: "financial_calendar", visible: true },
   { id: "daily_spending", visible: true },
   { id: "spending_chart", visible: true },
   { id: "portfolio_summary", visible: true },
-  { id: "savings_goals", visible: true },
 ];
 
 const DEFAULT_CATEGORIES_FLAT = [
@@ -315,13 +313,7 @@ export default function Analytics() {
           />
         )}
 
-        {/* Anomaly Detector */}
-        {isCardVisible("anomaly_detector") && (
-          <AnomalyDetector
-            transactions={transactions}
-            allCategoriesConfig={allCategoriesConfig}
-          />
-        )}
+
 
         {/* Calendar Section */}
         {isCardVisible("financial_calendar") && (
@@ -352,20 +344,7 @@ export default function Analytics() {
           })} loading={loading} />
         )}
 
-        {/* Savings Goals */}
-        {isCardVisible("savings_goals") && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 pt-4 pb-2">
-              <h2 className="font-bold text-[#0A0A0A] text-sm">{t('savings_goals')}</h2>
-              <Link to={createPageUrl("Goals")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
-                {t('view_all')} <ChevronRight className="w-3 h-3" />
-              </Link>
-            </div>
-            <Suspense fallback={<div className="h-10 animate-pulse" />}>
-              <GoalsMiniList goals={goals} loading={loading} />
-            </Suspense>
-          </div>
-        )}
+
 
       </div>
 
