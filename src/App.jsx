@@ -7,6 +7,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Subscription from '@/pages/Subscription';
+import LandingPage from '@/pages/LandingPage';
 import AdminSubscriptions from '@/pages/AdminSubscriptions';
 import Dashboard from '@/pages/Dashboard';
 import ProfileSettings from '@/pages/ProfileSettings';
@@ -43,8 +44,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/Dashboard" replace />} />
-      <Route path="/LandingPage" element={<Navigate to="/Dashboard" replace />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/Dashboard" element={
         <LayoutWrapper currentPageName="Dashboard">
           <Dashboard />
