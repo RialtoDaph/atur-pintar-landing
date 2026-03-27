@@ -54,6 +54,8 @@ const PLANS = [
 
 export default function LandingPage() {
   const howRef = useRef(null);
+  const featuresRef = useRef(null);
+  const pricingRef = useRef(null);
 
   const handleCTA = () => {
     base44.auth.redirectToLogin();
@@ -82,6 +84,8 @@ export default function LandingPage() {
         </div>
         <div className="hidden sm:flex items-center gap-4">
           <button onClick={scrollToHow} className="text-xs text-white/50 hover:text-white transition-colors">Cara Kerja</button>
+          <button onClick={() => featuresRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Fitur</button>
+          <button onClick={() => pricingRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Harga</button>
         </div>
         <button
           onClick={handleCTA}
@@ -210,7 +214,7 @@ export default function LandingPage() {
       </section>
 
       {/* 5. FEATURES */}
-      <section className="px-5 sm:px-8 pb-20 max-w-3xl mx-auto">
+      <section ref={featuresRef} className="px-5 sm:px-8 pb-20 max-w-3xl mx-auto">
         <div className="text-center mb-10">
           <p className="text-white/30 text-xs font-bold uppercase tracking-widest mb-2">Fitur utama</p>
           <h2 className="text-2xl sm:text-3xl font-black text-white">Yang kamu dapetin</h2>
@@ -242,7 +246,7 @@ export default function LandingPage() {
       </section>
 
       {/* 7. PRICING */}
-      <section className="px-5 sm:px-8 pb-20 max-w-4xl mx-auto">
+      <section ref={pricingRef} className="px-5 sm:px-8 pb-20 max-w-4xl mx-auto">
         <div className="text-center mb-10">
           <p className="text-white/30 text-xs font-bold uppercase tracking-widest mb-2">Harga</p>
           <h2 className="text-2xl sm:text-3xl font-black text-white">Harga sederhana, gak ribet</h2>
