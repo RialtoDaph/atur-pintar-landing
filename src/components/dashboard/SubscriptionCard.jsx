@@ -143,8 +143,22 @@ export default function SubscriptionCard({ user }) {
   }
 
   async function handleCancel(id) {
-    await base44.entities.Subscription.update(id, { status: "cancelled" });
-    setSubs((prev) => prev.map((s) => (s.id === id ? { ...s, status: "cancelled" } : s)));
+    const sub = subs.find((s) => s.id === id);
+    if (!confirm(`Catat pembayaran "${sub?.name || 'langganan'}" ke riwayat dan batalkan?`)) return;
+    // Log to transaction history
+    if (sub) {
+      await base44.entities.Transaction.create({
+        amount: sub.amount,
+        type: 'expense',
+        category: 'subscriptions',
+        note: sub.name + ' (dicatat manual)',
+        date: new Date().toISOString().split('T')[0],
+        is_recurring: false,
+        is_recurring_child: false,
+      });
+    }
+    await base44.entities.Subscription.update(id, { status: 'cancelled' });
+    setSubs((prev) => prev.map((s) => (s.id === id ? { ...s, status: 'cancelled' } : s)));
   }
 
   async function handleDelete(id) {
@@ -261,10 +275,10 @@ export default function SubscriptionCard({ user }) {
                         {sub.status === "active" && (
                           <button
                             onClick={() => handleCancel(sub.id)}
-                            title="Batalkan"
-                            className="p-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] active:bg-[#FEE2E2] transition-colors tap-highlight-fix"
+                            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] active:bg-[#FEE2E2] transition-colors tap-highlight-fix text-[10px] font-semibold"
                           >
                             <XCircle className="w-3.5 h-3.5" />
+                            <span>Catat &amp; Batalkan</span>
                           </button>
                         )}
                         <button

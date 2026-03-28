@@ -39,7 +39,20 @@ export default function ContractPaymentsCard({ user }) {
   }
 
   async function handleDelete(id) {
-    if (!confirm("Hapus transaksi rutin ini?")) return;
+    const tx = templates.find((t) => t.id === id);
+    if (!confirm(`Catat pembayaran "${tx?.note || 'transaksi rutin'}" ke riwayat dan hapus dari daftar rutin?`)) return;
+    // Create a one-time transaction record in history
+    if (tx) {
+      await base44.entities.Transaction.create({
+        amount: tx.amount,
+        type: tx.type,
+        category: tx.category,
+        note: (tx.note || 'Transaksi rutin') + ' (dicatat manual)',
+        date: new Date().toISOString().split('T')[0],
+        is_recurring_child: false,
+        is_recurring: false,
+      });
+    }
     await base44.entities.Transaction.delete(id);
     setTemplates((prev) => prev.filter((t) => t.id !== id));
   }
@@ -226,9 +239,10 @@ function ItemSection({ label, emoji, items, isIncome, onEdit, onDelete, formatCu
                 </button>
                 <button
                   onClick={() => onDelete(tx.id)}
-                  className="p-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] active:bg-[#FEE2E2] transition-colors tap-highlight-fix"
+                  className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] active:bg-[#FEE2E2] transition-colors tap-highlight-fix text-[10px] font-semibold"
                 >
                   <Trash2 className="w-3 h-3" />
+                  <span>Catat &amp; Hapus</span>
                 </button>
               </div>
             </div>
