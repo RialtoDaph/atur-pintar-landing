@@ -42,31 +42,14 @@ function LayoutInner({ children, currentPageName }) {
     }).catch(() => {});
   }, []);
 
-  // Initialize dark mode with system preference detection and manual override support
+  // Dark mode: default light, only enable if user manually set it
   useEffect(() => {
     const manualDarkMode = localStorage.getItem("darkMode");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-    // Respect manual override if set, otherwise use system preference
-    const shouldBeDark = manualDarkMode !== null ? manualDarkMode === "true" : prefersDark;
-    if (shouldBeDark) document.documentElement.classList.add("dark");else
-    document.documentElement.classList.remove("dark");
-  }, []);
-
-  // Listen for system color scheme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = (e) => {
-      const manualDarkMode = localStorage.getItem("darkMode");
-      // Only apply system change if user hasn't manually overridden
-      if (manualDarkMode === null) {
-        if (e.matches) document.documentElement.classList.add("dark");else
-        document.documentElement.classList.remove("dark");
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    if (manualDarkMode === "true") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
 
   const navItems = [
