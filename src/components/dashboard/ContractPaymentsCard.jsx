@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, ChevronDown, RefreshCw } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronDown, RefreshCw, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import EditContractModal from "./EditContractModal";
@@ -67,6 +68,20 @@ export default function ContractPaymentsCard({ user }) {
     await base44.entities.Transaction.create({ ...data, is_recurring: true, is_recurring_child: false });
     setShowAdd(null);
     loadTemplates();
+  }
+
+  async function handleMarkDone(tx) {
+    await base44.entities.Transaction.create({
+      amount: tx.amount,
+      type: tx.type,
+      category: tx.category,
+      note: (tx.note || 'Transaksi rutin') + ' (selesai)',
+      date: new Date().toISOString().split('T')[0],
+      is_recurring: false,
+      is_recurring_child: true,
+      recurring_parent_id: tx.id,
+    });
+    toast.success(`✅ "${tx.note || 'Transaksi rutin'}" berhasil dicatat ke riwayat!`);
   }
 
   const incomes = templates.filter((t) => t.type === "income");
@@ -145,6 +160,7 @@ export default function ContractPaymentsCard({ user }) {
                   isIncome
                   onEdit={setEditingId}
                   onDelete={handleDelete}
+                  onMarkDone={handleMarkDone}
                   formatCurrency={formatCurrency}
                   onAdd={() => setShowAdd("income")}
                 />
@@ -155,6 +171,7 @@ export default function ContractPaymentsCard({ user }) {
                   isIncome={false}
                   onEdit={setEditingId}
                   onDelete={handleDelete}
+                  onMarkDone={handleMarkDone}
                   formatCurrency={formatCurrency}
                   onAdd={() => setShowAdd("expense")}
                 />
@@ -187,7 +204,7 @@ export default function ContractPaymentsCard({ user }) {
   );
 }
 
-function ItemSection({ label, emoji, items, isIncome, onEdit, onDelete, formatCurrency, onAdd }) {
+function ItemSection({ label, emoji, items, isIncome, onEdit, onDelete, onMarkDone, formatCurrency, onAdd }) {
   return (
     <div className="border-t border-[#F2F4F7]">
       {/* Section header */}
@@ -231,6 +248,14 @@ function ItemSection({ label, emoji, items, isIncome, onEdit, onDelete, formatCu
                 {isIncome ? "+" : "−"}{formatCurrency(tx.amount)}
               </span>
               <div className="flex items-center gap-0.5 flex-shrink-0">
+                <button
+                  onClick={() => onMarkDone(tx)}
+                  title="Tandai Selesai"
+                  className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix text-[10px] font-semibold"
+                >
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>Selesai</span>
+                </button>
                 <button
                   onClick={() => onEdit(tx.id)}
                   className="p-1.5 rounded-lg text-[#CBD5E0] hover:text-[#4F7CFF] hover:bg-[#F2F4F7] active:bg-[#E8EDFF] transition-colors tap-highlight-fix"

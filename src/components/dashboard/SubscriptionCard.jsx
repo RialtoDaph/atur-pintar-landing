@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Plus, Trash2, ChevronDown, Bell, XCircle, CreditCard } from "lucide-react";
+import { Plus, Trash2, ChevronDown, Bell, XCircle, CreditCard, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const CYCLE_LABEL = { monthly: "/ bln", quarterly: "/ 3 bln", yearly: "/ thn" };
@@ -142,26 +143,30 @@ export default function SubscriptionCard({ user }) {
     setShowAdd(false);
   }
 
-  async function handleCancel(id) {
-    const sub = subs.find((s) => s.id === id);
-    if (!confirm(`Catat pembayaran "${sub?.name || 'langganan'}" ke riwayat dan batalkan?`)) return;
-    // Log to transaction history
-    if (sub) {
-      await base44.entities.Transaction.create({
-        amount: sub.amount,
-        type: 'expense',
-        category: 'subscriptions',
-        note: sub.name + ' (dicatat manual)',
-        date: new Date().toISOString().split('T')[0],
-        is_recurring: false,
-        is_recurring_child: false,
-      });
-    }
-    await base44.entities.Subscription.update(id, { status: 'cancelled' });
-    setSubs((prev) => prev.map((s) => (s.id === id ? { ...s, status: 'cancelled' } : s)));
+  async function handleMarkDone(sub) {
+    await base44.entities.Transaction.create({
+      amount: sub.amount,
+      type: 'expense',
+      category: 'subscriptions',
+      note: sub.name + ' (selesai)',
+      date: new Date().toISOString().split('T')[0],
+      is_recurring: false,
+      is_recurring_child: false,
+    });
+    // Update next_due_date based on billing cycle
+    const next = new Date(sub.next_due_date);
+    if (sub.billing_cycle === 'monthly') next.setMonth(next.getMonth() + 1);
+    else if (sub.billing_cycle === 'quarterly') next.setMonth(next.getMonth() + 3);
+    else if (sub.billing_cycle === 'yearly') next.setFullYear(next.getFullYear() + 1);
+    await base44.entities.Subscription.update(sub.id, {
+      next_due_date: next.toISOString().split('T')[0],
+    });
+    setSubs((prev) => prev.map((s) => s.id === sub.id ? { ...s, next_due_date: next.toISOString().split('T')[0] } : s));
+    toast.success(`✅ "${sub.name}" dicatat & jatuh tempo diperbarui!`);
   }
 
-  async function handleDelete(id) {
+  async function handleCancel(id) {
+
     if (!confirm("Hapus langganan ini?")) return;
     await base44.entities.Subscription.delete(id);
     setSubs((prev) => prev.filter((s) => s.id !== id));
@@ -273,13 +278,22 @@ export default function SubscriptionCard({ user }) {
                       </div>
                       <div className="flex items-center gap-0.5 flex-shrink-0">
                         {sub.status === "active" && (
-                          <button
-                            onClick={() => handleCancel(sub.id)}
-                            className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] active:bg-[#FEE2E2] transition-colors tap-highlight-fix text-[10px] font-semibold"
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                            <span>Catat &amp; Batalkan</span>
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleMarkDone(sub)}
+                              className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix text-[10px] font-semibold"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Selesai</span>
+                            </button>
+                            <button
+                              onClick={() => handleCancel(sub.id)}
+                              className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] active:bg-[#FEE2E2] transition-colors tap-highlight-fix text-[10px] font-semibold"
+                            >
+                              <XCircle className="w-3.5 h-3.5" />
+                              <span>Batalkan</span>
+                            </button>
+                          </>
                         )}
                         <button
                           onClick={() => handleDelete(sub.id)}
