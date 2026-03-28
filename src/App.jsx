@@ -58,7 +58,7 @@ const AuthenticatedApp = () => {
           <Dashboard />
         </LayoutWrapper>
       } />
-      {Object.entries(Pages).map(([path, Page]) => (
+      {Object.entries(Pages).filter(([path]) => path !== 'Dashboard' && path !== 'LandingPage').map(([path, Page]) => (
         <Route
           key={path}
           path={`/${path}`}

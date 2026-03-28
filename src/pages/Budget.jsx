@@ -67,25 +67,25 @@ export default function BudgetPage() {
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
     })();
 
-    const [b, txAll, cats, g] = await Promise.all([
-      base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }),
-      base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
-      base44.entities.CustomCategory.list("-created_date"),
-      base44.entities.SavingsGoal.filter({ created_by: user.email, status: "active" }),
-    ]);
+    try {
+      const [b, txAll, cats, g] = await Promise.all([
+        base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }),
+        base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
+        base44.entities.CustomCategory.list("-created_date"),
+        base44.entities.SavingsGoal.filter({ created_by: user.email, status: "active" }),
+      ]);
 
-    // Filter transactions to selected month client-side
-    const monthTx = txAll.filter(tx => tx.date >= monthStart && tx.date <= monthEnd && tx.type === "expense");
+      const monthTx = txAll.filter(tx => tx.date >= monthStart && tx.date <= monthEnd && tx.type === "expense");
+      const prev3Tx = txAll.filter(tx => tx.date >= threeMonthsAgo && tx.date < monthStart);
 
-    // Transactions from 3 months before currentMonth (for trend analysis)
-    const prev3Tx = txAll.filter(tx => tx.date >= threeMonthsAgo && tx.date < monthStart);
-
-    setBudgets(b);
-    setTransactions(monthTx);
-    setTransactions3M(prev3Tx);
-    setCustomCategories(cats);
-    setGoals(g);
-    setLoading(false);
+      setBudgets(b);
+      setTransactions(monthTx);
+      setTransactions3M(prev3Tx);
+      setCustomCategories(cats);
+      setGoals(g);
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Merge default + custom category metadata

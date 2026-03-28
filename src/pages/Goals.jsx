@@ -249,11 +249,11 @@ export default function Goals() {
           </div>
         )}
 
-        {transactions.filter(tx => txFilter === "all" || tx.type === txFilter).length === 0 ? (
+        {transactions.filter(tx => txFilter === "all" || (txFilter === "deposit" ? tx.type === "savings" : tx.type === "expense")).length === 0 ? (
           <div className="text-center py-12 text-[#9B9B9B] text-sm">{t('goals_no_tx')}</div>
         ) : (
           <div className="space-y-2">
-            {transactions.filter(tx => txFilter === "all" || tx.type === txFilter).map((tx) => (
+            {transactions.filter(tx => txFilter === "all" || (txFilter === "deposit" ? tx.type === "savings" : tx.type === "expense")).map((tx) => (
               <div key={tx.id} className="bg-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm border border-[#EFEFED]">
                 <div className="flex items-center gap-3">
                   <div
