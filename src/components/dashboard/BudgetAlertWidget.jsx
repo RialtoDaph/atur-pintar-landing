@@ -28,7 +28,7 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
     return <div className="bg-white rounded-2xl shadow-sm h-24 animate-pulse" />;
   }
 
-  if (budgets.length === 0) return null;
+
 
   // Calculate spending per category for this month
   const now = new Date();
@@ -62,7 +62,7 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
     })
     .sort((a, b) => b.percent - a.percent);
 
-  if (allBudgets.length === 0) return null;
+
 
   const hasAlert = allBudgets.some(b => b.percent >= 70);
 
