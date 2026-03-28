@@ -9,7 +9,7 @@ import CSVImportModal from "@/components/transactions/CSVImportModal";
 import PullToRefresh from "@/components/utils/PullToRefresh";
 import DashboardInsights from "@/components/dashboard/DashboardInsights";
 import ContractPaymentsCard from "@/components/dashboard/ContractPaymentsCard";
-import SubscriptionDetector from "@/components/dashboard/SubscriptionDetector";
+import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { DEFAULT_CATEGORIES } from "@/components/utils/categoryConfig";
 
 export default function Transactions() {
@@ -267,7 +267,7 @@ export default function Transactions() {
           {user && (
             <>
               <ContractPaymentsCard user={user} />
-              <SubscriptionDetector user={user} />
+              <SubscriptionCard user={user} />
             </>
           )}
 

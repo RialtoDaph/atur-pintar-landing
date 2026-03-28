@@ -1,0 +1,58 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nama layanan langganan (misal: Netflix, Spotify)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji ikon untuk langganan"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Jumlah pembayaran langganan"
+    },
+    "billing_cycle": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "quarterly",
+        "yearly"
+      ],
+      "default": "monthly",
+      "description": "Siklus penagihan"
+    },
+    "next_due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Tanggal jatuh tempo berikutnya"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "cancelled",
+        "paused"
+      ],
+      "default": "active",
+      "description": "Status langganan"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Catatan tambahan"
+    }
+  },
+  "required": [
+    "name",
+    "amount",
+    "billing_cycle",
+    "next_due_date"
+  ],
+  "rls": {
+    "enabled": true,
+    "filter_field": "created_by",
+    "filter_value": "{{user.email}}"
+  }
+}
