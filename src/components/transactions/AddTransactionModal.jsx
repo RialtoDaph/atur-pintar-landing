@@ -187,8 +187,8 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto scroll-smooth">
+      <div className="fixed inset-x-0 bottom-0 top-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" style={{ height: '100dvh' }}>
+        <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 overflow-y-auto scroll-smooth" style={{ maxHeight: '90dvh' }}>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-bold text-[#1A1A1A]">{t('add_transaction')}</h2>
