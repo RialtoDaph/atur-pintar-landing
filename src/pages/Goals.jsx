@@ -51,6 +51,13 @@ export default function Goals() {
     if (user) loadData();
   }, [goalId, user]);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub1 = base44.entities.SavingsGoal.subscribe(() => loadData());
+    const unsub2 = base44.entities.Transaction.subscribe(() => loadData());
+    return () => { unsub1(); unsub2(); };
+  }, [user?.email]);
+
   async function loadData() {
     setLoading(true);
     const [g, goalTxs] = await Promise.all([

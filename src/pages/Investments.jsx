@@ -32,6 +32,12 @@ export default function InvestmentsPage() {
 
   useEffect(() => { if (user) loadData(); }, [user]);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub = base44.entities.Investment.subscribe(() => loadData());
+    return unsub;
+  }, [user?.email]);
+
   async function loadData() {
      setLoading(true);
      try {

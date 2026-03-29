@@ -62,6 +62,20 @@ export default function Dashboard() {
     return () => window.removeEventListener("refresh-dashboard", onRefresh);
   }, [user?.email]);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub1 = base44.entities.Transaction.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
+    });
+    const unsub2 = base44.entities.SavingsGoal.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["goals", user.email] });
+    });
+    const unsub3 = base44.entities.Budget.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.email] });
+    });
+    return () => { unsub1(); unsub2(); unsub3(); };
+  }, [user?.email]);
+
   const enabled = !!user?.onboarding_completed;
 
   const { data: goals = [], isLoading: goalsLoading } = useQuery({

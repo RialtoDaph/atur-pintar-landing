@@ -55,6 +55,12 @@ export default function Transactions() {
     return () => window.removeEventListener("refresh-dashboard", handler);
   }, [user]);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub = base44.entities.Transaction.subscribe(() => loadData());
+    return unsub;
+  }, [user?.email]);
+
   async function loadData() {
     setLoading(true);
     try {

@@ -54,6 +54,13 @@ export default function BudgetPage() {
     if (user) loadData();
   }, [user, currentMonth]);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub1 = base44.entities.Budget.subscribe(() => loadData());
+    const unsub2 = base44.entities.Transaction.subscribe(() => loadData());
+    return () => { unsub1(); unsub2(); };
+  }, [user?.email]);
+
   async function loadData() {
     setLoading(true);
     const monthStart = `${currentMonth}-01`;

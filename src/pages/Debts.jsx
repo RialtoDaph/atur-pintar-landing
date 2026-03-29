@@ -38,6 +38,12 @@ export default function DebtsPage() {
 
   useEffect(() => { if (user) loadData(); }, [user]);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub = base44.entities.Debt.subscribe(() => loadData());
+    return unsub;
+  }, [user?.email]);
+
   async function loadData() {
     setLoading(true);
     const d = await base44.entities.Debt.filter({ created_by: user.email }, "-created_date");
