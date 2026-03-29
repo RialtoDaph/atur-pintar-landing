@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Plus, Trash2, ChevronDown, Bell, XCircle, CreditCard, CheckCircle2 } from "lucide-react";
+import ConfirmMarkDoneModal from "./ConfirmMarkDoneModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { toast } from "sonner";
 
@@ -65,6 +66,7 @@ export default function SubscriptionCard({ user }) {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [confirmSub, setConfirmSub] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -79,7 +81,7 @@ export default function SubscriptionCard({ user }) {
     setShowAdd(false);
   }
 
-  async function handleMarkDone(sub) {
+  async function doMarkDone(sub) {
     await base44.entities.Transaction.create({
       amount: sub.amount, type: "expense", category: "subscriptions",
       note: sub.name + " (selesai)", date: new Date().toISOString().split("T")[0],
@@ -92,7 +94,6 @@ export default function SubscriptionCard({ user }) {
     const nextStr = next.toISOString().split("T")[0];
     await base44.entities.Subscription.update(sub.id, { next_due_date: nextStr });
     setSubs((prev) => prev.map((s) => s.id === sub.id ? { ...s, next_due_date: nextStr } : s));
-    toast.success(`✅ "${sub.name}" dicatat & jatuh tempo diperbarui!`);
     window.dispatchEvent(new Event("refresh-dashboard"));
   }
 
@@ -173,7 +174,7 @@ export default function SubscriptionCard({ user }) {
                         <div className="flex items-center gap-0.5 flex-shrink-0">
                           {sub.status === "active" && (
                             <>
-                              <button onClick={() => handleMarkDone(sub)} title="Tandai Selesai" className="p-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix">
+                              <button onClick={() => setConfirmSub(sub)} title="Tandai Selesai" className="p-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                               </button>
                               <button onClick={() => handleCancel(sub.id)} title="Batalkan" className="p-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] transition-colors tap-highlight-fix">
@@ -201,6 +202,15 @@ export default function SubscriptionCard({ user }) {
       </div>
 
       {showAdd && <AddSubscriptionModal onClose={() => setShowAdd(false)} onSave={handleAdd} />}
+      {confirmSub && (
+        <ConfirmMarkDoneModal
+          title={confirmSub.name}
+          amount={confirmSub.amount}
+          formatCurrency={formatCurrency}
+          onConfirm={() => doMarkDone(confirmSub)}
+          onClose={() => setConfirmSub(null)}
+        />
+      )}
     </>
   );
 }

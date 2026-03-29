@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { toast } from "sonner";
 import EditContractModal from "./EditContractModal";
+import ConfirmMarkDoneModal from "./ConfirmMarkDoneModal";
 
 const INTERVAL_LABEL = { daily: "harian", weekly: "mingguan", monthly: "bulanan", yearly: "tahunan" };
 
@@ -21,6 +22,7 @@ export default function ContractPaymentsCard({ user }) {
   const [open, setOpen] = useState(false);
   const [showAdd, setShowAdd] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  const [confirmTx, setConfirmTx] = useState(null);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -34,7 +36,7 @@ export default function ContractPaymentsCard({ user }) {
     setLoading(false);
   }
 
-  async function handleMarkDone(tx) {
+  async function doMarkDone(tx) {
     await base44.entities.Transaction.create({
       amount: tx.amount,
       type: tx.type,
@@ -45,7 +47,6 @@ export default function ContractPaymentsCard({ user }) {
       is_recurring_child: true,
       recurring_parent_id: tx.id,
     });
-    toast.success(`✅ "${tx.note || "Transaksi rutin"}" dicatat!`);
     window.dispatchEvent(new Event("refresh-dashboard"));
   }
 
@@ -118,8 +119,8 @@ export default function ContractPaymentsCard({ user }) {
               <div className="p-3 space-y-2">{[1,2,3].map(i => <div key={i} className="h-9 bg-[#F2F4F7] rounded-lg animate-pulse" />)}</div>
             ) : (
               <>
-                <Section label="💰 Pemasukan" items={incomes} isIncome onMarkDone={handleMarkDone} onEdit={setEditingId} onDelete={handleDelete} formatCurrency={formatCurrency} onAdd={() => setShowAdd("income")} />
-                <Section label="📤 Pengeluaran" items={expenses} isIncome={false} onMarkDone={handleMarkDone} onEdit={setEditingId} onDelete={handleDelete} formatCurrency={formatCurrency} onAdd={() => setShowAdd("expense")} />
+                <Section label="💰 Pemasukan" items={incomes} isIncome onMarkDone={setConfirmTx} onEdit={setEditingId} onDelete={handleDelete} formatCurrency={formatCurrency} onAdd={() => setShowAdd("income")} />
+                <Section label="📤 Pengeluaran" items={expenses} isIncome={false} onMarkDone={setConfirmTx} onEdit={setEditingId} onDelete={handleDelete} formatCurrency={formatCurrency} onAdd={() => setShowAdd("expense")} />
               </>
             )}
           </div>
@@ -135,6 +136,15 @@ export default function ContractPaymentsCard({ user }) {
       )}
       {editingContract && (
         <EditContractModal contract={editingContract} onClose={() => setEditingId(null)} onSave={handleUpdate} />
+      )}
+      {confirmTx && (
+        <ConfirmMarkDoneModal
+          title={confirmTx.note || "Transaksi Rutin"}
+          amount={confirmTx.amount}
+          formatCurrency={formatCurrency}
+          onConfirm={() => doMarkDone(confirmTx)}
+          onClose={() => setConfirmTx(null)}
+        />
       )}
     </>
   );
