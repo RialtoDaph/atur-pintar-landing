@@ -77,8 +77,7 @@ export default function ContractPaymentsCard({ user }) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-        {/* Header */}
+      <div data-tour="contract-payments-card" className="bg-white rounded-2xl shadow-sm overflow-hidden">
         <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center gap-3 px-4 py-3 tap-highlight-fix">
           <div className="w-8 h-8 rounded-lg bg-[#4F7CFF]/10 flex items-center justify-center flex-shrink-0">
             <RefreshCw className="w-3.5 h-3.5 text-[#4F7CFF]" />

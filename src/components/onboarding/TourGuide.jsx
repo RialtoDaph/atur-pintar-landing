@@ -258,7 +258,7 @@ export default function TourGuide({ onComplete }) {
   } : {};
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: "none" }}>
+    <div data-tour-overlay="true" className="fixed inset-0 z-[9999]" style={{ pointerEvents: "none" }}>
       {/* Dark overlay with spotlight cutout */}
       <svg
         className="absolute inset-0 w-full h-full"

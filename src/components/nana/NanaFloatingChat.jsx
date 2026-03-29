@@ -21,7 +21,7 @@ export default function NanaFloatingChat() {
   // Detect open modals/dialogs and hide Nana
   useEffect(() => {
     const checkModals = () => {
-      const hasModal = document.querySelectorAll('[role="dialog"][data-state="open"], .fixed.inset-0:not([data-nana])').length > 0;
+      const hasModal = document.querySelectorAll('[role="dialog"][data-state="open"], .fixed.inset-0:not([data-nana]):not([data-tour-overlay])').length > 0;
       setIsModalOpen(hasModal);
     };
     const observer = new MutationObserver(checkModals);

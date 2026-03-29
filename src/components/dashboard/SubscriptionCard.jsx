@@ -115,7 +115,7 @@ export default function SubscriptionCard({ user }) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div data-tour="subscription-detector-card" className="bg-white rounded-2xl shadow-sm overflow-hidden">
         {/* Header */}
         <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center gap-3 px-4 py-3 tap-highlight-fix">
           <div className="w-8 h-8 rounded-lg bg-[#FF6A00]/10 flex items-center justify-center flex-shrink-0">
