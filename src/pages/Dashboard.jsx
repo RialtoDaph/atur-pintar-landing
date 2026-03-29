@@ -56,6 +56,12 @@ export default function Dashboard() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+  useEffect(() => {
+    const onRefresh = () => loadData();
+    window.addEventListener("refresh-dashboard", onRefresh);
+    return () => window.removeEventListener("refresh-dashboard", onRefresh);
+  }, [user?.email]);
+
   const enabled = !!user?.onboarding_completed;
 
   const { data: goals = [], isLoading: goalsLoading } = useQuery({

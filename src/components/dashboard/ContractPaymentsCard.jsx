@@ -46,6 +46,7 @@ export default function ContractPaymentsCard({ user }) {
       recurring_parent_id: tx.id,
     });
     toast.success(`✅ "${tx.note || "Transaksi rutin"}" dicatat!`);
+    window.dispatchEvent(new Event("refresh-dashboard"));
   }
 
   async function handleDelete(id) {

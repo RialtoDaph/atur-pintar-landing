@@ -93,6 +93,7 @@ export default function SubscriptionCard({ user }) {
     await base44.entities.Subscription.update(sub.id, { next_due_date: nextStr });
     setSubs((prev) => prev.map((s) => s.id === sub.id ? { ...s, next_due_date: nextStr } : s));
     toast.success(`✅ "${sub.name}" dicatat & jatuh tempo diperbarui!`);
+    window.dispatchEvent(new Event("refresh-dashboard"));
   }
 
   async function handleCancel(id) {
