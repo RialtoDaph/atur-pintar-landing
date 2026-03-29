@@ -199,6 +199,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
 
     setSaving(false);
     onClose();
+    window.location.reload();
   }
 
   function next() {setStep((s) => Math.min(s + 1, totalSteps - 1));}
