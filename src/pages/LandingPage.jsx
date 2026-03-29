@@ -37,7 +37,7 @@ function MatrixBackground() {
       h = canvas.height = window.innerHeight;
     };
     window.addEventListener('resize', onResize);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); };
+    return () => {cancelAnimationFrame(raf);window.removeEventListener('resize', onResize);};
   }, []);
   return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" style={{ zIndex: 0, opacity: 0.45 }} />;
 }
@@ -45,76 +45,76 @@ import { base44 } from "@/api/base44Client";
 import { CheckCircle, TrendingUp, Sparkles, Users, ArrowRight, Play, Zap, BarChart2, MessageCircle, Shield } from "lucide-react";
 
 const PROBLEMS = [
-  { emoji: "💸", text: "Gaji masuk, tapi gak tau kemana hilangnya" },
-  { emoji: "😩", text: "Udah coba nabung, tapi selalu kepake juga" },
-  { emoji: "😶‍🌫️", text: "Gak pernah tau kondisi keuangan sendiri" },
-];
+{ emoji: "💸", text: "Gaji masuk, tapi gak tau kemana hilangnya" },
+{ emoji: "😩", text: "Udah coba nabung, tapi selalu kepake juga" },
+{ emoji: "😶‍🌫️", text: "Gak pernah tau kondisi keuangan sendiri" }];
+
 
 const STEPS = [
-  { num: "01", title: "Tambah pengeluaran", desc: "Ketik atau pilih, selesai dalam 3 detik." },
-  { num: "02", title: "Semua langsung tercatat", desc: "Rapi, terorganisir, gak ada yang kelewat." },
-  { num: "03", title: "Lihat dashboard kamu", desc: "Kondisi keuangan seketika kelihatan jelas." },
-  { num: "04", title: "Nana AI kasih insight", desc: "Langsung tahu kamu boros di mana." },
-  { num: "05", title: "Analitik canggih", desc: "Sekali lihat, tau kemana uang pergi tiap bulan." },
-];
+{ num: "01", title: "Tambah pengeluaran", desc: "Ketik atau pilih, selesai dalam 3 detik." },
+{ num: "02", title: "Semua langsung tercatat", desc: "Rapi, terorganisir, gak ada yang kelewat." },
+{ num: "03", title: "Lihat dashboard kamu", desc: "Kondisi keuangan seketika kelihatan jelas." },
+{ num: "04", title: "Nana AI kasih insight", desc: "Langsung tahu kamu boros di mana." },
+{ num: "05", title: "Analitik canggih", desc: "Sekali lihat, tau kemana uang pergi tiap bulan." }];
+
 
 const FEATURES = [
-  { icon: <Zap className="w-5 h-5" />, title: "Pencatatan simpel", desc: "Gak ribet. Tambah transaksi dalam hitungan detik." },
-  { icon: <BarChart2 className="w-5 h-5" />, title: "Dashboard jelas", desc: "Langsung ngerti kondisi keuangan tanpa pusing." },
-  { icon: <TrendingUp className="w-5 h-5" />, title: "Analitik lengkap", desc: "Tau pola kebiasaan kamu dan kapan kamu boros." },
-  { icon: <MessageCircle className="w-5 h-5" />, title: "Nana AI", desc: "Kasih saran real berdasarkan data keuangan kamu." },
-];
+{ icon: <Zap className="w-5 h-5" />, title: "Pencatatan simpel", desc: "Gak ribet. Tambah transaksi dalam hitungan detik." },
+{ icon: <BarChart2 className="w-5 h-5" />, title: "Dashboard jelas", desc: "Langsung ngerti kondisi keuangan tanpa pusing." },
+{ icon: <TrendingUp className="w-5 h-5" />, title: "Analitik lengkap", desc: "Tau pola kebiasaan kamu dan kapan kamu boros." },
+{ icon: <MessageCircle className="w-5 h-5" />, title: "Nana AI", desc: "Kasih saran real berdasarkan data keuangan kamu." }];
+
 
 const PLANS = [
-  {
-    name: "Free",
-    price: "Rp 0",
-    period: "Gratis selamanya",
-    features: [
-      "Catat transaksi (unlimited)",
-      "Dashboard keuangan",
-      "Chat Nana AI (30x/bulan)",
-      "Anggaran maks. 2 kategori",
-      "Goals maks. 2 tujuan",
-      "Analisis AI (3 bulan terakhir)",
-    ],
-    limits: ["❌ Fitur Investasi", "❌ Analitik lanjutan"],
-    cta: "Mulai Gratis",
-    highlight: false,
-  },
-  {
-    name: "Premium",
-    price: "Rp 39.000",
-    period: "per bulan",
-    features: [
-      "Semua fitur Free",
-      "Anggaran & Goals unlimited",
-      "Nana AI chat unlimited",
-      "Fitur Investasi penuh",
-      "Analitik lanjutan semua kartu",
-      "Export PDF & Google Sheets",
-      "Custom kategori & widget",
-    ],
-    limits: [],
-    cta: "Coba Sekarang",
-    highlight: true,
-    badge: "Populer",
-  },
-  {
-    name: "Premium Tahunan",
-    price: "Rp 299.000",
-    period: "per tahun",
-    features: [
-      "Semua fitur Premium",
-      "Hemat 36% vs bulanan",
-      "Priority support",
-    ],
-    limits: [],
-    cta: "Coba Sekarang",
-    highlight: false,
-    badge: "Hemat 36%",
-  },
-];
+{
+  name: "Free",
+  price: "Rp 0",
+  period: "Gratis selamanya",
+  features: [
+  "Catat transaksi (unlimited)",
+  "Dashboard keuangan",
+  "Chat Nana AI (30x/bulan)",
+  "Anggaran maks. 2 kategori",
+  "Goals maks. 2 tujuan",
+  "Analisis AI (3 bulan terakhir)"],
+
+  limits: ["❌ Fitur Investasi", "❌ Analitik lanjutan"],
+  cta: "Mulai Gratis",
+  highlight: false
+},
+{
+  name: "Premium",
+  price: "Rp 39.000",
+  period: "per bulan",
+  features: [
+  "Semua fitur Free",
+  "Anggaran & Goals unlimited",
+  "Nana AI chat unlimited",
+  "Fitur Investasi penuh",
+  "Analitik lanjutan semua kartu",
+  "Export PDF & Google Sheets",
+  "Custom kategori & widget"],
+
+  limits: [],
+  cta: "Coba Sekarang",
+  highlight: true,
+  badge: "Populer"
+},
+{
+  name: "Premium Tahunan",
+  price: "Rp 299.000",
+  period: "per tahun",
+  features: [
+  "Semua fitur Premium",
+  "Hemat 36% vs bulanan",
+  "Priority support"],
+
+  limits: [],
+  cta: "Coba Sekarang",
+  highlight: false,
+  badge: "Hemat 36%"
+}];
+
 
 export default function LandingPage() {
   const howRef = useRef(null);
@@ -157,14 +157,14 @@ export default function LandingPage() {
         </div>
         <button
           onClick={handleCTA}
-          className="text-xs font-bold bg-[#FF6A00] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto"
-        >
+          className="text-xs font-bold bg-[#FF6A00] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
+          
           Masuk / Daftar
         </button>
       </nav>
 
       {/* 1. HERO */}
-      <section className="pt-28 pb-20 px-5 sm:px-12 lg:px-20 relative z-10">
+      <section className="pt-16 pr-5 pb-20 pl-5 sm:px-12 lg:px-20 relative z-10">
         <div className="absolute top-10 left-0 w-[600px] h-[500px] rounded-full bg-[#FF6A00]/6 blur-[140px] pointer-events-none" />
 
         <div className="max-w-5xl text-center sm:text-left">
@@ -186,16 +186,16 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3">
             <button
               onClick={handleCTA}
-              className="group flex items-center gap-2.5 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95 w-full sm:w-auto"
-            >
+              className="group flex items-center gap-2.5 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95 w-full sm:w-auto">
+              
               <Users className="w-4 h-4" />
               Mulai Gratis Sekarang
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
             <button
               onClick={scrollToHow}
-              className="flex items-center gap-2 text-white/60 hover:text-white border border-white/10 hover:border-white/20 font-semibold text-sm px-6 py-4 rounded-2xl transition-all w-full sm:w-auto"
-            >
+              className="flex items-center gap-2 text-white/60 hover:text-white border border-white/10 hover:border-white/20 font-semibold text-sm px-6 py-4 rounded-2xl transition-all w-full sm:w-auto">
+              
               <Play className="w-3.5 h-3.5" />
               Lihat Cara Kerja
             </button>
@@ -203,9 +203,9 @@ export default function LandingPage() {
 
           <div className="mt-8 flex items-center justify-center sm:justify-start gap-3">
             <div className="flex -space-x-2">
-              {["🧑‍💼", "👩‍💻", "🧑‍🎓", "👩‍💼", "🧑‍🍳"].map((e, i) => (
-                <div key={i} className="w-8 h-8 rounded-full bg-[#1A1A1A] border-2 border-[#0A0A0A] flex items-center justify-center text-sm">{e}</div>
-              ))}
+              {["🧑‍💼", "👩‍💻", "🧑‍🎓", "👩‍💼", "🧑‍🍳"].map((e, i) =>
+              <div key={i} className="w-8 h-8 rounded-full bg-[#1A1A1A] border-2 border-[#0A0A0A] flex items-center justify-center text-sm">{e}</div>
+              )}
             </div>
             <p className="text-sm text-white/50">Ratusan pengguna aktif</p>
           </div>
@@ -220,12 +220,12 @@ export default function LandingPage() {
             <h2 className="text-2xl sm:text-3xl font-black text-white">Masalah yang kamu rasain juga</h2>
           </div>
           <div className="space-y-3">
-            {PROBLEMS.map((p, i) => (
-              <div key={i} className="card-d rounded-2xl px-5 py-4 flex items-center gap-4">
+            {PROBLEMS.map((p, i) =>
+            <div key={i} className="card-d rounded-2xl px-5 py-4 flex items-center gap-4">
                 <span className="text-2xl flex-shrink-0">{p.emoji}</span>
                 <p className="text-white/80 text-sm sm:text-base font-medium leading-snug">{p.text}</p>
               </div>
-            ))}
+            )}
           </div>
           <div className="mt-6 bg-[#FF6A00]/8 border border-[#FF6A00]/20 rounded-2xl px-5 py-4">
             <p className="text-white/70 text-sm leading-relaxed">
@@ -244,16 +244,16 @@ export default function LandingPage() {
           <p className="text-[#FF6A00] font-bold text-sm mb-8">Bukan cuma catat. Tapi ngerti uang kamu.</p>
           <div className="space-y-3">
             {[
-              { icon: "⚡", text: "Catat transaksi dalam 3 detik" },
-              { icon: "📊", text: "Lihat kondisi keuangan langsung" },
-              { icon: "🤖", text: "Dapat insight personal dari Nana AI" },
-            ].map((item, i) => (
-              <div key={i} className="card-d rounded-2xl px-5 py-4 flex items-center gap-4">
+            { icon: "⚡", text: "Catat transaksi dalam 3 detik" },
+            { icon: "📊", text: "Lihat kondisi keuangan langsung" },
+            { icon: "🤖", text: "Dapat insight personal dari Nana AI" }].
+            map((item, i) =>
+            <div key={i} className="card-d rounded-2xl px-5 py-4 flex items-center gap-4">
                 <span className="text-2xl">{item.icon}</span>
                 <p className="text-white font-semibold text-sm sm:text-base">{item.text}</p>
                 <CheckCircle className="w-4 h-4 text-[#FF6A00] ml-auto flex-shrink-0" />
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -266,8 +266,8 @@ export default function LandingPage() {
             <h2 className="text-2xl sm:text-3xl font-black text-white">Semudah ini, serius.</h2>
           </div>
           <div className="space-y-0">
-            {STEPS.map((step, i) => (
-              <div key={i} className={`relative flex gap-5 ${i < STEPS.length - 1 ? "pb-8 step-line" : ""}`}>
+            {STEPS.map((step, i) =>
+            <div key={i} className={`relative flex gap-5 ${i < STEPS.length - 1 ? "pb-8 step-line" : ""}`}>
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#FF6A00]/15 border border-[#FF6A00]/30 flex items-center justify-center">
                   <span className="text-[#FF6A00] text-xs font-black">{step.num}</span>
                 </div>
@@ -276,13 +276,13 @@ export default function LandingPage() {
                   <p className="text-white/40 text-xs mt-0.5">{step.desc}</p>
                 </div>
               </div>
-            ))}
+            )}
           </div>
           <div className="mt-8 flex justify-center sm:justify-start">
             <button
               onClick={handleCTA}
-              className="inline-flex items-center gap-2 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-all hover:scale-105"
-            >
+              className="inline-flex items-center gap-2 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-all hover:scale-105">
+              
               Coba Sekarang <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -297,15 +297,15 @@ export default function LandingPage() {
             <h2 className="text-2xl sm:text-3xl font-black text-white">Yang kamu dapetin</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="card-d rounded-2xl p-5 hover:border-[#FF6A00]/25 transition-colors group">
+            {FEATURES.map((f, i) =>
+            <div key={i} className="card-d rounded-2xl p-5 hover:border-[#FF6A00]/25 transition-colors group">
                 <div className="w-9 h-9 rounded-xl bg-[#FF6A00]/10 flex items-center justify-center text-[#FF6A00] mb-3 group-hover:bg-[#FF6A00]/20 transition-colors">
                   {f.icon}
                 </div>
                 <p className="text-white font-bold text-sm mb-1">{f.title}</p>
                 <p className="text-white/45 text-xs leading-relaxed">{f.desc}</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -334,43 +334,43 @@ export default function LandingPage() {
             <p className="text-white/40 text-sm mt-2">Akses semua fitur termasuk Nana AI</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {PLANS.map((plan, i) => (
-              <div
-                key={i}
-                className={`relative rounded-2xl p-6 flex flex-col ${
-                  plan.highlight ? "bg-[#FF6A00] border border-[#FF6A00]" : "card-d"
-                }`}
-              >
-                {plan.badge && (
-                  <div className={`absolute -top-3 left-6 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${
-                    plan.highlight ? "bg-white text-[#FF6A00]" : "bg-[#FF6A00] text-white"
-                  }`}>
+            {PLANS.map((plan, i) =>
+            <div
+              key={i}
+              className={`relative rounded-2xl p-6 flex flex-col ${
+              plan.highlight ? "bg-[#FF6A00] border border-[#FF6A00]" : "card-d"}`
+              }>
+              
+                {plan.badge &&
+              <div className={`absolute -top-3 left-6 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${
+              plan.highlight ? "bg-white text-[#FF6A00]" : "bg-[#FF6A00] text-white"}`
+              }>
                     {plan.badge}
                   </div>
-                )}
+              }
                 <p className="font-black text-base mb-1 text-white">{plan.name}</p>
                 <p className={`text-3xl font-black mb-0.5 ${plan.highlight ? "text-white" : "g-text"}`}>{plan.price}</p>
                 <p className={`text-xs mb-5 ${plan.highlight ? "text-white/70" : "text-white/35"}`}>{plan.period}</p>
                 <div className="space-y-2.5 flex-1 mb-6">
-                  {plan.features.map((feat, j) => (
-                    <div key={j} className="flex items-center gap-2">
+                  {plan.features.map((feat, j) =>
+                <div key={j} className="flex items-center gap-2">
                       <CheckCircle className={`w-3.5 h-3.5 flex-shrink-0 ${plan.highlight ? "text-white" : "text-[#FF6A00]"}`} />
                       <p className={`text-xs ${plan.highlight ? "text-white/90" : "text-white/60"}`}>{feat}</p>
                     </div>
-                  ))}
+                )}
                 </div>
                 <button
-                  onClick={handleCTA}
-                  className={`w-full font-bold text-sm py-3 rounded-xl transition-all ${
-                    plan.highlight
-                      ? "bg-white text-[#FF6A00] hover:bg-white/90"
-                      : "border border-white/15 text-white hover:border-[#FF6A00]/50 hover:text-[#FF6A00]"
-                  }`}
-                >
+                onClick={handleCTA}
+                className={`w-full font-bold text-sm py-3 rounded-xl transition-all ${
+                plan.highlight ?
+                "bg-white text-[#FF6A00] hover:bg-white/90" :
+                "border border-white/15 text-white hover:border-[#FF6A00]/50 hover:text-[#FF6A00]"}`
+                }>
+                
                   {plan.cta}
                 </button>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
@@ -386,9 +386,9 @@ export default function LandingPage() {
           <p className="text-white/40 text-sm mb-8 relative">Mulai sekarang. Gratis 30 hari. Gak perlu kartu kredit.</p>
           <div className="flex justify-center sm:justify-start">
           <button
-            onClick={handleCTA}
-            className="relative group inline-flex items-center gap-3 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-black text-base px-10 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95"
-          >
+              onClick={handleCTA}
+              className="relative group inline-flex items-center gap-3 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-black text-base px-10 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
+              
             <Users className="w-5 h-5" />
             Mulai Gratis Sekarang
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -405,6 +405,6 @@ export default function LandingPage() {
         </div>
         <p className="text-white/20 text-xs">© 2025 Atur Pintar. Kelola uangmu lebih cerdas.</p>
       </footer>
-    </div>
-  );
+    </div>);
+
 }
