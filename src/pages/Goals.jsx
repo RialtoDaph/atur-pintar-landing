@@ -70,7 +70,9 @@ export default function Goals() {
   }
 
   async function handleTransaction(amount, type, note) {
-    const txType = type === "deposit" ? "savings" : "expense";
+    // deposit → "savings" (outflow from wallet, counted in balance)
+    // withdrawal → "income" (money returns to wallet, increases balance)
+    const txType = type === "deposit" ? "savings" : "income";
     const tx = {
       goal_id: goalId,
       amount,
@@ -256,21 +258,21 @@ export default function Goals() {
           </div>
         )}
 
-        {transactions.filter(tx => txFilter === "all" || (txFilter === "deposit" ? tx.type === "savings" : tx.type === "expense")).length === 0 ? (
+        {transactions.filter(tx => txFilter === "all" || (txFilter === "deposit" ? tx.type === "savings" : tx.type !== "savings")).length === 0 ? (
           <div className="text-center py-12 text-[#9B9B9B] text-sm">{t('goals_no_tx')}</div>
         ) : (
           <div className="space-y-2">
-            {transactions.filter(tx => txFilter === "all" || (txFilter === "deposit" ? tx.type === "savings" : tx.type === "expense")).map((tx) => (
+            {transactions.filter(tx => txFilter === "all" || (txFilter === "deposit" ? tx.type === "savings" : tx.type !== "savings")).map((tx) => (
               <div key={tx.id} className="bg-white rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm border border-[#EFEFED]">
                 <div className="flex items-center gap-3">
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-sm"
                     style={{
-                      backgroundColor: tx.type === "deposit" ? "#34C87A18" : "#FF525218",
-                      color: tx.type === "deposit" ? "#34C87A" : "#FF5252",
+                      backgroundColor: tx.type === "savings" ? "#34C87A18" : "#FF525218",
+                      color: tx.type === "savings" ? "#34C87A" : "#FF5252",
                     }}
                   >
-                    {tx.type === "deposit" ? "+" : "−"}
+                    {tx.type === "savings" ? "+" : "−"}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#1A1A1A]">{tx.note || (tx.type === "deposit" ? "Deposit" : "Withdrawal")}</p>
@@ -278,11 +280,11 @@ export default function Goals() {
                   </div>
                 </div>
                 <span
-                   className="text-sm font-bold"
-                   style={{ color: tx.type === "deposit" ? "#34C87A" : "#FF5252" }}
-                 >
-                   {tx.type === "deposit" ? "+" : "−"}{formatCurrency(tx.amount)}
-                 </span>
+                  className="text-sm font-bold"
+                  style={{ color: tx.type === "savings" ? "#34C87A" : "#FF5252" }}
+                >
+                  {tx.type === "savings" ? "+" : "−"}{formatCurrency(tx.amount)}
+                </span>
               </div>
             ))}
           </div>

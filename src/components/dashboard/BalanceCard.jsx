@@ -3,6 +3,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function BalanceCard({ income, expense, savings, loading }) {
   const { formatCurrency, t } = useAppSettings();
+  // balance = income minus all outflows (expense + savings deposits)
   const balance = income - expense;
 
   if (loading) {

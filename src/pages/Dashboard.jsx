@@ -110,13 +110,16 @@ export default function Dashboard() {
   }
 
   const now = new Date();
+  // Exclude recurring templates (is_recurring=true, is_recurring_child=false) — they are NOT actual transactions
   const thisMonthTx = transactions.filter(t => {
     const d = new Date(t.date);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+      && !(t.is_recurring === true && !t.is_recurring_child);
   });
 
   const monthIncome = thisMonthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const monthExpense = thisMonthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+  // Include "savings" type (goal deposits) as outflow so balance decreases when saving
+  const monthExpense = thisMonthTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
   const totalSaved = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
 
   const handleRefresh = async () => {

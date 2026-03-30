@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Pencil, Trash2, Calendar, Zap, CheckCircle } from "lucide-react";
+import { Pencil, Trash2, Calendar, Zap, CheckCircle, ChevronRight } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
 const COLORS = {
@@ -27,60 +27,75 @@ export default function GoalCard({ goal, onEdit, onDelete }) {
   const isUrgent = daysLeft !== null && daysLeft < 30;
   const months = daysLeft ? Math.max(daysLeft / 30, 0.5) : null;
   const suggestedMonthly = months && remaining > 0 ? Math.ceil(remaining / months) : null;
+  const isCompleted = goal.status === "completed";
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
-      <Link to={createPageUrl(`Goals?id=${goal.id}`)} className="block">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl" style={{ backgroundColor: `${color}20` }}>
-              {goal.icon || "💰"}
-            </div>
-            <div>
-              <p className="font-semibold text-[#1A1A1A] text-sm">{goal.name}</p>
-              {goal.description && <p className="text-xs text-[#8FA4C8] mt-0.5">{goal.description}</p>}
-            </div>
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <Link to={createPageUrl(`Goals?id=${goal.id}`)} className="block px-4 py-3">
+        {/* Top row: icon + name + % + chevron */}
+        <div className="flex items-center gap-3 mb-2.5">
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
+            style={{ backgroundColor: `${color}20` }}
+          >
+            {goal.icon || "💰"}
           </div>
-          {goal.status === "completed" && <CheckCircle className="w-5 h-5 text-[#00C9A7]" />}
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <p className="font-semibold text-[#1A1A1A] text-sm truncate">{goal.name}</p>
+              {isCompleted && <CheckCircle className="w-3.5 h-3.5 text-[#00C9A7] flex-shrink-0" />}
+            </div>
+            <p className="text-xs text-[#8FA4C8] truncate">
+              {formatCurrency(goal.current_amount || 0)} / {formatCurrency(goal.target_amount)}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className="text-sm font-bold" style={{ color }}>{progress.toFixed(0)}%</span>
+            <ChevronRight className="w-3.5 h-3.5 text-[#CBD5E0]" />
+          </div>
         </div>
 
-        <div className="mb-3">
-          <div className="flex justify-between text-xs mb-1.5">
-            <span className="text-[#4A5568] font-medium">{formatCurrency(goal.current_amount || 0)} dari {formatCurrency(goal.target_amount)}</span>
-            <span className="font-bold" style={{ color }}>{progress.toFixed(0)}%</span>
-          </div>
-          <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
-            <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, backgroundColor: color }} />
-          </div>
+        {/* Progress bar */}
+        <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{ width: `${progress}%`, backgroundColor: color }}
+          />
         </div>
 
-        <div className="flex gap-3 text-xs">
-          {daysLeft !== null && (
-            <div className="flex items-center gap-1 text-[#8FA4C8]">
-              <Calendar className="w-3.5 h-3.5" />
-              {daysLeft >= 0 ? `${daysLeft} ${t('goals_days_left')}` : t('goals_expired')}
-            </div>
-          )}
-          {suggestedMonthly && (
-            <div className={`flex items-center gap-1 ${isUrgent ? "text-[#FF6B6B]" : "text-[#8FA4C8]"}`}>
-              <Zap className="w-3.5 h-3.5" />
-              {formatCurrency(suggestedMonthly)}/bln
-            </div>
-          )}
-        </div>
+        {/* Bottom meta: deadline + suggestion */}
+        {(daysLeft !== null || suggestedMonthly) && (
+          <div className="flex items-center gap-3 mt-2">
+            {daysLeft !== null && (
+              <div className={`flex items-center gap-1 text-[10px] ${isUrgent && !isCompleted ? "text-[#FF6B6B]" : "text-[#8FA4C8]"}`}>
+                <Calendar className="w-3 h-3" />
+                {daysLeft >= 0 ? `${daysLeft} hari lagi` : "Terlewat"}
+              </div>
+            )}
+            {suggestedMonthly && !isCompleted && (
+              <div className={`flex items-center gap-1 text-[10px] ${isUrgent ? "text-[#FF6B6B]" : "text-[#8FA4C8]"}`}>
+                <Zap className="w-3 h-3" />
+                {formatCurrency(suggestedMonthly)}/bln
+              </div>
+            )}
+          </div>
+        )}
       </Link>
 
-      {/* Actions */}
-      <div className="flex gap-2 mt-3">
+      {/* Actions — compact icon buttons */}
+      <div className="flex border-t border-[#F2F4F7]">
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(goal); }}
-          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold bg-[#F2F4F7] text-[#1A1A1A] hover:bg-[#E2E8F0] transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-[#8FA4C8] hover:text-[#4F7CFF] hover:bg-[#F8FAFC] transition-colors tap-highlight-fix"
         >
           <Pencil className="w-3.5 h-3.5" /> {t('edit')}
         </button>
+        <div className="w-px bg-[#F2F4F7]" />
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(goal.id); }}
-          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-semibold text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-[#8FA4C8] hover:text-red-500 hover:bg-red-50 transition-colors tap-highlight-fix"
         >
           <Trash2 className="w-3.5 h-3.5" /> {t('goals_delete')}
         </button>
