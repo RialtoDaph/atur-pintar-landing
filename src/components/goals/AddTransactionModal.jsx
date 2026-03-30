@@ -34,7 +34,7 @@ export default function AddTransactionModal({ type, onClose, onSave, maxWithdraw
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6">
+      <div className="bg-white my-20 p-6 rounded-3xl w-full max-w-sm shadow-2xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-bold text-[#1A1A1A]">
             {isDeposit ? "Tambah Dana" : "Tarik Dana"}
@@ -57,12 +57,12 @@ export default function AddTransactionModal({ type, onClose, onSave, maxWithdraw
               className="w-full border border-[#EFEFED] rounded-xl pl-10 pr-4 py-3.5 text-xl font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] bg-[#F7F6F3]"
               placeholder="0"
               value={formatAmount(amount)}
-              onChange={handleAmountChange}
-            />
+              onChange={handleAmountChange} />
+            
           </div>
-          {!isDeposit && (
-            <p className="text-xs text-[#9B9B9B] mt-1">Tersedia: {formatCurrency(maxWithdrawal)}</p>
-          )}
+          {!isDeposit &&
+          <p className="text-xs text-[#9B9B9B] mt-1">Tersedia: {formatCurrency(maxWithdrawal)}</p>
+          }
         </div>
 
         <div className="mb-6">
@@ -71,22 +71,22 @@ export default function AddTransactionModal({ type, onClose, onSave, maxWithdraw
             className="w-full border border-[#EFEFED] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] bg-[#F7F6F3]"
             placeholder={isDeposit ? "Misal: Tabungan bulanan" : "Misal: Pengeluaran darurat"}
             value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
+            onChange={(e) => setNote(e.target.value)} />
+          
         </div>
 
         <button
           onClick={handleSave}
-          disabled={saving || !amount || parseFloat(amount.replace(/[^0-9]/g,"")) <= 0 || (!isDeposit && parseFloat(amount.replace(/[^0-9]/g,"")) > max)}
+          disabled={saving || !amount || parseFloat(amount.replace(/[^0-9]/g, "")) <= 0 || !isDeposit && parseFloat(amount.replace(/[^0-9]/g, "")) > max}
           className="w-full py-3.5 rounded-xl font-semibold text-sm disabled:opacity-40 transition-colors"
           style={{
             backgroundColor: isDeposit ? "#1A1A1A" : "#FF5252",
-            color: "white",
-          }}
-        >
+            color: "white"
+          }}>
+          
           {saving ? "Menyimpan..." : isDeposit ? "Tambah Dana" : "Tarik Dana"}
         </button>
       </div>
-    </div>
-  );
+    </div>);
+
 }
