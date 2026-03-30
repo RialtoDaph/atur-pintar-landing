@@ -79,7 +79,8 @@ export default function AnomalyDetector({ transactions, allCategoriesConfig = {}
 
     detected.sort((a, b) => b.pctIncrease - a.pctIncrease);
     setAnomalies(detected.slice(0, 5));
-  }, [transactions, allCategoriesConfig]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions]);
 
   if (anomalies.length === 0) return null;
 
