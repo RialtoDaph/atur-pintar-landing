@@ -3,12 +3,6 @@ import { base44 } from "@/api/base44Client";
 
 const INTERVAL_DAYS = { daily: 1, weekly: 7, monthly: 30, yearly: 365 };
 
-function addDays(dateStr, days) {
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split("T")[0];
-}
-
 function addInterval(dateStr, interval) {
   const d = new Date(dateStr);
   if (interval === "monthly") {
@@ -31,13 +25,14 @@ export async function processRecurringTransactions(userEmail) {
     const lastGen = tx.recurring_last_generated || tx.date;
     let nextDate = addInterval(lastGen, tx.recurring_interval);
 
-    if (nextDate <= today) {
-      // Collect all missing occurrences up to today
+    // Only auto-generate for dates BEFORE today (not today itself)
+    // Today's transaction must be manually recorded via "Tandai Selesai"
+    if (nextDate < today) {
       let current = nextDate;
       let latestGenerated = lastGen;
       const toCreate = [];
 
-      while (current <= today) {
+      while (current < today) {
         toCreate.push({
           amount: tx.amount,
           type: tx.type,
@@ -51,7 +46,6 @@ export async function processRecurringTransactions(userEmail) {
         current = addInterval(current, tx.recurring_interval);
       }
 
-      // Bulk create + update parent in parallel
       await Promise.all([
         base44.entities.Transaction.bulkCreate(toCreate),
         base44.entities.Transaction.update(tx.id, {
@@ -68,7 +62,7 @@ export default function RecurringManager({ userEmail }) {
     if (!userEmail) return;
     const today = new Date().toISOString().split("T")[0];
     const key = `recurring_processed_${userEmail}_${today}`;
-    if (sessionStorage.getItem(key)) return; // already ran today in this session
+    if (sessionStorage.getItem(key)) return;
     sessionStorage.setItem(key, "1");
     processRecurringTransactions(userEmail).catch(console.error);
   }, [userEmail]);
