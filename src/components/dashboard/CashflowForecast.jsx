@@ -62,6 +62,7 @@ export default function CashflowForecast({ transactions, loading, user }) {
   const progressPct = Math.round(dayOfMonth / daysInMonth * 100);
 
   const thisMonth = transactions.filter((tx) => {
+    if (tx.is_recurring && !tx.is_recurring_child) return false; // exclude templates
     const d = new Date(tx.date);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   });

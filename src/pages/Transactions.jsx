@@ -178,7 +178,9 @@ export default function Transactions() {
   );
 
   const filtered = useMemo(() => {
-    let result = filter === "all" ? transactions : transactions.filter(tx => tx.type === filter);
+    // Exclude recurring parent templates (they are not real transactions, just templates)
+    let result = transactions.filter(tx => !(tx.is_recurring && !tx.is_recurring_child));
+    if (filter !== "all") result = result.filter(tx => tx.type === filter);
     if (goalFilter) result = result.filter(tx => tx.goal_id === goalFilter);
     if (searchQuery) {
       const q = searchQuery.toLowerCase();

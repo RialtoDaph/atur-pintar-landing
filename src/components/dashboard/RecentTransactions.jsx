@@ -17,6 +17,10 @@ const CATEGORY_CONFIG = {
 
 export default function RecentTransactions({ transactions, loading }) {
   const { formatCurrency, t } = useAppSettings();
+
+  // Exclude recurring parent templates — only show real/child transactions
+  const displayTxs = (transactions || []).filter(tx => !(tx.is_recurring && !tx.is_recurring_child));
+
   if (loading) {
     return (
       <div className="px-5 pb-5 space-y-3">
@@ -25,7 +29,7 @@ export default function RecentTransactions({ transactions, loading }) {
     );
   }
 
-  if (transactions.length === 0) {
+  if (displayTxs.length === 0) {
     return (
       <div className="px-5 pb-5 text-center py-8 text-[#8FA4C8] text-sm">
         {t('no_transactions')}
@@ -35,7 +39,7 @@ export default function RecentTransactions({ transactions, loading }) {
 
   return (
     <div className="pb-2">
-      {transactions.map((tx) => {
+      {displayTxs.map((tx) => {
         const cat = CATEGORY_CONFIG[tx.category] || CATEGORY_CONFIG.other;
         const isIncome = tx.type === "income";
         return (
