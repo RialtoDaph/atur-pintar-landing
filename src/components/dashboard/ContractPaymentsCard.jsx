@@ -37,16 +37,30 @@ export default function ContractPaymentsCard({ user }) {
   }
 
   async function doMarkDone(tx) {
+    const today = new Date().toISOString().split("T")[0];
+    // Cek apakah sudah ada child transaction hari ini dari parent ini
+    const existing = await base44.entities.Transaction.filter({
+      recurring_parent_id: tx.id,
+      is_recurring_child: true,
+      date: today,
+    });
+    if (existing && existing.length > 0) {
+      // Sudah ada, tidak perlu buat duplikat
+      window.dispatchEvent(new Event("refresh-dashboard"));
+      return;
+    }
     await base44.entities.Transaction.create({
       amount: tx.amount,
       type: tx.type,
       category: tx.category,
       note: (tx.note || "Transaksi rutin") + " (selesai)",
-      date: new Date().toISOString().split("T")[0],
+      date: today,
       is_recurring: false,
       is_recurring_child: true,
       recurring_parent_id: tx.id,
     });
+    // Update recurring_last_generated agar RecurringManager tidak generate duplikat
+    await base44.entities.Transaction.update(tx.id, { recurring_last_generated: today });
     window.dispatchEvent(new Event("refresh-dashboard"));
   }
 
