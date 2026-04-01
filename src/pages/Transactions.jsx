@@ -178,8 +178,23 @@ export default function Transactions() {
   );
 
   const filtered = useMemo(() => {
-    // Exclude recurring parent templates (they are not real transactions, just templates)
-    let result = transactions.filter(tx => !(tx.is_recurring && !tx.is_recurring_child));
+    // Find parent IDs that already have a child recorded this month
+    const now = new Date();
+    const currentMonthChildParentIds = new Set(
+      transactions
+        .filter(tx => tx.is_recurring_child && (() => { const d = new Date(tx.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); })())
+        .map(tx => tx.recurring_parent_id)
+        .filter(Boolean)
+    );
+
+    // Show parents only if no child exists this month; hide parents that already have a child
+    let result = transactions.filter(tx => {
+      if (tx.is_recurring && !tx.is_recurring_child) {
+        return !currentMonthChildParentIds.has(tx.id);
+      }
+      return true;
+    });
+
     if (filter !== "all") result = result.filter(tx => tx.type === filter);
     if (goalFilter) result = result.filter(tx => tx.goal_id === goalFilter);
     if (searchQuery) {

@@ -18,8 +18,20 @@ const CATEGORY_CONFIG = {
 export default function RecentTransactions({ transactions, loading }) {
   const { formatCurrency, t } = useAppSettings();
 
-  // Exclude recurring parent templates — only show real/child transactions
-  const displayTxs = (transactions || []).filter(tx => !(tx.is_recurring && !tx.is_recurring_child));
+  // Show parents only if no child has been recorded for them this month
+  const now = new Date();
+  const currentMonthChildParentIds = new Set(
+    (transactions || [])
+      .filter(tx => tx.is_recurring_child && (() => { const d = new Date(tx.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); })())
+      .map(tx => tx.recurring_parent_id)
+      .filter(Boolean)
+  );
+  const displayTxs = (transactions || []).filter(tx => {
+    if (tx.is_recurring && !tx.is_recurring_child) {
+      return !currentMonthChildParentIds.has(tx.id);
+    }
+    return true;
+  });
 
   if (loading) {
     return (

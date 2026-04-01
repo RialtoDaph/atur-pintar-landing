@@ -43,8 +43,11 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
     spendingByCategory[key] = (spendingByCategory[key] || 0) + tx.amount;
   });
 
+  // Filter budgets to current month only (fixes duplicate category bug)
+  const currentMonthBudgets = budgets.filter(b => b.month === currentMonth);
+
   // Only show budgets that are >= 70% used
-  const alertBudgets = budgets
+  const alertBudgets = currentMonthBudgets
     .map(b => {
       const spent = spendingByCategory[b.category] || 0;
       const percent = b.amount > 0 ? (spent / b.amount) * 100 : 0;
@@ -54,15 +57,13 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
     .sort((a, b) => b.percent - a.percent);
 
   // Map all budgets with spending info
-  const allBudgets = budgets
+  const allBudgets = currentMonthBudgets
     .map(b => {
       const spent = spendingByCategory[b.category] || 0;
       const percent = b.amount > 0 ? (spent / b.amount) * 100 : 0;
       return { ...b, spent, percent };
     })
     .sort((a, b) => b.percent - a.percent);
-
-
 
   const hasAlert = allBudgets.some(b => b.percent >= 70);
 
