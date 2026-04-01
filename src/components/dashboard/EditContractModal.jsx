@@ -107,14 +107,22 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             </select>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Tanggal</label>
-            <DateInput
-              value={data.date || new Date().toISOString().split("T")[0]}
-              onChange={(date) => setData({ ...data, date })}
-              label="" />
-            
-          </div>
+          {(data.recurring_interval === "monthly" || data.recurring_interval === "yearly") && (
+            <div>
+              <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Tiap tanggal</label>
+              <select
+                value={data.date ? new Date(data.date + 'T12:00:00').getDate() : 1}
+                onChange={(e) => {
+                  const day = parseInt(e.target.value);
+                  const d = new Date();
+                  d.setDate(day);
+                  setData({ ...data, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}` });
+                }}
+                className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-white text-black">
+                {Array.from({length:31},(_,i)=>i+1).map(d=><option key={d} value={d}>Tanggal {d}</option>)}
+              </select>
+            </div>
+          )}
 
           <div className="flex gap-2 pt-4 sticky bottom-0 bg-white pb-2">
             <button

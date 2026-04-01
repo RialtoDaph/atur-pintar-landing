@@ -184,7 +184,12 @@ function Section({ label, items, isIncome, onMarkDone, onEdit, onDelete, formatC
             <div key={tx.id} className="flex items-center gap-2.5 px-4 py-2 hover:bg-[#F8FAFC] transition-colors">
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-[#1A1A1A] truncate">{tx.note || (isIncome ? "Pendapatan" : "Tagihan")}</p>
-                <p className="text-[9px] text-[#8FA4C8] capitalize">{INTERVAL_LABEL[tx.recurring_interval] || tx.recurring_interval}</p>
+                <p className="text-[9px] text-[#8FA4C8] capitalize">
+                  {INTERVAL_LABEL[tx.recurring_interval] || tx.recurring_interval}
+                  {(tx.recurring_interval === 'monthly' || tx.recurring_interval === 'yearly') && tx.date
+                    ? ` · tgl ${new Date(tx.date + 'T12:00:00').getDate()}`
+                    : ''}
+                </p>
               </div>
               <span className={`text-xs font-bold flex-shrink-0 ${isIncome ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
                 {isIncome ? "+" : "−"}{formatCurrency(tx.amount)}

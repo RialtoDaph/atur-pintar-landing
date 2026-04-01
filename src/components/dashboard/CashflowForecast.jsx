@@ -81,12 +81,9 @@ export default function CashflowForecast({ transactions, loading, user }) {
     scheduledFutureExpense += (occ.expense || 0) * tpl.amount;
   }
 
-  // Proyeksi harian berdasarkan rata-rata harian bulan ini (bukan avg 3 bulan)
-  const dailyExpense = dayOfMonth > 0 ? currentExpense / dayOfMonth : 0;
-  const dailyIncome = dayOfMonth > 0 ? currentIncome / dayOfMonth : 0;
-
-  const projectedTotalExpense = currentExpense + dailyExpense * daysLeft + scheduledFutureExpense;
-  const projectedTotalIncome = currentIncome + dailyIncome * daysLeft + scheduledFutureIncome;
+  // Proyeksi = aktual bulan ini + transaksi recurring yang dijadwalkan (tanpa extrapolasi harian)
+  const projectedTotalExpense = currentExpense + scheduledFutureExpense;
+  const projectedTotalIncome = currentIncome + scheduledFutureIncome;
   const projectedBalance = projectedTotalIncome - projectedTotalExpense;
   const isPositive = projectedBalance >= 0;
 
