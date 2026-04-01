@@ -117,9 +117,10 @@ export default function Dashboard() {
       && !(t.is_recurring === true && !t.is_recurring_child);
   });
 
-  const monthIncome = thisMonthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  // Include "savings" type (goal deposits) as outflow so balance decreases when saving
-  const monthExpense = thisMonthTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
+  // Semua transaksi (bukan template recurring) untuk saldo keseluruhan
+  const allTx = transactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
+  const monthIncome = allTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const monthExpense = allTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
   const totalSaved = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
 
   const handleRefresh = async () => {
