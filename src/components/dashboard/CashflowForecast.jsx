@@ -81,8 +81,9 @@ export default function CashflowForecast({ transactions, loading, user }) {
     scheduledFutureExpense += (occ.expense || 0) * tpl.amount;
   }
 
-  const dailyExpense = getHistoricalMonthlyAverage(transactions, "expense", 3) / daysInMonth;
-  const dailyIncome = getHistoricalMonthlyAverage(transactions, "income", 3) / daysInMonth;
+  // Proyeksi harian berdasarkan rata-rata harian bulan ini (bukan avg 3 bulan)
+  const dailyExpense = dayOfMonth > 0 ? currentExpense / dayOfMonth : 0;
+  const dailyIncome = dayOfMonth > 0 ? currentIncome / dayOfMonth : 0;
 
   const projectedTotalExpense = currentExpense + dailyExpense * daysLeft + scheduledFutureExpense;
   const projectedTotalIncome = currentIncome + dailyIncome * daysLeft + scheduledFutureIncome;
@@ -148,7 +149,7 @@ export default function CashflowForecast({ transactions, loading, user }) {
       </div>
 
       <p className="text-[10px] text-[#8FA4C8] text-center mt-2.5">
-        Berdasarkan rata-rata 3 bulan + transaksi recurring
+        Berdasarkan tren bulan ini + transaksi recurring
       </p>
     </div>);
 
