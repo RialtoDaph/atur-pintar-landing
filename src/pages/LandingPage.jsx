@@ -1,4 +1,5 @@
 import { useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function MatrixBackground() {
   const canvasRef = useRef(null);
@@ -403,7 +404,12 @@ export default function LandingPage() {
           <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-5 h-5" />
           <span className="text-sm font-black text-white">Atur Pintar</span>
         </div>
-        <p className="text-white/20 text-xs">© 2025 Atur Pintar. Kelola uangmu lebih cerdas.</p>
+        <p className="text-white/20 text-xs mb-3">© 2025 Atur Pintar. Kelola uangmu lebih cerdas.</p>
+        <div className="flex items-center justify-center sm:justify-start gap-4">
+          <Link to="/PrivacyPolicy" className="text-white/30 hover:text-white/60 text-xs transition-colors">Kebijakan Privasi</Link>
+          <span className="text-white/15 text-xs">·</span>
+          <Link to="/TermsOfService" className="text-white/30 hover:text-white/60 text-xs transition-colors">Syarat & Ketentuan</Link>
+        </div>
       </footer>
     </div>);
 

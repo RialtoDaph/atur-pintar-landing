@@ -11,6 +11,8 @@ import LandingPage from '@/pages/LandingPage';
 import AdminSubscriptions from '@/pages/AdminSubscriptions';
 import Dashboard from '@/pages/Dashboard';
 import ProfileSettings from '@/pages/ProfileSettings';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
+import TermsOfService from '@/pages/TermsOfService';
 
 const { Pages, Layout } = pagesConfig;
 
@@ -73,6 +75,8 @@ const AuthenticatedApp = () => {
       <Route path="/Subscription" element={<LayoutWrapper currentPageName="Subscription"><Subscription /></LayoutWrapper>} />
       <Route path="/AdminSubscriptions" element={<LayoutWrapper currentPageName="AdminSubscriptions"><AdminSubscriptions /></LayoutWrapper>} />
       <Route path="/ProfileSettings" element={<LayoutWrapper currentPageName="ProfileSettings"><ProfileSettings /></LayoutWrapper>} />
+      <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
+      <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
