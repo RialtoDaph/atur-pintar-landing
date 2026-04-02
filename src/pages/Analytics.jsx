@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import PremiumGate from "@/components/subscription/PremiumGate";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
@@ -44,13 +44,7 @@ const DEFAULT_CATEGORIES_FLAT = [
 
 export default function Analytics() {
   const { t, formatShortNumber, formatCurrency } = useAppSettings();
-  const [transactions, setTransactions] = useState([]);
-  const [goals, setGoals] = useState([]);
-  const [budgets, setBudgets] = useState([]);
-  const [investments, setInvestments] = useState([]);
-  const [debts, setDebts] = useState([]);
-  const [customCategories, setCustomCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [filterPeriod, setFilterPeriod] = useState("6");
   const [customDateRange, setCustomDateRange] = useState(null);
   const [user, setUser] = useState(null);
@@ -59,55 +53,88 @@ export default function Analytics() {
   const [showCardManager, setShowCardManager] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-    }).catch(() => {});
+    base44.auth.me().then(u => setUser(u)).catch(() => {});
   }, []);
 
-  // Use React Query for data fetching with automatic caching & deduplication
-  const { data: queryData, isLoading } = useQuery({
-    queryKey: ['analytics', user?.email],
-    queryFn: async () => {
-      if (!user) return null;
-      try {
-        const [t, g, b, i, d, cc, settings] = await Promise.all([
-          base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
-          base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
-          base44.entities.Budget.filter({ created_by: user.email }),
-          base44.entities.Investment.filter({ created_by: user.email }),
-          base44.entities.Debt.filter({ created_by: user.email }),
-          base44.entities.CustomCategory.list("-created_date"),
-          base44.entities.AppSettings.list()
-        ]);
-        return { t, g, b, i, d, cc, settings };
-      } catch (error) {
-        console.error('Failed to load analytics data:', error);
-        return null;
-      }
-    },
-    enabled: !!user,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 1
+  // Real-time subscriptions — sama seperti Dashboard agar cache selalu sinkron
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub1 = base44.entities.Transaction.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
+    });
+    const unsub2 = base44.entities.SavingsGoal.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["goals", user.email] });
+    });
+    const unsub3 = base44.entities.Budget.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.email] });
+    });
+    return () => { unsub1(); unsub2(); unsub3(); };
+  }, [user?.email]);
+
+  const enabled = !!user?.email;
+
+  // Gunakan query key yang SAMA dengan Dashboard agar berbagi cache
+  const { data: transactions = [], isLoading: txLoading } = useQuery({
+    queryKey: ["transactions_dashboard", user?.email],
+    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
+    enabled,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const { data: goals = [], isLoading: goalsLoading } = useQuery({
+    queryKey: ["goals", user?.email],
+    queryFn: () => base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
+    enabled,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
+    queryKey: ["budgets", user?.email],
+    queryFn: () => base44.entities.Budget.filter({ created_by: user.email }),
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: investments = [] } = useQuery({
+    queryKey: ["investments", user?.email],
+    queryFn: () => base44.entities.Investment.filter({ created_by: user.email }),
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: debts = [] } = useQuery({
+    queryKey: ["debts", user?.email],
+    queryFn: () => base44.entities.Debt.filter({ created_by: user.email }),
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: customCategories = [] } = useQuery({
+    queryKey: ["custom_categories"],
+    queryFn: () => base44.entities.CustomCategory.list("-created_date"),
+    enabled,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  // Load analytics card settings from AppSettings
+  const { data: settingsList = [] } = useQuery({
+    queryKey: ["app_settings", user?.email],
+    queryFn: () => base44.entities.AppSettings.list(),
+    enabled,
+    staleTime: 10 * 60 * 1000,
   });
 
   useEffect(() => {
-    if (queryData) {
-      setTransactions(queryData.t || []);
-      setGoals(queryData.g || []);
-      setBudgets(queryData.b || []);
-      setInvestments(queryData.i || []);
-      setDebts(queryData.d || []);
-      setCustomCategories(queryData.cc || []);
-      const userSettings = queryData.settings?.find(s => s.id === user.settings_id);
-      if (userSettings) {
-        setAppSettings(userSettings);
-        if (userSettings.analytics_cards && userSettings.analytics_cards.length > 0) {
-          setAnalyticsCards(userSettings.analytics_cards);
-        }
+    const userSettings = settingsList?.find(s => s.id === user?.settings_id);
+    if (userSettings) {
+      setAppSettings(userSettings);
+      if (userSettings.analytics_cards && userSettings.analytics_cards.length > 0) {
+        setAnalyticsCards(userSettings.analytics_cards);
       }
     }
-    setLoading(isLoading);
-  }, [queryData, isLoading, user?.settings_id]);
+  }, [settingsList, user?.settings_id]);
+
+  const loading = txLoading || goalsLoading || budgetsLoading;
 
   const localizedMonths = useMemo(() => {
     return [
