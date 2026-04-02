@@ -60,6 +60,7 @@ export default function Analytics() {
   useEffect(() => {
     if (!user?.email) return;
     const unsub1 = base44.entities.Transaction.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["transactions_analytics", user.email] });
       queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
     });
     const unsub2 = base44.entities.SavingsGoal.subscribe(() => {
@@ -73,12 +74,12 @@ export default function Analytics() {
 
   const enabled = !!user?.email;
 
-  // Gunakan query key yang SAMA dengan Dashboard agar berbagi cache
-  const { data: transactions = [], isLoading: txLoading } = useQuery({
-    queryKey: ["transactions_dashboard", user?.email],
+  // Query key TERPISAH dari Dashboard agar limit 300 tidak konflik dengan cache 100
+  const { data: rawTransactions = [], isLoading: txLoading } = useQuery({
+    queryKey: ["transactions_analytics", user?.email],
     queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
     enabled,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0, // selalu ambil data terbaru
   });
 
   const { data: goals = [], isLoading: goalsLoading } = useQuery({
@@ -133,6 +134,9 @@ export default function Analytics() {
       }
     }
   }, [settingsList, user?.settings_id]);
+
+  // Filter recurring templates (is_recurring=true & bukan child) dari semua kalkulasi
+  const transactions = rawTransactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
 
   const loading = txLoading || goalsLoading || budgetsLoading;
 
