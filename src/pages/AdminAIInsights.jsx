@@ -21,9 +21,14 @@ export default function AdminAIInsights() {
 
   async function loadData() {
     setLoading(true);
-    const res = await base44.functions.invoke("adminGetAIInsights", {});
-    setInsights(res.data?.insights || []);
-    setStats({ totalCalls: res.data?.totalAICallsEstimate });
+    try {
+      const res = await base44.functions.invoke("adminGetAIInsights", {});
+      setInsights(res.data?.insights || []);
+      setStats({ totalCalls: res.data?.totalAICallsEstimate });
+    } catch {
+      setInsights([]);
+      setStats(null);
+    }
     setLoading(false);
   }
 
