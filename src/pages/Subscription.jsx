@@ -13,11 +13,8 @@ const PLANS = [
     features: [
       "Catat transaksi (unlimited)",
       "Dashboard keuangan",
-      "Chat Nana AI (30x/bulan)",
-      "Anggaran maks. 2 kategori",
-      "Goals maks. 2 tujuan",
-      "Utang maks. 2 aktif",
-      "Analisis AI (3 bulan terakhir)",
+      "Chat Nana AI Setiap Hari",
+      "Anggaran dan lainnya (terbatas)",
     ],
     limits: [
       "❌ Fitur Investasi",
