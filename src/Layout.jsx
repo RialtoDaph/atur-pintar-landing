@@ -273,7 +273,7 @@ function LayoutInner({ children, currentPageName }) {
 
       {/* Main content — add top padding on mobile for header */}
       <div ref={mainContentRef} className="sm:ml-60 pt-14 sm:pt-0 overflow-y-auto">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="sync">
           <motion.div
             key={currentPageName}
             initial={{ opacity: 0, x: isNestedPage ? 50 : -50 }}
