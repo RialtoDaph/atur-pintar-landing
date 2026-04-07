@@ -246,8 +246,8 @@ export default function LandingPage() {
           <div className="space-y-3">
             {[
             { icon: "⚡", text: "Catat transaksi dalam 3 detik" },
-            { icon: "📊", text: "Lihat kondisi keuangan langsung" },
-            { icon: "🤖", text: "Dapat insight personal dari Nana AI" }].
+            { icon: "📊", text: "Dashboard realtime, tau kondisi keuangan kamu kapanpun" },
+            { icon: "🤖", text: "Nana AI, asisten keuangan kamu — kasih saran personal tiap minggu" }].
             map((item, i) =>
             <div key={i} className="card-d rounded-2xl px-5 py-4 flex items-center gap-4">
                 <span className="text-2xl">{item.icon}</span>
