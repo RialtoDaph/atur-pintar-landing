@@ -208,7 +208,7 @@ export default function LandingPage() {
 
               )}
             </div>
-            <p className="text-sm text-white/50">Sudah dipakai 2.400+ pengguna aktif di Indonesia</p>
+            <p className="text-[hsl(var(--sidebar-ring))] text-sm">Sudah dipakai 2.400+ pengguna aktif di Indonesia</p>
           </div>
         </div>
       </section>
