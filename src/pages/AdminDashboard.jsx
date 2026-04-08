@@ -161,7 +161,7 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
             <p className="text-xs text-[#8FA4C8] font-medium mb-2">MRR (Monthly Recurring Revenue)</p>
             <p className="text-3xl font-bold text-[#FF6A00]">Rp {fmt(stats?.totalMRR)}</p>
-            <p className="text-xs text-[#8FA4C8] mt-2">From {premiumUsers} premium users</p>
+            <p className="text-xs text-[#8FA4C8] mt-2">From {stats?.premiumUsers} premium users</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
             <p className="text-xs text-[#8FA4C8] font-medium mb-2">Premium Conversion</p>
