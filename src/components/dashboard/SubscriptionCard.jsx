@@ -140,7 +140,7 @@ export default function SubscriptionCard({ user }) {
   const [open, setOpen] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [confirmSub, setConfirmSub] = useState(null);
-  const [tappedSubId, setTappedSubId] = useState(null);
+  const [popupSub, setPopupSub] = useState(null);
   const [editingSub, setEditingSub] = useState(null);
 
   useEffect(() => {
@@ -179,7 +179,7 @@ export default function SubscriptionCard({ user }) {
     await base44.entities.Subscription.delete(id);
     setSubs((prev) => prev.filter((s) => s.id !== id));
     setEditingSub(null);
-    setTappedSubId(null);
+    setPopupSub(null);
   }
 
   async function handleUpdate(id, data) {
@@ -189,6 +189,7 @@ export default function SubscriptionCard({ user }) {
   }
 
   const active = subs.filter((s) => s.status === "active");
+  const cancelled = subs.filter((s) => s.status === "cancelled");
   const totalMonthly = active.reduce((sum, s) => sum + s.amount * (CYCLE_FACTOR[s.billing_cycle] ?? 1), 0);
   const soonCount = active.filter((s) => { const d = getDaysUntil(s.next_due_date); return d >= 0 && d <= 3; }).length;
 
@@ -232,65 +233,45 @@ export default function SubscriptionCard({ user }) {
                     const days = getDaysUntil(sub.next_due_date);
                     const isSoon = days >= 0 && days <= 3;
                     const isOverdue = days < 0;
-                    const isTapped = tappedSubId === sub.id;
                     return (
-                      <div key={sub.id}>
-                        <div
-                          className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors tap-highlight-fix ${isTapped ? "bg-[#F8FAFC]" : "hover:bg-[#F8FAFC]"}`}
-                          onClick={() => setTappedSubId(isTapped ? null : sub.id)}
-                        >
-                          <div className="w-9 h-9 rounded-xl bg-[#F8FAFC] border border-[#F0F2F5] flex items-center justify-center text-base flex-shrink-0">
-                            {sub.icon || "📦"}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold text-[#1A1A1A] truncate">{sub.name}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-[11px] font-bold text-[#FF6A00]">
-                                {formatCurrency(sub.amount)}
-                                <span className="font-normal text-[#8FA4C8]">{CYCLE_LABEL[sub.billing_cycle]}</span>
-                              </span>
-                              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                isOverdue ? "bg-[#FF6B6B]/10 text-[#FF6B6B]" :
-                                isSoon ? "bg-[#FF6A00]/10 text-[#FF6A00]" :
-                                "bg-[#F2F4F7] text-[#8FA4C8]"
-                              }`}>
-                                {isOverdue ? `${Math.abs(days)} hari lalu` : days === 0 ? "Hari ini!" : `${days} hari lagi`}
-                              </span>
-                            </div>
-                          </div>
-                          <ChevronDown className={`w-3.5 h-3.5 text-[#8FA4C8] flex-shrink-0 transition-transform ${isTapped ? "rotate-180" : ""}`} />
+                      <div key={sub.id}
+                        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#F8FAFC] transition-colors tap-highlight-fix"
+                        onClick={() => setPopupSub(sub)}
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-[#F8FAFC] border border-[#F0F2F5] flex items-center justify-center text-base flex-shrink-0">
+                          {sub.icon || "📦"}
                         </div>
-                        {isTapped && (
-                          <div className="flex items-center gap-2 px-4 py-2.5 bg-[#F8FAFC] border-t border-[#F2F4F7]">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setConfirmSub(sub); setTappedSubId(null); }}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] text-[10px] font-bold hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Bayar
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setEditingSub(sub); setTappedSubId(null); }}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4F7CFF]/10 text-[#4F7CFF] text-[10px] font-bold hover:bg-[#4F7CFF]/20 transition-colors tap-highlight-fix"
-                            >
-                              <Pencil className="w-3.5 h-3.5" /> Edit
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleDelete(sub.id); setTappedSubId(null); }}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF6B6B]/10 text-[#FF6B6B] text-[10px] font-bold hover:bg-[#FF6B6B]/20 transition-colors tap-highlight-fix ml-auto"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Hapus
-                            </button>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-[#1A1A1A] truncate">{sub.name}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[11px] font-bold text-[#FF6A00]">
+                              {formatCurrency(sub.amount)}
+                              <span className="font-normal text-[#8FA4C8]">{CYCLE_LABEL[sub.billing_cycle]}</span>
+                            </span>
+                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                              isOverdue ? "bg-[#FF6B6B]/10 text-[#FF6B6B]" :
+                              isSoon ? "bg-[#FF6A00]/10 text-[#FF6A00]" :
+                              "bg-[#F2F4F7] text-[#8FA4C8]"
+                            }`}>
+                              {isOverdue ? `${Math.abs(days)} hari lalu` : days === 0 ? "Hari ini!" : `${days} hari lagi`}
+                            </span>
                           </div>
-                        )}
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setConfirmSub(sub); }}
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] text-[10px] font-bold hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix flex-shrink-0"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Bayar
+                        </button>
                       </div>
                     );
                   })}
-                  {subs.filter(s => s.status === "cancelled").length > 0 && (
+                  {cancelled.length > 0 && (
                     <div className="px-4 py-2 bg-[#F8FAFC]">
                       <p className="text-[10px] text-[#8FA4C8] font-semibold">DIBATALKAN</p>
                     </div>
                   )}
-                  {subs.filter(s => s.status === "cancelled").map((sub) => (
+                  {cancelled.map((sub) => (
                     <div key={sub.id} className="flex items-center gap-3 px-4 py-2.5 opacity-40">
                       <div className="w-8 h-8 rounded-xl bg-[#F2F4F7] flex items-center justify-center text-sm flex-shrink-0">{sub.icon || "📦"}</div>
                       <div className="flex-1 min-w-0">
@@ -315,6 +296,28 @@ export default function SubscriptionCard({ user }) {
       </div>
 
       {showAdd && <AddSubscriptionModal onClose={() => setShowAdd(false)} onSave={handleAdd} />}
+
+      {popupSub && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6" onClick={() => setPopupSub(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-xs shadow-xl overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="px-4 py-3 border-b border-[#F2F4F7]">
+              <p className="text-sm font-bold text-[#1A1A1A]">{popupSub.icon} {popupSub.name}</p>
+              <p className="text-[10px] text-[#8FA4C8]">{formatCurrency(popupSub.amount)}{CYCLE_LABEL[popupSub.billing_cycle]}</p>
+            </div>
+            <div className="flex gap-2 p-3">
+              <button onClick={() => { setEditingSub(popupSub); setPopupSub(null); }}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-[#4F7CFF]/10 text-[#4F7CFF] text-xs font-bold tap-highlight-fix">
+                <Pencil className="w-3.5 h-3.5" /> Edit
+              </button>
+              <button onClick={() => { handleDelete(popupSub.id); setPopupSub(null); }}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-[#FF6B6B]/10 text-[#FF6B6B] text-xs font-bold tap-highlight-fix">
+                <Trash2 className="w-3.5 h-3.5" /> Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {editingSub && (
         <EditSubscriptionModal
           sub={editingSub}
@@ -323,6 +326,7 @@ export default function SubscriptionCard({ user }) {
           onDelete={handleDelete}
         />
       )}
+
       {confirmSub && (
         <ConfirmMarkDoneModal
           title={confirmSub.name}

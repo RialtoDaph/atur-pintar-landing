@@ -162,8 +162,31 @@ export default function ContractPaymentsCard({ user }) {
   );
 }
 
+function ItemPopup({ tx, isIncome, onEdit, onDelete, onClose }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6" onClick={onClose}>
+      <div className="bg-white rounded-2xl w-full max-w-xs shadow-xl overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="px-4 py-3 border-b border-[#F2F4F7]">
+          <p className="text-sm font-bold text-[#1A1A1A] truncate">{tx.note || (isIncome ? "Pendapatan" : "Tagihan")}</p>
+          <p className="text-[10px] text-[#8FA4C8] capitalize">{INTERVAL_LABEL[tx.recurring_interval] || tx.recurring_interval}</p>
+        </div>
+        <div className="flex gap-2 p-3">
+          <button onClick={() => { onEdit(tx.id); onClose(); }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-[#4F7CFF]/10 text-[#4F7CFF] text-xs font-bold tap-highlight-fix">
+            <Pencil className="w-3.5 h-3.5" /> Edit
+          </button>
+          <button onClick={() => { onDelete(tx.id); onClose(); }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-[#FF6B6B]/10 text-[#FF6B6B] text-xs font-bold tap-highlight-fix">
+            <Trash2 className="w-3.5 h-3.5" /> Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Section({ label, items, isIncome, onMarkDone, onEdit, onDelete, formatCurrency, onAdd }) {
-  const [tappedId, setTappedId] = useState(null);
+  const [popupTx, setPopupTx] = useState(null);
   return (
     <div className="border-t border-[#F2F4F7]">
       <div className="flex items-center justify-between px-4 py-2">
@@ -181,53 +204,40 @@ function Section({ label, items, isIncome, onMarkDone, onEdit, onDelete, formatC
       ) : (
         <div className="pb-1">
           {items.map((tx) => (
-            <div key={tx.id}>
-              <div
-                className={`flex items-center gap-2.5 px-4 py-2.5 transition-colors ${tappedId === tx.id ? "bg-[#F8FAFC]" : "hover:bg-[#F8FAFC]"}`}
-              >
-                <div className="flex-1 min-w-0" onClick={() => setTappedId(tappedId === tx.id ? null : tx.id)}>
-                  <p className="text-xs font-medium text-[#1A1A1A] truncate">{tx.note || (isIncome ? "Pendapatan" : "Tagihan")}</p>
-                  <p className="text-[9px] text-[#8FA4C8] capitalize">
-                    {INTERVAL_LABEL[tx.recurring_interval] || tx.recurring_interval}
-                    {(tx.recurring_interval === 'monthly' || tx.recurring_interval === 'yearly') && tx.date
-                      ? ` · tgl ${new Date(tx.date + 'T12:00:00').getDate()}`
-                      : ''}
-                  </p>
-                </div>
-                <span className={`text-xs font-bold flex-shrink-0 ${isIncome ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`} onClick={() => setTappedId(tappedId === tx.id ? null : tx.id)}>
-                  {isIncome ? "+" : "−"}{formatCurrency(tx.amount)}
-                </span>
-                <button
-                  onClick={() => onMarkDone(tx)}
-                  className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex-shrink-0 transition-colors tap-highlight-fix ${
-                    isIncome
-                      ? "bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20"
-                      : "bg-[#FF6B6B]/10 text-[#FF6B6B] hover:bg-[#FF6B6B]/20"
-                  }`}
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  {isIncome ? "Terima" : "Bayar"}
-                </button>
+            <div key={tx.id}
+              className="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+              onClick={() => setPopupTx(tx)}
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-[#1A1A1A] truncate">{tx.note || (isIncome ? "Pendapatan" : "Tagihan")}</p>
+                <p className="text-[9px] text-[#8FA4C8] capitalize">
+                  {INTERVAL_LABEL[tx.recurring_interval] || tx.recurring_interval}
+                  {(tx.recurring_interval === 'monthly' || tx.recurring_interval === 'yearly') && tx.date
+                    ? ` · tgl ${new Date(tx.date + 'T12:00:00').getDate()}`
+                    : ''}
+                </p>
               </div>
-              {tappedId === tx.id && (
-                <div className="flex items-center gap-2 px-4 py-2 bg-[#F8FAFC] border-t border-[#F2F4F7]">
-                  <button
-                    onClick={() => { onEdit(tx.id); setTappedId(null); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4F7CFF]/10 text-[#4F7CFF] text-[10px] font-bold hover:bg-[#4F7CFF]/20 transition-colors tap-highlight-fix"
-                  >
-                    <Pencil className="w-3.5 h-3.5" /> Edit
-                  </button>
-                  <button
-                    onClick={() => { onDelete(tx.id); setTappedId(null); }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF6B6B]/10 text-[#FF6B6B] text-[10px] font-bold hover:bg-[#FF6B6B]/20 transition-colors tap-highlight-fix ml-auto"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> Hapus
-                  </button>
-                </div>
-              )}
+              <span className={`text-xs font-bold flex-shrink-0 ${isIncome ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                {isIncome ? "+" : "−"}{formatCurrency(tx.amount)}
+              </span>
+              <button
+                onClick={e => { e.stopPropagation(); onMarkDone(tx); }}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold flex-shrink-0 transition-colors tap-highlight-fix ${
+                  isIncome
+                    ? "bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20"
+                    : "bg-[#FF6B6B]/10 text-[#FF6B6B] hover:bg-[#FF6B6B]/20"
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                {isIncome ? "Terima" : "Bayar"}
+              </button>
             </div>
           ))}
         </div>
+      )}
+
+      {popupTx && (
+        <ItemPopup tx={popupTx} isIncome={isIncome} onEdit={onEdit} onDelete={onDelete} onClose={() => setPopupTx(null)} />
       )}
     </div>
   );
