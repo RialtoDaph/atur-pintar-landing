@@ -2,6 +2,7 @@ import { createPageUrl } from "@/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, Settings, Bell, Lightbulb, Search, Grid3x3, ArrowLeft, Wallet, Users } from "lucide-react";
 import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
+import AdminNotificationPanel from "@/components/notifications/AdminNotificationPanel";
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import NanaFloatingChat from "@/components/nana/NanaFloatingChat";
@@ -17,6 +18,8 @@ function LayoutInner({ children, currentPageName }) {
   const [anyModalOpen, setAnyModalOpen] = useState(false);
   const [unreadAlertCount, setUnreadAlertCount] = useState(0);
   const [showTour, setShowTour] = useState(false);
+  const [showAdminNotifications, setShowAdminNotifications] = useState(false);
+  const [unreadAdminCount, setUnreadAdminCount] = useState(0);
   const { t } = useAppSettings();
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,9 +39,21 @@ function LayoutInner({ children, currentPageName }) {
       if (u?.onboarding_completed && !u?.tour_completed) {
         setTimeout(() => setShowTour(true), 1800);
       }
-      // Fetch unread alerts count
+      // Log login
+      base44.functions.invoke('logUserLogin', {}).catch(() => {});
+      
+      // Fetch unread alerts
       base44.entities.Alert.filter({ created_by: u.email, status: "unread" }).then((alerts) => {
         setUnreadAlertCount(alerts?.length || 0);
+      }).catch(() => {});
+      
+      // Fetch unread admin notifications
+      base44.entities.AdminNotification.list().then((notifs) => {
+        const relevant = notifs.filter(n => 
+          (n.target_type === 'all' || n.target_email === u.email) && 
+          (!n.read_by?.includes(u.email))
+        );
+        setUnreadAdminCount(relevant.length);
       }).catch(() => {});
     }).catch(() => {});
   }, []);
@@ -253,13 +268,16 @@ function LayoutInner({ children, currentPageName }) {
           }
 
           <div className="flex items-center gap-2">
-            <button onClick={() => { setShowAlertsDrawer(true); setUnreadAlertCount(0); }} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
+            <button onClick={() => { setShowAdminNotifications(true); setUnreadAdminCount(0); }} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Bell className="w-4 h-4" />
-              {unreadAlertCount > 0 && (
+              {unreadAdminCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF6A00] text-white text-[9px] font-bold flex items-center justify-center">
-                  {unreadAlertCount > 9 ? "9+" : unreadAlertCount}
+                  {unreadAdminCount > 9 ? "9+" : unreadAdminCount}
                 </span>
               )}
+            </button>
+            <button onClick={() => { setShowAlertsDrawer(true); setUnreadAlertCount(0); }} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
+              <Bell className="w-4 h-4" />
             </button>
             <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Search className="w-4 h-4" />
@@ -322,6 +340,9 @@ function LayoutInner({ children, currentPageName }) {
       <ReminderNotificationPopup user={user} />
 
 
+
+      {/* Admin Notifications */}
+      {showAdminNotifications && <AdminNotificationPanel user={user} onClose={() => setShowAdminNotifications(false)} />}
 
       {/* Alerts Drawer */}
       {showAlertsDrawer && <AlertsDrawer onClose={() => setShowAlertsDrawer(false)} user={user} />}

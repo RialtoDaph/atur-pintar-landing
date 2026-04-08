@@ -37,6 +37,8 @@ export default function AdminDashboard() {
 
       // Calculate metrics
       const totalUsers = allUsers.length;
+      const premiumMonthly = allUsers.filter(u => u.subscription_plan === "premium_monthly" && u.subscription_status === "active");
+      const premiumYearly = allUsers.filter(u => u.subscription_plan === "premium_yearly" && u.subscription_status === "active");
       const premiumUsers = allUsers.filter(u => u.subscription_plan && u.subscription_plan !== "free" && u.subscription_status === "active").length;
       const thisMonth = new Date().toISOString().slice(0, 7);
       const newUsersThisMonth = allUsers.filter(u => u.created_date?.startsWith(thisMonth)).length;

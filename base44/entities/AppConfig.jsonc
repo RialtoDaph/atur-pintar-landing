@@ -1,0 +1,57 @@
+{
+  "name": "AppConfig",
+  "type": "object",
+  "properties": {
+    "feature_split_bill": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable Split Bill feature"
+    },
+    "feature_shared_wallet": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable Shared Wallet feature"
+    },
+    "feature_investment": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable Investment feature"
+    },
+    "feature_nana_ai": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable Nana AI chat"
+    },
+    "feature_gamification": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable streaks and achievements"
+    },
+    "feature_waiting_list": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable waiting list"
+    },
+    "maintenance_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show maintenance page to non-admin users"
+    },
+    "premium_price_monthly": {
+      "type": "number",
+      "default": 49000,
+      "description": "Monthly premium price in IDR"
+    },
+    "premium_price_yearly": {
+      "type": "number",
+      "default": 490000,
+      "description": "Yearly premium price in IDR"
+    },
+    "app_name": {
+      "type": "string",
+      "default": "Atur Pintar",
+      "description": "Application name"
+    }
+  },
+  "required": []
+}

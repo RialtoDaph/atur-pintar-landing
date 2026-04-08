@@ -22,6 +22,7 @@ import AdminLogs from '@/pages/AdminLogs';
 import AdminNotifications from '@/pages/AdminNotifications';
 import AdminCategories from '@/pages/AdminCategories';
 import AdminSettings from '@/pages/AdminSettings';
+import AdminProtect from '@/components/admin/AdminProtect';
 
 const { Pages, Layout } = pagesConfig;
 
@@ -90,12 +91,12 @@ const AuthenticatedApp = () => {
       <Route path="/Notifications" element={<LayoutWrapper currentPageName="Notifications"><Notifications /></LayoutWrapper>} />
       <Route path="/Accounts" element={<LayoutWrapper currentPageName="Accounts"><Accounts /></LayoutWrapper>} />
       <Route path="/SharedFinance" element={<LayoutWrapper currentPageName="SharedFinance"><SharedFinance /></LayoutWrapper>} />
-      <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper>} />
-      <Route path="/AdminUsers" element={<LayoutWrapper currentPageName="AdminUsers"><AdminUsers /></LayoutWrapper>} />
-      <Route path="/AdminLogs" element={<LayoutWrapper currentPageName="AdminLogs"><AdminLogs /></LayoutWrapper>} />
-      <Route path="/AdminNotifications" element={<LayoutWrapper currentPageName="AdminNotifications"><AdminNotifications /></LayoutWrapper>} />
-      <Route path="/AdminCategories" element={<LayoutWrapper currentPageName="AdminCategories"><AdminCategories /></LayoutWrapper>} />
-      <Route path="/AdminSettings" element={<LayoutWrapper currentPageName="AdminSettings"><AdminSettings /></LayoutWrapper>} />
+      <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminProtect><AdminDashboard /></AdminProtect></LayoutWrapper>} />
+      <Route path="/AdminUsers" element={<LayoutWrapper currentPageName="AdminUsers"><AdminProtect><AdminUsers /></AdminProtect></LayoutWrapper>} />
+      <Route path="/AdminLogs" element={<LayoutWrapper currentPageName="AdminLogs"><AdminProtect><AdminLogs /></AdminProtect></LayoutWrapper>} />
+      <Route path="/AdminNotifications" element={<LayoutWrapper currentPageName="AdminNotifications"><AdminProtect><AdminNotifications /></AdminProtect></LayoutWrapper>} />
+      <Route path="/AdminCategories" element={<LayoutWrapper currentPageName="AdminCategories"><AdminProtect><AdminCategories /></AdminProtect></LayoutWrapper>} />
+      <Route path="/AdminSettings" element={<LayoutWrapper currentPageName="AdminSettings"><AdminProtect><AdminSettings /></AdminProtect></LayoutWrapper>} />
       <Route path="/AdminAIInsights" element={<Navigate to="/AdminDashboard" replace />} />
       <Route path="/AdminAnomalies" element={<Navigate to="/AdminDashboard" replace />} />
       <Route path="/AdminTransactions" element={<Navigate to="/AdminUsers" replace />} />
