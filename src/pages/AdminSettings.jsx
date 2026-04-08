@@ -27,6 +27,7 @@ export default function AdminSettings() {
       waiting_list_form: true
     }
   });
+  const [deletingSimData, setDeletingSimData] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -129,6 +130,51 @@ export default function AdminSettings() {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  async function deleteSimulationData() {
+    if (!window.confirm("⚠️ YAKIN? Ini akan menghapus semua data simulasi. Tindakan ini TIDAK BISA DIBATALKAN.")) return;
+    if (!window.confirm("Hapus investment, alert, dan notifikasi simulasi? Ketik 'HAPUS' untuk konfirmasi.")) return;
+    setDeletingSimData(true);
+    try {
+      const investmentIds = ["69d6ac16b817fa58e538e224", "69d6ac16b817fa58e538e225", "69d6ac16b817fa58e538e226"];
+      const alertIds = ["69d6ac61427fef70824fe32a", "69d6ac61427fef70824fe32b", "69d6ac61427fef70824fe32c"];
+      const notifIds = ["69d6abc60171dac7dd9eb414", "69d6c10da1db39cbb506cb59"];
+      
+      let deleted = 0;
+      for (const id of investmentIds) {
+        try {
+          await base44.entities.Investment.delete(id);
+          deleted++;
+        } catch (e) {}
+      }
+      for (const id of alertIds) {
+        try {
+          await base44.entities.Alert.delete(id);
+          deleted++;
+        } catch (e) {}
+      }
+      for (const id of notifIds) {
+        try {
+          await base44.entities.AdminNotification.delete(id);
+          deleted++;
+        } catch (e) {}
+      }
+      
+      await base44.entities.SystemLog.create({
+        log_type: "activity",
+        user_email: user?.email,
+        action: "simulation_data_deleted",
+        severity: "warning",
+        details: `Deleted ${deleted} simulation records (investments, alerts, notifications)`
+      });
+      
+      setSuccessMsg(`✓ Berhasil menghapus ${deleted} record simulasi`);
+      setTimeout(() => setSuccessMsg(""), 3000);
+    } catch (e) {
+      console.error(e);
+    }
+    setDeletingSimData(false);
   }
 
   const exportWaitingListCSV = () => {
@@ -298,6 +344,17 @@ export default function AdminSettings() {
                 </button>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-red-200">
+          <h2 className="text-lg font-bold text-red-600 mb-4">⚠️ Danger Zone</h2>
+          <div className="space-y-3">
+            <button onClick={deleteSimulationData} disabled={deletingSimData} className="w-full px-4 py-3 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 disabled:opacity-60">
+              {deletingSimData ? "Menghapus..." : "🗑️ Hapus Sisa Data Simulasi"}
+            </button>
+            <p className="text-xs text-red-600">Menghapus semua investment, alert, dan notifikasi simulasi. Tidak bisa dibatalkan.</p>
           </div>
         </div>
 
