@@ -41,6 +41,7 @@ export async function processRecurringTransactions(userEmail) {
           date: current,
           is_recurring_child: true,
           recurring_parent_id: tx.id,
+          ...(tx.account_id ? { account_id: tx.account_id } : {}),
         });
         latestGenerated = current;
         current = addInterval(current, tx.recurring_interval);

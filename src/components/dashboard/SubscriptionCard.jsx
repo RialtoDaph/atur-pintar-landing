@@ -4,6 +4,7 @@ import { Plus, Trash2, ChevronDown, Bell, XCircle, CreditCard, CheckCircle2 } fr
 import ConfirmMarkDoneModal from "./ConfirmMarkDoneModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { toast } from "sonner";
+import { syncAccountBalance } from "@/components/utils/accountSync";
 
 const CYCLE_LABEL = { monthly: "/bln", quarterly: "/3bln", yearly: "/thn" };
 const CYCLE_FACTOR = { monthly: 1, quarterly: 1 / 3, yearly: 1 / 12 };
@@ -81,12 +82,14 @@ export default function SubscriptionCard({ user }) {
     setShowAdd(false);
   }
 
-  async function doMarkDone(sub) {
+  async function doMarkDone(sub, accountId) {
     await base44.entities.Transaction.create({
       amount: sub.amount, type: "expense", category: "subscriptions",
       note: sub.name + " (selesai)", date: new Date().toISOString().split("T")[0],
-      is_recurring: false, is_recurring_child: false
+      is_recurring: false, is_recurring_child: false,
+      ...(accountId ? { account_id: accountId } : {})
     });
+    if (accountId) await syncAccountBalance(accountId, sub.amount, "expense", 1);
     const next = new Date(sub.next_due_date);
     if (sub.billing_cycle === "monthly") next.setMonth(next.getMonth() + 1);else
     if (sub.billing_cycle === "quarterly") next.setMonth(next.getMonth() + 3);else
@@ -207,7 +210,7 @@ export default function SubscriptionCard({ user }) {
         title={confirmSub.name}
         amount={confirmSub.amount}
         formatCurrency={formatCurrency}
-        onConfirm={() => doMarkDone(confirmSub)}
+        onConfirm={(accountId) => doMarkDone(confirmSub, accountId)}
         onClose={() => setConfirmSub(null)} />
 
       }

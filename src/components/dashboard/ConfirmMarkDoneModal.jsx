@@ -1,13 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
 
 export default function ConfirmMarkDoneModal({ title, amount, formatCurrency, onConfirm, onClose }) {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [selectedAccountId, setSelectedAccountId] = useState("");
+
+  useEffect(() => {
+    base44.entities.Account.filter({}).then((data) => {
+      setAccounts(data || []);
+      const def = data?.find(a => a.is_default);
+      if (def) setSelectedAccountId(def.id);
+      else if (data?.[0]) setSelectedAccountId(data[0].id);
+    }).catch(() => {});
+  }, []);
 
   async function handleConfirm() {
     setLoading(true);
-    await onConfirm();
+    await onConfirm(selectedAccountId || null);
     setDone(true);
     setLoading(false);
     setTimeout(() => onClose(), 1400);
@@ -34,9 +46,23 @@ export default function ConfirmMarkDoneModal({ title, amount, formatCurrency, on
             {amount != null &&
           <p className="text-base font-bold text-[#1A1A1A] mb-4">{formatCurrency(amount)}</p>
           }
-            <p className="text-[11px] text-[#8FA4C8] mb-4">
+            <p className="text-[11px] text-[#8FA4C8] mb-3">
               Transaksi ini akan dicatat ke riwayat pengeluaran hari ini.
             </p>
+            {accounts.length > 0 && (
+              <div className="mb-4">
+                <p className="text-[10px] text-[#8FA4C8] font-semibold mb-1 text-left">Potong dari rekening:</p>
+                <select
+                  value={selectedAccountId}
+                  onChange={(e) => setSelectedAccountId(e.target.value)}
+                  className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#00C9A7]/30 focus:border-[#00C9A7] bg-white">
+                  <option value="">-- Tidak potong rekening --</option>
+                  {accounts.map(a => (
+                    <option key={a.id} value={a.id}>{a.icon || "💳"} {a.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="flex gap-2">
               <button
               onClick={onClose}
