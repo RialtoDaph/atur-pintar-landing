@@ -16,6 +16,7 @@ import TermsOfService from '@/pages/TermsOfService';
 import Notifications from '@/pages/Notifications';
 import Accounts from '@/pages/Accounts';
 import SharedFinance from '@/pages/SharedFinance';
+import AdminDashboard from '@/pages/AdminDashboard';
 
 const { Pages, Layout } = pagesConfig;
 
@@ -84,6 +85,7 @@ const AuthenticatedApp = () => {
       <Route path="/Notifications" element={<LayoutWrapper currentPageName="Notifications"><Notifications /></LayoutWrapper>} />
       <Route path="/Accounts" element={<LayoutWrapper currentPageName="Accounts"><Accounts /></LayoutWrapper>} />
       <Route path="/SharedFinance" element={<LayoutWrapper currentPageName="SharedFinance"><SharedFinance /></LayoutWrapper>} />
+      <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper>} />
       <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="*" element={<PageNotFound />} />
