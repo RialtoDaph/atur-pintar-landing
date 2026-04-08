@@ -10,6 +10,7 @@ import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionn
 import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
 import BalanceCard from "@/components/dashboard/BalanceCard";
+import AccountsWidget from "@/components/dashboard/AccountsWidget";
 
 import RecurringManager from "@/components/transactions/RecurringManager";
 import ReminderWidget from "@/components/reminders/ReminderWidget";
@@ -171,6 +172,9 @@ export default function Dashboard() {
             loadData();
           }} />
         )}
+
+        {/* Accounts Widget */}
+        {user?.onboarding_completed && <AccountsWidget user={user} />}
 
         {/* Streak Widget */}
         {user?.onboarding_completed && <StreakWidget user={user} transactionCount={thisMonthTx.length} />}

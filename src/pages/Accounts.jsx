@@ -90,9 +90,14 @@ function AccountModal({ account, onClose, onSave }) {
           <div>
             <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Saldo Awal</p>
             <input
-              type="number"
-              value={form.balance}
-              onChange={e => setForm(f => ({ ...f, balance: parseFloat(e.target.value) || 0 }))}
+              type="text"
+              inputMode="numeric"
+              value={form._balanceDisplay ?? (form.balance ? Number(form.balance).toLocaleString("id-ID") : "")}
+              onChange={e => {
+                const raw = e.target.value.replace(/[^0-9]/g, "");
+                setForm(f => ({ ...f, balance: parseFloat(raw) || 0, _balanceDisplay: raw === "" ? "" : Number(raw).toLocaleString("id-ID") }));
+              }}
+              placeholder="0"
               className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#FF6A00]/30"
             />
           </div>

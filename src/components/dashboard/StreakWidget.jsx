@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Flame, Star, Trophy, Zap } from "lucide-react";
+import { Flame, ChevronDown, ChevronUp, Trophy, Zap } from "lucide-react";
 import { format } from "date-fns";
-import { Link } from "react-router-dom";
 
 const LEVELS = [
   { level: 1, name: "Pemula", min: 0, max: 100, color: "#8FA4C8" },
@@ -15,6 +14,7 @@ const LEVELS = [
 export default function StreakWidget({ user, transactionCount }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -26,14 +26,15 @@ export default function StreakWidget({ user, transactionCount }) {
     const existing = await base44.entities.GamificationProfile.filter({ created_by: user.email });
 
     if (existing.length === 0) {
-      // First time - create profile
+      // First time - only create if there's actual transactions
+      if (transactionCount === 0) { setLoading(false); return; }
       const p = await base44.entities.GamificationProfile.create({
         daily_streak: 1,
         longest_streak: 1,
         last_activity_date: today,
         total_points: 10,
         level: 1,
-        achievements: ["first_login"],
+        achievements: ["first_transaction"],
       });
       setProfile(p);
       setLoading(false);
@@ -46,24 +47,27 @@ export default function StreakWidget({ user, transactionCount }) {
 
     let updates = {};
 
-    if (last === today) {
-      // Already active today, just award points for transactions
-      if (transactionCount > 0 && !p.achievements?.includes("first_transaction")) {
-        updates.achievements = [...(p.achievements || []), "first_transaction"];
-        updates.total_points = (p.total_points || 0) + 50;
+    // Only update streak/activity date if user has actual transactions today
+    if (transactionCount > 0) {
+      if (last === today) {
+        // Already active today, award first_transaction achievement
+        if (!p.achievements?.includes("first_transaction")) {
+          updates.achievements = [...(p.achievements || []), "first_transaction"];
+          updates.total_points = (p.total_points || 0) + 50;
+        }
+      } else if (last === yesterday) {
+        // Continued streak!
+        const newStreak = (p.daily_streak || 0) + 1;
+        updates.daily_streak = newStreak;
+        updates.longest_streak = Math.max(p.longest_streak || 0, newStreak);
+        updates.last_activity_date = today;
+        updates.total_points = (p.total_points || 0) + 10 + (newStreak % 7 === 0 ? 50 : 0);
+      } else {
+        // Streak broken
+        updates.daily_streak = 1;
+        updates.last_activity_date = today;
+        updates.total_points = (p.total_points || 0) + 5;
       }
-    } else if (last === yesterday) {
-      // Continued streak!
-      const newStreak = (p.daily_streak || 0) + 1;
-      updates.daily_streak = newStreak;
-      updates.longest_streak = Math.max(p.longest_streak || 0, newStreak);
-      updates.last_activity_date = today;
-      updates.total_points = (p.total_points || 0) + 10 + (newStreak % 7 === 0 ? 50 : 0); // bonus every 7 days
-    } else if (last !== today) {
-      // Streak broken
-      updates.daily_streak = 1;
-      updates.last_activity_date = today;
-      updates.total_points = (p.total_points || 0) + 5;
     }
 
     // Update level
@@ -91,30 +95,66 @@ export default function StreakWidget({ user, transactionCount }) {
   const isActiveToday = profile.last_activity_date === format(new Date(), "yyyy-MM-dd");
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm px-4 py-3 border border-[#F2F4F7] flex items-center gap-3">
-      {/* Flame + streak */}
-      <div className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${isActiveToday ? "bg-[#FF6A00]/10" : "bg-[#F2F4F7]"}`}>
-        <Flame className={`w-4 h-4 ${isActiveToday ? "text-[#FF6A00]" : "text-[#8FA4C8]"}`} />
-        <p className={`text-xs font-black leading-none mt-0.5 ${isActiveToday ? "text-[#FF6A00]" : "text-[#8FA4C8]"}`}>{profile.daily_streak}</p>
-      </div>
+    <div className="bg-white rounded-2xl shadow-sm border border-[#F2F4F7] overflow-hidden">
+      <button
+        onClick={() => setExpanded(v => !v)}
+        className="w-full px-4 py-3 flex items-center gap-3 text-left tap-highlight-fix"
+      >
+        {/* Flame + streak */}
+        <div className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${isActiveToday ? "bg-[#FF6A00]/10" : "bg-[#F2F4F7]"}`}>
+          <Flame className={`w-4 h-4 ${isActiveToday ? "text-[#FF6A00]" : "text-[#8FA4C8]"}`} />
+          <p className={`text-xs font-black leading-none mt-0.5 ${isActiveToday ? "text-[#FF6A00]" : "text-[#8FA4C8]"}`}>{profile.daily_streak}</p>
+        </div>
 
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-[#1A1A1A] leading-tight">
-          {!isActiveToday ? "Catat transaksi hari ini!" : `${profile.daily_streak} hari berturut-turut 🔥`}
-        </p>
-        {nextLevel && (
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex-1 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${progressToNext}%`, backgroundColor: currentLevel.color }} />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-[#1A1A1A] leading-tight">
+            {!isActiveToday ? "Catat transaksi hari ini!" : `${profile.daily_streak} hari berturut-turut 🔥`}
+          </p>
+          {nextLevel && (
+            <div className="flex items-center gap-2 mt-1">
+              <div className="flex-1 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${progressToNext}%`, backgroundColor: currentLevel.color }} />
+              </div>
+              <span className="text-[10px] text-[#8FA4C8] whitespace-nowrap">{profile.total_points} XP</span>
             </div>
-            <span className="text-[10px] text-[#8FA4C8] whitespace-nowrap">{profile.total_points} XP</span>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: currentLevel.color + "20", color: currentLevel.color }}>
-        Lv.{currentLevel.level}
-      </span>
+        <span className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: currentLevel.color + "20", color: currentLevel.color }}>
+          Lv.{currentLevel.level}
+        </span>
+        {expanded ? <ChevronUp className="w-4 h-4 text-[#8FA4C8] flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-[#8FA4C8] flex-shrink-0" />}
+      </button>
+
+      {expanded && (
+        <div className="border-t border-[#F2F4F7] px-4 py-3 grid grid-cols-3 gap-3">
+          <div className="text-center">
+            <p className="text-2xl font-black text-[#FF6A00]">{profile.daily_streak}</p>
+            <p className="text-[10px] text-[#8FA4C8] font-medium">Streak Kini</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-black text-[#1A1A1A]">{profile.longest_streak || 0}</p>
+            <p className="text-[10px] text-[#8FA4C8] font-medium">Terpanjang</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-black" style={{ color: currentLevel.color }}>{profile.total_points}</p>
+            <p className="text-[10px] text-[#8FA4C8] font-medium">Total XP</p>
+          </div>
+          <div className="col-span-3">
+            <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase tracking-wider mb-1.5">Level berikutnya</p>
+            {nextLevel ? (
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all" style={{ width: `${progressToNext}%`, backgroundColor: currentLevel.color }} />
+                </div>
+                <span className="text-xs font-bold" style={{ color: currentLevel.color }}>{nextLevel.name}</span>
+              </div>
+            ) : (
+              <p className="text-xs font-bold text-[#FF6A00]">🏆 Level Maksimum tercapai!</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
