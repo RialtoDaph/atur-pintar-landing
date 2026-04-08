@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStreakManager from "@/components/admin/AdminStreakManager";
 import { Users, ArrowLeftRight, TrendingUp, TrendingDown, UserCheck, UserCheck2, RefreshCw } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend,
@@ -90,9 +91,14 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Streak Manager */}
+        <div className="mt-6">
+          <AdminStreakManager />
+        </div>
+
         {/* Charts */}
         {stats?.chartData && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
             <div className="bg-white rounded-2xl p-5 shadow-sm">
               <p className="text-sm font-semibold text-[#1A1A1A] mb-4">Pertumbuhan Transaksi (6 Bulan)</p>
               <ResponsiveContainer width="100%" height={220}>
