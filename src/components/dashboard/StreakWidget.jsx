@@ -13,7 +13,7 @@ const LEVELS = [
   { level: 5, name: "Master", min: 1500, max: 9999, color: "#FF6A00" },
 ];
 
-export default function StreakWidget({ user, transactionCount, lastTxAddedAt }) {
+export default function StreakWidget({ user, lastTxAddedAt }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -21,30 +21,34 @@ export default function StreakWidget({ user, transactionCount, lastTxAddedAt }) 
   const [streakMessage, setStreakMessage] = useState("");
   const [popupStreak, setPopupStreak] = useState(0);
 
-  // Initial load: just fetch & display profile, no popup
   useEffect(() => {
     if (!user) return;
-    loadProfile();
+    fetchProfile();
   }, [user]);
 
-  // Triggered only when a new transaction is added
   useEffect(() => {
     if (!user || !lastTxAddedAt) return;
-    updateStreak();
+    handleNewTransaction();
   }, [lastTxAddedAt]);
 
-  async function loadProfile() {
-    const existing = await base44.entities.GamificationProfile.filter({ created_by: user.email });
-    if (existing.length > 0) setProfile(existing[0]);
+  async function fetchProfile() {
+    try {
+      const existing = await base44.entities.GamificationProfile.filter({ created_by: user.email });
+      if (existing.length > 0) setProfile(existing[0]);
+    } catch (e) {}
     setLoading(false);
   }
 
-  async function updateStreak() {
+  async function handleNewTransaction() {
     const today = format(new Date(), "yyyy-MM-dd");
-    const existing = await base44.entities.GamificationProfile.filter({ created_by: user.email });
+    let existing;
+    try {
+      existing = await base44.entities.GamificationProfile.filter({ created_by: user.email });
+    } catch (e) { return; }
 
+    // Create profile if doesn't exist
     if (existing.length === 0) {
-      const p = await base44.entities.GamificationProfile.create({
+      const created = await base44.entities.GamificationProfile.create({
         daily_streak: 1,
         longest_streak: 1,
         last_activity_date: today,
@@ -52,9 +56,10 @@ export default function StreakWidget({ user, transactionCount, lastTxAddedAt }) 
         level: 1,
         achievements: ["first_transaction"],
       });
-      setProfile(p);
+      setProfile(created);
+      setLoading(false);
       setPopupStreak(1);
-      setStreakMessage("Transaksi pertama tercatat! Streak kamu dimulai!");
+      setStreakMessage("Transaksi pertama tercatat! Streak kamu dimulai! +10 XP 🎉");
       setShowPopup(true);
       return;
     }
@@ -62,45 +67,44 @@ export default function StreakWidget({ user, transactionCount, lastTxAddedAt }) 
     const p = existing[0];
     const last = p.last_activity_date;
     const yesterday = format(new Date(Date.now() - 86400000), "yyyy-MM-dd");
+    const currentPoints = p.total_points || 0;
 
     let updates = {};
 
     if (last === today) {
-      if (!p.achievements?.includes("first_transaction")) {
-        updates.achievements = [...(p.achievements || []), "first_transaction"];
-        updates.total_points = (p.total_points || 0) + 50;
-      }
-      setPopupStreak(p.daily_streak);
-      setStreakMessage(`Catatan tersimpan! Terus pertahankan streakmu ya!`);
+      // Same day: give +5 XP for every additional transaction
+      updates.total_points = currentPoints + 5;
+      setPopupStreak(p.daily_streak || 1);
+      setStreakMessage(`+5 XP! Terus catat pengeluaranmu! 💪`);
       setShowPopup(true);
     } else if (last === yesterday) {
-      const newStreak = (p.daily_streak || 0) + 1;
+      // Consecutive day: streak continues
+      const newStreak = (p.daily_streak || 1) + 1;
+      const bonus = newStreak % 7 === 0 ? 50 : 0;
       updates.daily_streak = newStreak;
       updates.longest_streak = Math.max(p.longest_streak || 0, newStreak);
       updates.last_activity_date = today;
-      updates.total_points = (p.total_points || 0) + 10 + (newStreak % 7 === 0 ? 50 : 0);
+      updates.total_points = currentPoints + 10 + bonus;
       setPopupStreak(newStreak);
-      setStreakMessage(newStreak % 7 === 0 ? `Luar biasa! ${newStreak} hari! Kamu dapat bonus +50 XP!` : `Streak berlanjut! +10 XP untukmu!`);
+      setStreakMessage(bonus > 0 ? `Luar biasa! ${newStreak} hari berturut! +${10 + bonus} XP 🏆` : `Streak berlanjut! ${newStreak} hari! +10 XP 🔥`);
       setShowPopup(true);
     } else {
+      // Broken streak or first time today
       updates.daily_streak = 1;
       updates.last_activity_date = today;
-      updates.total_points = (p.total_points || 0) + 5;
+      updates.total_points = currentPoints + 5;
       setPopupStreak(1);
-      setStreakMessage("Streak baru dimulai hari ini! +5 XP");
+      setStreakMessage("Streak baru dimulai hari ini! +5 XP ✨");
       setShowPopup(true);
     }
 
-    const newPoints = updates.total_points || p.total_points || 0;
+    // Recalculate level
+    const newPoints = updates.total_points ?? currentPoints;
     const lvl = LEVELS.find(l => newPoints >= l.min && newPoints < l.max) || LEVELS[LEVELS.length - 1];
     updates.level = lvl.level;
 
-    if (Object.keys(updates).length > 0) {
-      const updated = await base44.entities.GamificationProfile.update(p.id, updates);
-      setProfile(updated);
-    } else {
-      setProfile(p);
-    }
+    const updated = await base44.entities.GamificationProfile.update(p.id, updates);
+    setProfile(updated);
   }
 
   if (loading || !profile) return null;
