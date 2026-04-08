@@ -35,7 +35,7 @@ export default function Transactions() {
   const [deleting, setDeleting] = useState(false);
   const [showCSVImport, setShowCSVImport] = useState(false);
   const [page, setPage] = useState(1);
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(true);
   const PAGE_SIZE = 50;
 
   useEffect(() => {

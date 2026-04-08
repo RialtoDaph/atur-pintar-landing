@@ -140,67 +140,75 @@ export default function SubscriptionCard({ user }) {
 
         {open &&
         <div className="border-t border-[#F2F4F7]">
-            {loading ?
-          <div className="p-3 space-y-2">{[1, 2, 3].map((i) => <div key={i} className="h-9 bg-[#F2F4F7] rounded-lg animate-pulse" />)}</div> :
-          subs.length === 0 ?
-          <div className="px-3 py-2.5">
-                <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border-2 border-dashed border-[#E2E8F0] text-[10px] text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
-                  <Plus className="w-3 h-3" /> Tambah langganan
+          {loading ?
+        <div className="p-3 space-y-2">{[1, 2, 3].map((i) => <div key={i} className="h-9 bg-[#F2F4F7] rounded-lg animate-pulse" />)}</div> :
+        subs.length === 0 ?
+        <div className="px-3 py-3">
+              <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-3 rounded-xl border-2 border-dashed border-[#E2E8F0] text-xs text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
+                <Plus className="w-3.5 h-3.5" /> Tambah langganan pertama
+              </button>
+            </div> :
+
+        <>
+              <div className="divide-y divide-[#F2F4F7]">
+                {subs.filter(s => s.status === "active").map((sub) => {
+              const days = getDaysUntil(sub.next_due_date);
+              const isSoon = days >= 0 && days <= 3;
+              const isOverdue = days < 0;
+              return (
+                <div key={sub.id} className="flex items-center gap-3 px-4 py-3">
+                      <div className="w-9 h-9 rounded-xl bg-[#F8FAFC] border border-[#F0F2F5] flex items-center justify-center text-base flex-shrink-0">
+                        {sub.icon || "📦"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-[#1A1A1A] truncate">{sub.name}</p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[11px] font-bold text-[#FF6A00]">{formatCurrency(sub.amount)}<span className="font-normal text-[#8FA4C8]">{CYCLE_LABEL[sub.billing_cycle]}</span></span>
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                            isOverdue ? "bg-[#FF6B6B]/10 text-[#FF6B6B]" :
+                            isSoon ? "bg-[#FF6A00]/10 text-[#FF6A00]" :
+                            "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
+                            {isOverdue ? `${Math.abs(days)}h lalu` : days === 0 ? "Hari ini!" : `${days}h lagi`}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <button onClick={() => setConfirmSub(sub)} title="Catat Bayar" className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix text-[10px] font-bold">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Bayar
+                        </button>
+                        <button onClick={() => handleDelete(sub.id)} title="Hapus" className="p-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] transition-colors tap-highlight-fix">
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>);
+
+            })}
+                {subs.filter(s => s.status === "cancelled").length > 0 && (
+                  <div className="px-4 py-2 bg-[#F8FAFC]">
+                    <p className="text-[10px] text-[#8FA4C8] font-semibold">DIBATALKAN</p>
+                  </div>
+                )}
+                {subs.filter(s => s.status === "cancelled").map((sub) => (
+                  <div key={sub.id} className="flex items-center gap-3 px-4 py-2.5 opacity-40">
+                    <div className="w-8 h-8 rounded-xl bg-[#F2F4F7] flex items-center justify-center text-sm flex-shrink-0">{sub.icon || "📦"}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-[#1A1A1A] truncate">{sub.name}</p>
+                      <p className="text-[10px] text-[#8FA4C8]">{formatCurrency(sub.amount)}{CYCLE_LABEL[sub.billing_cycle]}</p>
+                    </div>
+                    <button onClick={() => handleDelete(sub.id)} className="p-1.5 text-[#CBD5E0] hover:text-[#FF6B6B] tap-highlight-fix">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="px-3 py-2.5 border-t border-[#F2F4F7]">
+                <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-dashed border-[#E2E8F0] text-[10px] text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
+                  <Plus className="w-3 h-3" /> Tambah Langganan
                 </button>
-              </div> :
-
-          <>
-                <div className="divide-y divide-[#F2F4F7]">
-                  {subs.map((sub) => {
-                const days = getDaysUntil(sub.next_due_date);
-                const isSoon = sub.status === "active" && days >= 0 && days <= 3;
-                const isCancelled = sub.status === "cancelled";
-                return (
-                  <div key={sub.id} className={`flex items-center gap-2.5 px-4 py-2 ${isCancelled ? "opacity-40" : ""}`}>
-                        <div className="w-7 h-7 rounded-lg bg-[#F2F4F7] flex items-center justify-center text-sm flex-shrink-0">
-                          {sub.icon || "📦"}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1 flex-wrap">
-                            <p className="text-xs font-medium text-[#1A1A1A] truncate">{sub.name}</p>
-                            {isSoon &&
-                        <span className="text-[9px] font-bold bg-[#FF6A00]/10 text-[#FF6A00] px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                                {days === 0 ? "Hari ini!" : `${days}h lagi`}
-                              </span>
-                        }
-                            {isCancelled && <span className="text-[9px] bg-[#F2F4F7] text-[#8FA4C8] px-1.5 py-0.5 rounded-full">Dibatalkan</span>}
-                          </div>
-                          <p className="text-[9px] text-[#8FA4C8]">
-                            {formatCurrency(sub.amount)}{CYCLE_LABEL[sub.billing_cycle]} · {new Date(sub.next_due_date).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-0.5 flex-shrink-0">
-                          {sub.status === "active" &&
-                      <>
-                              <button onClick={() => setConfirmSub(sub)} title="Tandai Selesai" className="p-1.5 rounded-lg bg-[#00C9A7]/10 text-[#00C9A7] hover:bg-[#00C9A7]/20 transition-colors tap-highlight-fix">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                              </button>
-                              <button onClick={() => handleCancel(sub.id)} title="Batalkan" className="p-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] transition-colors tap-highlight-fix">
-                                <XCircle className="w-3.5 h-3.5" />
-                              </button>
-                            </>
-                      }
-                          <button onClick={() => handleDelete(sub.id)} title="Hapus" className="p-1.5 rounded-lg text-[#CBD5E0] hover:text-[#FF6B6B] hover:bg-[#FFF5F5] transition-colors tap-highlight-fix">
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>);
-
-              })}
-                </div>
-                <div className="px-3 py-2.5 border-t border-[#F2F4F7]">
-                  <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-dashed border-[#E2E8F0] text-[10px] text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
-                    <Plus className="w-3 h-3" /> Tambah Langganan
-                  </button>
-                </div>
-              </>
-          }
-          </div>
+              </div>
+            </>
+        }
+        </div>
         }
       </div>
 

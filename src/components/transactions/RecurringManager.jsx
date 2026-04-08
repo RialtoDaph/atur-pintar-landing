@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { syncAccountBalance } from "@/components/utils/accountSync";
 
 const INTERVAL_DAYS = { daily: 1, weekly: 7, monthly: 30, yearly: 365 };
 
@@ -53,6 +54,12 @@ export async function processRecurringTransactions(userEmail) {
           recurring_last_generated: latestGenerated,
         }),
       ]);
+      // Sync account balance for each generated child
+      if (tx.account_id) {
+        for (const child of toCreate) {
+          await syncAccountBalance(tx.account_id, child.amount, child.type, 1);
+        }
+      }
     }
   }
 }
