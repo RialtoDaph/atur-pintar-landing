@@ -75,7 +75,7 @@ export default function Settings() {
       <div className="max-w-2xl mx-auto px-5 mt-6 space-y-4">
 
         {/* Tampilan */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
           <div className="px-5 pt-4 pb-2">
             <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_appearance')}</p>
           </div>
@@ -83,7 +83,7 @@ export default function Settings() {
             onClick={toggleDark}
             aria-pressed={darkMode}
             aria-label={darkMode ? "Nonaktifkan mode gelap" : "Aktifkan mode gelap"}
-            className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]"
+            className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-all duration-150 border-t border-[#F2F4F7]"
           >
             <div className="flex items-center gap-3">
               {darkMode ? <Moon className="w-5 h-5 text-[#FF6A00]" /> : <Sun className="w-5 h-5 text-[#FF6A00]" />}
@@ -99,7 +99,7 @@ export default function Settings() {
         </div>
 
         {/* Bahasa & Mata Uang */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
           <div className="px-5 pt-4 pb-3 flex items-center justify-between">
             <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_language')} & {t('settings_currency')}</p>
             {settings?.settings_unlocked ? (
@@ -174,12 +174,12 @@ export default function Settings() {
         </div>
 
         {/* Integrasi & Export */}
-        <div className="bg-white rounded-2xl shadow-sm p-5">
+        <div className="bg-white rounded-2xl shadow-md p-5 border border-[#F0F2F5]">
           <IntegrationSettings />
         </div>
 
         {/* Feedback */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
           <div className="px-5 pt-4 pb-2">
             <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Feedback</p>
           </div>
@@ -198,7 +198,7 @@ export default function Settings() {
 
         {/* Admin Panel - hanya untuk admin */}
         {user?.role === 'admin' && (
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
             <div className="px-5 pt-4 pb-2">
               <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Admin</p>
             </div>
@@ -216,7 +216,7 @@ export default function Settings() {
         )}
 
         {/* Legal */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
           <div className="px-5 pt-4 pb-2">
             <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Legal</p>
           </div>

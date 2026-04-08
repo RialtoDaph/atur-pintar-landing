@@ -156,7 +156,7 @@ export default function BudgetPage() {
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
       {/* Header */}
-      <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
+      <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-20">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -167,14 +167,14 @@ export default function BudgetPage() {
               {/* Month navigator */}
               <button
                 onClick={() => setMonthOffset(o => o - 1)}
-                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setMonthOffset(o => Math.min(o + 1, 0))}
                 disabled={monthOffset === 0}
-                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-30"
+                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all disabled:opacity-30"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -182,7 +182,7 @@ export default function BudgetPage() {
                 <Link
                   to="/Subscription"
                   data-tour="add-budget-btn"
-                  className="w-10 h-10 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] transition-colors"
+                  className="w-11 h-11 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all"
                   title="Upgrade untuk tambah lebih banyak budget"
                 >
                   <Crown className="w-5 h-5 text-white" />
@@ -191,7 +191,8 @@ export default function BudgetPage() {
                 <button
                   data-tour="add-budget-btn"
                   onClick={() => setShowAdd(true)}
-                  className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+                  className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all"
+                  style={{boxShadow: '0 4px 16px rgba(255,106,0,0.45)'}}
                 >
                   <Plus className="w-5 h-5 text-white" />
                 </button>
@@ -200,7 +201,7 @@ export default function BudgetPage() {
           </div>
 
           {/* Overview card */}
-          <div className="bg-white/10 rounded-2xl p-5">
+          <div className="bg-white/10 rounded-2xl p-5 border border-white/5">
             <div className="flex justify-between items-center mb-3">
               <span className="text-white/70 text-sm">{t("budget_total")}</span>
               <span className="text-white font-bold text-lg">{formatCurrency(totalBudget)}</span>

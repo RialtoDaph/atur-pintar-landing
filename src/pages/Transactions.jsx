@@ -232,7 +232,7 @@ export default function Transactions() {
     <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
         {/* Header */}
-        <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
+        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-6">
           <div className="max-w-2xl mx-auto flex items-center justify-between">
             <div>
               <p className="text-[#8FA4C8] text-sm font-medium">{t('tx_history')}</p>
@@ -242,7 +242,7 @@ export default function Transactions() {
               <button
                 onClick={() => setShowCSVImport(true)}
                 aria-label={t('add_transaction')}
-                className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 tap-highlight-fix"
+                className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 active:scale-95 transition-all focus:outline-none tap-highlight-fix"
               >
                 <Upload className="w-4 h-4 text-white" aria-hidden="true" />
               </button>
@@ -250,7 +250,8 @@ export default function Transactions() {
                 data-tour="add-transaction-btn"
                 onClick={() => setShowAddTx(true)}
                 aria-label={t('add_transaction')}
-                className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 focus:ring-offset-[#0A0A0A] tap-highlight-fix"
+                className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all tap-highlight-fix"
+                style={{boxShadow: '0 4px 16px rgba(255,106,0,0.45)'}}
               >
                 <Plus className="w-5 h-5 text-white" aria-hidden="true" />
               </button>
@@ -275,7 +276,7 @@ export default function Transactions() {
           )}
 
           {/* Filter + History — satu card */}
-          <div data-tour="tx-history-card" className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div data-tour="tx-history-card" className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
             {/* Clickable header to toggle */}
             <div className="flex items-center justify-between px-4 py-3.5">
               <button
@@ -406,7 +407,7 @@ export default function Transactions() {
                             return (
                               <div
                                 key={tx.id}
-                                className={`flex items-center gap-3 px-4 py-2.5 hover:bg-[#F8FAFC] transition-colors group border-b border-[#F2F4F7] last:border-b-0 ${selectMode ? "cursor-pointer" : ""} ${selectedIds.has(tx.id) ? "bg-[#FF6A00]/5" : ""}`}
+                                className={`flex items-center gap-3 px-4 py-3 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-all duration-150 group border-b border-[#F2F4F7] last:border-b-0 ${selectMode ? "cursor-pointer" : ""} ${selectedIds.has(tx.id) ? "bg-[#FF6A00]/5" : ""}`}
                                 onClick={selectMode ? () => toggleSelect(tx.id) : undefined}
                               >
                                 {selectMode && (

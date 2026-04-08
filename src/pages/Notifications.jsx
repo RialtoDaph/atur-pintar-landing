@@ -77,22 +77,22 @@ export default function Notifications() {
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
       {/* Header */}
-      <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
+      <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto">
           <p className="text-[#8FA4C8] text-sm font-medium">Pusat Notifikasi</p>
           <h1 className="text-white text-2xl font-bold mt-0.5">Pengingat & Notifikasi</h1>
           <div className="flex gap-3 mt-4">
-            <div className="bg-white/10 rounded-xl px-4 py-2 text-center">
-              <p className="text-white font-bold text-lg">{unreadAlerts}</p>
-              <p className="text-[#8FA4C8] text-xs">Notif baru</p>
+            <div className="bg-white/10 rounded-xl px-4 py-2.5 text-center flex-1 border border-white/5">
+              <p className="text-white font-bold text-xl">{unreadAlerts}</p>
+              <p className="text-[#8FA4C8] text-[10px] font-medium uppercase tracking-wide">Notif baru</p>
             </div>
-            <div className="bg-white/10 rounded-xl px-4 py-2 text-center">
-              <p className="text-white font-bold text-lg">{activeReminders}</p>
-              <p className="text-[#8FA4C8] text-xs">Pengingat aktif</p>
+            <div className="bg-white/10 rounded-xl px-4 py-2.5 text-center flex-1 border border-white/5">
+              <p className="text-white font-bold text-xl">{activeReminders}</p>
+              <p className="text-[#8FA4C8] text-[10px] font-medium uppercase tracking-wide">Aktif</p>
             </div>
-            <div className="bg-white/10 rounded-xl px-4 py-2 text-center">
-              <p className="text-[#FF6A00] font-bold text-lg">{upcomingReminders}</p>
-              <p className="text-[#8FA4C8] text-xs">Jatuh tempo 7hr</p>
+            <div className="bg-[#FF6A00]/20 rounded-xl px-4 py-2.5 text-center flex-1 border border-[#FF6A00]/30">
+              <p className="text-[#FF6A00] font-bold text-xl">{upcomingReminders}</p>
+              <p className="text-[#8FA4C8] text-[10px] font-medium uppercase tracking-wide">7hr ini</p>
             </div>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function Notifications() {
 
       <div className="max-w-2xl mx-auto px-5 mt-5">
         {/* Tabs */}
-        <div className="flex bg-white rounded-2xl p-1 shadow-sm mb-5">
+        <div className="flex bg-white rounded-2xl p-1 shadow-md mb-5 border border-[#F0F2F5]">
           <button
             onClick={() => setTab("reminders")}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
@@ -132,7 +132,8 @@ export default function Notifications() {
           <div className="space-y-3">
             <button
               onClick={() => setShowAddReminder(true)}
-              className="w-full bg-[#FF6A00] text-white py-3 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2"
+              className="w-full bg-[#FF6A00] text-white py-4 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all duration-150"
+              style={{boxShadow: '0 4px 16px rgba(255,106,0,0.4)'}}
             >
               + Tambah Pengingat
             </button>
@@ -148,7 +149,7 @@ export default function Notifications() {
                 const isUrgent = daysUntil >= 0 && daysUntil <= 3;
                 const isPast = daysUntil < 0;
                 return (
-                  <div key={rem.id} className={`bg-white rounded-2xl shadow-sm p-4 border-l-4 ${
+                  <div key={rem.id} className={`bg-white rounded-2xl shadow-md p-4 border-l-4 hover:shadow-lg transition-all duration-200 ${
                     !rem.is_active ? "opacity-50 border-[#E2E8F0]" :
                     isUrgent ? "border-[#FF6A00]" :
                     isPast ? "border-red-400" : "border-[#E2E8F0]"

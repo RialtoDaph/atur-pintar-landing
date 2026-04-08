@@ -45,19 +45,19 @@ export default function Menu() {
         {MENU_GROUPS.map((group) => (
           <div key={group.title}>
             <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-2 px-1">{group.title}</p>
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
               {group.items.map((item, idx) => (
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
                   data-tour={item.page === "Tips" ? "tips-nav-link" : undefined}
-                  className={`flex items-center gap-4 px-5 py-4 hover:bg-[#F8FAFC] transition-colors ${
+                  className={`flex items-center gap-4 px-5 py-4 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-all duration-150 ${
                     idx < group.items.length - 1 ? "border-b border-[#F2F4F7]" : ""
                   }`}
                 >
                   <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
-                    style={{ backgroundColor: item.color + "18" }}
+                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0 shadow-sm"
+                    style={{ backgroundColor: item.color + "20", boxShadow: `0 2px 8px ${item.color}25` }}
                   >
                     {item.emoji}
                   </div>

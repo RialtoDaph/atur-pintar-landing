@@ -152,11 +152,11 @@ export default function Accounts() {
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
-      <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
+      <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto">
           <p className="text-[#8FA4C8] text-sm font-medium">Multi-Rekening</p>
           <h1 className="text-white text-2xl font-bold mt-0.5">Rekening & Dompet</h1>
-          <div className="mt-4 bg-white/10 rounded-2xl px-5 py-4">
+          <div className="mt-4 bg-white/10 rounded-2xl px-5 py-4 border border-white/5">
             <p className="text-[#8FA4C8] text-xs">Total Saldo Semua Rekening</p>
             <p className="text-white text-3xl font-bold mt-0.5">{formatRupiah(totalBalance)}</p>
             <p className="text-[#8FA4C8] text-xs mt-1">{accounts.length} rekening aktif</p>
@@ -167,7 +167,8 @@ export default function Accounts() {
       <div className="max-w-2xl mx-auto px-5 mt-5 space-y-3">
         <button
           onClick={() => { setEditAccount(null); setShowModal(true); }}
-          className="w-full bg-[#FF6A00] text-white py-3.5 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm"
+          className="w-full bg-[#FF6A00] text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all duration-150"
+          style={{boxShadow: '0 4px 16px rgba(255,106,0,0.4)'}}
         >
           <Plus className="w-4 h-4" /> Tambah Rekening Baru
         </button>
@@ -184,7 +185,7 @@ export default function Accounts() {
           </div>
         ) : (
           accounts.map(acc => (
-            <div key={acc.id} className={`bg-white rounded-2xl shadow-sm p-4 border ${acc.is_default ? "border-[#FF6A00]/30" : "border-transparent"}`}>
+            <div key={acc.id} className={`bg-white rounded-2xl p-4 border transition-all duration-200 hover:shadow-lg ${acc.is_default ? "border-[#FF6A00]/40 shadow-md" : "border-[#F0F2F5] shadow-md"}`}>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{ backgroundColor: (acc.color || "#FF6A00") + "20" }}>
                   {acc.icon || "🏦"}

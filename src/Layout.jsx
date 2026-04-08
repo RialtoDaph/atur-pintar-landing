@@ -159,7 +159,7 @@ function LayoutInner({ children, currentPageName }) {
       `}</style>
 
       {/* Desktop sidebar */}
-      <div className="hidden sm:flex fixed left-0 top-0 h-full w-60 bg-[#0A0A0A] flex-col px-5 py-8 z-40">
+      <div className="hidden sm:flex fixed left-0 top-0 h-full w-60 bg-[#0A0A0A] flex-col px-5 py-8 z-40" style={{boxShadow: '4px 0 24px rgba(0,0,0,0.5)'}}>
         {/* Logo */}
         <div className="mb-8 px-2 flex items-center gap-2">
           <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-10 h10" />
@@ -177,10 +177,10 @@ function LayoutInner({ children, currentPageName }) {
                 key={item.page}
                 to={createPageUrl(item.page)}
                 data-tour={item.tourId || undefined}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                 active ?
-                "bg-[#FF6A00] text-white shadow-sm" :
-                "text-[#888] hover:text-white hover:bg-white/10"}`
+                "bg-[#FF6A00] text-white shadow-md" :
+                "text-[#888] hover:text-white hover:bg-white/10 active:bg-white/15"}`
                 }>
 
                 <item.icon className="w-4 h-4" />
@@ -287,7 +287,7 @@ function LayoutInner({ children, currentPageName }) {
       </div>
 
       {/* Mobile bottom nav — hidden when any modal is open */}
-      {!anyModalOpen && <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-[60] border-t border-white/10" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      {!anyModalOpen && <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-[60] border-t border-white/10" style={{boxShadow: '0 -4px 24px rgba(0,0,0,0.5)'}} style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {mobileMainNav.map((item) => {
           const active = currentPageName === item.page;
           return (

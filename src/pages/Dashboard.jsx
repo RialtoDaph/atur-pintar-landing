@@ -133,9 +133,9 @@ export default function Dashboard() {
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
       {user && <RecurringManager userEmail={user.email} />}
       {/* Top Header */}
-      <div className="bg-[#0A0A0A] px-5 pt-6 pb-14">
+      <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-16">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-[#8FA4C8] text-xs font-medium">{t('dashboard_greeting')}</p>
               <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
@@ -143,7 +143,8 @@ export default function Dashboard() {
             <button
               data-tour="add-transaction-btn"
               onClick={() => setShowAddTransaction(true)}
-              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors tap-highlight-fix"
+              className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all duration-150 tap-highlight-fix"
+              style={{boxShadow: '0 4px 16px rgba(255,106,0,0.45)'}}
             >
               <Plus className="w-5 h-5 text-white" />
             </button>

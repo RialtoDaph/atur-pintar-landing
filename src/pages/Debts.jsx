@@ -107,7 +107,7 @@ export default function DebtsPage() {
   return (
     <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
-        <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
+        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-20">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -115,13 +115,14 @@ export default function DebtsPage() {
               <h1 className="text-white text-2xl font-bold mt-0.5">{t('debts_title')}</h1>
             </div>
             {debtLimitReached ? (
-              <Link to="/Subscription" className="w-10 h-10 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] transition-colors" title="Upgrade untuk tambah lebih banyak utang">
+              <Link to="/Subscription" className="w-11 h-11 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all" title="Upgrade untuk tambah lebih banyak utang">
                 <Crown className="w-5 h-5 text-white" />
               </Link>
             ) : (
               <button
                 onClick={() => setShowAdd(true)}
-                className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
+                className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all"
+                style={{boxShadow: '0 4px 16px rgba(255,106,0,0.45)'}}
               >
                 <Plus className="w-5 h-5 text-white" />
               </button>
@@ -129,11 +130,11 @@ export default function DebtsPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white/10 rounded-2xl p-4">
+            <div className="bg-white/10 rounded-2xl p-4 border border-white/5">
               <p className="text-white/60 text-xs mb-1">{t('debts_total')}</p>
               <p className="text-white font-bold text-lg">{formatCurrency(totalDebt)}</p>
             </div>
-            <div className="bg-white/10 rounded-2xl p-4">
+            <div className="bg-white/10 rounded-2xl p-4 border border-white/5">
               <p className="text-white/60 text-xs mb-1">{t('debts_monthly')}</p>
               <p className="text-white font-bold text-lg">{formatCurrency(totalMonthly)}</p>
             </div>
@@ -167,7 +168,7 @@ export default function DebtsPage() {
             const type = DEBT_TYPES[debt.type] || DEBT_TYPES.lainnya;
             const progress = debt.total_amount > 0 ? ((debt.total_amount - debt.remaining_amount) / debt.total_amount) * 100 : 0;
             return (
-              <div key={debt.id} className="bg-white rounded-2xl p-5 shadow-sm">
+              <div key={debt.id} className="bg-white rounded-2xl p-5 shadow-md border border-[#F0F2F5] hover:shadow-lg transition-all duration-200">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3 flex-1">
                     <div className="w-10 h-10 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center text-xl flex-shrink-0">
