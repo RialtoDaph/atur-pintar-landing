@@ -13,6 +13,7 @@ export default function AdminUsers() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showStats, setShowStats] = useState(true);
+  const [cleaningUp, setCleaningUp] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -37,10 +38,11 @@ export default function AdminUsers() {
     setLoading(false);
   }
 
-  async function approvePayment(paymentId, userEmail, amount) {
+  async function approvePayment(paymentId, userEmail, plan, amount) {
     try {
       const today = new Date().toISOString().split("T")[0];
-      const endDate = new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+      const daysToAdd = plan === "premium_yearly" ? 365 : 30;
+      const endDate = new Date(new Date().getTime() + daysToAdd * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
       // Update payment
       await base44.entities.SubscriptionPayment.update(paymentId, { status: "approved", approved_at: today });
@@ -49,7 +51,7 @@ export default function AdminUsers() {
       const userList = await base44.entities.User.filter({ email: userEmail });
       if (userList.length > 0) {
         await base44.entities.User.update(userList[0].id, {
-          subscription_plan: "premium_monthly",
+          subscription_plan: plan,
           subscription_status: "active",
           subscription_start_date: today,
           subscription_end_date: endDate
@@ -58,8 +60,8 @@ export default function AdminUsers() {
 
       // Send notification to user
       await base44.entities.AdminNotification.create({
-        title: "🎉 Selamat! Akun kamu sudah Premium!",
-        message: "Pembayaran kamu sudah dikonfirmasi. Selamat menikmati fitur premium Atur Pintar!",
+        title: "🎉 Akun Premium Aktif!",
+        message: "Pembayaran kamu sudah dikonfirmasi admin. Selamat menikmati semua fitur premium Atur Pintar! 🚀",
         target_type: "specific",
         target_email: userEmail,
         is_read: false,
@@ -72,7 +74,7 @@ export default function AdminUsers() {
         user_email: userEmail,
         action: "payment_approved",
         severity: "info",
-        details: `Payment approved for ${userEmail}: Rp ${amount}`
+        details: `Plan: ${plan}, Amount: Rp ${amount}`
       });
 
       setSuccessMsg("Payment approved & user upgraded to premium");
@@ -86,8 +88,9 @@ export default function AdminUsers() {
   async function rejectPayment(paymentId) {
     if (!window.confirm("Reject this payment?")) return;
     try {
-      const payment = await base44.entities.SubscriptionPayment.filter({ id: paymentId });
-      const userEmail = payment.length > 0 ? payment[0].created_by : "user@example.com";
+      const paymentsList = await base44.entities.SubscriptionPayment.filter({ id: paymentId });
+      const payment = paymentsList.length > 0 ? paymentsList[0] : null;
+      const userEmail = payment?.user_email || payment?.created_by || "user@example.com";
 
       await base44.entities.SubscriptionPayment.update(paymentId, { status: "rejected" });
 
@@ -106,7 +109,8 @@ export default function AdminUsers() {
         log_type: "activity",
         user_email: userEmail,
         action: "payment_rejected",
-        severity: "info"
+        severity: "info",
+        details: `Payment rejected for ${userEmail}`
       });
 
       setSuccessMsg("Payment rejected");
@@ -142,6 +146,20 @@ export default function AdminUsers() {
   const inactiveUsers = users.filter(u => new Date(u.updated_date || u.created_date) < fourteenDaysAgo).length;
 
   // CSV Export
+  async function cleanupSampleData() {
+    if (!window.confirm("Hapus semua data sample dari larasadelia dan imeldaiis? Tindakan ini tidak bisa dibatalkan.")) return;
+    setCleaningUp(true);
+    try {
+      const res = await base44.functions.invoke("cleanupSampleData", {});
+      setSuccessMsg(`Berhasil menghapus ${res.data.deleted} records dari ${res.data.entities} entities`);
+      setTimeout(() => setSuccessMsg(""), 5000);
+      await loadData();
+    } catch (error) {
+      setErrorMsg("Error cleaning up data: " + error.message);
+    }
+    setCleaningUp(false);
+  }
+
   const exportCSV = () => {
     const headers = ["Name", "Email", "Plan", "Status", "Joined", "Last Active"];
     const rows = users.map(u => [
@@ -261,7 +279,7 @@ export default function AdminUsers() {
                         <td className="py-3 px-2 text-center text-[#8FA4C8] text-xs">{new Date(p.created_date).toLocaleDateString("id-ID")}</td>
                         <td className="py-3 px-2 text-center space-x-2">
                           <button
-                            onClick={() => approvePayment(p.id, p.created_by, p.amount)}
+                            onClick={() => approvePayment(p.id, p.user_email || p.created_by, p.plan, p.amount)}
                             className="px-3 py-1 bg-green-600 text-white text-xs font-bold rounded hover:bg-green-700 transition-colors"
                           >
                             Approve
@@ -287,8 +305,11 @@ export default function AdminUsers() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-[#1A1A1A]">Users ({filteredUsers.length})</h2>
             <div className="flex gap-2">
-              <button onClick={exportCSV} className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+               <button onClick={exportCSV} className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
                 📥 Export CSV
+              </button>
+              <button onClick={cleanupSampleData} disabled={cleaningUp} className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50">
+                {cleaningUp ? "🗑️ Cleaning..." : "🗑️ Cleanup"}
               </button>
               <button onClick={loadData} className="p-2 hover:bg-[#F8FAFC] rounded-lg transition-colors">
                 <RefreshCw className="w-4 h-4 text-[#FF6A00]" />
