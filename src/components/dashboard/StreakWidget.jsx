@@ -23,14 +23,15 @@ export default function StreakWidget({ user, transactionCount, lastTxAddedAt }) 
 
   useEffect(() => {
     if (!user) return;
-    loadAndUpdateStreak();
+    loadAndUpdateStreak(!!lastTxAddedAt);
   }, [user, lastTxAddedAt]);
 
-  async function loadAndUpdateStreak() {
+  async function loadAndUpdateStreak(fromNewTx = false) {
     const today = format(new Date(), "yyyy-MM-dd");
     const existing = await base44.entities.GamificationProfile.filter({ created_by: user.email });
 
     if (existing.length === 0) {
+      if (!fromNewTx) { setLoading(false); return; }
       const p = await base44.entities.GamificationProfile.create({
         daily_streak: 1,
         longest_streak: 1,
@@ -53,7 +54,9 @@ export default function StreakWidget({ user, transactionCount, lastTxAddedAt }) 
 
     let updates = {};
 
-    // Always update streak when this is triggered by a new transaction (lastTxAddedAt)
+    // Only update streak when triggered by a new transaction
+    if (!fromNewTx) { setProfile(p); setLoading(false); return; }
+
     if (last === today) {
       if (!p.achievements?.includes("first_transaction")) {
         updates.achievements = [...(p.achievements || []), "first_transaction"];
