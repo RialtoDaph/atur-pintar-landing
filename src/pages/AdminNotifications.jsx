@@ -61,13 +61,22 @@ export default function AdminNotifications() {
 
   const sendToInactiveUser = async (userEmail, userName, daysSince) => {
     try {
-      await base44.entities.AdminNotification.create({
+      const n = await base44.entities.AdminNotification.create({
         title: "📱 Halo " + userName + "!",
         message: `Sudah ${daysSince} hari kamu tidak mencatat keuangan. Yuk balik lagi, Nana kangen nih! 😊`,
         target_type: "specific",
         target_email: userEmail,
         is_read: false,
         read_by: []
+      });
+      
+      // Log to SystemLog
+      await base44.entities.SystemLog.create({
+        log_type: "activity",
+        user_email: user?.email,
+        action: "reengagement_sent",
+        severity: "info",
+        details: `Sent to ${userEmail}`
       });
     } catch (e) {
       console.error(e);
@@ -109,6 +118,16 @@ export default function AdminNotifications() {
       is_read: false,
       read_by: [],
     });
+    
+    // Log to SystemLog
+    await base44.entities.SystemLog.create({
+      log_type: "activity",
+      user_email: user?.email,
+      action: "notification_sent",
+      severity: "info",
+      details: `Title: ${form.title}, Target: ${form.target_type === "all" ? "Semua User" : form.target_email}`
+    });
+    
     setNotifications(prev => [created, ...prev]);
     setForm({ title: "", message: "", target_type: "all", target_email: "" });
     setSending(false);
@@ -116,7 +135,18 @@ export default function AdminNotifications() {
   }
 
   async function handleDelete(id) {
+    const notif = notifications.find(n => n.id === id);
     await base44.entities.AdminNotification.delete(id);
+    
+    // Log to SystemLog
+    await base44.entities.SystemLog.create({
+      log_type: "activity",
+      user_email: user?.email,
+      action: "notification_deleted",
+      severity: "info",
+      details: `Deleted: ${notif?.title}`
+    });
+    
     setNotifications(prev => prev.filter(n => n.id !== id));
     setDeleteConfirm(null);
   }

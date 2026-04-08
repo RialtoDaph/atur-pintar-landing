@@ -46,7 +46,7 @@ export default function AdminLogs() {
   }
 
   async function clearOldLogs() {
-    if (!window.confirm("Clear all logs older than 30 days? This cannot be undone.")) return;
+    if (!window.confirm("Hapus semua log lebih dari 30 hari? Tindakan ini tidak bisa dibatalkan.")) return;
     setClearing(true);
     try {
       const thirtyDaysAgo = new Date();
@@ -55,6 +55,16 @@ export default function AdminLogs() {
       for (const log of oldLogs) {
         await base44.entities.SystemLog.delete(log.id);
       }
+      
+      // Log the cleanup action itself
+      await base44.entities.SystemLog.create({
+        log_type: "activity",
+        user_email: user?.email,
+        action: "old_logs_cleared",
+        severity: "warning",
+        details: `Deleted ${oldLogs.length} logs older than 30 days`
+      });
+      
       await loadLogs();
     } catch (e) {
       console.error(e);

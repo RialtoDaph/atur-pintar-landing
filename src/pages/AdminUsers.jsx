@@ -71,13 +71,13 @@ export default function AdminUsers() {
       // Log action
       await base44.entities.SystemLog.create({
         log_type: "activity",
-        user_email: userEmail,
+        user_email: user?.email || "admin",
         action: "payment_approved",
         severity: "info",
-        details: `Plan: ${plan}, Amount: Rp ${amount}`
+        details: `Plan: ${plan} upgraded for ${userEmail}, Amount: Rp ${amount}`
       });
 
-      setSuccessMsg("Payment approved & user upgraded to premium");
+      setSuccessMsg("✓ Pembayaran disetujui & user upgraded ke premium");
       setTimeout(() => setSuccessMsg(""), 3000);
       await loadData();
     } catch (error) {
@@ -107,13 +107,13 @@ export default function AdminUsers() {
       // Log action
       await base44.entities.SystemLog.create({
         log_type: "activity",
-        user_email: userEmail,
+        user_email: user?.email || "admin",
         action: "payment_rejected",
-        severity: "info",
+        severity: "warning",
         details: `Payment rejected for ${userEmail}`
       });
 
-      setSuccessMsg("Payment rejected");
+      setSuccessMsg("✓ Pembayaran ditolak");
       setTimeout(() => setSuccessMsg(""), 3000);
       await loadData();
     } catch (error) {

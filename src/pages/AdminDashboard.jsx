@@ -43,9 +43,9 @@ export default function AdminDashboard() {
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       const oldPendingCount = pendingPayments.filter(p => new Date(p.created_date) < threeDaysAgo).length;
 
-      // Monthly revenue (approved payments this month)
+      // Monthly revenue (approved payments this month) - actual
       const monthlyRevenue = approvedPayments
-        .filter(p => p.created_date?.startsWith(thisMonth))
+        .filter(p => p.approved_at?.startsWith(thisMonth))
         .reduce((sum, p) => sum + (p.amount || 0), 0);
 
       // Active users (transactions in last 30 days)
@@ -60,6 +60,9 @@ export default function AdminDashboard() {
       // Onboarding completion rate
       const completedOnboarding = allUsers.filter(u => u.onboarding_completed).length;
       const onboardingRate = totalUsers > 0 ? Math.round((completedOnboarding / totalUsers) * 100) : 0;
+      
+      // New users this month (April 2026)
+      const newThisMonth = allUsers.filter(u => u.created_date?.startsWith(thisMonth)).length;
 
       // Generate monthly chart data (last 6 months)
       const chartData = [];
@@ -74,9 +77,11 @@ export default function AdminDashboard() {
         });
       }
 
-      // MRR calculation
-      const mrrMonthly = allUsers.filter(u => u.subscription_plan === "premium_monthly" && u.subscription_status === "active").length * 49000;
-      const mrrYearly = allUsers.filter(u => u.subscription_plan === "premium_yearly" && u.subscription_status === "active").length * (490000 / 12);
+      // MRR calculation - EXACT: 2 premium_monthly * 49k + 1 premium_yearly * 40833
+      const premiumMonthly = allUsers.filter(u => u.subscription_plan === "premium_monthly" && u.subscription_status === "active");
+      const premiumYearly = allUsers.filter(u => u.subscription_plan === "premium_yearly" && u.subscription_status === "active");
+      const mrrMonthly = premiumMonthly.length * 49000;
+      const mrrYearly = premiumYearly.length * 40833; // 490000/12 ≈ 40833
       const totalMRR = mrrMonthly + mrrYearly;
       
       // Churn (expired subscriptions this month)
@@ -86,7 +91,7 @@ export default function AdminDashboard() {
         totalUsers,
         premiumUsers,
         freeUsers: totalUsers - premiumUsers,
-        newUsersThisMonth,
+        newUsersThisMonth: newThisMonth,
         pendingPaymentCount: pendingPayments.length,
         oldPendingCount,
         monthlyRevenue: Math.round(monthlyRevenue),

@@ -64,9 +64,27 @@ export default function AdminCategories() {
     if (editId) {
       const updated = await base44.entities.GlobalCategory.update(editId, form);
       setCategories(prev => prev.map(c => c.id === editId ? { ...c, ...updated } : c));
+      
+      // Log edit to SystemLog
+      await base44.entities.SystemLog.create({
+        log_type: "activity",
+        user_email: user?.email,
+        action: "category_updated",
+        severity: "info",
+        details: `Category updated: ${form.name}`
+      });
     } else {
       const created = await base44.entities.GlobalCategory.create({ ...form, is_default: false, is_active: true });
       setCategories(prev => [...prev, created]);
+
+      // Log to SystemLog
+      await base44.entities.SystemLog.create({
+        log_type: "activity",
+        user_email: user?.email,
+        action: "category_added",
+        severity: "info",
+        details: `Category added: ${form.name}`
+      });
     }
     setSaving(false);
     setShowForm(false);
@@ -75,7 +93,18 @@ export default function AdminCategories() {
   }
 
   async function handleDelete(id) {
+    const cat = categories.find(c => c.id === id);
     await base44.entities.GlobalCategory.delete(id);
+    
+    // Log to SystemLog
+    await base44.entities.SystemLog.create({
+      log_type: "activity",
+      user_email: user?.email,
+      action: "category_deleted",
+      severity: "warning",
+      details: `Category deleted: ${cat?.name}`
+    });
+    
     setCategories(prev => prev.filter(c => c.id !== id));
     setDeleteConfirm(null);
   }
