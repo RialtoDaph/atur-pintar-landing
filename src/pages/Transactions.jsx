@@ -11,6 +11,7 @@ import DashboardInsights from "@/components/dashboard/DashboardInsights";
 import ContractPaymentsCard from "@/components/dashboard/ContractPaymentsCard";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import { DEFAULT_CATEGORIES } from "@/components/utils/categoryConfig";
+import { syncAccountBalance } from "@/components/utils/accountSync";
 
 export default function Transactions() {
   const { formatCurrency, t, settings } = useAppSettings();
@@ -86,9 +87,11 @@ export default function Transactions() {
   async function handleDelete(id) {
     if (!confirm(t('tx_confirm_delete'))) return;
     setDeleting(true);
+    const tx = transactions.find(t => t.id === id);
     setTransactions(prev => prev.filter(t => t.id !== id));
     try {
       await base44.entities.Transaction.delete(id);
+      if (tx?.account_id) await syncAccountBalance(tx.account_id, tx.amount, tx.type, -1);
       toast.success(t('tx_delete_success'));
     } catch (error) {
       console.error("Delete failed:", error);
@@ -100,9 +103,13 @@ export default function Transactions() {
   }
 
   async function handleEdit(id, data) {
+    const oldTx = transactions.find(t => t.id === id);
     setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...data } : t));
     try {
       await base44.entities.Transaction.update(id, data);
+      // Reverse old balance effect, apply new
+      if (oldTx?.account_id) await syncAccountBalance(oldTx.account_id, oldTx.amount, oldTx.type, -1);
+      if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
       toast.success(t('tx_update_success'));
       setEditingTx(null);
     } catch (error) {
@@ -509,6 +516,7 @@ export default function Transactions() {
                   throw new Error("Invalid transaction data");
                 }
                 await base44.entities.Transaction.create(data);
+                if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
                 toast.success(t('tx_create_success'));
                 setTransactions(prev => prev.filter(t => t.id !== tempId));
                 loadData();

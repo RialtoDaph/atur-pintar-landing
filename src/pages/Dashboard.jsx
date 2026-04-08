@@ -11,6 +11,7 @@ import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import AccountsWidget from "@/components/dashboard/AccountsWidget";
+import { syncAccountBalance } from "@/components/utils/accountSync";
 
 import RecurringManager from "@/components/transactions/RecurringManager";
 import ReminderWidget from "@/components/reminders/ReminderWidget";
@@ -215,7 +216,8 @@ export default function Dashboard() {
           goals={goals}
           onClose={() => setShowAddTransaction(false)}
           onSave={async (data) => {
-            await base44.entities.Transaction.create(data);
+            const tx = await base44.entities.Transaction.create(data);
+            if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
             setShowAddTransaction(false);
             loadData();
           }}
