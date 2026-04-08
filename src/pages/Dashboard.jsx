@@ -42,7 +42,6 @@ export default function Dashboard() {
   const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
   const [showSampleBanner, setShowSampleBanner] = useState(hasSampleData);
-  const [accounts, setAccounts] = useState([]);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -50,7 +49,6 @@ export default function Dashboard() {
       if (!u?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
         setShowOnboarding(true);
       }
-      base44.entities.Account.filter({ created_by: u.email }).then(list => setAccounts(list || [])).catch(() => {});
     }).catch(() => {});
   }, []);
 
@@ -159,7 +157,6 @@ export default function Dashboard() {
             expense={monthExpense}
             savings={totalSaved}
             loading={loading}
-            accountTotal={accounts.length > 0 ? accounts.reduce((s,a) => s + (a.balance || 0), 0) : undefined}
           />
         </div>
       </div>
@@ -175,6 +172,9 @@ export default function Dashboard() {
             loadData();
           }} />
         )}
+
+        {/* Accounts Widget */}
+        {user?.onboarding_completed && <AccountsWidget user={user} />}
 
         {/* Streak Widget */}
         {user?.onboarding_completed && <StreakWidget user={user} transactionCount={thisMonthTx.length} />}
@@ -197,9 +197,6 @@ export default function Dashboard() {
         )}
 
 
-
-        {/* Accounts Widget - paling bawah */}
-        {user?.onboarding_completed && <AccountsWidget user={user} accounts={accounts} />}
 
         <div className="h-2" />
 

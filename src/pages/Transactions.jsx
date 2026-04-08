@@ -34,7 +34,7 @@ export default function Transactions() {
   const [deleting, setDeleting] = useState(false);
   const [showCSVImport, setShowCSVImport] = useState(false);
   const [page, setPage] = useState(1);
-  const [historyOpen, setHistoryOpen] = useState(true);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const PAGE_SIZE = 50;
 
   useEffect(() => {
@@ -277,11 +277,15 @@ export default function Transactions() {
 
           {/* Filter + History — satu card */}
           <div data-tour="tx-history-card" className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
-            {/* Header */}
+            {/* Clickable header to toggle */}
             <div className="flex items-center justify-between px-4 py-3.5">
-              <div className="flex items-center gap-2 flex-1">
+              <button
+                onClick={() => setHistoryOpen(o => !o)}
+                className="flex items-center gap-2 flex-1 tap-highlight-fix"
+              >
                 <p className="text-sm font-bold text-[#1A1A1A]">{t('tx_history')} {t('tx_title')}</p>
-              </div>
+                <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${historyOpen ? "rotate-180" : ""}`} />
+              </button>
               {selectMode && selectedIds.size > 0 && (
                 <button
                   onClick={handleDeleteSelected}
