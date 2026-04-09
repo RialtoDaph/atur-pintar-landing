@@ -282,8 +282,18 @@ export default function Transactions() {
             </>
           )}
 
+          {/* Recurring Transaction Notice */}
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-start gap-3">
+            <span className="text-base">🔄</span>
+            <div>
+              <p className="text-xs font-bold text-amber-800">Transaksi Berulang (Recurring)</p>
+              <p className="text-xs text-amber-700 mt-0.5">Transaksi recurring tidak diproses otomatis. Buka halaman ini secara berkala untuk mengonfirmasi transaksi yang perlu diulang.</p>
+            </div>
+          </div>
+
           {/* Filter + History — satu card */}
-          <div data-tour="tx-history-card" className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
+          <div data-tour="tx-history-card"
+            className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
             {/* Clickable header to toggle */}
             <div className="flex items-center justify-between px-4 py-3.5">
               <button

@@ -32,5 +32,10 @@
   "required": [
     "name",
     "emoji"
-  ]
+  ],
+  "rls": {
+    "enabled": true,
+    "filter_field": "created_by",
+    "filter_value": "{{user.email}}"
+  }
 }

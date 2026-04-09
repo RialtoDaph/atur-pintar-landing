@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import PremiumGate from "@/components/subscription/PremiumGate";
 
 function generateCode() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
 }
 
 function WalletCard({ wallet, currentUserEmail, onLeave }) {
@@ -329,17 +330,17 @@ export default function SharedFinance() {
               <button onClick={() => setShowJoin(false)} className="p-2 rounded-xl hover:bg-[#F2F4F7]"><X className="w-5 h-5 text-[#8FA4C8]" /></button>
             </div>
             <div className="px-5 py-5 space-y-4">
-              <p className="text-sm text-[#8FA4C8]">Minta kode undangan 6 karakter dari owner dompet bersama.</p>
+              <p className="text-sm text-[#8FA4C8]">Minta kode undangan 8 karakter dari owner dompet bersama.</p>
               <input
                 value={joinCode}
                 onChange={e => setJoinCode(e.target.value.toUpperCase())}
-                placeholder="Contoh: AB1C2D"
-                maxLength={6}
+                placeholder="Contoh: AB1C2D3E"
+                maxLength={8}
                 className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-xl font-bold tracking-[0.4em] text-center text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#FF6A00]/30 uppercase"
               />
             </div>
             <div className="px-5 pb-6">
-              <button onClick={handleJoin} disabled={joining || joinCode.length !== 6}
+              <button onClick={handleJoin} disabled={joining || joinCode.length !== 8}
                 className="w-full py-3.5 bg-[#FF6A00] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
                 {joining ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
                 Bergabung

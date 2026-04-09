@@ -181,7 +181,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   }
 
   async function handleSave() {
-    if (!form.amount || !form.category) return;
+    if (!form.amount) return;
+    // Fallback to 'other' if no category selected
+    const finalCategory = form.category || 'other';
 
     const amount = parseRupiah(form.amount);
     if (amount <= 0) return;
@@ -190,6 +192,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
     try {
       await onSave({
         ...form,
+        category: finalCategory,
         type: tab,
         amount,
         goal_id: form.goal_id || undefined
@@ -394,7 +397,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
             </div>
           }
 
-          <button onClick={handleSave} disabled={saving || !form.amount || !form.category}
+          <button onClick={handleSave} disabled={saving || !form.amount}
           className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
           style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
             {saving ? t('saving') : `${t('add')} ${tab === "expense" ? t('expense') : t('income')}`}

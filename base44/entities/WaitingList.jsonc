@@ -57,5 +57,10 @@
     "city",
     "current_finance_tracking_method",
     "early_access_interest"
-  ]
+  ],
+  "rls": {
+    "enabled": true,
+    "filter_field": "created_by",
+    "filter_value": "{{user.email}}"
+  }
 }
