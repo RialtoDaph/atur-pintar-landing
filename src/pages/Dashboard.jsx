@@ -14,8 +14,6 @@ import AccountsWidget from "@/components/dashboard/AccountsWidget";
 import { syncAccountBalance } from "@/components/utils/accountSync";
 
 import RecurringManager from "@/components/transactions/RecurringManager";
-import NetWorthCard from "@/components/dashboard/NetWorthCard";
-import ReminderWidget from "@/components/reminders/ReminderWidget";
 import StreakWidget from "@/components/dashboard/StreakWidget";
 
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
@@ -209,10 +207,7 @@ export default function Dashboard() {
           }} />
         )}
 
-        {/* Net Worth Card */}
-        {user?.onboarding_completed && accounts.length > 0 && (
-          <NetWorthCard accounts={accounts} />
-        )}
+
 
         {/* Subscription Expired Banner */}
         {user?.subscription_status === "expired" && (
@@ -229,8 +224,7 @@ export default function Dashboard() {
         {/* Streak Widget */}
         {user?.onboarding_completed && <StreakWidget user={user} transactionCount={thisMonthTx.length} lastTxAddedAt={lastTxAddedAt} />}
 
-        {/* Reminder Widget */}
-        <ReminderWidget user={user} />
+
 
         {/* Budget Alert Widget */}
         <Suspense fallback={<LazyFallback />}>

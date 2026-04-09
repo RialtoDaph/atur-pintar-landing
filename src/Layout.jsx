@@ -18,7 +18,6 @@ function LayoutInner({ children, currentPageName }) {
   const [anyModalOpen, setAnyModalOpen] = useState(false);
   const [unreadAlertCount, setUnreadAlertCount] = useState(0);
   const [showTour, setShowTour] = useState(false);
-  const [showAdminNotifications, setShowAdminNotifications] = useState(false);
   const [unreadAdminCount, setUnreadAdminCount] = useState(0);
   const { t } = useAppSettings();
   const location = useLocation();
@@ -63,6 +62,20 @@ function LayoutInner({ children, currentPageName }) {
           (!n.read_by?.includes(u.email))
         );
         setUnreadAdminCount(relevant.length);
+      }).catch(() => {});
+
+      // Fetch upcoming reminders
+      base44.entities.Reminder.filter({ is_active: true, created_by: u.email }).then((reminders) => {
+        const now = new Date();
+        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        const upcoming = reminders.filter(r => {
+          if (r.last_dismissed_month === currentMonth) return false;
+          const thisMonth = new Date(now.getFullYear(), now.getMonth(), r.due_day);
+          const target = thisMonth < now ? new Date(now.getFullYear(), now.getMonth() + 1, r.due_day) : thisMonth;
+          const days = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+          return days <= 7;
+        });
+        setUnreadAlertCount(prev => prev + upcoming.length);
       }).catch(() => {});
     }).catch(() => {});
   }, []);
@@ -277,16 +290,13 @@ function LayoutInner({ children, currentPageName }) {
           }
 
           <div className="flex items-center gap-2">
-            <button onClick={() => { setShowAdminNotifications(true); setUnreadAdminCount(0); }} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
-              <Bell className="w-4 h-4" />
-              {unreadAdminCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF6A00] text-white text-[9px] font-bold flex items-center justify-center">
-                  {unreadAdminCount > 9 ? "9+" : unreadAdminCount}
-                </span>
-              )}
-            </button>
             <button onClick={() => { setShowAlertsDrawer(true); setUnreadAlertCount(0); }} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Bell className="w-4 h-4" />
+              {(unreadAlertCount + unreadAdminCount) > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF6A00] text-white text-[9px] font-bold flex items-center justify-center">
+                  {(unreadAlertCount + unreadAdminCount) > 9 ? "9+" : (unreadAlertCount + unreadAdminCount)}
+                </span>
+              )}
             </button>
             <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Search className="w-4 h-4" />
@@ -350,11 +360,10 @@ function LayoutInner({ children, currentPageName }) {
 
 
 
-      {/* Admin Notifications */}
-      {showAdminNotifications && <AdminNotificationPanel user={user} onClose={() => setShowAdminNotifications(false)} />}
 
-      {/* Alerts Drawer */}
-      {showAlertsDrawer && <AlertsDrawer onClose={() => setShowAlertsDrawer(false)} user={user} />}
+
+      {/* Alerts & Notifications Drawer */}
+      {showAlertsDrawer && <AlertsDrawer onClose={() => { setShowAlertsDrawer(false); setUnreadAdminCount(0); }} user={user} />}
 
       {/* Global Search */}
       {showSearch && <GlobalSearch onClose={() => setShowSearch(false)} />}

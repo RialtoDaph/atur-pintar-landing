@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, TrendingUp, AlertTriangle, CheckCircle, Zap, Info, Bell } from "lucide-react";
+import { X, TrendingUp, AlertTriangle, CheckCircle, Zap, Info, Bell, Check } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import DashboardInsights from "@/components/dashboard/DashboardInsights";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
@@ -17,11 +17,28 @@ const ALERT_CONFIG = {
   budget_exceeded:     { icon: AlertTriangle, color: "text-red-600",   bg: "bg-red-50",   label: "Budget" },
 };
 
+const TYPE_EMOJI = { tagihan: "🧾", cicilan: "🏦", tabungan: "🐷", langganan: "📱", lainnya: "📌" };
+
+function getDaysUntilDue(dueDay) {
+  const today = new Date();
+  const thisMonth = new Date(today.getFullYear(), today.getMonth(), dueDay);
+  if (thisMonth < today) {
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, dueDay);
+    return Math.ceil((nextMonth - today) / (1000 * 60 * 60 * 24));
+  }
+  return Math.ceil((thisMonth - today) / (1000 * 60 * 60 * 24));
+}
+
 export default function AlertsDrawer({ onClose, user }) {
   const [transactions, setTransactions] = useState([]);
   const [goals, setGoals] = useState([]);
   const [alertRecords, setAlertRecords] = useState([]);
+  const [adminNotifs, setAdminNotifs] = useState([]);
+  const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
   useEffect(() => {
     if (!user?.email) return;
@@ -29,10 +46,11 @@ export default function AlertsDrawer({ onClose, user }) {
       base44.entities.Transaction.filter({ created_by: user.email }, "-date", 100),
       base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
       base44.entities.Alert.filter({ created_by: user.email, status: "unread" }, "-created_date"),
-    ]).then(([tx, gl, alerts]) => {
+      base44.entities.AdminNotification.list(),
+      base44.entities.Reminder.filter({ is_active: true, created_by: user.email }),
+    ]).then(([tx, gl, alerts, notifs, rems]) => {
       setTransactions(tx);
       setGoals(gl);
-      // Dedup alerts by title, max 10, max 30 days old
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const seenTitles = new Set();
       const dedupedAlerts = (alerts || []).filter(a => {
@@ -42,11 +60,27 @@ export default function AlertsDrawer({ onClose, user }) {
         return true;
       }).slice(0, 10);
       setAlertRecords(dedupedAlerts);
+      const myNotifs = (notifs || []).filter(n =>
+        (n.target_type === 'all' || n.target_email === user.email) && !n.read_by?.includes(user.email)
+      );
+      setAdminNotifs(myNotifs);
+      const upcoming = (rems || []).filter(r => {
+        if (r.last_dismissed_month === currentMonth) return false;
+        return getDaysUntilDue(r.due_day) <= 7;
+      }).map(r => ({ ...r, daysLeft: getDaysUntilDue(r.due_day) })).sort((a, b) => a.daysLeft - b.daysLeft);
+      setReminders(upcoming);
       setLoading(false);
-      // Mark all unread alerts as read
       alerts.forEach(a => base44.entities.Alert.update(a.id, { status: "read" }));
+      myNotifs.forEach(n => {
+        base44.entities.AdminNotification.update(n.id, { read_by: [...(n.read_by || []), user.email] }).catch(() => {});
+      });
     });
   }, [user?.email]);
+
+  async function dismissReminder(r) {
+    await base44.entities.Reminder.update(r.id, { last_dismissed_month: currentMonth });
+    setReminders(prev => prev.filter(x => x.id !== r.id));
+  }
 
   return (
     <AnimatePresence>
@@ -92,6 +126,50 @@ export default function AlertsDrawer({ onClose, user }) {
               </div>
             ) : (
               <>
+                {/* Admin Notifications */}
+                {adminNotifs.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest px-1">Dari Admin ({adminNotifs.length})</p>
+                    {adminNotifs.map(n => (
+                      <div key={n.id} className="bg-white rounded-2xl p-3 shadow-sm ring-2 ring-[#FF6A00]/20">
+                        <div className="flex items-start gap-3">
+                          <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
+                            <Bell className="w-4 h-4 text-[#FF6A00]" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-[#1A1A1A] text-sm">{n.title}</p>
+                            <p className="text-[#4A5568] text-xs mt-0.5 leading-relaxed">{n.message}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Upcoming Reminders */}
+                {reminders.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest px-1">Pengingat ({reminders.length})</p>
+                    {reminders.map(r => {
+                      const urgent = r.daysLeft <= 3;
+                      return (
+                        <div key={r.id} className={`bg-white rounded-2xl p-3 shadow-sm flex items-center gap-3 ${urgent ? "ring-2 ring-orange-200" : ""}`}>
+                          <span className="text-xl">{r.icon || TYPE_EMOJI[r.type] || "📌"}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-[#0A0A0A] truncate">{r.title}</p>
+                            <p className="text-xs text-[#8FA4C8]">
+                              {r.daysLeft === 0 ? "Hari ini" : r.daysLeft === 1 ? "Besok" : `${r.daysLeft} hari lagi`}
+                            </p>
+                          </div>
+                          <button onClick={() => dismissReminder(r)} className="w-7 h-7 rounded-full bg-green-50 flex items-center justify-center hover:bg-green-100 transition-colors flex-shrink-0">
+                            <Check className="w-3.5 h-3.5 text-green-500" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
                 {/* Alert entity records — unread notifications */}
                 {alertRecords.length > 0 && (
                   <div className="space-y-2">
