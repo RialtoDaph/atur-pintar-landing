@@ -16,7 +16,7 @@ export function usePricing() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.asServiceRole.entities.AppConfig.list()
+    base44.entities.AppConfig.list()
       .then(configs => {
         if (configs && configs.length > 0) {
           setMonthly(configs[0].premium_price_monthly || DEFAULTS.monthly);
