@@ -42,9 +42,18 @@ function LayoutInner({ children, currentPageName }) {
       // Log login
       base44.functions.invoke('logUserLogin', {}).catch(() => {});
       
-      // Fetch unread alerts
+      // Fetch unread alerts - dedup by title, max 30 days old
       base44.entities.Alert.filter({ created_by: u.email, status: "unread" }).then((alerts) => {
-        setUnreadAlertCount(alerts?.length || 0);
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        const seenTitles = new Set();
+        let count = 0;
+        for (const a of (alerts || [])) {
+          if (!seenTitles.has(a.title) && (!a.created_date || a.created_date > thirtyDaysAgo)) {
+            seenTitles.add(a.title);
+            count++;
+          }
+        }
+        setUnreadAlertCount(Math.min(count, 10));
       }).catch(() => {});
       
       // Fetch unread admin notifications

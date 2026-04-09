@@ -128,22 +128,19 @@ export default function SmartAlerts({ transactions, loading }) {
   async function saveAlertToDatabase(alertData) {
     try {
       const user = await base44.auth.me();
-      // Check if alert with same type exists for this month
+      // Check if alert with same type already exists (avoid duplicates)
       const existing = await base44.entities.Alert.filter({
         type: alertData.type,
-        status: { $in: ["unread", "read"] },
         created_by: user.email
       });
-
-      // Only create if doesn't exist yet
-      if (existing.length === 0) {
-        await base44.entities.Alert.create({
-          ...alertData,
-          status: "unread"
-        });
+      // Only create if no alert of this type exists in last 30 days
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const recentExists = existing.some(a => !a.created_date || a.created_date > thirtyDaysAgo);
+      if (!recentExists) {
+        await base44.entities.Alert.create({ ...alertData, status: "unread" });
       }
     } catch (error) {
-      console.error("Error saving alert:", error);
+      // silent
     }
   }
 

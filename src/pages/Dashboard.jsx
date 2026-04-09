@@ -59,6 +59,22 @@ export default function Dashboard() {
           base44.auth.updateMe({ subscription_status: "expired", subscription_plan: "free" });
         }
       }
+      // Init GamificationProfile on first load if missing
+      if (u?.onboarding_completed) {
+        base44.entities.GamificationProfile.filter({ created_by: u.email }).then(profiles => {
+          if (profiles.length === 0) {
+            base44.entities.GamificationProfile.create({
+              daily_streak: 0, longest_streak: 0, total_points: 0, level: 1,
+              last_activity_date: new Date().toISOString().split("T")[0]
+            }).catch(() => {});
+          }
+        }).catch(() => {});
+        // Run deduplication once per session
+        if (!sessionStorage.getItem("dedup_done")) {
+          sessionStorage.setItem("dedup_done", "1");
+          base44.functions.invoke("deduplicateUserData", {}).catch(() => {});
+        }
+      }
     }).catch(() => {});
   }, []);
 

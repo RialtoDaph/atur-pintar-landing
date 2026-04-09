@@ -43,7 +43,16 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   const cameraRef = useRef(null);
 
   useEffect(() => {
-    base44.entities.Account.list().then(list => setAccounts(list || [])).catch(() => {});
+    base44.entities.Account.list().then(list => {
+      // Deduplicate accounts by name (keep first/oldest per name)
+      const seen = new Set();
+      const deduped = (list || []).filter(acc => {
+        if (seen.has(acc.name)) return false;
+        seen.add(acc.name);
+        return true;
+      });
+      setAccounts(deduped);
+    }).catch(() => {});
   }, []);
 
   // Removed - now handled in TransactionCategories component

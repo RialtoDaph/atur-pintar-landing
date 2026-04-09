@@ -10,10 +10,12 @@ export default function NetWorthCard({ accounts = [] }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      base44.entities.Investment.list().catch(() => []),
-      base44.entities.Debt.filter({ status: "active" }).catch(() => []),
-    ]).then(([inv, dbt]) => {
+    base44.auth.me().then(u => {
+      return Promise.all([
+        base44.entities.Investment.filter({ created_by: u.email }).catch(() => []),
+        base44.entities.Debt.filter({ status: "active", created_by: u.email }).catch(() => []),
+      ]);
+    }).then(([inv, dbt]) => {
       setInvestments(inv);
       setDebts(dbt);
       setLoading(false);

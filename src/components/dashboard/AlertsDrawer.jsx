@@ -32,7 +32,16 @@ export default function AlertsDrawer({ onClose, user }) {
     ]).then(([tx, gl, alerts]) => {
       setTransactions(tx);
       setGoals(gl);
-      setAlertRecords(alerts);
+      // Dedup alerts by title, max 10, max 30 days old
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const seenTitles = new Set();
+      const dedupedAlerts = (alerts || []).filter(a => {
+        if (a.created_date && a.created_date < thirtyDaysAgo) return false;
+        if (seenTitles.has(a.title)) return false;
+        seenTitles.add(a.title);
+        return true;
+      }).slice(0, 10);
+      setAlertRecords(dedupedAlerts);
       setLoading(false);
       // Mark all unread alerts as read
       alerts.forEach(a => base44.entities.Alert.update(a.id, { status: "read" }));
