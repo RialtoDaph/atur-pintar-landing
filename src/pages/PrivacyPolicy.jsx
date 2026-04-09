@@ -25,7 +25,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-white font-bold text-base mb-3">1. Identitas Pengelola</h2>
-            <p>Kebijakan Privasi ini berlaku untuk layanan <strong className="text-white">Atur Pintar</strong> ("Aplikasi", "Kami"), yang dikelola oleh <strong className="text-white">[Nama Pengelola/PT — Placeholder]</strong>, berdomisili di Indonesia.</p>
+            <p>Atur Pintar adalah produk yang dikelola oleh tim pengembang independen yang berdomisili di Indonesia.</p>
             <p className="mt-2">Kontak privasi: <span className="text-[#FF6A00] font-medium">support@aturpintar.id</span></p>
           </section>
 
@@ -121,7 +121,6 @@ export default function PrivacyPolicy() {
             <h2 className="text-white font-bold text-base mb-3">11. Hubungi Kami</h2>
             <p>Pertanyaan, keluhan, atau permintaan terkait privasi data dapat disampaikan ke:</p>
             <p className="mt-2 text-white/55">Email: <span className="text-[#FF6A00] font-medium">support@aturpintar.id</span></p>
-            <p className="text-white/55">Alamat: [Alamat Kantor — Placeholder], Indonesia</p>
             <p className="mt-2 text-white/40 text-xs">Kami akan merespons dalam 14 hari kerja.</p>
           </section>
         </div>
@@ -133,7 +132,7 @@ export default function PrivacyPolicy() {
           <span className="text-white/15 text-xs">·</span>
           <Link to="/TermsOfService" className="text-white/30 hover:text-white/60 text-xs transition-colors">Syarat & Ketentuan</Link>
         </div>
-        <p className="text-white/20 text-xs">© 2026 Atur Pintar. Kelola uangmu lebih cerdas.</p>
+        <p className="text-white/20 text-xs">© 2026 Atur Pintar. Semua hak dilindungi.</p>
       </footer>
     </div>
   );

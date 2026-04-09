@@ -25,7 +25,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="text-white font-bold text-base mb-3">1. Definisi dan Penerimaan</h2>
-            <p className="mb-2"><strong className="text-white">Atur Pintar x Nana AI</strong> adalah layanan aplikasi manajemen keuangan pribadi berbasis kecerdasan buatan ("Layanan"), yang dikelola oleh <strong className="text-white">[Nama Pengelola — Placeholder]</strong> ("Pengelola", "Kami").</p>
+            <p className="mb-2"><strong className="text-white">Atur Pintar x Nana AI</strong> adalah layanan aplikasi manajemen keuangan pribadi berbasis kecerdasan buatan ("Layanan"), yang dikelola oleh tim pengembang independen yang berdomisili di Indonesia ("Pengelola", "Kami").</p>
             <p>Dengan mendaftar atau menggunakan Layanan, kamu ("Pengguna") menyatakan telah membaca, memahami, dan menyetujui Syarat & Ketentuan ini serta <Link to="/PrivacyPolicy" className="text-[#FF6A00] hover:underline">Kebijakan Privasi</Link> kami. Jika tidak setuju, harap tidak menggunakan Layanan.</p>
           </section>
 
@@ -142,9 +142,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-white font-bold text-base mb-3">12. Hubungi Kami</h2>
             <p>Pertanyaan, keluhan, atau pengaduan terkait Layanan:</p>
-            <p className="mt-2 text-white/55">Email: <span className="text-[#FF6A00] font-medium">support@aturpintar.id</span></p>
-            <p className="text-white/55">Alamat: [Alamat Kantor — Placeholder], Indonesia</p>
-            <p className="mt-2 text-white/40 text-xs">Kami akan merespons dalam 3 hari kerja.</p>
+            <p className="mt-2 text-white/55">Untuk pertanyaan, keluhan, atau laporan, silakan hubungi kami melalui email: <span className="text-[#FF6A00] font-medium">support@aturpintar.id</span>. Kami akan merespons dalam 1–3 hari kerja.</p>
           </section>
         </div>
       </div>
@@ -155,7 +153,7 @@ export default function TermsOfService() {
           <span className="text-white/15 text-xs">·</span>
           <Link to="/PrivacyPolicy" className="text-white/30 hover:text-white/60 text-xs transition-colors">Kebijakan Privasi</Link>
         </div>
-        <p className="text-white/20 text-xs">© 2026 Atur Pintar. Kelola uangmu lebih cerdas.</p>
+        <p className="text-white/20 text-xs">© 2026 Atur Pintar. Semua hak dilindungi.</p>
       </footer>
     </div>
   );
