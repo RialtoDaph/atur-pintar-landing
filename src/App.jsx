@@ -40,7 +40,7 @@ const AuthenticatedApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    base44.asServiceRole.entities.AppConfig.list().then(configs => {
+    base44.entities.AppConfig.list().then(configs => {
       if (configs && configs.length && configs[0].maintenance_mode === true) {
         setMaintenanceMode(true);
       }
