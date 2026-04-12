@@ -155,8 +155,10 @@ export default function AdminUsers() {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       return new Date(u.updated_date || u.created_date) < thirtyDaysAgo;
     }
+    if (filter === "no_onboarding") return !u.onboarding_completed;
     return true;
   });
+  const noOnboardingCount = users.filter(u => !u.onboarding_completed).length;
 
   const pendingPayments = payments.filter(p => p.status === "pending");
   const threeDaysAgo = new Date();
@@ -344,8 +346,8 @@ export default function AdminUsers() {
           </div>
 
           {/* Filter */}
-          <div className="flex gap-2 mb-4">
-            {["all", "premium", "free", "inactive"].map(f => (
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {["all", "premium", "free", "inactive", "no_onboarding"].map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -353,7 +355,7 @@ export default function AdminUsers() {
                   filter === f ? "bg-[#FF6A00] text-white" : "bg-[#F8FAFC] text-[#1A1A1A] hover:bg-[#E2E8F0]"
                 }`}
               >
-                {f === "all" ? "All" : f === "inactive" ? "Inactive" : f.charAt(0).toUpperCase() + f.slice(1)}
+                {f === "all" ? "All" : f === "inactive" ? "Inactive" : f === "no_onboarding" ? `Belum Onboarding (${noOnboardingCount})` : f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
           </div>
@@ -368,6 +370,7 @@ export default function AdminUsers() {
                   <th className="text-center py-3 px-2 font-semibold text-[#1A1A1A]">Status</th>
                   <th className="text-center py-3 px-2 font-semibold text-[#1A1A1A]">Joined</th>
                   <th className="text-center py-3 px-2 font-semibold text-[#1A1A1A]">Last Active</th>
+                  <th className="text-center py-3 px-2 font-semibold text-[#1A1A1A]">Onboarding</th>
                   <th className="text-center py-3 px-2 font-semibold text-[#1A1A1A]">Aksi</th>
                 </tr>
               </thead>
@@ -390,6 +393,13 @@ export default function AdminUsers() {
                       </td>
                       <td className="py-3 px-2 text-center text-[#8FA4C8] text-xs">{new Date(u.created_date).toLocaleDateString("id-ID")}</td>
                       <td className="py-3 px-2 text-center text-[#8FA4C8] text-xs">{daysSinceActive}d ago</td>
+                      <td className="py-3 px-2 text-center">
+                        {u.onboarding_completed ? (
+                          <span className="text-green-500 text-xs font-semibold">✓</span>
+                        ) : (
+                          <span className="text-amber-500 text-xs font-semibold">Belum</span>
+                        )}
+                      </td>
                       <td className="py-3 px-2 text-center">
                         {u.email !== user?.email && (
                           <div className="flex items-center justify-center gap-1">

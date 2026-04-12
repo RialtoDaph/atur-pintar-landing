@@ -1,535 +1,402 @@
-import { useState } from "react";
-import { ArrowRight, ArrowLeft, X, Check } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ArrowRight, ArrowLeft, Camera, Upload, Plus, Trash2, Check, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { seedSampleData } from "@/components/onboarding/SampleDataManager";
 
-const TODAY = new Date().toISOString().split("T")[0];
+const STORAGE_KEY = "onboarding_progress_v2";
 
-const STEPS = [
-{ id: "welcome" },
-{ id: "locale" },
-{ id: "income" },
-{ id: "savings_goal" },
-{ id: "debt" },
-{ id: "done" }];
+const ACCOUNT_ICONS = ["💳", "🏦", "💵", "🏧", "📱", "💰", "🪙", "💼"];
+const ACCOUNT_TYPES = [
+  { value: "bank", label: "Bank" },
+  { value: "cash", label: "Cash / Tunai" },
+  { value: "ewallet", label: "E-Wallet" },
+  { value: "other", label: "Lainnya" },
+];
+const FINANCIAL_GOALS = [
+  { value: "save_more", label: "Menabung lebih banyak 🐷" },
+  { value: "pay_debt", label: "Melunasi utang 💳" },
+  { value: "control_spending", label: "Mengontrol pengeluaran 📊" },
+  { value: "financial_freedom", label: "Mencapai kebebasan finansial 🚀" },
+  { value: "other", label: "Lainnya" },
+];
 
+function fmtNum(val) {
+  const n = parseInt(String(val).replace(/\D/g, ""), 10) || 0;
+  return n > 0 ? n.toLocaleString("id-ID") : "";
+}
+function parseNum(val) { return parseInt(String(val).replace(/\D/g, ""), 10) || 0; }
 
-const LANGUAGES = [
-{ code: "id", label: "Indonesia", flag: "🇮🇩" },
-{ code: "en", label: "English", flag: "🇺🇸" }];
-
-
-const CURRENCIES = [
-{ code: "IDR", label: "Rupiah", symbol: "Rp", flag: "🇮🇩" },
-{ code: "USD", label: "US Dollar", symbol: "$", flag: "🇺🇸" },
-{ code: "EUR", label: "Euro", symbol: "€", flag: "🇪🇺" }];
-
+function ProgressBar({ step, total }) {
+  return (
+    <div className="mb-6">
+      <div className="flex justify-between text-xs text-[#8FA4C8] mb-2">
+        <span className="font-semibold">Langkah {step} dari {total}</span>
+        <span>{Math.round((step / total) * 100)}%</span>
+      </div>
+      <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
+        <div className="h-2 bg-[#FF6A00] rounded-full transition-all duration-500"
+          style={{ width: `${(step / total) * 100}%` }} />
+      </div>
+      <div className="flex justify-between mt-2">
+        {["Profil", "Keuangan", "Rekening", "Selesai"].map((label, i) => (
+          <div key={i} className={`text-[10px] font-semibold ${i + 1 <= step ? "text-[#FF6A00]" : "text-[#CBD5E0]"}`}>
+            {label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function OnboardingQuestionnaire({ onClose }) {
-  const [step, setStep] = useState(0);
+  const savedRaw = localStorage.getItem(STORAGE_KEY);
+  const saved = savedRaw ? JSON.parse(savedRaw) : {};
+
+  const [step, setStep] = useState(saved.step || 1);
   const [saving, setSaving] = useState(false);
 
-  // Form data
-  const [monthlyIncome, setMonthlyIncome] = useState("");
-  const [monthlyExpense, setMonthlyExpense] = useState("");
+  // Step 1
+  const [photoUrl, setPhotoUrl] = useState(saved.photoUrl || "");
+  const [fullName, setFullName] = useState(saved.fullName || "");
+  const [phone, setPhone] = useState(saved.phone || "");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoRef = useRef(null);
+  const cameraRef = useRef(null);
 
-  function formatNumber(val) {
-    const raw = val.replace(/\D/g, "");
-    return raw ? parseInt(raw, 10).toLocaleString("id-ID") : "";
+  // Step 2
+  const [monthlyIncome, setMonthlyIncome] = useState(saved.monthlyIncome || 0);
+  const [primaryGoal, setPrimaryGoal] = useState(saved.primaryGoal || "");
+  const [occupation, setOccupation] = useState(saved.occupation || "");
+
+  // Step 3 — accounts
+  const [accounts, setAccounts] = useState(saved.accounts || []);
+  const [accName, setAccName] = useState("");
+  const [accType, setAccType] = useState("bank");
+  const [accBalance, setAccBalance] = useState(0);
+  const [accIcon, setAccIcon] = useState("🏦");
+  const [accError, setAccError] = useState("");
+
+  // Persist to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      step, photoUrl, fullName, phone, monthlyIncome, primaryGoal, occupation, accounts
+    }));
+  }, [step, photoUrl, fullName, phone, monthlyIncome, primaryGoal, occupation, accounts]);
+
+  async function handlePhotoUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPhoto(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setPhotoUrl(file_url);
+    setUploadingPhoto(false);
   }
-  function parseNumber(val) {
-    return val.replace(/\./g, "").replace(/,/g, "");
+
+  function addAccount() {
+    if (!accName.trim()) { setAccError("Nama rekening wajib diisi"); return; }
+    setAccError("");
+    setAccounts(prev => [...prev, { id: Date.now(), name: accName.trim(), type: accType, balance: accBalance, icon: accIcon }]);
+    setAccName(""); setAccType("bank"); setAccBalance(0); setAccIcon("🏦");
   }
-
-  const [hasGoal, setHasGoal] = useState(null);
-  const [goalName, setGoalName] = useState("");
-  const [goalTarget, setGoalTarget] = useState("");
-  const [goalDeadline, setGoalDeadline] = useState("");
-
-  const [hasDebt, setHasDebt] = useState(null);
-  const [debtName, setDebtName] = useState("");
-  const [debtType, setDebtType] = useState("lainnya");
-  const [debtRemaining, setDebtRemaining] = useState("");
-  const [debtMonthly, setDebtMonthly] = useState("");
-
-  const [selectedLanguage, setSelectedLanguage] = useState("id");
-  const [selectedCurrency, setSelectedCurrency] = useState("IDR");
-
-  const [riskTolerance, setRiskTolerance] = useState("");
-  const [financialGoal, setFinancialGoal] = useState("");
-
-  const [salaryDay, setSalaryDay] = useState("");
-
-  const [hasReminder, setHasReminder] = useState(null);
-  const [reminderTitle, setReminderTitle] = useState("");
-  const [reminderAmount, setReminderAmount] = useState("");
-  const [reminderDay, setReminderDay] = useState("");
-
-  const totalSteps = STEPS.length;
-  const currentStep = STEPS[step];
 
   async function handleFinish() {
     setSaving(true);
-
     const promises = [];
 
-    // Save opening balance (saldo awal) as a one-time income transaction
-    if (monthlyExpense) {
-      promises.push(base44.entities.Transaction.create({
-        amount: parseFloat(parseNumber(monthlyExpense)),
-        type: "income",
-        category: "opening_balance",
-        note: "Saldo Awal",
-        date: TODAY,
-        is_recurring: false
-      }));
-    }
+    // Update user profile
+    promises.push(base44.auth.updateMe({
+      full_name: fullName,
+      photo_url: photoUrl || undefined,
+      phone,
+      monthly_income: monthlyIncome || undefined,
+      primary_goal: primaryGoal || undefined,
+      onboarding_completed: true,
+    }));
 
-    // Save monthly income as a RECURRING transaction template
-    if (monthlyIncome) {
-      // Build date with the correct salary day in current month
-      let salaryDate = TODAY;
-      if (salaryDay) {
-        const d = new Date(TODAY);
-        d.setDate(parseInt(salaryDay));
-        salaryDate = d.toISOString().split("T")[0];
-      }
+    // Create accounts
+    promises.push(...accounts.map(acc =>
+      base44.entities.Account.create({
+        name: acc.name,
+        type: acc.type,
+        balance: acc.balance,
+        icon: acc.icon,
+        is_default: accounts.indexOf(acc) === 0,
+      })
+    ));
+
+    // Save monthly income as recurring transaction
+    if (monthlyIncome > 0) {
+      const firstAcc = accounts[0];
       promises.push(base44.entities.Transaction.create({
-        amount: parseFloat(parseNumber(monthlyIncome)),
+        amount: monthlyIncome,
         type: "income",
         category: "salary",
         note: "Pendapatan bulanan",
-        date: salaryDate,
+        date: new Date().toISOString().split("T")[0],
+        account_id: undefined,
         is_recurring: true,
-        recurring_interval: "monthly"
+        recurring_interval: "monthly",
       }));
     }
-
-    // Save savings goal
-    if (hasGoal && goalName && goalTarget) {
-      promises.push(base44.entities.SavingsGoal.create({
-        name: goalName,
-        target_amount: parseFloat(parseNumber(goalTarget)),
-        current_amount: 0,
-        deadline: goalDeadline || undefined,
-        icon: "🎯",
-        color: "#FF6A00",
-        status: "active"
-      }));
-    }
-
-    // Save debt
-    if (hasDebt && debtName && debtRemaining) {
-      promises.push(base44.entities.Debt.create({
-        name: debtName,
-        type: debtType,
-        total_amount: parseFloat(parseNumber(debtRemaining)),
-        remaining_amount: parseFloat(parseNumber(debtRemaining)),
-        monthly_payment: debtMonthly ? parseFloat(parseNumber(debtMonthly)) : 0,
-        status: "active",
-        icon: "💳"
-      }));
-    }
-
-    // Save risk profile
-    if (riskTolerance || financialGoal || monthlyIncome) {
-      promises.push(base44.entities.UserRiskProfile.create({
-        risk_tolerance: riskTolerance || "moderate",
-        financial_goal: financialGoal || "wealth_building",
-        monthly_income: monthlyIncome ? parseFloat(parseNumber(monthlyIncome)) : undefined,
-        last_assessment_date: TODAY,
-        investment_experience: "beginner",
-        investment_horizon: "medium_term"
-      }));
-    }
-
-    // Save reminder AND create a recurring transaction for it
-    if (hasReminder && reminderTitle && reminderDay) {
-      const reminderAmt = reminderAmount ? parseFloat(parseNumber(reminderAmount)) : undefined;
-      promises.push(base44.entities.Reminder.create({
-        title: reminderTitle,
-        type: "tagihan",
-        amount: reminderAmt,
-        due_day: parseInt(reminderDay),
-        is_active: true,
-        icon: "🔔"
-      }));
-      // Also create a recurring expense transaction template
-      if (reminderAmt) {
-        // Build a date with the correct due day in current month
-        const dueDate = new Date(TODAY);
-        dueDate.setDate(parseInt(reminderDay));
-        const dueDateStr = dueDate.toISOString().split("T")[0];
-        promises.push(base44.entities.Transaction.create({
-          amount: reminderAmt,
-          type: "expense",
-          category: "bills",
-          note: reminderTitle,
-          date: dueDateStr,
-          is_recurring: true,
-          recurring_interval: "monthly"
-        }));
-      }
-    }
-
-    // Save language & currency settings
-    const CURRENCY_MAP = { IDR: "Rp", USD: "$", EUR: "€" };
-    promises.push(base44.entities.AppSettings.list().then(async (list) => {
-      const payload = {
-        language: selectedLanguage,
-        currency: selectedCurrency,
-        currency_symbol: CURRENCY_MAP[selectedCurrency],
-        decimal_separator: selectedCurrency === "IDR" ? "," : ".",
-        thousand_separator: selectedCurrency === "IDR" ? "." : ","
-      };
-      if (list.length > 0) {
-        await base44.entities.AppSettings.update(list[0].id, payload);
-      } else {
-        await base44.entities.AppSettings.create(payload);
-      }
-    }));
-
-    // Mark onboarding done on user
-    promises.push(base44.auth.updateMe({ onboarding_completed: true }));
 
     await Promise.all(promises);
-
-    // Seed sample data so charts & analytics are visible immediately
-    // await seedSampleData(); // DISABLED
-
+    localStorage.removeItem(STORAGE_KEY);
     setSaving(false);
     onClose();
     window.location.reload();
   }
 
-  function next() {setStep((s) => Math.min(s + 1, totalSteps - 1));}
-  function prev() {setStep((s) => Math.max(s - 1, 0));}
-
-  const progress = (step + 1) / totalSteps * 100;
+  const initials = fullName ? fullName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() : "?";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
-        {/* Progress bar */}
-        <div className="h-1 bg-[#F2F4F7]">
-          <div className="h-1 bg-[#FF6A00] transition-all duration-300" style={{ width: `${progress}%` }} />
-        </div>
-
+      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden max-h-[95dvh] overflow-y-auto">
         <div className="p-6">
-          <div className="flex items-center justify-between mb-5">
-            <span className="text-xs font-semibold text-[#8FA4C8]">{step + 1} / {totalSteps}</span>
+          <ProgressBar step={step} total={4} />
 
-          </div>
+          {/* ===== STEP 1: Profil ===== */}
+          {step === 1 && (
+            <div>
+              <div className="text-4xl mb-2 text-center">👋</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] text-center mb-1">Halo! Kenalan dulu yuk</h2>
+              <p className="text-sm text-[#8FA4C8] text-center mb-6">Cerita sedikit tentang dirimu</p>
 
-          {/* STEP: Welcome */}
-          {currentStep.id === "welcome" &&
-          <div className="text-center">
-              <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/ba12d8d2f_3.png" alt="Atur Pintar" className="w-20 h-20 mx-auto mb-4 object-contain" />
-              <h2 className="text-xl font-bold text-[#1A1A1A] mb-2">Selamat Datang di Atur Pintar 
-            </h2>
-              <p className="text-sm text-[#4A5568] leading-relaxed mb-6">Jawab beberapa pertanyaan singkat agar kami bisa menyiapkan dasbor sesuai kondisi keuanganmu.
-
-            </p>
-              <div className="flex gap-3">
-  
-                <button onClick={next} className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2">
-                  Mulai <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>}
-
-          {/* STEP: Locale */}
-          {currentStep.id === "locale" &&
-          <div>
-              <div className="text-3xl mb-3">🌐</div>
-              <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Bahasa & Mata Uang</h2>
-              <p className="text-sm text-[#8FA4C8] mb-5">Pilih preferensimu. Pengaturan ini <span className="font-semibold text-[#FF6A00]">tidak bisa diubah</span> setelah ini.</p>
-
-              <div className="mb-5">
-                <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Bahasa</label>
-                <div className="space-y-2">
-                  {LANGUAGES.map((lang) =>
-                <button key={lang.code} onClick={() => setSelectedLanguage(lang.code)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${selectedLanguage === lang.code ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] hover:border-[#CBD5E0]"}`}>
-                      <span className="text-xl">{lang.flag}</span>
-                      <span className={`text-sm font-semibold ${selectedLanguage === lang.code ? "text-[#FF6A00]" : "text-[#1A1A1A]"}`}>{lang.label}</span>
-                    </button>
-                )}
+              {/* Photo */}
+              <div className="flex flex-col items-center mb-5">
+                <div className="w-20 h-20 rounded-full bg-[#F2F4F7] border-2 border-dashed border-[#CBD5E0] flex items-center justify-center mb-2 overflow-hidden relative">
+                  {uploadingPhoto ? (
+                    <Loader2 className="w-6 h-6 text-[#8FA4C8] animate-spin" />
+                  ) : photoUrl ? (
+                    <img src={photoUrl} alt="profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-bold text-[#8FA4C8]">{initials}</span>
+                  )}
                 </div>
-              </div>
-
-              <div className="mb-6">
-                <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Mata Uang</label>
-                <div className="space-y-2">
-                  {CURRENCIES.map((cur) =>
-                <button key={cur.code} onClick={() => setSelectedCurrency(cur.code)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${selectedCurrency === cur.code ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] hover:border-[#CBD5E0]"}`}>
-                      <span className="text-xl">{cur.flag}</span>
-                      <div className="text-left">
-                        <p className={`text-sm font-semibold ${selectedCurrency === cur.code ? "text-[#FF6A00]" : "text-[#1A1A1A]"}`}>{cur.label}</p>
-                        <p className="text-xs text-[#8FA4C8]">{cur.symbol} · {cur.code}</p>
-                      </div>
-                    </button>
-                )}
+                <div className="flex gap-2">
+                  <button onClick={() => cameraRef.current?.click()}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FF6A00]/10 text-[#FF6A00] text-xs font-semibold hover:bg-[#FF6A00]/20 transition-colors">
+                    <Camera className="w-3.5 h-3.5" /> Kamera
+                  </button>
+                  <button onClick={() => photoRef.current?.click()}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F2F4F7] text-[#4A5568] text-xs font-semibold hover:bg-[#E2E8F0] transition-colors">
+                    <Upload className="w-3.5 h-3.5" /> Upload
+                  </button>
                 </div>
+                <input ref={cameraRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handlePhotoUpload} />
+                <input ref={photoRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
               </div>
 
-              <NavButtons onPrev={prev} onNext={next} />
-            </div>
-          }
-
-          {/* STEP: Income & Expense */}
-          {currentStep.id === "income" &&
-          <div>
-              <div className="text-3xl mb-3">💰</div>
-              <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Pendapatan & Pengeluaran</h2>
-              <p className="text-sm text-[#8FA4C8] mb-5">Berapa rata-rata keuangan bulanan kamu?</p>
-              <div className="space-y-4 mb-6">
+              <div className="space-y-3 mb-6">
                 <div>
-                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Pendapatan Bersih / Bulan</label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium">Rp</span>
-                    <input
-                    type="text"
-                    inputMode="numeric"
-                    className="w-full border border-[#E2E8F0] rounded-xl pl-12 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                    placeholder="0"
-                    value={monthlyIncome}
-                    onChange={(e) => setMonthlyIncome(formatNumber(e.target.value))} />
-
-                  </div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    Nama Lengkap <span className="text-red-400">*</span>
+                  </label>
+                  <input type="text" placeholder="Masukkan nama lengkapmu"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                    value={fullName} onChange={e => setFullName(e.target.value)} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Saldo Awal (Total Uang Saat Ini)</label>
-                  <p className="text-[10px] text-[#8FA4C8] mb-1.5">Jumlah total uang yang kamu miliki sekarang (tunai + rekening)</p>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium">Rp</span>
-                    <input
-                    type="text"
-                    inputMode="numeric"
-                    className="w-full border border-[#E2E8F0] rounded-xl pl-12 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                    placeholder="0"
-                    value={monthlyExpense}
-                    onChange={(e) => setMonthlyExpense(formatNumber(e.target.value))} />
-                  </div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    WhatsApp / HP <span className="text-[#CBD5E0]">(opsional)</span>
+                  </label>
+                  <input type="tel" placeholder="+62 8xx-xxxx-xxxx"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                    value={phone} onChange={e => setPhone(e.target.value)} />
                 </div>
               </div>
-                <div>
-                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tanggal Gajian Tiap Bulan</label>
-                  <div className="grid grid-cols-4 gap-2 mb-2">
-                    {[1, 5, 10, 15, 20, 25, 28, 31].map((d) =>
-                <button key={d} type="button" onClick={() => setSalaryDay(String(d))}
-                className={`py-2 rounded-xl border text-sm font-semibold transition-all ${salaryDay === String(d) ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
-                        {d}
-                      </button>
-                )}
-                  </div>
-                  <input type="number" min="1" max="31" inputMode="numeric"
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              placeholder="Atau ketik tanggal lain (1-31)" value={salaryDay} onChange={(e) => setSalaryDay(e.target.value)} />
-                </div>
-              <NavButtons onPrev={prev} onNext={next} canNext={!!monthlyIncome && !!monthlyExpense && !!salaryDay} />
-            </div>
-          }
 
-          {/* STEP: Savings Goal */}
-          {currentStep.id === "savings_goal" &&
-          <div>
-              <div className="text-3xl mb-3">🎯</div>
-              <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Tujuan Tabungan</h2>
-              <p className="text-sm text-[#8FA4C8] mb-5">Apakah kamu punya tujuan tabungan besar?</p>
-              <div className="flex gap-3 mb-5">
-                {[{ label: "Ya, punya", val: true }, { label: "Belum ada", val: false }].map((opt) =>
-              <button key={String(opt.val)} onClick={() => setHasGoal(opt.val)}
-              className={`flex-1 py-3 rounded-xl border text-sm font-semibold transition-all ${hasGoal === opt.val ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
-                    {opt.label}
-                  </button>
-              )}
-              </div>
-              {hasGoal &&
-            <div className="space-y-3 mb-5">
-                  <input className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              placeholder="Nama tujuan (misal: DP Rumah)" value={goalName} onChange={(e) => setGoalName(e.target.value)} />
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
-                    <input type="text" inputMode="numeric" className="w-full border border-[#E2E8F0] rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                placeholder="Target dana" value={goalTarget} onChange={(e) => setGoalTarget(formatNumber(e.target.value))} />
-                  </div>
-                  <div>
-                    <label className="text-xs text-[#8FA4C8] font-medium block mb-1">Target Deadline (opsional)</label>
-                    <input type="date" className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                value={goalDeadline} onChange={(e) => setGoalDeadline(e.target.value)} />
-                  </div>
-                </div>
-            }
-              <NavButtons onPrev={prev} onNext={next} canNext={hasGoal === false || hasGoal && goalName && goalTarget} />
-            </div>
-          }
-
-          {/* STEP: Debt */}
-          {currentStep.id === "debt" &&
-          <div>
-              <div className="text-3xl mb-3">💳</div>
-              <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Utang / Cicilan</h2>
-              <p className="text-sm text-[#8FA4C8] mb-5">Apakah kamu punya utang yang sedang berjalan?</p>
-              <div className="flex gap-3 mb-5">
-                {[{ label: "Ya, punya", val: true }, { label: "Tidak ada", val: false }].map((opt) =>
-              <button key={String(opt.val)} onClick={() => setHasDebt(opt.val)}
-              className={`flex-1 py-3 rounded-xl border text-sm font-semibold transition-all ${hasDebt === opt.val ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
-                    {opt.label}
-                  </button>
-              )}
-              </div>
-              {hasDebt &&
-            <div className="space-y-3 mb-5">
-                  <input className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              placeholder="Nama utang (misal: KPR BCA)" value={debtName} onChange={(e) => setDebtName(e.target.value)} />
-                  <select className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              value={debtType} onChange={(e) => setDebtType(e.target.value)}>
-                    <option value="kpr">KPR</option>
-                    <option value="kendaraan">Kendaraan</option>
-                    <option value="kartu_kredit">Kartu Kredit</option>
-                    <option value="pinjaman_pribadi">Pinjaman Pribadi</option>
-                    <option value="lainnya">Lainnya</option>
-                  </select>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
-                    <input type="text" inputMode="numeric" className="w-full border border-[#E2E8F0] rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                placeholder="Sisa utang" value={debtRemaining} onChange={(e) => setDebtRemaining(formatNumber(e.target.value))} />
-                  </div>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
-                    <input type="text" inputMode="numeric" className="w-full border border-[#E2E8F0] rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                placeholder="Cicilan / bulan (opsional)" value={debtMonthly} onChange={(e) => setDebtMonthly(formatNumber(e.target.value))} />
-                  </div>
-                </div>
-            }
-              <NavButtons onPrev={prev} onNext={next} canNext={hasDebt === false || hasDebt && debtName && debtRemaining} />
-            </div>
-          }
-
-          {/* STEP: Risk Profile */}
-          {currentStep.id === "risk" &&
-          <div>
-              <div className="text-3xl mb-3">📈</div>
-              <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Profil Investasi</h2>
-              <p className="text-sm text-[#8FA4C8] mb-5">Ini membantu Nana AI memberikan saran yang lebih personal.</p>
-              <div className="mb-4">
-                <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Toleransi Risiko</label>
-                <div className="space-y-2">
-                  {[
-                { val: "conservative", label: "Konservatif", desc: "Lebih suka aman, hindari risiko besar" },
-                { val: "moderate", label: "Moderat", desc: "Berani ambil sedikit risiko" },
-                { val: "aggressive", label: "Agresif", desc: "Siap ambil risiko tinggi demi return besar" }].
-                map((opt) =>
-                <button key={opt.val} onClick={() => setRiskTolerance(opt.val)}
-                className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${riskTolerance === opt.val ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0] hover:border-[#CBD5E0]"}`}>
-                      <p className={`text-sm font-semibold ${riskTolerance === opt.val ? "text-[#FF6A00]" : "text-[#1A1A1A]"}`}>{opt.label}</p>
-                      <p className="text-xs text-[#8FA4C8] mt-0.5">{opt.desc}</p>
-                    </button>
-                )}
-                </div>
-              </div>
-              <div className="mb-5">
-                <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Tujuan Utama Investasi</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                { val: "wealth_building", label: "Pertumbuhan Kekayaan" },
-                { val: "income_generation", label: "Pendapatan Pasif" },
-                { val: "capital_preservation", label: "Perlindungan Modal" },
-                { val: "retirement", label: "Dana Pensiun" }].
-                map((opt) =>
-                <button key={opt.val} onClick={() => setFinancialGoal(opt.val)}
-                className={`py-2.5 px-3 rounded-xl border text-xs font-semibold transition-all text-center ${financialGoal === opt.val ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
-                      {opt.label}
-                    </button>
-                )}
-                </div>
-              </div>
-              <NavButtons onPrev={prev} onNext={next} showSkip onSkip={next} />
-            </div>
-          }
-
-          {/* STEP: Reminder */}
-          {currentStep.id === "reminder" &&
-          <div>
-              <div className="text-3xl mb-3">🔔</div>
-              <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Pengingat Tagihan</h2>
-              <p className="text-sm text-[#8FA4C8] mb-5">Apakah ada tagihan rutin yang perlu diingat?</p>
-              <div className="flex gap-3 mb-5">
-                {[{ label: "Ya, ada", val: true }, { label: "Tidak ada", val: false }].map((opt) =>
-              <button key={String(opt.val)} onClick={() => setHasReminder(opt.val)}
-              className={`flex-1 py-3 rounded-xl border text-sm font-semibold transition-all ${hasReminder === opt.val ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
-                    {opt.label}
-                  </button>
-              )}
-              </div>
-              {hasReminder &&
-            <div className="space-y-3 mb-5">
-                  <input className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              placeholder="Nama tagihan (misal: Listrik PLN)" value={reminderTitle} onChange={(e) => setReminderTitle(e.target.value)} />
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
-                    <input type="text" inputMode="numeric" className="w-full border border-[#E2E8F0] rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-                placeholder="Nominal (opsional)" value={reminderAmount} onChange={(e) => setReminderAmount(formatNumber(e.target.value))} />
-                  </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {[1, 5, 10, 15, 20, 25, 28, 31].map((d) =>
-                <button key={d} type="button" onClick={() => setReminderDay(String(d))}
-                className={`py-2 rounded-xl border text-sm font-semibold transition-all ${reminderDay === String(d) ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
-                        {d}
-                      </button>
-                )}
-                  </div>
-                  <input type="number" min="1" max="31" inputMode="numeric"
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              placeholder="Atau ketik tanggal lain (1-31)" value={reminderDay} onChange={(e) => setReminderDay(e.target.value)} />
-                </div>
-            }
-              <NavButtons onPrev={prev} onNext={next} canNext={hasReminder === false || hasReminder && reminderTitle && reminderDay} />
-            </div>
-          }
-
-          {/* STEP: Done */}
-          {currentStep.id === "done" &&
-          <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-[#FF6A00]/10 flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-[#FF6A00]" />
-              </div>
-              <h2 className="text-xl font-bold text-[#1A1A1A] mb-2">Siap! Semuanya Sudah Diatur 🚀</h2>
-              <p className="text-sm text-[#4A5568] leading-relaxed mb-6">
-                Data keuanganmu sudah kami simpan dan dasbor siap digunakan. Kamu bisa mengedit atau menambah data kapan saja.
-              </p>
-              <button
-              onClick={handleFinish}
-              disabled={saving}
-              className="w-full py-3.5 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors disabled:opacity-50">
-
-                {saving ? "Menyimpan..." : "Mulai Menggunakan Atur Pintar 🎉"}
+              <button onClick={() => { if (!fullName.trim()) return; setStep(2); }} disabled={!fullName.trim()}
+                className="w-full py-3.5 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-40">
+                Lanjut <ArrowRight className="w-4 h-4" />
               </button>
             </div>
-          }
+          )}
+
+          {/* ===== STEP 2: Keuangan ===== */}
+          {step === 2 && (
+            <div>
+              <div className="text-4xl mb-2 text-center">💰</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] text-center mb-1">Cerita tentang keuanganmu</h2>
+              <p className="text-sm text-[#8FA4C8] text-center mb-6">Ini membantu kami memberi rekomendasi yang tepat</p>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    Pendapatan Bulanan (Rp) <span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
+                    <input type="text" inputMode="numeric" placeholder="0"
+                      className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                      value={fmtNum(monthlyIncome)}
+                      onChange={e => setMonthlyIncome(parseNum(e.target.value))} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tujuan Keuangan Utama</label>
+                  <div className="space-y-2">
+                    {FINANCIAL_GOALS.map(g => (
+                      <button key={g.value} onClick={() => setPrimaryGoal(g.value)}
+                        className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-semibold transition-all ${
+                          primaryGoal === g.value ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"
+                        }`}>
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    Pekerjaan <span className="text-[#CBD5E0]">(opsional)</span>
+                  </label>
+                  <input type="text" placeholder="Karyawan swasta, wiraswasta, dll"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                    value={occupation} onChange={e => setOccupation(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={() => setStep(1)}
+                  className="w-11 h-11 flex items-center justify-center rounded-xl border border-[#E2E8F0] text-[#4A5568] hover:bg-[#F8FAFC] flex-shrink-0">
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <button onClick={() => { if (!monthlyIncome) return; setStep(3); }} disabled={!monthlyIncome}
+                  className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-40">
+                  Lanjut <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ===== STEP 3: Rekening ===== */}
+          {step === 3 && (
+            <div>
+              <div className="text-4xl mb-2 text-center">🏦</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] text-center mb-1">Tambahkan rekeningmu</h2>
+              <p className="text-sm text-[#8FA4C8] text-center mb-1">Minimal 1 rekening diperlukan untuk mencatat transaksi</p>
+
+              {/* Added accounts */}
+              {accounts.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {accounts.map(acc => (
+                    <div key={acc.id} className="flex items-center justify-between bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{acc.icon}</span>
+                        <div>
+                          <p className="text-sm font-semibold text-[#1A1A1A]">{acc.name}</p>
+                          <p className="text-xs text-[#8FA4C8]">{acc.type} · Rp {acc.balance.toLocaleString("id-ID")}</p>
+                        </div>
+                      </div>
+                      <button onClick={() => setAccounts(prev => prev.filter(a => a.id !== acc.id))}
+                        className="text-[#CBD5E0] hover:text-red-400 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add account form */}
+              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 mb-4">
+                <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-3">Tambah Rekening</p>
+
+                {/* Icon picker */}
+                <div className="flex gap-2 mb-3 flex-wrap">
+                  {ACCOUNT_ICONS.map(icon => (
+                    <button key={icon} onClick={() => setAccIcon(icon)}
+                      className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${
+                        accIcon === icon ? "bg-[#FF6A00] scale-110" : "bg-white border border-[#E2E8F0] hover:border-[#CBD5E0]"
+                      }`}>
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <input type="text" placeholder="Nama rekening (misal: BCA Tabungan, OVO)"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white"
+                    value={accName} onChange={e => { setAccName(e.target.value); setAccError(""); }} />
+                  {accError && <p className="text-xs text-red-500">{accError}</p>}
+
+                  <select value={accType} onChange={e => setAccType(e.target.value)}
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white">
+                    {ACCOUNT_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] text-sm">Rp</span>
+                    <input type="text" inputMode="numeric" placeholder="Saldo awal (boleh 0)"
+                      className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white"
+                      value={fmtNum(accBalance)}
+                      onChange={e => setAccBalance(parseNum(e.target.value))} />
+                  </div>
+
+                  <button onClick={addAccount}
+                    className="w-full py-2.5 rounded-xl border-2 border-dashed border-[#FF6A00] text-[#FF6A00] text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#FF6A00]/5 transition-colors">
+                    <Plus className="w-4 h-4" /> Tambah Rekening
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={() => setStep(2)}
+                  className="w-11 h-11 flex items-center justify-center rounded-xl border border-[#E2E8F0] text-[#4A5568] hover:bg-[#F8FAFC] flex-shrink-0">
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <button onClick={() => setStep(4)} disabled={accounts.length === 0}
+                  className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-40">
+                  {accounts.length === 0 ? "Tambah min. 1 rekening" : `Lanjut (${accounts.length} rekening) →`}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ===== STEP 4: Done ===== */}
+          {step === 4 && (
+            <div className="text-center">
+              <div className="text-6xl mb-4">🚀</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] mb-2">Semua siap!</h2>
+              <p className="text-sm text-[#4A5568] mb-5 leading-relaxed">
+                Halo, <strong>{fullName}</strong>! Akunmu sudah siap digunakan.
+              </p>
+
+              {/* Summary */}
+              <div className="bg-[#F8FAFC] rounded-2xl p-4 mb-6 text-left space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">💰</span>
+                  <div>
+                    <p className="text-xs text-[#8FA4C8]">Pendapatan bulanan</p>
+                    <p className="text-sm font-bold text-[#1A1A1A]">Rp {monthlyIncome.toLocaleString("id-ID")}</p>
+                  </div>
+                </div>
+                {accounts.map(acc => (
+                  <div key={acc.id} className="flex items-center gap-2">
+                    <span className="text-lg">{acc.icon}</span>
+                    <div>
+                      <p className="text-xs text-[#8FA4C8]">{acc.name}</p>
+                      <p className="text-sm font-bold text-[#1A1A1A]">Saldo: Rp {acc.balance.toLocaleString("id-ID")}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button onClick={handleFinish} disabled={saving}
+                className="w-full py-4 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-50">
+                {saving ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
+                ) : (
+                  <><Check className="w-4 h-4" /> Mulai Pakai Atur Pintar!</>
+                )}
+              </button>
+
+              <button onClick={() => setStep(3)} className="mt-3 text-xs text-[#8FA4C8] hover:text-[#4A5568] transition-colors">
+                ← Kembali
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    </div>);
-
-}
-
-function NavButtons({ onPrev, onNext, canNext = true, showSkip = false, onSkip }) {
-  return (
-    <div className="flex gap-2">
-      <button onClick={onPrev} className="w-10 h-10 flex items-center justify-center rounded-xl border border-[#E2E8F0] text-[#4A5568] hover:bg-[#F8FAFC] transition-colors flex-shrink-0">
-        <ArrowLeft className="w-4 h-4" />
-      </button>
-      {showSkip &&
-      <button onClick={onSkip} className="flex-1 py-2.5 rounded-xl border border-[#E2E8F0] text-[#4A5568] text-xs font-semibold hover:bg-[#F8FAFC] transition-colors">
-          Lewati
-        </button>
-      }
-      <button onClick={onNext} disabled={!canNext}
-      className="flex-1 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors disabled:opacity-40 flex items-center justify-center gap-1">
-        Lanjut <ArrowRight className="w-4 h-4" />
-      </button>
-    </div>);
-
+    </div>
+  );
 }
