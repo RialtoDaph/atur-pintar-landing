@@ -6,8 +6,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AddTransactionModal from "@/components/goals/AddTransactionModal";
 import AddGoalModal from "@/components/goals/AddGoalModal";
+import AddSavingsModal from "@/components/goals/AddSavingsModal";
 import GoalCard from "@/components/goals/GoalCard";
 import GoalsNanaPanel from "@/components/goals/GoalsNanaPanel";
+import { toast } from "sonner";
 import PullToRefresh from "@/components/utils/PullToRefresh";
 
 const FREE_GOALS_LIMIT = 2;
@@ -32,9 +34,12 @@ export default function Goals() {
   const [goals, setGoals] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showTxModal, setShowTxModal] = useState(null); // 'deposit' | 'withdrawal'
+  const [showTxModal, setShowTxModal] = useState(null);
   const [showAddGoal, setShowAddGoal] = useState(false);
-  const [txFilter, setTxFilter] = useState("all"); // 'all' | 'deposit' | 'withdrawal'
+  const [txFilter, setTxFilter] = useState("all");
+  const [savingsGoal, setSavingsGoal] = useState(null); // goal to add savings to
+  const [raiseTargetGoal, setRaiseTargetGoal] = useState(null);
+  const [deleteConfirmGoal, setDeleteConfirmGoal] = useState(null);
 
   const goal = goals.find((g) => g.id === goalId) || null;
 
@@ -108,10 +113,40 @@ export default function Goals() {
     }
   }
 
+  async function handleAddSavings(goal, { amount, accountId, date, note }) {
+    const newAmount = (goal.current_amount || 0) + amount;
+    const newStatus = newAmount >= goal.target_amount ? "completed" : goal.status;
+    await Promise.all([
+      base44.entities.Transaction.create({
+        type: "savings", amount, account_id: accountId,
+        goal_id: goal.id, date, note: note || `Tabungan ${goal.name}`,
+      }),
+      base44.entities.SavingsGoal.update(goal.id, { current_amount: newAmount, status: newStatus }),
+      base44.entities.Account.filter({ id: accountId }).then(([acc]) => {
+        if (acc) return base44.entities.Account.update(accountId, { balance: Math.max((acc.balance || 0) - amount, 0) });
+      }),
+    ]);
+    setSavingsGoal(null);
+    if (newStatus === "completed") toast.success(`🎉 Goal "${goal.name}" berhasil tercapai!`);
+    else toast.success("Dana berhasil ditambahkan.");
+    loadData();
+  }
+
   async function handleDelete() {
-    if (!window.confirm(t('goals_delete_confirm'))) return;
+    if (!goalId) return;
+    // Nullify goal_id on related transactions
+    const txs = await base44.entities.Transaction.filter({ goal_id: goalId });
+    await Promise.all(txs.map(tx => base44.entities.Transaction.update(tx.id, { goal_id: null })));
     await base44.entities.SavingsGoal.delete(goalId);
-    navigate(createPageUrl("Dashboard"));
+    navigate(createPageUrl("Goals"));
+  }
+
+  async function handleDeleteFromList(id) {
+    setDeleteConfirmGoal(null);
+    const txs = await base44.entities.Transaction.filter({ goal_id: id });
+    await Promise.all(txs.map(tx => base44.entities.Transaction.update(tx.id, { goal_id: null })));
+    await base44.entities.SavingsGoal.delete(id);
+    loadData();
   }
 
   async function handleAddGoal(data) {
@@ -125,6 +160,22 @@ export default function Goals() {
   }
 
   const [editingGoal, setEditingGoal] = useState(null);
+
+  async function handlePause(goal) {
+    await base44.entities.SavingsGoal.update(goal.id, { status: "paused" });
+    setGoals(prev => prev.map(g => g.id === goal.id ? { ...g, status: "paused" } : g));
+  }
+
+  async function handleResume(goal) {
+    await base44.entities.SavingsGoal.update(goal.id, { status: "active" });
+    setGoals(prev => prev.map(g => g.id === goal.id ? { ...g, status: "active" } : g));
+  }
+
+  async function handleRaiseTarget(goal) {
+    setRaiseTargetGoal(goal);
+    setEditingGoal({ ...goal, _raiseOnly: true });
+    setShowAddGoal(true);
+  }
 
   function calculateSuggestedMonthly(goal) {
     if (!goal.deadline) return null;
@@ -382,11 +433,11 @@ export default function Goals() {
             key={g.id}
             goal={g}
             onEdit={(goal) => { setEditingGoal(goal); setShowAddGoal(true); }}
-            onDelete={async (id) => {
-              if (!window.confirm(t('goals_delete_confirm'))) return;
-              await base44.entities.SavingsGoal.delete(id);
-              loadData();
-            }}
+            onDelete={(id) => setDeleteConfirmGoal(id)}
+            onAddSavings={(goal) => setSavingsGoal(goal)}
+            onPause={handlePause}
+            onResume={handleResume}
+            onRaiseTarget={handleRaiseTarget}
           />
         ))
       )}
@@ -395,9 +446,39 @@ export default function Goals() {
     {showAddGoal && (
      <AddGoalModal
        goal={editingGoal || null}
-       onClose={() => { setShowAddGoal(false); setEditingGoal(null); }}
-       onSave={handleAddGoal}
+       onClose={() => { setShowAddGoal(false); setEditingGoal(null); setRaiseTargetGoal(null); }}
+       onSave={async (data) => {
+         if (raiseTargetGoal) {
+           await base44.entities.SavingsGoal.update(raiseTargetGoal.id, { target_amount: data.target_amount, status: data.current_amount < data.target_amount ? 'active' : 'completed' });
+           setRaiseTargetGoal(null);
+         } else {
+           await handleAddGoal(data);
+         }
+         setShowAddGoal(false); setEditingGoal(null);
+         loadData();
+       }}
      />
+    )}
+
+    {savingsGoal && (
+      <AddSavingsModal
+        goal={savingsGoal}
+        onClose={() => setSavingsGoal(null)}
+        onSave={(data) => handleAddSavings(savingsGoal, data)}
+      />
+    )}
+
+    {deleteConfirmGoal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full">
+          <p className="font-bold text-[#1A1A1A] mb-2">Hapus Goal ini?</p>
+          <p className="text-sm text-[#4A5568] mb-5">Menghapus goal tidak akan menghapus transaksi tabungan yang sudah ada. Transaksi terkait akan menjadi transaksi savings tanpa goal.</p>
+          <div className="flex gap-2">
+            <button onClick={() => setDeleteConfirmGoal(null)} className="flex-1 py-2.5 rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8] hover:bg-[#F2F4F7]">Batal</button>
+            <button onClick={() => handleDeleteFromList(deleteConfirmGoal)} className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600">Hapus</button>
+          </div>
+        </div>
+      </div>
     )}
     </div>
     </PullToRefresh>
