@@ -145,7 +145,26 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
           </div>
         </div>
 
-
+        {/* Action buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3.5 rounded-xl border border-[#E2E8F0] text-[#8FA4C8] font-semibold text-sm hover:bg-[#F8FAFC] transition-colors"
+          >
+            Batal
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving || !category || !rawAmount}
+            className="flex-1 py-3.5 rounded-xl bg-[#FF6A00] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {saving ? (
+              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Menyimpan...</>
+            ) : (
+              isEditing ? "Simpan Perubahan" : "Simpan Anggaran"
+            )}
+          </button>
+        </div>
       </div>
     </div>);
 
