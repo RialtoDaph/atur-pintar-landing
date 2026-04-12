@@ -21,23 +21,30 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
   const [category, setCategory] = useState(editBudget?.category || "");
   const [rawAmount, setRawAmount] = useState(editBudget?.amount ? String(editBudget.amount) : "");
   const [saving, setSaving] = useState(false);
+  const [globalCategories, setGlobalCategories] = useState([]);
   const [customCategories, setCustomCategories] = useState([]);
   const [error, setError] = useState(null);
 
-  // Merge default + custom
+  useEffect(() => {
+    // Fetch GlobalCategory (admin-defined) for expense/both types
+    base44.entities.GlobalCategory.filter({ is_active: true }).then(cats => {
+      setGlobalCategories((cats || []).filter(c => c.type === 'expense' || c.type === 'both'));
+    }).catch(() => {});
+    // Also fetch user custom categories
+    base44.entities.CustomCategory.list().then(cats => {
+      setCustomCategories((cats || []).filter(c => c.type === 'expense' || c.type === 'both' || !c.type));
+    }).catch(() => {});
+  }, []);
+
+  // Merge: GlobalCategory (admin) → DEFAULT_CATEGORIES fallback → custom
+  const baseCategories = globalCategories.length > 0
+    ? globalCategories.map(c => ({ key: c.name.toLowerCase().replace(/\s+/g, '_'), label: c.name, emoji: c.emoji || '📦', color: c.color || '#95A5A6' }))
+    : DEFAULT_CATEGORIES.map((c) => ({ key: c.key, label: lang === 'id' ? c.label_id : c.label_en, emoji: c.emoji, color: c.color }));
+
   const allCategories = [
-  ...DEFAULT_CATEGORIES.map((c) => ({
-    key: c.key,
-    label: lang === "id" ? c.label_id : c.label_en,
-    emoji: c.emoji,
-    color: c.color
-  })),
-  ...customCategories.map((c) => ({
-    key: `custom_${c.id}`,
-    label: c.name,
-    emoji: c.emoji,
-    color: c.color || "#95A5A6"
-  }))];
+    ...baseCategories,
+    ...customCategories.map((c) => ({ key: `custom_${c.id}`, label: c.name, emoji: c.emoji, color: c.color || '#95A5A6' }))
+  ];
 
 
   // Filter out already-budgeted categories (except the one being edited)

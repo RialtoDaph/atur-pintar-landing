@@ -136,7 +136,7 @@ export default function BudgetPage() {
   );
 
   async function handleDelete(id) {
-    if (!window.confirm(t("budget_delete_confirm") || "Hapus budget ini?")) return;
+    if (!window.confirm("Menghapus budget tidak akan menghapus transaksi terkait. Hanya tracking anggaran yang dihapus. Lanjutkan?")) return;
     await base44.entities.Budget.delete(id);
     loadData();
   }
