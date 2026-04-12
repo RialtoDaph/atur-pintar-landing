@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useAuth } from "@/lib/AuthContext";
-import { Users, Plus, Copy, UserPlus, Crown, X, Check, Loader2, Link, Mail, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { Users, Plus, Copy, UserPlus, Crown, X, Check, Loader2, Link, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import { toast } from "sonner";
 import PremiumGate from "@/components/subscription/PremiumGate";
 
@@ -29,7 +28,6 @@ function WalletCard({ wallet, currentUserEmail, onLeave }) {
         </div>
       </div>
 
-      {/* Members */}
       <div className="mb-4">
         <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">Anggota ({memberCount})</p>
         <div className="space-y-2">
@@ -54,7 +52,6 @@ function WalletCard({ wallet, currentUserEmail, onLeave }) {
         </div>
       </div>
 
-      {/* Invite Code */}
       {isOwner && wallet.invite_code && (
         <div className="bg-[#F2F4F7] rounded-xl p-3 flex items-center justify-between gap-3">
           <div>
@@ -83,7 +80,7 @@ function WalletCard({ wallet, currentUserEmail, onLeave }) {
 }
 
 export default function SharedFinance() {
-  const { user } = useAuth();
+  const [user, setUser] = useState(null);
   const [wallets, setWallets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -93,6 +90,10 @@ export default function SharedFinance() {
   const [saving, setSaving] = useState(false);
   const [joining, setJoining] = useState(false);
   const [sharedTxs, setSharedTxs] = useState([]);
+
+  useEffect(() => {
+    base44.auth.me().then(u => setUser(u)).catch(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -233,7 +234,6 @@ export default function SharedFinance() {
           ))
         )}
 
-        {/* Shared Transaction Feed */}
         {sharedTxs.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="px-4 py-3 border-b border-[#F2F4F7]">
@@ -259,7 +259,6 @@ export default function SharedFinance() {
           </div>
         )}
 
-        {/* Info */}
         <div className="bg-white rounded-2xl shadow-sm p-4 border border-[#FF6A00]/20">
           <p className="text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-2">✨ Fitur Shared Finance</p>
           <ul className="space-y-1.5 text-sm text-[#1A1A1A]">
@@ -271,7 +270,6 @@ export default function SharedFinance() {
         </div>
       </div>
 
-      {/* Create Modal */}
       {showCreate && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-xl">
@@ -280,7 +278,6 @@ export default function SharedFinance() {
               <button onClick={() => setShowCreate(false)} className="p-2 rounded-xl hover:bg-[#F2F4F7]"><X className="w-5 h-5 text-[#8FA4C8]" /></button>
             </div>
             <div className="px-5 py-4 space-y-4">
-              {/* Icon Picker */}
               <div className="flex gap-2 flex-wrap">
                 {ICONS.map(ic => (
                   <button key={ic} onClick={() => setCreateForm(f => ({ ...f, icon: ic }))}
@@ -323,7 +320,6 @@ export default function SharedFinance() {
         </div>
       )}
 
-      {/* Join Modal */}
       {showJoin && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-xl">
@@ -350,7 +346,7 @@ export default function SharedFinance() {
             </div>
           </div>
         </div>
-        )}
-        </div>
-        );
-        }
+      )}
+    </div>
+  );
+}
