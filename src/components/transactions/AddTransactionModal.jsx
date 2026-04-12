@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Settings2, Camera, Loader2, Scissors, Sparkles, Upload } from "lucide-react";
+import { X, Camera, Loader2, Scissors, Sparkles, Upload } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useCategoryManager } from "@/components/utils/useCategoryManager";
 import { parseRupiah } from "@/components/utils/parseRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import ManageCategoriesModal from "./ManageCategoriesModal";
 import SplitBillModal from "./SplitBillModal";
 import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
 import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
@@ -13,8 +12,8 @@ import TransactionCategories from "./TransactionCategories";
 import { toast } from "sonner";
 
 export default function AddTransactionModal({ goals = [], onClose, onSave, initialValues = {} }) {
-  const { t, formatCurrency, settings } = useAppSettings();
-  const { learnCategory, detectCategory, suggestFromHistory } = useCategoryManager();
+  const { t, formatCurrency } = useAppSettings();
+  const { learnCategory, detectCategory, suggestFromHistory, suggestFromDB } = useCategoryManager();
   const [tab, setTab] = useState("expense");
   const [form, setForm] = useState({
     amount: initialValues.amount || "",
@@ -27,17 +26,11 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   const [accounts, setAccounts] = useState([]);
   const [saving, setSaving] = useState(false);
   const [aiCatSuggestion, setAiCatSuggestion] = useState(null);
-  const [aiCatLoading, setAiCatLoading] = useState(false);
   const aiCatTimer = useRef(null);
-  const [customCats, setCustomCats] = useState([]);
-  const [showManage, setShowManage] = useState(false);
-
   const [scanning, setScanning] = useState(false);
-  const [receiptData, setReceiptData] = useState(null); // extracted receipt
+  const [receiptData, setReceiptData] = useState(null);
   const [showSplitBill, setShowSplitBill] = useState(false);
-  const [catOrder, setCatOrder] = useState([]); // Category drag order
-  const [appSettings, setAppSettings] = useState(null);
-  const [subCatPopup, setSubCatPopup] = useState(null); // { parentKey, parentLabel, subs }
+  const [subCatPopup, setSubCatPopup] = useState(null);
   const [showGoalSelect, setShowGoalSelect] = useState(false);
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
@@ -46,7 +39,6 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
     base44.auth.me().then(user => {
       if (!user?.email) return;
       base44.entities.Account.filter({ created_by: user.email }, 'created_date').then(list => {
-        // Deduplicate by name, keep oldest
         const seen = new Set();
         const deduped = (list || []).filter(acc => {
           if (seen.has(acc.name)) return false;
@@ -54,7 +46,6 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
           return true;
         });
         setAccounts(deduped);
-        // Auto-select default account
         const defaultAcc = deduped.find(a => a.is_default) || deduped[0];
         if (defaultAcc && !form.account_id) {
           setForm(f => ({ ...f, account_id: defaultAcc.id }));
@@ -63,39 +54,21 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
     }).catch(() => {});
   }, []);
 
-  // Removed - now handled in TransactionCategories component
-
-  // Auto-suggest category: keyword → history → LLM (fallback)
   async function suggestCategory(noteValue) {
-    if (!noteValue || noteValue.length < 2) {setAiCatSuggestion(null);return;}
-
-    // 1. Keyword-based (instant, no API)
+    if (!noteValue || noteValue.length < 2) { setAiCatSuggestion(null); return; }
     const fromKeyword = detectCategory(noteValue);
-    if (fromKeyword) {setAiCatSuggestion(fromKeyword);return;}
-
-    // 2. History-based (instant, localStorage)
+    if (fromKeyword) { setAiCatSuggestion(fromKeyword); return; }
     const fromHistory = suggestFromHistory(noteValue);
-    if (fromHistory) {setAiCatSuggestion(fromHistory);return;}
-
-    // 3. LLM fallback (only if note is long enough)
-    if (noteValue.length < 4) return;
-    setAiCatLoading(true);
-    try {
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Tentukan kategori transaksi keuangan untuk deskripsi berikut: "${noteValue}". Pilih SATU dari: housing, food, transport, health, entertainment, shopping, subscriptions, salary, freelance, savings, other. Kembalikan HANYA key kategorinya saja, tanpa teks lain.`
-      });
-      const suggested = typeof res === 'string' ? res.trim().toLowerCase() : '';
-      const validKeys = ['housing', 'food', 'transport', 'health', 'entertainment', 'shopping', 'subscriptions', 'salary', 'freelance', 'savings', 'other'];
-      if (validKeys.includes(suggested)) setAiCatSuggestion(suggested);
-    } catch (e) {}
-    setAiCatLoading(false);
+    if (fromHistory) { setAiCatSuggestion(fromHistory); return; }
+    const fromDB = await suggestFromDB(noteValue);
+    if (fromDB) { setAiCatSuggestion(fromDB); return; }
   }
 
   function handleNoteChange(val) {
     setForm((f) => ({ ...f, note: val }));
     clearTimeout(aiCatTimer.current);
     if (!form.category) {
-      aiCatTimer.current = setTimeout(() => suggestCategory(val), 700);
+      aiCatTimer.current = setTimeout(() => suggestCategory(val), 2000);
     }
   }
 
@@ -104,12 +77,10 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
     if (!file) return;
     setScanning(true);
     setReceiptData(null);
-
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       const response = await base44.functions.invoke("extractReceiptData", { file_url });
       const extracted = response.data?.data;
-
       if (extracted && extracted.total_amount) {
         setReceiptData(extracted);
         setTab("expense");
@@ -125,7 +96,6 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         toast.error("Gagal membaca struk. Silakan coba lagi.");
       }
     } catch (error) {
-      console.error("Receipt scan failed:", error);
       toast.error("Gagal memindai struk. Silakan periksa file Anda.");
     } finally {
       setScanning(false);
@@ -136,13 +106,11 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   async function handleSplitConfirm({ splitMode, participants, shares, items }) {
     setShowSplitBill(false);
     setSaving(true);
-
     try {
       if (!receiptData?.total_amount || !Array.isArray(shares) || shares.length === 0) {
         toast.error("Data split bill tidak valid");
         return;
       }
-
       await onSave({
         type: "expense",
         amount: receiptData.total_amount,
@@ -151,29 +119,24 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         date: form.date,
         is_recurring: false
       });
-
-      const iouPromises = shares.
-      filter((share) => share.name !== "Saya" && share.amount > 0).
-      map((share) =>
-      base44.entities.SplitIOU.create({
-        store_name: receiptData.store_name,
-        date: form.date,
-        debtor_name: share.name,
-        debtor_email: share.email || "",
-        creditor_name: "Saya",
-        amount: share.amount,
-        status: "unpaid",
-        receipt_image_url: receiptData.receipt_image_url || "",
-        notes: `Split bill ${splitMode === "equal" ? "bagi rata" : "per item"}`
-      })
-      );
-
-      if (iouPromises.length > 0) {
-        await Promise.all(iouPromises);
-      }
+      const iouPromises = shares
+        .filter((share) => share.name !== "Saya" && share.amount > 0)
+        .map((share) =>
+          base44.entities.SplitIOU.create({
+            store_name: receiptData.store_name,
+            date: form.date,
+            debtor_name: share.name,
+            debtor_email: share.email || "",
+            creditor_name: "Saya",
+            amount: share.amount,
+            status: "unpaid",
+            receipt_image_url: receiptData.receipt_image_url || "",
+            notes: `Split bill ${splitMode === "equal" ? "bagi rata" : "per item"}`
+          })
+        );
+      if (iouPromises.length > 0) await Promise.all(iouPromises);
       toast.success("Split bill berhasil disimpan");
     } catch (error) {
-      console.error("Split bill failed:", error);
       toast.error("Gagal menyimpan split bill");
     } finally {
       setSaving(false);
@@ -182,12 +145,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
   async function handleSave() {
     if (!form.amount) return;
-    // Fallback to 'other' if no category selected
     const finalCategory = form.category || 'other';
-
     const amount = parseRupiah(form.amount);
     if (amount <= 0) return;
-
     setSaving(true);
     try {
       await onSave({
@@ -197,19 +157,15 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         amount,
         goal_id: form.goal_id || undefined
       });
-      // Learn from user's category choice
       if (form.note && form.category) {
         learnCategory(form.note, form.category);
       }
     } catch (error) {
-      console.error("Save transaction failed:", error);
       throw error;
     } finally {
       setSaving(false);
     }
   }
-
-
 
   return (
     <>
@@ -220,14 +176,14 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
               <h2 className="text-lg font-bold text-[#1A1A1A]">{t('add_transaction')}</h2>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <button onClick={() => cameraRef.current?.click()} disabled={scanning}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#FF6A00]/10 hover:bg-[#FF6A00]/20 transition-colors text-[10px] font-semibold text-[#FF6A00] tap-highlight-fix"
-                title="Foto Struk">
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#FF6A00]/10 hover:bg-[#FF6A00]/20 transition-colors text-[10px] font-semibold text-[#FF6A00] tap-highlight-fix"
+                  title="Foto Struk">
                   {scanning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Camera className="w-3 h-3" />}
                   Kamera
                 </button>
                 <button onClick={() => fileRef.current?.click()} disabled={scanning}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#F2F4F7] hover:bg-[#E2E8F0] transition-colors text-[10px] font-semibold text-[#4A5568] tap-highlight-fix"
-                title="Upload dari Galeri">
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#F2F4F7] hover:bg-[#E2E8F0] transition-colors text-[10px] font-semibold text-[#4A5568] tap-highlight-fix"
+                  title="Upload dari Galeri">
                   <Upload className="w-3 h-3" />
                   Galeri
                 </button>
@@ -235,19 +191,14 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleScanReceipt} />
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setShowManage(true)} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors tap-highlight-fix" title={t('manage_categories')}>
-                <Settings2 className="w-4 h-4" />
-              </button>
-              <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors tap-highlight-fix">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] transition-colors tap-highlight-fix">
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Receipt preview + Split Bill CTA */}
-          {receiptData &&
-          <div className="mb-5 bg-gradient-to-br from-[#FF6A00]/5 to-[#F8FAFC] border border-[#FF6A00]/20 rounded-2xl p-4">
+          {/* Receipt preview */}
+          {receiptData && (
+            <div className="mb-5 bg-gradient-to-br from-[#FF6A00]/5 to-[#F8FAFC] border border-[#FF6A00]/20 rounded-2xl p-4">
               <div className="flex items-center gap-1.5 mb-3">
                 <Sparkles className="w-3.5 h-3.5 text-[#FF6A00]" />
                 <span className="text-xs font-bold text-[#FF6A00]">AI Berhasil Membaca Struk</span>
@@ -256,55 +207,51 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                 <div>
                   <p className="text-sm font-bold text-[#1A1A1A]">{receiptData.store_name}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    {receiptData.category &&
-                  <span className="text-[10px] bg-[#FF6A00]/10 text-[#FF6A00] font-semibold px-2 py-0.5 rounded-full capitalize">
+                    {receiptData.category && (
+                      <span className="text-[10px] bg-[#FF6A00]/10 text-[#FF6A00] font-semibold px-2 py-0.5 rounded-full capitalize">
                         {receiptData.category}
                       </span>
-                  }
-                    {receiptData.tax_amount > 0 &&
-                  <span className="text-[10px] text-[#8FA4C8]">Pajak: {formatCurrency(receiptData.tax_amount)}</span>
-                  }
+                    )}
+                    {receiptData.tax_amount > 0 && (
+                      <span className="text-[10px] text-[#8FA4C8]">Pajak: {formatCurrency(receiptData.tax_amount)}</span>
+                    )}
                   </div>
                 </div>
-                <p className="text-sm font-bold text-[#FF6A00]">
-                  {formatCurrency(receiptData.total_amount)}
-                </p>
+                <p className="text-sm font-bold text-[#FF6A00]">{formatCurrency(receiptData.total_amount)}</p>
               </div>
-              {receiptData.items?.length > 0 &&
-            <div className="space-y-1 mb-3 max-h-28 overflow-y-auto">
-                  {receiptData.items.map((item, i) =>
-              <div key={i} className="flex justify-between text-xs text-[#4A5568]">
+              {receiptData.items?.length > 0 && (
+                <div className="space-y-1 mb-3 max-h-28 overflow-y-auto">
+                  {receiptData.items.map((item, i) => (
+                    <div key={i} className="flex justify-between text-xs text-[#4A5568]">
                       <span>{item.quantity > 1 ? `${item.quantity}x ` : ""}{item.name}</span>
                       <span>{formatCurrency(item.price * item.quantity)}</span>
                     </div>
-              )}
+                  ))}
                 </div>
-            }
+              )}
               <button
-              onClick={() => setShowSplitBill(true)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#0A0A0A] text-white text-xs font-bold hover:bg-[#333] transition-colors">
-              
+                onClick={() => setShowSplitBill(true)}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#0A0A0A] text-white text-xs font-bold hover:bg-[#333] transition-colors">
                 <Scissors className="w-3.5 h-3.5" />
                 {t('split_bill_with_friends')}
               </button>
               <ReceiptCorrectionForm
-              receiptData={receiptData}
-              onChange={(corrected) => {
-                setReceiptData(corrected);
-                setForm((f) => ({
-                  ...f,
-                  amount: corrected.total_amount ? String(Math.round(corrected.total_amount)) : f.amount,
-                  date: corrected.date || f.date,
-                  note: corrected.store_name || f.note
-                }));
-              }} />
-            
+                receiptData={receiptData}
+                onChange={(corrected) => {
+                  setReceiptData(corrected);
+                  setForm((f) => ({
+                    ...f,
+                    amount: corrected.total_amount ? String(Math.round(corrected.total_amount)) : f.amount,
+                    date: corrected.date || f.date,
+                    note: corrected.store_name || f.note
+                  }));
+                }} />
             </div>
-          }
+          )}
 
           {/* Scanning overlay */}
-          {scanning &&
-          <div className="mb-5 bg-[#FF6A00]/5 border border-[#FF6A00]/20 rounded-2xl p-6 flex flex-col items-center gap-3">
+          {scanning && (
+            <div className="mb-5 bg-[#FF6A00]/5 border border-[#FF6A00]/20 rounded-2xl p-6 flex flex-col items-center gap-3">
               <div className="relative">
                 <Camera className="w-10 h-10 text-[#FF6A00]/30" />
                 <Loader2 className="w-5 h-5 text-[#FF6A00] animate-spin absolute -top-1 -right-1" />
@@ -314,28 +261,23 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                 <p className="text-xs text-[#8FA4C8] mt-0.5">Mengekstrak merchant, total, tanggal & kategori</p>
               </div>
             </div>
-          }
+          )}
 
           {/* Type tabs */}
           <div className="flex bg-[#F2F4F7] rounded-xl p-1 mb-5">
-            {["expense", "income"].map((tabKey) =>
-            <button key={tabKey} onClick={() => {setTab(tabKey);setForm((f) => ({ ...f, category: "" }));}}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
-            tab === tabKey ?
-            tabKey === "expense" ? "bg-[#FF6B6B] text-white shadow-sm" : "bg-[#00C9A7] text-white shadow-sm" :
-            "text-[#8FA4C8]"}`
-            }>
-               {tabKey === "expense" ? t('expense') : t('income')}
-             </button>
-            )}
+            {["expense", "income"].map((tabKey) => (
+              <button key={tabKey} onClick={() => { setTab(tabKey); setForm((f) => ({ ...f, category: "" })); }}
+                className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  tab === tabKey
+                    ? tabKey === "expense" ? "bg-[#FF6B6B] text-white shadow-sm" : "bg-[#00C9A7] text-white shadow-sm"
+                    : "text-[#8FA4C8]"
+                }`}>
+                {tabKey === "expense" ? t('expense') : t('income')}
+              </button>
+            ))}
           </div>
 
-          <TransactionCategories
-            tab={tab}
-            form={form}
-            setForm={setForm}
-            onShowSubCatPopup={setSubCatPopup} />
-          
+          <TransactionCategories tab={tab} form={form} setForm={setForm} />
 
           {/* Account Selector */}
           {accounts.length > 0 && (
@@ -345,11 +287,8 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                 <button
                   onClick={() => setForm(f => ({ ...f, account_id: "" }))}
                   className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                    form.account_id === ""
-                      ? "bg-[#1A1A1A] text-white border-[#1A1A1A]"
-                      : "bg-[#F2F4F7] text-[#4A5568] border-transparent"
-                  }`}
-                >
+                    form.account_id === "" ? "bg-[#1A1A1A] text-white border-[#1A1A1A]" : "bg-[#F2F4F7] text-[#4A5568] border-transparent"
+                  }`}>
                   Semua
                 </button>
                 {accounts.map(acc => (
@@ -357,11 +296,8 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                     key={acc.id}
                     onClick={() => setForm(f => ({ ...f, account_id: acc.id }))}
                     className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                      form.account_id === acc.id
-                        ? "bg-[#FF6A00] text-white border-[#FF6A00]"
-                        : "bg-[#F2F4F7] text-[#4A5568] border-transparent"
-                    }`}
-                  >
+                      form.account_id === acc.id ? "bg-[#FF6A00] text-white border-[#FF6A00]" : "bg-[#F2F4F7] text-[#4A5568] border-transparent"
+                    }`}>
                     <span>{acc.icon || "💳"}</span>
                     {acc.name}
                   </button>
@@ -370,59 +306,38 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
             </div>
           )}
 
-          <TransactionFormInputs
-            form={form}
-            setForm={setForm}
-            t={t}
-            onNoteChange={handleNoteChange} />
-          
+          <TransactionFormInputs form={form} setForm={setForm} t={t} onNoteChange={handleNoteChange} />
 
           {/* AI Category Suggestion */}
-          {!form.category && aiCatSuggestion &&
-          <div className="mb-4 flex items-center gap-2 bg-[#4F7CFF]/5 border border-[#4F7CFF]/20 rounded-xl px-3 py-2.5">
-              <span className="text-xs text-[#4F7CFF]">✨ AI saran kategori:</span>
+          {!form.category && aiCatSuggestion && (
+            <div className="mb-4 flex items-center gap-2 bg-[#4F7CFF]/5 border border-[#4F7CFF]/20 rounded-xl px-3 py-2.5">
+              <span className="text-xs text-[#4F7CFF]">💡 Biasanya kamu pakai:</span>
               <button
-              onClick={() => {setForm((f) => ({ ...f, category: aiCatSuggestion }));setAiCatSuggestion(null);}}
-              className="text-xs font-bold text-white bg-[#4F7CFF] px-3 py-1 rounded-lg hover:bg-[#3D6AE8] transition-colors tap-highlight-fix capitalize">
-              
+                onClick={() => { setForm((f) => ({ ...f, category: aiCatSuggestion })); setAiCatSuggestion(null); }}
+                className="text-xs font-bold text-white bg-[#4F7CFF] px-3 py-1 rounded-lg hover:bg-[#3D6AE8] transition-colors tap-highlight-fix capitalize">
                 {aiCatSuggestion}
               </button>
               <button onClick={() => setAiCatSuggestion(null)} className="ml-auto text-[#8FA4C8] hover:text-[#4A5568] tap-highlight-fix text-xs">✕</button>
             </div>
-          }
-          {aiCatLoading && !form.category &&
-          <div className="mb-3 text-xs text-[#8FA4C8] flex items-center gap-1.5">
-              <Loader2 className="w-3 h-3 animate-spin" />
-              AI mendeteksi kategori...
-            </div>
-          }
+          )}
 
           <button onClick={handleSave} disabled={saving || !form.amount}
-          className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
-          style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
+            className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
+            style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
             {saving ? t('saving') : `${t('add')} ${tab === "expense" ? t('expense') : t('income')}`}
           </button>
         </div>
       </div>
 
-      {showManage &&
-      <ManageCategoriesModal
-        onClose={() => setShowManage(false)}
-        onUpdated={() => setShowManage(false)} />
+      {showSplitBill && receiptData && (
+        <SplitBillModal
+          receiptData={receiptData}
+          onClose={() => setShowSplitBill(false)}
+          onConfirm={handleSplitConfirm} />
+      )}
 
-      }
-
-      {showSplitBill && receiptData &&
-      <SplitBillModal
-        receiptData={receiptData}
-        onClose={() => setShowSplitBill(false)}
-        onConfirm={handleSplitConfirm} />
-
-      }
-
-      {/* Sub-category popup */}
-      {subCatPopup &&
-      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      {subCatPopup && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-3xl w-full max-w-xs shadow-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -437,44 +352,34 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
               </button>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {subCatPopup.subs.map((sub) =>
-            <button
-              key={sub.key}
-              onClick={() => {
-                setForm((f) => ({ ...f, category: sub.key }));
-                setSubCatPopup(null);
-              }}
-              className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#FF6A00] hover:bg-[#FF6A00]/5 transition-all tap-highlight-fix">
-              
+              {subCatPopup.subs.map((sub) => (
+                <button key={sub.key}
+                  onClick={() => { setForm((f) => ({ ...f, category: sub.key })); setSubCatPopup(null); }}
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#FF6A00] hover:bg-[#FF6A00]/5 transition-all tap-highlight-fix">
                   <span className="text-2xl">{sub.emoji}</span>
                   <span className="text-[10px] font-semibold text-[#4A5568] text-center leading-tight">{sub.label}</span>
                 </button>
-            )}
+              ))}
             </div>
             <button
-            onClick={() => {
-              setForm((f) => ({ ...f, category: subCatPopup.parentKey }));
-              setSubCatPopup(null);
-            }}
-            className="mt-3 w-full py-2.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#8FA4C8] hover:border-[#CBD5E0] transition-colors tap-highlight-fix">
-            
+              onClick={() => { setForm((f) => ({ ...f, category: subCatPopup.parentKey })); setSubCatPopup(null); }}
+              className="mt-3 w-full py-2.5 rounded-xl border border-[#E2E8F0] text-xs font-semibold text-[#8FA4C8] hover:border-[#CBD5E0] transition-colors tap-highlight-fix">
               Pilih "{subCatPopup.parentLabel}" saja (tanpa sub-kategori)
             </button>
           </div>
         </div>
-      }
+      )}
 
       <BottomSheetSelect
         isOpen={showGoalSelect}
         onClose={() => setShowGoalSelect(false)}
         title={t('link_to_goal')}
         options={[
-        { key: "", label: t('no_goal'), emoji: "❌" },
-        ...goals.map((g) => ({ key: g.id, label: g.name, emoji: g.icon }))]
-        }
+          { key: "", label: t('no_goal'), emoji: "❌" },
+          ...goals.map((g) => ({ key: g.id, label: g.name, emoji: g.icon }))
+        ]}
         onSelect={(goalId) => setForm({ ...form, goal_id: goalId })}
         selectedValue={form.goal_id} />
-      
-    </>);
-
+    </>
+  );
 }

@@ -1,27 +1,28 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Plus, Pencil, Trash2, Tag, Check, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X, ChevronUp, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
-const COLORS = ["#FF6A00", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EF4444", "#06B6D4", "#EC4899"];
-const EMOJIS = ["🍔", "🚗", "🛒", "💊", "🎮", "📚", "⚡", "💰", "🏠", "✈️", "🎁", "💳", "🏋️", "🎵", "🌿", "📱"];
+const COLORS = ["#FF6A00", "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EF4444", "#06B6D4", "#EC4899", "#27AE60", "#E91E63"];
+const EMOJIS = ["🍔", "🚗", "🛒", "💊", "🎮", "📚", "⚡", "💰", "🏠", "✈️", "🎁", "💳", "🏋️", "🎵", "🌿", "📱", "🍚", "💼", "🐷", "📦", "💻", "🏦", "🛡️", "💝"];
 
-const DEFAULT_CATEGORIES = [
-  { name: "Makanan & Minuman", emoji: "🍔", color: "#FF6A00", type: "expense", is_default: true },
-  { name: "Transportasi", emoji: "🚗", color: "#3B82F6", type: "expense", is_default: true },
-  { name: "Belanja", emoji: "🛒", color: "#8B5CF6", type: "expense", is_default: true },
-  { name: "Kesehatan", emoji: "💊", color: "#10B981", type: "expense", is_default: true },
-  { name: "Hiburan", emoji: "🎮", color: "#F59E0B", type: "expense", is_default: true },
-  { name: "Pendidikan", emoji: "📚", color: "#06B6D4", type: "expense", is_default: true },
-  { name: "Tagihan", emoji: "⚡", color: "#EF4444", type: "expense", is_default: true },
-  { name: "Sewa/Kos", emoji: "🏠", color: "#8B5CF6", type: "expense", is_default: true },
-  { name: "Investasi", emoji: "📈", color: "#10B981", type: "expense", is_default: true },
-  { name: "Asuransi", emoji: "🛡️", color: "#EF4444", type: "expense", is_default: true },
-  { name: "Donasi", emoji: "💝", color: "#EC4899", type: "expense", is_default: true },
-  { name: "Tabungan", emoji: "🏦", color: "#10B981", type: "expense", is_default: true },
-  { name: "Gaji", emoji: "💼", color: "#10B981", type: "income", is_default: true },
-  { name: "Bonus", emoji: "🎁", color: "#F59E0B", type: "income", is_default: true },
-  { name: "Freelance", emoji: "💻", color: "#3B82F6", type: "income", is_default: true },
+const DEFAULT_SEED = [
+  { name: "Makanan & Minuman", emoji: "🍚", color: "#FF6A00", type: "expense", is_active: true, sort_order: 1 },
+  { name: "Transportasi", emoji: "🚗", color: "#3B82F6", type: "expense", is_active: true, sort_order: 2 },
+  { name: "Belanja", emoji: "🛒", color: "#EC4899", type: "expense", is_active: true, sort_order: 3 },
+  { name: "Kesehatan", emoji: "💊", color: "#10B981", type: "expense", is_active: true, sort_order: 4 },
+  { name: "Hiburan", emoji: "🎮", color: "#F59E0B", type: "expense", is_active: true, sort_order: 5 },
+  { name: "Pendidikan", emoji: "📚", color: "#06B6D4", type: "expense", is_active: true, sort_order: 6 },
+  { name: "Rumah & Utilitas", emoji: "🏠", color: "#8B5CF6", type: "expense", is_active: true, sort_order: 7 },
+  { name: "Asuransi", emoji: "🛡️", color: "#EF4444", type: "expense", is_active: true, sort_order: 8 },
+  { name: "Donasi", emoji: "💝", color: "#E91E63", type: "expense", is_active: true, sort_order: 9 },
+  { name: "Gaji", emoji: "💼", color: "#27AE60", type: "income", is_active: true, sort_order: 10 },
+  { name: "Bonus", emoji: "🎁", color: "#F59E0B", type: "income", is_active: true, sort_order: 11 },
+  { name: "Freelance", emoji: "💻", color: "#3B82F6", type: "income", is_active: true, sort_order: 12 },
+  { name: "Pendapatan Lain", emoji: "💰", color: "#2ECC71", type: "income", is_active: true, sort_order: 13 },
+  { name: "Tabungan", emoji: "🐷", color: "#95A5A6", type: "both", is_active: true, sort_order: 14 },
+  { name: "Lainnya", emoji: "📦", color: "#95A5A6", type: "both", is_active: true, sort_order: 15 },
 ];
 
 export default function AdminCategories() {
@@ -44,13 +45,12 @@ export default function AdminCategories() {
 
   async function loadCategories() {
     setLoading(true);
-    const res = await base44.entities.GlobalCategory.list();
+    const res = await base44.entities.GlobalCategory.list("sort_order");
     if (res.length === 0) {
-      // Seed defaults
-      for (const cat of DEFAULT_CATEGORIES) {
-        await base44.entities.GlobalCategory.create(cat);
+      for (const cat of DEFAULT_SEED) {
+        await base44.entities.GlobalCategory.create({ ...cat, is_default: true });
       }
-      const res2 = await base44.entities.GlobalCategory.list();
+      const res2 = await base44.entities.GlobalCategory.list("sort_order");
       setCategories(res2);
     } else {
       setCategories(res);
@@ -63,28 +63,13 @@ export default function AdminCategories() {
     setSaving(true);
     if (editId) {
       const updated = await base44.entities.GlobalCategory.update(editId, form);
-      setCategories(prev => prev.map(c => c.id === editId ? { ...c, ...updated } : c));
-      
-      // Log edit to SystemLog
-      await base44.entities.SystemLog.create({
-        log_type: "activity",
-        user_email: user?.email,
-        action: "category_updated",
-        severity: "info",
-        details: `Category updated: ${form.name}`
-      });
+      setCategories(prev => prev.map(c => c.id === editId ? { ...c, ...form } : c));
+      toast.success("Kategori diperbarui");
     } else {
-      const created = await base44.entities.GlobalCategory.create({ ...form, is_default: false, is_active: true });
+      const maxOrder = categories.reduce((m, c) => Math.max(m, c.sort_order || 0), 0);
+      const created = await base44.entities.GlobalCategory.create({ ...form, is_default: false, is_active: true, sort_order: maxOrder + 1 });
       setCategories(prev => [...prev, created]);
-
-      // Log to SystemLog
-      await base44.entities.SystemLog.create({
-        log_type: "activity",
-        user_email: user?.email,
-        action: "category_added",
-        severity: "info",
-        details: `Category added: ${form.name}`
-      });
+      toast.success("Kategori berhasil ditambahkan");
     }
     setSaving(false);
     setShowForm(false);
@@ -93,20 +78,36 @@ export default function AdminCategories() {
   }
 
   async function handleDelete(id) {
-    const cat = categories.find(c => c.id === id);
     await base44.entities.GlobalCategory.delete(id);
-    
-    // Log to SystemLog
-    await base44.entities.SystemLog.create({
-      log_type: "activity",
-      user_email: user?.email,
-      action: "category_deleted",
-      severity: "warning",
-      details: `Category deleted: ${cat?.name}`
-    });
-    
     setCategories(prev => prev.filter(c => c.id !== id));
     setDeleteConfirm(null);
+    toast.success("Kategori dihapus");
+  }
+
+  async function toggleActive(cat) {
+    const newVal = !cat.is_active;
+    await base44.entities.GlobalCategory.update(cat.id, { is_active: newVal });
+    setCategories(prev => prev.map(c => c.id === cat.id ? { ...c, is_active: newVal } : c));
+    toast.success(newVal ? "Kategori diaktifkan" : "Kategori dinonaktifkan");
+  }
+
+  async function moveOrder(cat, direction) {
+    const idx = categories.findIndex(c => c.id === cat.id);
+    const swapIdx = idx + direction;
+    if (swapIdx < 0 || swapIdx >= categories.length) return;
+
+    const newCats = [...categories];
+    const aOrder = newCats[idx].sort_order ?? idx;
+    const bOrder = newCats[swapIdx].sort_order ?? swapIdx;
+
+    await Promise.all([
+      base44.entities.GlobalCategory.update(newCats[idx].id, { sort_order: bOrder }),
+      base44.entities.GlobalCategory.update(newCats[swapIdx].id, { sort_order: aOrder }),
+    ]);
+
+    // Swap in local array
+    [newCats[idx], newCats[swapIdx]] = [newCats[swapIdx], newCats[idx]];
+    setCategories(newCats);
   }
 
   function startEdit(cat) {
@@ -128,8 +129,8 @@ export default function AdminCategories() {
       <div className="p-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">Category Manager</h1>
-            <p className="text-sm text-[#8FA4C8] mt-1">Kelola kategori default untuk semua user</p>
+            <h1 className="text-2xl font-bold text-[#1A1A1A]">Kelola Kategori</h1>
+            <p className="text-sm text-[#8FA4C8] mt-1">Perubahan langsung berlaku untuk semua user</p>
           </div>
           <button
             onClick={() => { setShowForm(!showForm); setEditId(null); setForm({ name: "", emoji: "🍔", color: "#FF6A00", type: "expense" }); }}
@@ -148,15 +149,15 @@ export default function AdminCategories() {
               <div>
                 <label className="text-xs font-medium text-[#8FA4C8] mb-1.5 block">Nama Kategori</label>
                 <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                  placeholder="contoh: Investasi Saham" className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                  placeholder="contoh: Makanan & Minuman" className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
               </div>
               <div>
                 <label className="text-xs font-medium text-[#8FA4C8] mb-1.5 block">Tipe</label>
                 <select value={form.type} onChange={e => setForm(p => ({ ...p, type: e.target.value }))}
                   className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]">
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
-                  <option value="both">Both</option>
+                  <option value="expense">Pengeluaran</option>
+                  <option value="income">Pemasukan</option>
+                  <option value="both">Keduanya</option>
                 </select>
               </div>
               <div>
@@ -179,6 +180,12 @@ export default function AdminCategories() {
                       style={{ backgroundColor: c }} />
                   ))}
                 </div>
+                {/* Custom hex input */}
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="w-7 h-7 rounded-lg border border-[#E2E8F0]" style={{ backgroundColor: form.color }} />
+                  <input type="text" value={form.color} onChange={e => setForm(p => ({ ...p, color: e.target.value }))}
+                    placeholder="#FF6A00" className="flex-1 px-2 py-1.5 rounded-lg border border-[#E2E8F0] text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                </div>
               </div>
             </div>
             <div className="flex gap-3 mt-5">
@@ -193,29 +200,47 @@ export default function AdminCategories() {
           </div>
         )}
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map(cat => (
-            <div key={cat.id} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style={{ backgroundColor: (cat.color || "#FF6A00") + "20" }}>
+        {/* Category List */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          {categories.map((cat, idx) => (
+            <div key={cat.id} className={`flex items-center gap-4 px-5 py-3.5 border-b border-[#F2F4F7] last:border-0 ${!cat.is_active ? "opacity-50" : ""}`}>
+              {/* Sort buttons */}
+              <div className="flex flex-col gap-0.5">
+                <button onClick={() => moveOrder(cat, -1)} disabled={idx === 0}
+                  className="p-0.5 rounded hover:bg-[#F2F4F7] disabled:opacity-30 transition-colors">
+                  <ChevronUp className="w-3.5 h-3.5 text-[#8FA4C8]" />
+                </button>
+                <button onClick={() => moveOrder(cat, 1)} disabled={idx === categories.length - 1}
+                  className="p-0.5 rounded hover:bg-[#F2F4F7] disabled:opacity-30 transition-colors">
+                  <ChevronDown className="w-3.5 h-3.5 text-[#8FA4C8]" />
+                </button>
+              </div>
+
+              {/* Emoji */}
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ backgroundColor: (cat.color || "#FF6A00") + "20" }}>
                 {cat.emoji}
               </div>
+
+              {/* Info */}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-[#1A1A1A] truncate">{cat.name}</p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-0.5">
                   <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                     cat.type === "income" ? "bg-green-50 text-green-600" :
                     cat.type === "expense" ? "bg-red-50 text-red-500" :
                     "bg-blue-50 text-blue-600"
-                  }`}>
-                    {cat.type}
-                  </span>
-                  {cat.is_default && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FF6A00]/10 text-[#FF6A00]">default</span>
-                  )}
+                  }`}>{cat.type === "expense" ? "Pengeluaran" : cat.type === "income" ? "Pemasukan" : "Keduanya"}</span>
+                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color || "#95A5A6" }} />
                 </div>
               </div>
-              <div className="flex flex-col gap-1.5">
+
+              {/* Actions */}
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => toggleActive(cat)}
+                  className={`p-1.5 rounded-lg transition-colors ${cat.is_active ? "bg-green-50 text-green-600 hover:bg-green-100" : "bg-gray-100 text-gray-400 hover:bg-gray-200"}`}
+                  title={cat.is_active ? "Nonaktifkan" : "Aktifkan"}>
+                  {cat.is_active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                </button>
                 <button onClick={() => startEdit(cat)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100">
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
@@ -225,6 +250,10 @@ export default function AdminCategories() {
               </div>
             </div>
           ))}
+
+          {categories.length === 0 && (
+            <div className="text-center py-12 text-[#8FA4C8] text-sm">Belum ada kategori. Klik "Tambah Kategori" untuk memulai.</div>
+          )}
         </div>
 
         {/* Delete confirm */}
