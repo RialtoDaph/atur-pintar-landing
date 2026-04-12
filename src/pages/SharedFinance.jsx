@@ -81,22 +81,46 @@ function WalletCard({ wallet, currentUserEmail, onLeave }) {
 
 export default function SharedFinance() {
   const [user, setUser] = useState(null);
-  const [wallets, setWallets] = useState([]);
+  const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [wallets, setWallets] = useState([]);
+  const [sharedTxs, setSharedTxs] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [createForm, setCreateForm] = useState({ name: "", description: "", icon: "👨‍👩‍👧", inviteEmail: "" });
   const [joinCode, setJoinCode] = useState("");
   const [saving, setSaving] = useState(false);
   const [joining, setJoining] = useState(false);
-  const [sharedTxs, setSharedTxs] = useState([]);
+
+  const ICONS = ["👨‍👩‍👧", "💑", "👫", "🏠", "💍", "👨‍👩‍👧‍👦", "🤝", "❤️"];
 
   useEffect(() => {
-    base44.auth.me().then(u => setUser(u)).catch(() => setLoading(false));
+    base44.auth.me().then(async u => {
+      setUser(u);
+      // Check premium from user object first
+      const userPremium = u?.subscription_plan &&
+        ["premium_monthly", "premium_yearly"].includes(u.subscription_plan) &&
+        u?.subscription_status === "active";
+      if (userPremium) {
+        setIsPremium(true);
+        setLoading(false);
+      } else {
+        // Fallback: check Subscription entity directly (more reliable after payment)
+        try {
+          const subs = await base44.entities.Subscription.filter({ created_by: u.email });
+          const activeSub = subs?.find(s => s.status === "active" &&
+            ["premium_monthly", "premium_yearly"].includes(s.plan));
+          setIsPremium(!!activeSub);
+        } catch {
+          setIsPremium(false);
+        }
+        setLoading(false);
+      }
+    }).catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isPremium) return;
     const load = async () => {
       const all = await base44.entities.SharedWallet.list();
       const mine = all.filter(w =>
@@ -113,10 +137,9 @@ export default function SharedFinance() {
         const merged = txsArr.flat().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 30);
         setSharedTxs(merged);
       }
-      setLoading(false);
     };
     load();
-  }, [user]);
+  }, [user, isPremium]);
 
   async function handleCreate() {
     if (!createForm.name.trim() || !user) return;
@@ -173,10 +196,15 @@ export default function SharedFinance() {
     toast.success("Kamu telah keluar dari dompet bersama");
   }
 
-  const ICONS = ["👨‍👩‍👧", "💑", "👫", "🏠", "💍", "👨‍👩‍👧‍👦", "🤝", "❤️"];
-  const isPremium = user?.subscription_plan && ["premium_monthly", "premium_yearly"].includes(user.subscription_plan) && user?.subscription_status === "active";
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F2F4F7] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#F2F4F7] border-t-[#FF6A00] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
-  if (!loading && !isPremium) {
+  if (!isPremium) {
     return (
       <div className="min-h-screen bg-[#F2F4F7] pb-10">
         <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
@@ -218,11 +246,7 @@ export default function SharedFinance() {
           </button>
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-4 border-[#F2F4F7] border-t-[#FF6A00] rounded-full animate-spin" />
-          </div>
-        ) : wallets.length === 0 ? (
+        {wallets.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
             <Users className="w-12 h-12 text-[#E2E8F0] mx-auto mb-3" />
             <p className="text-[#1A1A1A] font-semibold">Belum ada dompet bersama</p>
