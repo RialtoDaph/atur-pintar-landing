@@ -142,16 +142,23 @@ export default function NanaFloatingChat() {
     setSending(true);
     const text = input;
     setInput("");
-    const contextBlock = formatContextForMessage(context);
-    const styleInstruction = responseStyle === "ringkas" ? "\n[MODE JAWABAN: SANGAT RINGKAS, maksimal 80 kata, poin singkat saja]" : "\n[MODE JAWABAN: DETAIL, penjelasan lengkap dengan contoh konkret]";
-    const messageContent = text + styleInstruction + contextBlock;
-    await base44.agents.addMessage(conv, { role: "user", content: messageContent });
-    // Track count
-    if (!isPremium) {
-      const monthKey = new Date().toISOString().slice(0, 7);
-      const newCount = chatCount + 1;
-      setChatCount(newCount);
-      if (user) localStorage.setItem(`nana_count_${user.id}_${monthKey}`, JSON.stringify(newCount));
+    try {
+      const contextBlock = formatContextForMessage(context);
+      const styleInstruction = responseStyle === "ringkas" ? "\n[MODE JAWABAN: SANGAT RINGKAS, maksimal 80 kata, poin singkat saja]" : "\n[MODE JAWABAN: DETAIL, penjelasan lengkap dengan contoh konkret]";
+      const messageContent = text + styleInstruction + contextBlock;
+      await base44.agents.addMessage(conv, { role: "user", content: messageContent });
+      // Track count
+      if (!isPremium) {
+        const monthKey = new Date().toISOString().slice(0, 7);
+        const newCount = chatCount + 1;
+        setChatCount(newCount);
+        if (user) localStorage.setItem(`nana_count_${user.id}_${monthKey}`, JSON.stringify(newCount));
+      }
+    } catch (err) {
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "Nana sedang tidak bisa menjawab saat ini. Coba lagi dalam beberapa saat ya! 😊"
+      }]);
     }
     setSending(false);
   }
