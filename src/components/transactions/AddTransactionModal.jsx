@@ -217,7 +217,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
   const typeColor = tab === "expense" ? "#DC2626" : "#16A34A";
   const typeBg = tab === "expense" ? "#FEF2F2" : "#F0FDF4";
-  const saveBg = tab === "expense" ? "#EF4444" : "#22C55E";
+  const saveBg = "#F97316";
   const saveLabel = tab === "expense" ? "Simpan Pengeluaran" : "Simpan Pemasukan";
 
   return (
@@ -231,9 +231,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
               <button key={t} onClick={() => { setTab(t); setCategory(""); }}
                 className="py-4 text-sm font-bold transition-all relative"
                 style={{
-                  backgroundColor: tab === t ? typeBg : "white",
-                  color: tab === t ? typeColor : "#8FA4C8",
-                  borderBottom: tab === t ? `2.5px solid ${typeColor}` : "2.5px solid transparent"
+                  backgroundColor: tab === t ? "#FFF7ED" : "white",
+                  color: tab === t ? "#F97316" : "#8FA4C8",
+                  borderBottom: tab === t ? "2.5px solid #F97316" : "2.5px solid transparent"
                 }}>
                 {t === "expense" ? "Pengeluaran" : "Pemasukan"}
               </button>
@@ -310,9 +310,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                       <button key={acc.id} onClick={() => setAccountId(acc.id)}
                         className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border-[1.5px] transition-all"
                         style={{
-                          borderColor: active ? typeColor : "#E2E8F0",
-                          backgroundColor: active ? typeColor + "15" : "#F8FAFC",
-                          color: active ? typeColor : "#4A5568"
+                          borderColor: active ? "#F97316" : "#E2E8F0",
+                          backgroundColor: active ? "#FFF7ED" : "#F8FAFC",
+                          color: active ? "#EA580C" : "#4A5568"
                         }}>
                         <span>{acc.icon || "💳"}</span>{acc.name}
                       </button>
@@ -332,7 +332,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
               <div className="flex border border-[#E2E8F0] rounded-lg overflow-hidden mb-2">
                 {["fav", "all"].map(t => (
                   <button key={t} onClick={() => setFavTab(t)}
-                    className={`flex-1 py-1.5 text-xs font-semibold transition-all ${favTab === t ? "bg-[#0A0A0A] text-white" : "text-[#8FA4C8]"}`}>
+                    className={`flex-1 py-1.5 text-xs font-semibold transition-all ${favTab === t ? "bg-[#F97316] text-white" : "text-[#8FA4C8]"}`}>
                     {t === "fav" ? "⭐ Favorit" : "Semua"}
                   </button>
                 ))}
@@ -389,7 +389,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                 </div>
                 <button onClick={() => setIsRecurring(r => !r)}
                   className="w-11 h-6 rounded-full transition-colors relative flex-shrink-0"
-                  style={{ backgroundColor: isRecurring ? typeColor : "#E2E8F0" }}>
+                  style={{ backgroundColor: isRecurring ? "#F97316" : "#E2E8F0" }}>
                   <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${isRecurring ? "translate-x-5" : "translate-x-0.5"}`} />
                 </button>
               </div>
@@ -399,9 +399,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                     <button key={iv.key} onClick={() => setInterval(iv.key)}
                       className="flex-1 py-2 rounded-xl text-xs font-semibold border transition-all"
                       style={{
-                        backgroundColor: interval === iv.key ? typeColor + "15" : "#F2F4F7",
-                        borderColor: interval === iv.key ? typeColor : "transparent",
-                        color: interval === iv.key ? typeColor : "#4A5568"
+                        backgroundColor: interval === iv.key ? "#FFF7ED" : "#F2F4F7",
+                        borderColor: interval === iv.key ? "#F97316" : "transparent",
+                        color: interval === iv.key ? "#EA580C" : "#4A5568"
                       }}>
                       {iv.label}
                     </button>

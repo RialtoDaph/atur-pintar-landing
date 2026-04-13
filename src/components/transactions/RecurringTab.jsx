@@ -147,7 +147,7 @@ export default function RecurringTab({ user, globalCategories }) {
     setPickerState(null);
   }
 
-  if (loading) return <div className="p-8 flex justify-center"><div className="w-6 h-6 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="p-8 flex justify-center"><div className="w-6 h-6 border-2 border-[#F97316] border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
     <div className="space-y-5 pb-8">

@@ -206,8 +206,8 @@ export default function BudgetPage() {
                 <button
                   data-tour="add-budget-btn"
                   onClick={() => setShowAdd(true)}
-                  className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all"
-                  style={{boxShadow: '0 4px 16px rgba(255,106,0,0.45)'}}
+                  className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all"
+                  style={{boxShadow: '0 4px 16px rgba(249,115,22,0.4)'}}
                 >
                   <Plus className="w-5 h-5 text-white" />
                 </button>
@@ -244,15 +244,15 @@ export default function BudgetPage() {
         {/* Nana AI Savings Recommendation */}
         {budgetLimitReached && (
           <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3 border border-[#FF6A00]/20">
-            <Crown className="w-5 h-5 text-[#FF6A00] flex-shrink-0" />
+            <Crown className="w-5 h-5 text-[#F97316] flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-[#1A1A1A]">Batas {FREE_BUDGET_LIMIT} budget tercapai</p>
               <p className="text-xs text-[#8FA4C8]">Upgrade Premium untuk budget unlimited.</p>
             </div>
-            <Link to="/Subscription" className="px-3 py-1.5 bg-[#FF6A00] text-white rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors flex-shrink-0">Upgrade</Link>
+            <Link to="/Subscription" className="px-3 py-1.5 bg-[#F97316] text-white rounded-xl text-xs font-semibold hover:bg-[#EA580C] transition-colors flex-shrink-0">Upgrade</Link>
           </div>
         )}
-        {/* Proactive Nana AI Budget Alerts */}
+        {/* Proactive Nana AI Budget Alerts */
         {!loading && budgets.length > 0 && (
           <BudgetNanaPanel
             budgets={budgets}
@@ -288,7 +288,7 @@ export default function BudgetPage() {
             <p className="text-[#8FA4C8] text-sm mt-1 mb-5">Buat budget untuk mulai tracking pengeluaranmu tiap bulan!</p>
             <button
               onClick={() => setShowAdd(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF6A00] text-white rounded-xl font-bold text-sm hover:bg-[#e05e00] transition-colors">
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#F97316] text-white rounded-xl font-bold text-sm hover:bg-[#EA580C] transition-colors">
               <Plus className="w-4 h-4" /> Buat Budget Pertama
             </button>
           </div>

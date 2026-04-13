@@ -50,7 +50,7 @@ export default function ProfileSettings() {
         {user && !editingProfile &&
         <div className="bg-white rounded-2xl p-5 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-[#F97316] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
               {user.photo_url ? (
                 <img src={user.photo_url} alt="Foto" className="w-full h-full object-cover" />
               ) : (
@@ -62,10 +62,10 @@ export default function ProfileSettings() {
               <p className="text-sm text-[#8FA4C8] mt-0.5">{user.email}</p>
               {user.job && <p className="text-xs text-[#8FA4C8] mt-0.5">💼 {user.job}{user.city ? ` · 📍 ${user.city}` : ""}</p>}
               {user.motivation && (
-                <p className="text-xs text-[#FF6A00] mt-1.5 italic">✨ {user.motivation}</p>
+                <p className="text-xs text-[#F97316] mt-1.5 italic">✨ {user.motivation}</p>
               )}
               {user.role && (
-                <p className="text-xs font-semibold text-[#FF6A00] mt-1 uppercase">{user.role}</p>
+                <p className="text-xs font-semibold text-[#F97316] mt-1 uppercase">{user.role}</p>
               )}
             </div>
             <button
@@ -91,7 +91,7 @@ export default function ProfileSettings() {
           <button
             onClick={() => setExpandedDropdown(expandedDropdown === 'subscription' ? null : 'subscription')}
             className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]">
-            <Crown className="w-5 h-5 text-[#FF6A00]" />
+            <Crown className="w-5 h-5 text-[#F97316]" />
             <div className="text-left flex-1">
               <p className="font-medium text-[#1A1A1A] text-sm">Langganan</p>
               <p className="text-xs text-[#8FA4C8]">
@@ -104,7 +104,7 @@ export default function ProfileSettings() {
             <div className="px-5 py-3 border-t border-[#F2F4F7] bg-[#F8FAFC] space-y-2">
               <Link
                 to={createPageUrl("Subscription")}
-                className="block text-sm text-[#FF6A00] hover:text-[#FF6A00]/80 font-medium"
+                className="block text-sm text-[#F97316] hover:text-[#F97316]/80 font-medium"
               >
                 Kelola Langganan →
               </Link>
@@ -158,7 +158,7 @@ export default function ProfileSettings() {
           <button
             onClick={() => setShowChangePassword(true)}
             className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]">
-            <Lock className="w-5 h-5 text-[#FF6A00]" />
+            <Lock className="w-5 h-5 text-[#F97316]" />
             <div className="text-left flex-1">
               <p className="font-medium text-[#1A1A1A] text-sm">Ganti Password</p>
               <p className="text-xs text-[#8FA4C8]">Perbarui password akun kamu</p>

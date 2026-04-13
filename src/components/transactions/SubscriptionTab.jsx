@@ -110,7 +110,7 @@ export default function SubscriptionTab({ user }) {
     load();
   }
 
-  if (loading) return <div className="p-8 flex justify-center"><div className="w-6 h-6 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="p-8 flex justify-center"><div className="w-6 h-6 border-2 border-[#F97316] border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
     <div className="space-y-5 pb-8">
@@ -162,7 +162,7 @@ export default function SubscriptionTab({ user }) {
 
       {/* Add button */}
       <button onClick={() => setShowAddForm(true)}
-        className="w-full py-3.5 rounded-xl border-2 border-dashed border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors flex items-center justify-center gap-2">
+        className="w-full py-3.5 rounded-xl border-2 border-dashed border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8] hover:border-[#F97316] hover:text-[#F97316] transition-colors flex items-center justify-center gap-2">
         <Plus className="w-4 h-4" /> Tambah Langganan
       </button>
 
@@ -200,7 +200,7 @@ export default function SubscriptionTab({ user }) {
               <div className="flex gap-1.5">
                 {["monthly", "quarterly", "yearly"].map(c => (
                   <button key={c} onClick={() => setAddForm(f => ({ ...f, billing_cycle: c }))}
-                    className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${addForm.billing_cycle === c ? "bg-[#FF6A00] text-white border-[#FF6A00]" : "bg-[#F2F4F7] text-[#4A5568] border-transparent"}`}>
+                    className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${addForm.billing_cycle === c ? "bg-[#F97316] text-white border-[#F97316]" : "bg-[#F2F4F7] text-[#4A5568] border-transparent"}`}>
                     {CYCLE_LABELS[c]}
                   </button>
                 ))}
@@ -214,7 +214,7 @@ export default function SubscriptionTab({ user }) {
                 value={addForm.notes} onChange={e => setAddForm(f => ({ ...f, notes: e.target.value }))} />
             </div>
             <button onClick={handleAdd} disabled={saving || !addForm.name || !addForm.amount}
-              className="w-full mt-5 py-3.5 rounded-xl bg-[#FF6A00] text-white font-bold text-sm disabled:opacity-40">
+              className="w-full mt-5 py-3.5 rounded-xl bg-[#F97316] text-white font-bold text-sm disabled:opacity-40">
               {saving ? "Menyimpan..." : "Simpan Langganan"}
             </button>
           </div>

@@ -229,8 +229,8 @@ export default function Transactions() {
                 <Upload className="w-4 h-4 text-white" />
               </button>
               <button data-tour="add-transaction-btn" onClick={() => setShowAddTx(true)}
-                className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all tap-highlight-fix"
-                style={{ boxShadow: '0 4px 16px rgba(255,106,0,0.45)' }}>
+                className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all tap-highlight-fix"
+                style={{ boxShadow: '0 4px 16px rgba(249,115,22,0.4)' }}>
                 <Plus className="w-5 h-5 text-white" />
               </button>
             </div>
@@ -241,7 +241,7 @@ export default function Transactions() {
             {[["history","Riwayat"],["recurring","Transaksi Rutin"],["subscription","Langganan"]].map(([key,label]) => (
               <button key={key} onClick={() => setMainTab(key)}
                 className={`flex-1 py-3 text-xs font-semibold transition-all border-b-2 ${
-                  mainTab === key ? "text-[#FF6A00] border-[#FF6A00]" : "text-[#8FA4C8] border-transparent"
+                  mainTab === key ? "text-[#F97316] border-[#F97316]" : "text-[#8FA4C8] border-transparent"
                 }`}>{label}</button>
             ))}
           </div>
@@ -274,7 +274,7 @@ export default function Transactions() {
                     </button>
                   )}
                   <button onClick={() => { setSelectMode(s => !s); setSelectedIds(new Set()); }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors tap-highlight-fix ${selectMode ? "bg-[#0A0A0A] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors tap-highlight-fix ${selectMode ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
                     {selectMode ? t('tx_cancel') : t('tx_select')}
                   </button>
                 </div>
@@ -286,7 +286,7 @@ export default function Transactions() {
                         {FILTER_TABS.map(tab => (
                           <button key={tab.key} role="tab" aria-selected={filter === tab.key}
                             onClick={() => setFilter(tab.key)}
-                            className={`flex-1 py-1.5 rounded-md text-xs font-semibold capitalize transition-all tap-highlight-fix ${filter === tab.key ? "bg-[#0A0A0A] text-white shadow-sm" : "text-[#8FA4C8]"}`}>
+                            className={`flex-1 py-1.5 rounded-md text-xs font-semibold capitalize transition-all tap-highlight-fix ${filter === tab.key ? "bg-[#F97316] text-white shadow-sm" : "text-[#8FA4C8]"}`}>
                             {tab.label}
                           </button>
                         ))}
@@ -299,7 +299,7 @@ export default function Transactions() {
                             className="w-full border border-[#E2E8F0] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-[#F8FAFC] tap-highlight-fix" />
                         </div>
                         <button onClick={() => setShowFilterPanel(v => !v)}
-                          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold tap-highlight-fix transition-colors ${showFilterPanel || hasActiveFilter ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold tap-highlight-fix transition-colors ${showFilterPanel || hasActiveFilter ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
                           <Filter className="w-3 h-3" />{hasActiveFilter ? "Aktif" : "Filter"}
                         </button>
                       </div>
@@ -341,12 +341,12 @@ export default function Transactions() {
                       {goals.length > 0 && (
                         <div className="flex gap-1.5 overflow-x-auto pb-1">
                           <button onClick={() => setGoalFilter(null)}
-                            className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors tap-highlight-fix ${!goalFilter ? "bg-[#0A0A0A] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
+                            className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors tap-highlight-fix ${!goalFilter ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
                             {t('all_goals')}
                           </button>
                           {goals.map(goal => (
                             <button key={goal.id} onClick={() => setGoalFilter(goal.id)}
-                              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1 tap-highlight-fix ${goalFilter === goal.id ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
+                              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap transition-colors flex items-center gap-1 tap-highlight-fix ${goalFilter === goal.id ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
                               {goal.icon} {goal.name}
                             </button>
                           ))}
@@ -363,7 +363,7 @@ export default function Transactions() {
                         <p className="text-[#8FA4C8] text-xs mb-4">{t('tx_empty_desc')}</p>
                         {!searchQuery && (
                           <button onClick={() => setShowAddTx(true)}
-                            className="px-4 py-2 rounded-xl bg-[#FF6A00] text-white text-xs font-semibold tap-highlight-fix">
+                            className="px-4 py-2 rounded-xl bg-[#F97316] text-white text-xs font-semibold tap-highlight-fix">
                             + {t('add_transaction')}
                           </button>
                         )}

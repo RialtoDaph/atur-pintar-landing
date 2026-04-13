@@ -280,7 +280,7 @@ export default function Goals() {
              )}
              <button
                onClick={() => setEditingGoal(goal)}
-               className="flex items-center justify-center gap-2 bg-[#FF6A00] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors tap-highlight-fix"
+               className="flex items-center justify-center gap-2 bg-[#F97316] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#EA580C] transition-colors tap-highlight-fix"
              >
                ✏️ {t('edit')}
              </button>
@@ -384,8 +384,8 @@ export default function Goals() {
             <button
               onClick={() => setShowAddGoal(true)}
               aria-label="Tambah tujuan baru"
-              className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all tap-highlight-fix"
-              style={{boxShadow: '0 4px 16px rgba(255,106,0,0.45)'}}
+              className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all tap-highlight-fix"
+              style={{boxShadow: '0 4px 16px rgba(249,115,22,0.4)'}}
             >
               <Plus className="w-5 h-5 text-white" />
             </button>
@@ -405,12 +405,12 @@ export default function Goals() {
 
       {goalsLimitReached && (
         <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3 border border-[#FF6A00]/20">
-          <Crown className="w-5 h-5 text-[#FF6A00] flex-shrink-0" />
+          <Crown className="w-5 h-5 text-[#F97316] flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-[#1A1A1A]">Batas {FREE_GOALS_LIMIT} tujuan tercapai</p>
             <p className="text-xs text-[#8FA4C8]">Upgrade Premium untuk goals unlimited.</p>
           </div>
-          <Link to="/Subscription" className="px-3 py-1.5 bg-[#FF6A00] text-white rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors flex-shrink-0">Upgrade</Link>
+          <Link to="/Subscription" className="px-3 py-1.5 bg-[#F97316] text-white rounded-xl text-xs font-semibold hover:bg-[#EA580C] transition-colors flex-shrink-0">Upgrade</Link>
         </div>
       )}
       {loading ? (
@@ -422,7 +422,7 @@ export default function Goals() {
           <p className="text-[#8FA4C8] text-sm mt-1 mb-4">{t('goals_empty_desc')}</p>
           <button
             onClick={() => setShowAddGoal(true)}
-            className="px-5 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-semibold hover:bg-[#e05e00] transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2 tap-highlight-fix"
+            className="px-5 py-2.5 rounded-xl bg-[#F97316] text-white text-sm font-semibold hover:bg-[#EA580C] transition-colors focus:outline-none focus:ring-2 focus:ring-[#F97316] focus:ring-offset-2 tap-highlight-fix"
           >
             + Buat Tujuan Pertama
           </button>

@@ -227,7 +227,7 @@ function LayoutInner({ children, currentPageName }) {
                 data-tour={item.tourId || undefined}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
                 active ?
-                "bg-[#FF6A00] text-white shadow-md" :
+                "bg-[#F97316] text-white shadow-md" :
                 "text-[#888] hover:text-white hover:bg-white/10 active:bg-white/15"}`
                 }>
 
@@ -257,7 +257,7 @@ function LayoutInner({ children, currentPageName }) {
                 to={createPageUrl(item.page)}
                 className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 active ?
-                "bg-[#FF6A00] text-white shadow-sm" :
+                "bg-[#F97316] text-white shadow-sm" :
                 "text-[#888] hover:text-white hover:bg-white/10"}`
                 }>
 
@@ -274,7 +274,7 @@ function LayoutInner({ children, currentPageName }) {
             to={createPageUrl("ProfileSettings")}
             className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors">
 
-            <div className="w-5 h-5 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-[9px] font-bold overflow-hidden">
+            <div className="w-5 h-5 rounded-full bg-[#F97316] flex items-center justify-center text-white text-[9px] font-bold overflow-hidden">
               {user?.photo_url ? <img src={user.photo_url} alt="avatar" className="w-full h-full object-cover" /> : initials}
             </div>
             <span className="truncate">{user?.full_name || t('profile')}</span>
@@ -304,7 +304,7 @@ function LayoutInner({ children, currentPageName }) {
             <button onClick={() => { setShowAlertsDrawer(true); setUnreadAlertCount(0); }} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Bell className="w-4 h-4" />
               {(unreadAlertCount + unreadAdminCount) > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF6A00] text-white text-[9px] font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#EF4444] text-white text-[9px] font-bold flex items-center justify-center">
                   {(unreadAlertCount + unreadAdminCount) > 9 ? "9+" : (unreadAlertCount + unreadAdminCount)}
                 </span>
               )}
@@ -312,7 +312,7 @@ function LayoutInner({ children, currentPageName }) {
             <button onClick={() => setShowSearch(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
               <Search className="w-4 h-4" />
             </button>
-            <Link to={createPageUrl("ProfileSettings")} className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center text-white text-xs font-bold tap-highlight-fix overflow-hidden">
+            <Link to={createPageUrl("ProfileSettings")} className="w-8 h-8 rounded-full bg-[#F97316] flex items-center justify-center text-white text-xs font-bold tap-highlight-fix overflow-hidden">
               {user?.photo_url ? <img src={user.photo_url} alt="avatar" className="w-full h-full object-cover" /> : initials}
             </Link>
           </div>
@@ -343,7 +343,7 @@ function LayoutInner({ children, currentPageName }) {
               key={`tab-${item.page}`}
               onClick={() => handleTabClick(item.page)}
               className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
-              active ? "text-[#FF6A00]" : "text-[#888]"}`}>
+              active ? "text-[#F97316]" : "text-[#888]"}`}>
               
               <item.icon className="w-5 h-5" />
               {item.label}
@@ -356,7 +356,7 @@ function LayoutInner({ children, currentPageName }) {
           data-tour="mobile-more-tab"
           onClick={() => handleTabClick("Menu")}
           className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
-          mobileMorePages.includes(currentPageName) ? "text-[#FF6A00]" : "text-[#888]"}`}>
+          mobileMorePages.includes(currentPageName) ? "text-[#F97316]" : "text-[#888]"}`}>
           
           <Grid3x3 className="w-5 h-5" />
           {t('nav_more')}

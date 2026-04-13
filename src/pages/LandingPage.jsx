@@ -254,7 +254,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto sm:mx-0 text-center sm:text-left">
           <p className="text-white/30 text-xs font-bold uppercase tracking-widest mb-2">Solusinya simpel</p>
           <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Kendalikan uangmu. Mulai hari ini:</h2>
-          <p className="text-[#FF6A00] font-bold text-sm mb-8">Bukan cuma catat. Tapi beneran ngerti dan berubah.</p>
+          <p className="text-[#F97316] font-bold text-sm mb-8">Bukan cuma catat. Tapi beneran ngerti dan berubah.</p>
           <div className="space-y-3">
             {[
             { icon: "⚡", text: "Catat transaksi dalam 3 detik" },
@@ -264,7 +264,7 @@ export default function LandingPage() {
             <div key={i} className="card-d rounded-2xl px-5 py-4 flex items-center gap-4">
                 <span className="text-2xl">{item.icon}</span>
                 <p className="text-white font-semibold text-sm sm:text-base">{item.text}</p>
-                <CheckCircle className="w-4 h-4 text-[#FF6A00] ml-auto flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 text-[#F97316] ml-auto flex-shrink-0" />
               </div>
             )}
           </div>
@@ -281,8 +281,8 @@ export default function LandingPage() {
           <div className="space-y-0">
             {STEPS.map((step, i) =>
             <div key={i} className={`relative flex gap-5 ${i < STEPS.length - 1 ? "pb-8 step-line" : ""}`}>
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#FF6A00]/15 border border-[#FF6A00]/30 flex items-center justify-center">
-                  <span className="text-[#FF6A00] text-xs font-black">{step.num}</span>
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#F97316]/15 border border-[#F97316]/30 flex items-center justify-center">
+                  <span className="text-[#F97316] text-xs font-black">{step.num}</span>
                 </div>
                 <div className="pt-1.5">
                   <p className="text-white font-bold text-sm sm:text-base">{step.title}</p>
@@ -294,7 +294,7 @@ export default function LandingPage() {
           <div className="mt-8 flex justify-center sm:justify-start">
             <button
               onClick={handleCTA}
-              className="inline-flex items-center gap-2 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-all hover:scale-105">
+              className="inline-flex items-center gap-2 bg-[#F97316] hover:bg-[#EA580C] text-white font-bold text-sm px-6 py-3.5 rounded-xl transition-all hover:scale-105">
               
               Lihat Demo <ArrowRight className="w-4 h-4" />
             </button>
@@ -311,8 +311,8 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map((f, i) =>
-            <div key={i} className="card-d rounded-2xl p-5 hover:border-[#FF6A00]/25 transition-colors group">
-                <div className="w-9 h-9 rounded-xl bg-[#FF6A00]/10 flex items-center justify-center text-2xl mb-3">
+            <div key={i} className="card-d rounded-2xl p-5 hover:border-[#F97316]/25 transition-colors group">
+                <div className="w-9 h-9 rounded-xl bg-[#F97316]/10 flex items-center justify-center text-2xl mb-3">
                   {f.icon}
                 </div>
                 <p className="text-white font-bold text-sm mb-1">{f.title}</p>
@@ -327,8 +327,8 @@ export default function LandingPage() {
       <section className="px-5 sm:px-12 lg:px-20 pb-20 relative z-10">
         <div className="max-w-2xl mx-auto sm:mx-0">
           <div className="card-d rounded-3xl p-8 glow text-center sm:text-left">
-            <div className="w-14 h-14 rounded-full bg-[#FF6A00]/10 flex items-center justify-center mb-4">
-              <Shield className="w-7 h-7 text-[#FF6A00]" />
+            <div className="w-14 h-14 rounded-full bg-[#F97316]/10 flex items-center justify-center mb-4">
+              <Shield className="w-7 h-7 text-[#F97316]" />
             </div>
             <p className="text-white/60 text-sm leading-relaxed italic">
               "Dirancang untuk membantu kamu yang sering bingung kemana uang pergi."
@@ -351,12 +351,12 @@ export default function LandingPage() {
             <div
               key={i}
               className={`relative rounded-2xl p-6 flex flex-col ${
-              plan.highlight ? "bg-[#FF6A00] border border-[#FF6A00]" : "card-d"}`
+              plan.highlight ? "bg-[#F97316] border border-[#F97316]" : "card-d"}`
               }>
               
                 {plan.badge &&
               <div className={`absolute -top-3 left-6 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide ${
-              plan.highlight ? "bg-white text-[#FF6A00]" : "bg-[#FF6A00] text-white"}`
+              plan.highlight ? "bg-white text-[#F97316]" : "bg-[#F97316] text-white"}`
               }>
                     {plan.badge}
                   </div>
@@ -367,7 +367,7 @@ export default function LandingPage() {
                 <div className="space-y-2.5 flex-1 mb-6">
                   {plan.features.map((feat, j) =>
                 <div key={j} className="flex items-center gap-2">
-                      <CheckCircle className={`w-3.5 h-3.5 flex-shrink-0 ${plan.highlight ? "text-white" : "text-[#FF6A00]"}`} />
+                      <CheckCircle className={`w-3.5 h-3.5 flex-shrink-0 ${plan.highlight ? "text-white" : "text-[#F97316]"}`} />
                       <p className={`text-xs ${plan.highlight ? "text-white/90" : "text-white/60"}`}>{feat}</p>
                     </div>
                 )}
@@ -376,8 +376,8 @@ export default function LandingPage() {
                 onClick={handleCTA}
                 className={`w-full font-bold text-sm py-3 rounded-xl transition-all ${
                 plan.highlight ?
-                "bg-white text-[#FF6A00] hover:bg-white/90" :
-                "border border-white/15 text-white hover:border-[#FF6A00]/50 hover:text-[#FF6A00]"}`
+                "bg-white text-[#F97316] hover:bg-white/90" :
+                "border border-white/15 text-white hover:border-[#F97316]/50 hover:text-[#F97316]"}`
                 }>
                 
                   {plan.cta}
@@ -391,7 +391,7 @@ export default function LandingPage() {
       {/* 8. FINAL CTA */}
       <section className="px-5 sm:px-12 lg:px-20 pb-24 relative z-10">
         <div className="max-w-2xl mx-auto sm:mx-0 card-d rounded-3xl p-10 sm:p-14 relative overflow-hidden text-center sm:text-left">
-          <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-[#FF6A00]/6 blur-[80px] pointer-events-none" />
+          <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-[#F97316]/6 blur-[80px] pointer-events-none" />
           <h2 className="text-2xl sm:text-4xl font-black text-white mb-3 leading-tight relative">
             Kalau kamu gak kontrol uangmu,<br />
             <span className="g-text">uangmu yang kontrol kamu.</span>
@@ -400,7 +400,7 @@ export default function LandingPage() {
           <div className="flex justify-center sm:justify-start">
           <button
               onClick={handleCTA}
-              className="relative group inline-flex items-center gap-3 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-black text-base px-10 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
+              className="relative group inline-flex items-center gap-3 bg-[#F97316] hover:bg-[#EA580C] text-white font-black text-base px-10 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
               
             <Users className="w-5 h-5" />
             Mulai Gratis Sekarang
@@ -439,13 +439,13 @@ export default function LandingPage() {
                 support@aturpintar.id
               </a>
               <div className="flex items-center gap-3">
-                <a href="https://instagram.com/aturpintar" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#FF6A00]/20 flex items-center justify-center text-white/40 hover:text-[#FF6A00] transition-colors">
+                <a href="https://instagram.com/aturpintar" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#F97316]/20 flex items-center justify-center text-white/40 hover:text-[#F97316] transition-colors">
                   <Instagram className="w-3.5 h-3.5" />
                 </a>
-                <a href="https://tiktok.com/@aturpintar" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#FF6A00]/20 flex items-center justify-center text-white/40 hover:text-[#FF6A00] transition-colors">
+                <a href="https://tiktok.com/@aturpintar" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#F97316]/20 flex items-center justify-center text-white/40 hover:text-[#F97316] transition-colors">
                   <span className="text-xs font-bold">TK</span>
                 </a>
-                <a href="https://x.com/aturpintar" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#FF6A00]/20 flex items-center justify-center text-white/40 hover:text-[#FF6A00] transition-colors">
+                <a href="https://x.com/aturpintar" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#F97316]/20 flex items-center justify-center text-white/40 hover:text-[#F97316] transition-colors">
                   <Twitter className="w-3.5 h-3.5" />
                 </a>
               </div>

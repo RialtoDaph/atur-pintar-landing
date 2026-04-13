@@ -171,8 +171,8 @@ export default function Dashboard() {
               <button
                 data-tour="add-transaction-btn"
                 onClick={() => setShowAddTransaction(true)}
-                className="w-11 h-11 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] active:scale-95 transition-all duration-150 tap-highlight-fix"
-                style={{ boxShadow: '0 4px 16px rgba(255,106,0,0.45)' }}
+                className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all duration-150 tap-highlight-fix"
+                style={{ boxShadow: '0 4px 16px rgba(249,115,22,0.4)' }}
               >
                 <Plus className="w-5 h-5 text-white" />
               </button>

@@ -11,7 +11,7 @@ const ACCOUNT_TYPES = [
 ];
 
 const DEFAULT_ICONS = ["🏦", "💵", "📱", "💳", "🏧", "🐷", "💰", "🎯"];
-const DEFAULT_COLORS = ["#FF6A00", "#1976D2", "#388E3C", "#7B1FA2", "#F57C00", "#E91E63", "#00BCD4", "#607D8B"];
+const DEFAULT_COLORS = ["#F97316", "#1976D2", "#388E3C", "#7B1FA2", "#F57C00", "#E91E63", "#00BCD4", "#607D8B"];
 
 function formatRupiah(n) {
   if (n === undefined || n === null) return "Rp 0";
@@ -24,7 +24,7 @@ function AccountModal({ account, onClose, onSave }) {
     type: account?.type || "bank",
     balance: account?.balance || 0,
     icon: account?.icon || "🏦",
-    color: account?.color || "#FF6A00",
+    color: account?.color || "#F97316",
     institution: account?.institution || "",
     is_default: account?.is_default || false,
   });
@@ -57,7 +57,7 @@ function AccountModal({ account, onClose, onSave }) {
             <div className="flex gap-2 flex-wrap">
               {DEFAULT_ICONS.map(ic => (
                 <button key={ic} onClick={() => setForm(f => ({ ...f, icon: ic }))}
-                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all ${form.icon === ic ? "ring-2 ring-[#FF6A00] bg-[#FF6A00]/10" : "bg-[#F2F4F7]"}`}>
+                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all ${form.icon === ic ? "ring-2 ring-[#F97316] bg-[#F97316]/10" : "bg-[#F2F4F7]"}`}>
                   {ic}
                 </button>
               ))}
@@ -70,7 +70,7 @@ function AccountModal({ account, onClose, onSave }) {
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               placeholder="e.g., Rekening BCA, OVO, Dompet"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#FF6A00]/30"
+              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
             />
           </div>
           {/* Type */}
@@ -80,7 +80,7 @@ function AccountModal({ account, onClose, onSave }) {
               {ACCOUNT_TYPES.map(t => (
                 <button key={t.key} onClick={() => setForm(f => ({ ...f, type: t.key, icon: f.icon || t.icon }))}
                   className={`py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all ${
-                    form.type === t.key ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#1A1A1A]"
+                    form.type === t.key ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#1A1A1A]"
                   }`}>
                   {t.icon} {t.label}
                 </button>
@@ -99,7 +99,7 @@ function AccountModal({ account, onClose, onSave }) {
                 setForm(f => ({ ...f, balance: parseFloat(raw) || 0, _balanceDisplay: raw === "" ? "" : Number(raw).toLocaleString("id-ID") }));
               }}
               placeholder="0"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#FF6A00]/30"
+              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
             />
           </div>
           {/* Default toggle */}
@@ -109,14 +109,14 @@ function AccountModal({ account, onClose, onSave }) {
               <p className="text-xs text-[#8FA4C8]">Digunakan sebagai default di transaksi baru</p>
             </div>
             <button onClick={() => setForm(f => ({ ...f, is_default: !f.is_default }))}
-              className={`w-11 h-6 rounded-full transition-colors relative ${form.is_default ? "bg-[#FF6A00]" : "bg-[#E2E8F0]"}`}>
+              className={`w-11 h-6 rounded-full transition-colors relative ${form.is_default ? "bg-[#F97316]" : "bg-[#E2E8F0]"}`}>
               <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${form.is_default ? "left-6" : "left-1"}`} />
             </button>
           </div>
         </div>
         <div className="px-5 pb-6 pt-2">
           <button onClick={handleSave} disabled={saving || !form.name.trim()}
-            className="w-full py-3.5 bg-[#FF6A00] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+            className="w-full py-3.5 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
             {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
             {account?.id ? "Simpan Perubahan" : "Buat Rekening"}
           </button>
@@ -199,15 +199,15 @@ export default function Accounts() {
       <div className="max-w-2xl mx-auto px-5 mt-5 space-y-3">
         <button
           onClick={() => { setEditAccount(null); setShowModal(true); }}
-          className="w-full bg-[#FF6A00] text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all duration-150"
-          style={{boxShadow: '0 4px 16px rgba(255,106,0,0.4)'}}
+          className="w-full bg-[#F97316] text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all duration-150"
+          style={{boxShadow: '0 4px 16px rgba(249,115,22,0.4)'}}
         >
           <Plus className="w-4 h-4" /> Tambah Rekening Baru
         </button>
 
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-4 border-[#F2F4F7] border-t-[#FF6A00] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-[#F2F4F7] border-t-[#F97316] rounded-full animate-spin" />
           </div>
         ) : accounts.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
@@ -217,7 +217,7 @@ export default function Accounts() {
           </div>
         ) : (
           accounts.map(acc => (
-            <div key={acc.id} className={`bg-white rounded-2xl p-4 border transition-all duration-200 hover:shadow-lg ${acc.is_default ? "border-[#FF6A00]/40 shadow-md" : "border-[#F0F2F5] shadow-md"}`}>
+            <div key={acc.id} className={`bg-white rounded-2xl p-4 border transition-all duration-200 hover:shadow-lg ${acc.is_default ? "border-[#F97316]/40 shadow-md" : "border-[#F0F2F5] shadow-md"}`}>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style={{ backgroundColor: (acc.color || "#FF6A00") + "20" }}>
                   {acc.icon || "🏦"}
@@ -225,7 +225,7 @@ export default function Accounts() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-[#1A1A1A] text-sm">{acc.name}</p>
-                    {acc.is_default && <span className="text-[10px] bg-[#FF6A00]/10 text-[#FF6A00] font-bold px-2 py-0.5 rounded-full">Utama</span>}
+                    {acc.is_default && <span className="text-[10px] bg-[#F97316]/10 text-[#F97316] font-bold px-2 py-0.5 rounded-full">Utama</span>}
                   </div>
                   <p className="text-xs text-[#8FA4C8] mt-0.5">{typeLabel[acc.type] || acc.type}</p>
                   <p className="text-base font-bold mt-1" style={{ color: (acc.balance || 0) < 0 ? "#EF4444" : (acc.color || "#1A1A1A") }}>
@@ -252,8 +252,8 @@ export default function Accounts() {
         )}
 
         {/* Info Card */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 border border-[#FF6A00]/20">
-          <p className="text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-2">💡 Tips</p>
+        <div className="bg-white rounded-2xl shadow-sm p-4 border border-[#F97316]/20">
+         <p className="text-xs font-bold text-[#F97316] uppercase tracking-widest mb-2">💡 Tips</p>
           <p className="text-sm text-[#1A1A1A]">Pilih rekening saat mencatat transaksi untuk memantau saldo tiap rekening secara akurat.</p>
         </div>
       </div>
