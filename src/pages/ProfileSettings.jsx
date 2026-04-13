@@ -50,23 +50,23 @@ export default function ProfileSettings() {
         {user && !editingProfile &&
         <div className="bg-white rounded-2xl p-5 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-[#F97316] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
-              {user.photo_url ? (
-                <img src={user.photo_url} alt="Foto" className="w-full h-full object-cover" />
-              ) : (
-                user.full_name?.[0]?.toUpperCase() || "U"
-              )}
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+              {user.photo_url ?
+              <img src={user.photo_url} alt="Foto" className="w-full h-full object-cover" /> :
+
+              user.full_name?.[0]?.toUpperCase() || "U"
+              }
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-[#1A1A1A] text-lg">{user.full_name || t('settings_user_label')}</p>
               <p className="text-sm text-[#8FA4C8] mt-0.5">{user.email}</p>
               {user.job && <p className="text-xs text-[#8FA4C8] mt-0.5">💼 {user.job}{user.city ? ` · 📍 ${user.city}` : ""}</p>}
-              {user.motivation && (
-                <p className="text-xs text-[#F97316] mt-1.5 italic">✨ {user.motivation}</p>
-              )}
-              {user.role && (
-                <p className="text-xs font-semibold text-[#F97316] mt-1 uppercase">{user.role}</p>
-              )}
+              {user.motivation &&
+              <p className="text-xs text-[#FF6A00] mt-1.5 italic">✨ {user.motivation}</p>
+              }
+              {user.role &&
+              <p className="text-xs font-semibold text-[#FF6A00] mt-1 uppercase">{user.role}</p>
+              }
             </div>
             <button
               onClick={() => setEditingProfile(true)}
@@ -78,20 +78,20 @@ export default function ProfileSettings() {
         }
 
         {/* Edit Profile Form */}
-        {user && editingProfile && (
-          <EditProfileForm
-            user={user}
-            onSaved={(updated) => { setUser(updated); setEditingProfile(false); }}
-            onCancel={() => setEditingProfile(false)}
-          />
-        )}
+        {user && editingProfile &&
+        <EditProfileForm
+          user={user}
+          onSaved={(updated) => {setUser(updated);setEditingProfile(false);}}
+          onCancel={() => setEditingProfile(false)} />
+
+        }
 
         {/* Subscription */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <button
             onClick={() => setExpandedDropdown(expandedDropdown === 'subscription' ? null : 'subscription')}
             className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]">
-            <Crown className="w-5 h-5 text-[#F97316]" />
+            <Crown className="w-5 h-5 text-[#FF6A00]" />
             <div className="text-left flex-1">
               <p className="font-medium text-[#1A1A1A] text-sm">Langganan</p>
               <p className="text-xs text-[#8FA4C8]">
@@ -100,16 +100,16 @@ export default function ProfileSettings() {
             </div>
             <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${expandedDropdown === 'subscription' ? 'rotate-180' : ''}`} />
           </button>
-          {expandedDropdown === 'subscription' && (
-            <div className="px-5 py-3 border-t border-[#F2F4F7] bg-[#F8FAFC] space-y-2">
+          {expandedDropdown === 'subscription' &&
+          <div className="px-5 py-3 border-t border-[#F2F4F7] bg-[#F8FAFC] space-y-2">
               <Link
-                to={createPageUrl("Subscription")}
-                className="block text-sm text-[#F97316] hover:text-[#F97316]/80 font-medium"
-              >
+              to={createPageUrl("Subscription")}
+              className="block text-sm text-[#FF6A00] hover:text-[#FF6A00]/80 font-medium">
+              
                 Kelola Langganan →
               </Link>
             </div>
-          )}
+          }
         </div>
 
         {/* Nana AI Preferences Dropdown */}
@@ -124,11 +124,11 @@ export default function ProfileSettings() {
             </div>
             <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${expandedDropdown === 'nana' ? 'rotate-180' : ''}`} />
           </button>
-          {expandedDropdown === 'nana' && (
-            <div className="px-5 py-4 border-t border-[#F2F4F7] bg-[#F8FAFC]">
+          {expandedDropdown === 'nana' &&
+          <div className="px-5 py-4 border-t border-[#F2F4F7] bg-[#F8FAFC]">
               <NanaPreferencesSettings />
             </div>
-          )}
+          }
         </div>
 
         {/* Risk Profile Dropdown */}
@@ -143,11 +143,11 @@ export default function ProfileSettings() {
             </div>
             <ChevronDown className={`w-4 h-4 text-[#8FA4C8] transition-transform ${expandedDropdown === 'risk' ? 'rotate-180' : ''}`} />
           </button>
-          {expandedDropdown === 'risk' && (
-            <div className="px-5 py-4 border-t border-[#F2F4F7] bg-[#F8FAFC]">
+          {expandedDropdown === 'risk' &&
+          <div className="px-5 py-4 border-t border-[#F2F4F7] bg-[#F8FAFC]">
               <RiskProfileAssessment />
             </div>
-          )}
+          }
         </div>
 
         {/* Security */}
@@ -158,7 +158,7 @@ export default function ProfileSettings() {
           <button
             onClick={() => setShowChangePassword(true)}
             className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]">
-            <Lock className="w-5 h-5 text-[#F97316]" />
+            <Lock className="w-5 h-5 text-[#FF6A00]" />
             <div className="text-left flex-1">
               <p className="font-medium text-[#1A1A1A] text-sm">Ganti Password</p>
               <p className="text-xs text-[#8FA4C8]">Perbarui password akun kamu</p>
@@ -188,7 +188,7 @@ export default function ProfileSettings() {
         </div>
 
         <div className="text-center pb-4 space-y-1">
-          <p className="text-xs text-[#8FA4C8]">{t('settings_version')}</p>
+          
           <p className="text-[11px] text-[#8FA4C8]/60">Atur Pintar · PT Rideff Vreka Tech</p>
           <p className="text-[10px] text-[#8FA4C8]/40 italic">"Kelola uangmu hari ini, raih kebebasan finansialmu esok hari."</p>
         </div>
@@ -213,6 +213,6 @@ export default function ProfileSettings() {
           </div>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
-  );
+    </div>);
+
 }
