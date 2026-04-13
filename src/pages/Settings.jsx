@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Moon, Sun, Check, MessageSquare, ShieldCheck } from "lucide-react";
+import { Moon, Sun, Check, MessageSquare, ShieldCheck, MapPin } from "lucide-react";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 const LANGUAGES = [
@@ -32,6 +32,8 @@ export default function Settings() {
   const [currency, setCurrency] = useState("IDR");
   const [language, setLanguage] = useState("id");
   const [showFeedback, setShowFeedback] = useState(false);
+  const [restartingTour, setRestartingTour] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -61,6 +63,12 @@ export default function Settings() {
   async function selectLanguage(code) {
     setLanguage(code);
     await updateSettings({ ...settings, language: code });
+  }
+
+  async function handleRestartTour() {
+    setRestartingTour(true);
+    await base44.auth.updateMe({ tour_completed: false });
+    navigate('/Dashboard');
   }
 
   return (
@@ -176,6 +184,25 @@ export default function Settings() {
         {/* Integrasi & Export */}
         <div className="bg-white rounded-2xl shadow-md p-5 border border-[#F0F2F5]">
           <IntegrationSettings />
+        </div>
+
+        {/* Tour Panduan */}
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
+          <div className="px-5 pt-4 pb-2">
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Panduan</p>
+          </div>
+          <button
+            onClick={handleRestartTour}
+            disabled={restartingTour}
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]"
+          >
+            <MapPin className="w-5 h-5 text-[#FF6A00]" />
+            <div className="text-left flex-1">
+              <p className="font-medium text-[#1A1A1A] text-sm">Mulai Tour Ulang</p>
+              <p className="text-xs text-[#8FA4C8]">Lihat panduan fitur-fitur Atur Pintar dari awal</p>
+            </div>
+            {restartingTour && <div className="w-4 h-4 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />}
+          </button>
         </div>
 
         {/* Feedback */}

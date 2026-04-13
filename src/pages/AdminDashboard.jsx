@@ -4,7 +4,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStreakManager from "@/components/admin/AdminStreakManager";
-import { Users, TrendingUp, DollarSign, Clock, AlertTriangle, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Users, TrendingUp, DollarSign, Clock, AlertTriangle, RefreshCw, CheckCircle2, UserX, Send, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,9 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [monthlyChartData, setMonthlyChartData] = useState([]);
+  const [notOnboardedModal, setNotOnboardedModal] = useState(false);
+  const [notOnboardedList, setNotOnboardedList] = useState([]);
+  const [sendingReminder, setSendingReminder] = useState({});
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -67,6 +70,8 @@ export default function AdminDashboard() {
       // Onboarding completion rate
       const completedOnboarding = allUsers.filter(u => u.onboarding_completed).length;
       const onboardingRate = totalUsers > 0 ? Math.round((completedOnboarding / totalUsers) * 100) : 0;
+      const notOnboarded = allUsers.filter(u => !u.onboarding_completed);
+      setNotOnboardedList(notOnboarded);
       
       // New users this month (April 2026)
       const newThisMonth = allUsers.filter(u => u.created_date?.startsWith(thisMonth)).length;
@@ -106,6 +111,7 @@ export default function AdminDashboard() {
         premiumUsers,
         freeUsers: totalUsers - premiumUsers,
         newUsersThisMonth: newThisMonth,
+        notOnboardedCount: notOnboarded.length,
         pendingPaymentCount: pendingPayments.length,
         oldPendingCount,
         monthlyRevenue: Math.round(monthlyRevenue),
@@ -252,10 +258,66 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Not Onboarded Widget */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0] mb-6 cursor-pointer hover:border-[#FF6A00]/40 transition-colors" onClick={() => setNotOnboardedModal(true)}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                <UserX className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-[#1A1A1A]">User Belum Selesai Onboarding</p>
+                <p className="text-xs text-[#8FA4C8]">Klik untuk lihat daftar dan kirim reminder</p>
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-amber-600">{stats?.notOnboardedCount ?? 0}</p>
+          </div>
+        </div>
+
         {/* Streak Manager */}
         <div className="mt-6">
           <AdminStreakManager onActionComplete={loadStats} />
         </div>
+
+        {/* Not Onboarded Modal */}
+        {notOnboardedModal && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] flex flex-col shadow-2xl">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#F2F4F7]">
+                <h3 className="font-bold text-[#1A1A1A]">User Belum Onboarding ({notOnboardedList.length})</h3>
+                <button onClick={() => setNotOnboardedModal(false)} className="p-1 hover:bg-[#F2F4F7] rounded"><X className="w-4 h-4" /></button>
+              </div>
+              <div className="overflow-y-auto flex-1 px-6 py-4 space-y-2">
+                {notOnboardedList.length === 0 && <p className="text-sm text-[#8FA4C8] text-center py-6">Semua user sudah selesai onboarding! 🎉</p>}
+                {notOnboardedList.map(u => (
+                  <div key={u.id} className="flex items-center justify-between p-3 bg-[#F8FAFC] rounded-xl">
+                    <div>
+                      <p className="text-sm font-semibold text-[#1A1A1A]">{u.full_name || u.email}</p>
+                      <p className="text-xs text-[#8FA4C8]">{u.email}</p>
+                      <p className="text-xs text-[#8FA4C8]">Daftar: {u.created_date ? new Date(u.created_date).toLocaleDateString('id-ID') : '-'}</p>
+                    </div>
+                    <button
+                      disabled={sendingReminder[u.id]}
+                      onClick={async () => {
+                        setSendingReminder(prev => ({ ...prev, [u.id]: true }));
+                        await base44.asServiceRole.entities.AdminNotification.create({
+                          title: '👋 Selesaikan setup akunmu!',
+                          message: 'Hei! Kamu belum selesai proses onboarding Atur Pintar. Yuk buka app dan selesaikan setup untuk mulai kelola keuanganmu.',
+                          target_type: 'specific',
+                          target_email: u.email
+                        });
+                        setSendingReminder(prev => ({ ...prev, [u.id]: false }));
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FF6A00] text-white text-xs font-bold rounded-lg hover:bg-[#e05e00] disabled:opacity-50 transition-colors flex-shrink-0">
+                      {sendingReminder[u.id] ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send className="w-3 h-3" />}
+                      Kirim Reminder
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

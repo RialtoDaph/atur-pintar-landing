@@ -5,15 +5,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 const TOUR_STEPS = [
-  { id: "add-transaction-btn", page: "Dashboard", title: "Tambah Transaksi ➕", desc: "Ketuk tombol + untuk catat pemasukan atau pengeluaran baru.", placement: "bottom-left" },
-  { id: "balance-card", page: "Dashboard", title: "Ringkasan Keuangan 💰", desc: "Lihat saldo bersih, pemasukan, dan pengeluaran bulan ini dalam satu tampilan.", placement: "bottom" },
-  { id: "nana-chat", page: "Dashboard", title: "Tanya Nana AI 🤖", desc: "Punya pertanyaan soal keuangan? Ketuk Nana kapan saja untuk dapat saran pintar.", placement: "top-left" },
-  { id: "contract-payments-card", page: "Transactions", title: "Kontrak & Tagihan 🏠", desc: "Catat tagihan rutin seperti sewa, listrik, atau internet di sini.", placement: "bottom" },
-  { id: "subscription-detector-card", page: "Transactions", title: "Langganan 📱", desc: "Pantau semua langganan aktif kamu — Netflix, Spotify, dan lainnya.", placement: "bottom" },
-  { id: "tx-history-card", page: "Transactions", title: "Riwayat Transaksi 📋", desc: "Ketuk judul ini untuk buka riwayat lengkap semua transaksi.", placement: "top" },
-  { id: "add-budget-btn", page: "Budget", title: "Buat Anggaran 📊", desc: "Tetapkan batas pengeluaran per kategori agar keuangan tetap terkontrol.", placement: "bottom-left" },
-  { id: "mobile-more-tab", page: "Budget", title: "Menu Lainnya 📂", desc: "Ketuk 'Lainnya' di navigasi bawah untuk lihat Tujuan, Utang, Pengingat, dan fitur lainnya.", placement: "top" },
-  { id: "tips-nav-link", page: "Menu", title: "Pusat Bantuan 💡", desc: "Ada fitur yang belum dipahami? Cari jawabannya di sini. Semua panduan tersedia lengkap!", placement: "bottom" },
+  { id: "balance-card", page: "Dashboard", title: "Dashboard Keuangan 💰", desc: "Ini Dashboard kamu — lihat ringkasan saldo, pemasukan, dan pengeluaran bulan ini dalam satu tampilan.", placement: "bottom" },
+  { id: "add-transaction-btn", page: "Dashboard", title: "Tambah Transaksi ➕", desc: "Ketuk tombol + untuk catat pemasukan, pengeluaran, atau tabungan baru. Pilih rekening & kategori dalam detik.", placement: "bottom-left" },
+  { id: "accounts-nav", page: "Accounts", title: "Rekening & Dompet 🏦", desc: "Kelola semua akun keuanganmu di satu tempat — bank, cash, e-wallet. Saldo selalu tersinkronisasi otomatis.", placement: "bottom" },
+  { id: "add-budget-btn", page: "Budget", title: "Budget per Kategori 📊", desc: "Pantau budget bulanan di sini. Atur batas pengeluaran dan dapatkan alert otomatis saat mendekati limit.", placement: "bottom-left" },
+  { id: "mobile-more-tab", page: "Budget", title: "Menu Lengkap 📂", desc: "Ketuk 'Lainnya' untuk akses Utang & Cicilan, Goals Tabungan, Reminder tagihan, dan Shared Wallet.", placement: "top" },
+  { id: "nana-chat", page: "Dashboard", title: "Tanya Nana AI 🤖", desc: "Tanya Nana kapan saja untuk saran keuangan personal — analisis pengeluaran, tips menabung, dan lainnya.", placement: "top-left" },
+  { id: "tips-nav-link", page: "Menu", title: "Tips & Panduan 💡", desc: "Temukan tips keuangan personal dan panduan penggunaan fitur-fitur Atur Pintar di sini.", placement: "bottom" },
+  { id: "mobile-more-tab", page: "Menu", title: "Siap Mulai! 🎉", desc: "Pengaturan akun ada di pojok kanan atas (ikon profil). Selamat menggunakan Atur Pintar — kontrol uangmu mulai sekarang!", placement: "top" },
 ];
 
 const TOOLTIP_WIDTH = 280;

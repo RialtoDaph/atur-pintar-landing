@@ -32,6 +32,7 @@ export default function AdminSettings() {
     feature_investment: true,
     feature_nana_ai: true,
     feature_gamification: true,
+    settings_unlocked: false,
   });
   const [deletingSimData, setDeletingSimData] = useState(false);
 
@@ -65,6 +66,7 @@ export default function AdminSettings() {
           feature_investment: config.feature_investment !== false,
           feature_nana_ai: config.feature_nana_ai !== false,
           feature_gamification: config.feature_gamification !== false,
+          settings_unlocked: config.settings_unlocked === true,
         });
       }
     } catch (e) {
@@ -89,6 +91,7 @@ export default function AdminSettings() {
         feature_investment: Boolean(settings.feature_investment),
         feature_nana_ai: Boolean(settings.feature_nana_ai),
         feature_gamification: Boolean(settings.feature_gamification),
+        settings_unlocked: Boolean(settings.settings_unlocked),
       };
 
       if (appConfig) {
@@ -218,6 +221,16 @@ export default function AdminSettings() {
               <div>
                 <label htmlFor="maintenance_mode" className="text-sm font-semibold text-red-700 cursor-pointer">Mode Maintenance</label>
                 <p className="text-xs text-red-500 mt-0.5">Jika ON, user biasa akan melihat halaman pemeliharaan. Admin tetap bisa akses normal.</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+              <input type="checkbox" id="settings_unlocked" checked={settings.settings_unlocked}
+                onChange={e => setSettings({ ...settings, settings_unlocked: e.target.checked })}
+                className="w-5 h-5 mt-0.5 flex-shrink-0" />
+              <div>
+                <label htmlFor="settings_unlocked" className="text-sm font-semibold text-blue-700 cursor-pointer">Izinkan User Ubah Bahasa & Mata Uang</label>
+                <p className="text-xs text-blue-500 mt-0.5">Jika ON, user bisa mengubah bahasa dan mata uang sendiri di halaman Pengaturan. Jika OFF, pilihan terkunci.</p>
               </div>
             </div>
 
