@@ -26,6 +26,7 @@ import AdminNotifications from '@/pages/AdminNotifications';
 import AdminCategories from '@/pages/AdminCategories';
 import AdminSettings from '@/pages/AdminSettings';
 import MaintenancePage from '@/pages/MaintenancePage';
+import About from '@/pages/About';
 import AdminProtect from '@/components/admin/AdminProtect';
 
 const { Pages, Layout } = pagesConfig;
@@ -120,6 +121,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdminAIInsights" element={<Navigate to="/AdminDashboard" replace />} />
       <Route path="/AdminAnomalies" element={<Navigate to="/AdminDashboard" replace />} />
       <Route path="/AdminTransactions" element={<Navigate to="/AdminUsers" replace />} />
+      <Route path="/About" element={<About />} />
       <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="*" element={<PageNotFound />} />

@@ -451,8 +451,9 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-white/5 pt-5">
-            <p className="text-white/20 text-xs text-center">© 2025 Atur Pintar. All rights reserved.</p>
+          <div className="border-t border-white/5 pt-5 space-y-1">
+            <p className="text-white/20 text-xs text-center">© 2025 PT Rideff Vreka Tech. All rights reserved.</p>
+            <p className="text-white/15 text-xs text-center">Atur Pintar adalah produk dari PT Rideff Vreka Tech</p>
           </div>
         </div>
       </footer>

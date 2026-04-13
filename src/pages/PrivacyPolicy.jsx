@@ -25,8 +25,9 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-white font-bold text-base mb-3">1. Identitas Pengelola</h2>
-            <p>Atur Pintar adalah produk yang dikelola oleh tim pengembang independen yang berdomisili di Indonesia.</p>
-            <p className="mt-2">Kontak privasi: <span className="text-[#FF6A00] font-medium">support@aturpintar.id</span></p>
+            <p>Atur Pintar adalah produk yang dikelola oleh <strong className="text-white">PT Rideff Vreka Tech</strong>, perusahaan teknologi yang berdomisili di Indonesia.</p>
+            <p className="mt-2">Email: <span className="text-[#FF6A00] font-medium">support@aturpintar.id</span></p>
+            <p className="mt-1 text-white/50 text-xs">Data yang kami kumpulkan meliputi: email, nama, data transaksi keuangan, dan profil pengguna — digunakan semata-mata untuk layanan manajemen keuangan personal. Data disimpan aman dan tidak dijual ke pihak ketiga. Pengguna dapat meminta penghapusan akun dengan mengirim email ke support@aturpintar.id.</p>
           </section>
 
           <section>
@@ -132,7 +133,8 @@ export default function PrivacyPolicy() {
           <span className="text-white/15 text-xs">·</span>
           <Link to="/TermsOfService" className="text-white/30 hover:text-white/60 text-xs transition-colors">Syarat & Ketentuan</Link>
         </div>
-        <p className="text-white/20 text-xs">© 2026 Atur Pintar. Semua hak dilindungi.</p>
+        <p className="text-white/20 text-xs">© 2025 PT Rideff Vreka Tech. Semua hak dilindungi.</p>
+        <p className="text-white/15 text-xs mt-1">Atur Pintar adalah produk dari PT Rideff Vreka Tech</p>
       </footer>
     </div>
   );

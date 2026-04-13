@@ -34,6 +34,7 @@ export default function Subscription() {
   const [loadingSnap, setLoadingSnap] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
   const [successPlan, setSuccessPlan] = useState(null);
+  const [orderId, setOrderId] = useState(null);
 
   const monthlyPrice = config?.premium_price_monthly || 49000;
   const yearlyPrice = config?.premium_price_yearly || 490000;
@@ -63,7 +64,8 @@ export default function Subscription() {
       setLoadingSnap(false);
 
       window.snap.pay(token, {
-        onSuccess: async () => {
+        onSuccess: async (result) => {
+          setOrderId(result?.order_id || null);
           // Immediately activate subscription client-side, webhook will confirm
           const endDate = new Date();
           if (planKey === "premium_monthly") endDate.setMonth(endDate.getMonth() + 1);
@@ -257,12 +259,28 @@ export default function Subscription() {
               <CheckCircle2 className="w-9 h-9 text-green-500" />
             </div>
             <p className="text-xl font-bold text-[#1A1A1A] mb-1">Pembayaran Berhasil! 🎉</p>
-            <p className="text-sm text-[#8FA4C8] mt-1 mb-1">
+            <p className="text-sm text-[#8FA4C8] mt-1 mb-3">
               Selamat! Kamu sekarang pengguna <span className="font-bold text-[#FF6A00]">Premium</span>.
             </p>
-            <p className="text-xs text-[#8FA4C8] mb-5">
-              Paket: {successPlan === "premium_monthly" ? "Premium Bulanan" : "Premium Tahunan"}
-            </p>
+            <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 text-left mb-5 space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8FA4C8]">Produk</span>
+                <span className="font-semibold text-[#1A1A1A]">Atur Pintar Premium</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-[#8FA4C8]">Paket</span>
+                <span className="font-semibold text-[#1A1A1A]">{successPlan === "premium_monthly" ? "Premium Bulanan" : "Premium Tahunan"}</span>
+              </div>
+              {orderId && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#8FA4C8]">No. Order</span>
+                  <span className="font-mono font-semibold text-[#1A1A1A]">{orderId}</span>
+                </div>
+              )}
+              <div className="pt-1.5 border-t border-[#E2E8F0]">
+                <p className="text-[10px] text-[#8FA4C8] text-center">Pembayaran diterima oleh PT Rideff Vreka Tech</p>
+              </div>
+            </div>
             <button
               onClick={() => setSuccessPlan(null)}
               className="w-full py-3 bg-[#FF6A00] text-white rounded-xl font-semibold text-sm hover:bg-[#e05e00] transition-colors"

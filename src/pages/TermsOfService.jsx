@@ -25,7 +25,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="text-white font-bold text-base mb-3">1. Definisi dan Penerimaan</h2>
-            <p className="mb-2"><strong className="text-white">Atur Pintar x Nana AI</strong> adalah layanan aplikasi manajemen keuangan pribadi berbasis kecerdasan buatan ("Layanan"), yang dikelola oleh tim pengembang independen yang berdomisili di Indonesia ("Pengelola", "Kami").</p>
+            <p className="mb-2"><strong className="text-white">Atur Pintar</strong> adalah layanan aplikasi manajemen keuangan pribadi berbasis kecerdasan buatan ("Layanan"), yang dikelola oleh <strong className="text-white">PT Rideff Vreka Tech</strong> ("Pengelola", "Kami"), perusahaan teknologi yang berdomisili di Indonesia.</p>
             <p>Dengan mendaftar atau menggunakan Layanan, kamu ("Pengguna") menyatakan telah membaca, memahami, dan menyetujui Syarat & Ketentuan ini serta <Link to="/PrivacyPolicy" className="text-[#FF6A00] hover:underline">Kebijakan Privasi</Link> kami. Jika tidak setuju, harap tidak menggunakan Layanan.</p>
           </section>
 
@@ -153,7 +153,8 @@ export default function TermsOfService() {
           <span className="text-white/15 text-xs">·</span>
           <Link to="/PrivacyPolicy" className="text-white/30 hover:text-white/60 text-xs transition-colors">Kebijakan Privasi</Link>
         </div>
-        <p className="text-white/20 text-xs">© 2026 Atur Pintar. Semua hak dilindungi.</p>
+        <p className="text-white/20 text-xs">© 2025 PT Rideff Vreka Tech. Semua hak dilindungi.</p>
+        <p className="text-white/15 text-xs mt-1">Atur Pintar adalah produk dari PT Rideff Vreka Tech</p>
       </footer>
     </div>
   );

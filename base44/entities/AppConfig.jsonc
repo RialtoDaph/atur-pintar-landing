@@ -2,6 +2,11 @@
   "name": "AppConfig",
   "type": "object",
   "properties": {
+    "company_name": {
+      "type": "string",
+      "default": "PT Rideff Vreka Tech",
+      "description": "Nama resmi perusahaan pengelola"
+    },
     "feature_split_bill": {
       "type": "boolean",
       "default": true,

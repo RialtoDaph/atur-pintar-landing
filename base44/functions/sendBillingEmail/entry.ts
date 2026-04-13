@@ -43,7 +43,7 @@ function emailLayout({ previewText, content }) {
                   <td class="header-pad" style="background-color:#0A0A0A;padding:32px 40px;text-align:center;">
                     <img src="${LOGO_URL}" alt="Atur Pintar" width="52" height="52" style="border-radius:14px;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;">
                     <p style="margin:0;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.3px;">Atur Pintar</p>
-                    <p style="margin:4px 0 0;color:#8FA4C8;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;">Financial Tracker</p>
+                    <p style="margin:4px 0 0;color:#8FA4C8;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;">by PT Rideff Vreka Tech</p>
                   </td>
                 </tr>
 
@@ -57,7 +57,8 @@ function emailLayout({ previewText, content }) {
                 <!-- Footer -->
                 <tr>
                   <td class="footer-pad" style="background-color:#F8FAFC;padding:24px 40px;text-align:center;border-top:1px solid #E2E8F0;">
-                    <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#1A1A1A;">Atur Pintar</p>
+                    <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#1A1A1A;">Atur Pintar</p>
+                    <p style="margin:0 0 4px;font-size:11px;color:#94A3B8;">Produk dari PT Rideff Vreka Tech</p>
                     <p style="margin:0;font-size:12px;color:#94A3B8;line-height:1.7;">Ada pertanyaan soal tagihan? Hubungi <a href="mailto:support@aturpintar.id" style="color:#FF6A00;text-decoration:none;">support@aturpintar.id</a></p>
                   </td>
                 </tr>
@@ -134,6 +135,7 @@ Deno.serve(async (req) => {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0A0A0A;border-radius:16px;margin-bottom:28px;overflow:hidden;">
         <tr>
           <td style="padding:24px 28px;">
+            <p style="margin:0 0 4px;font-size:11px;color:#8FA4C8;">Pembayaran diterima oleh PT Rideff Vreka Tech</p>
             <p style="margin:0 0 16px;font-size:11px;font-weight:700;color:#8FA4C8;text-transform:uppercase;letter-spacing:1px;">📋 Ringkasan Pembayaran</p>
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
               <tr>
@@ -237,7 +239,7 @@ Deno.serve(async (req) => {
     });
 
     await resend.emails.send({
-      from: 'Atur Pintar <admin@aturpintar.id>',
+      from: 'Atur Pintar by PT Rideff Vreka Tech <admin@aturpintar.id>',
       to: userEmail,
       subject: isSuccess
         ? `✅ Premium Aktif! Selamat, ${userName} — Atur Pintar`
