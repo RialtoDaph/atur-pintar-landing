@@ -252,7 +252,7 @@ export default function BudgetPage() {
             <Link to="/Subscription" className="px-3 py-1.5 bg-[#F97316] text-white rounded-xl text-xs font-semibold hover:bg-[#EA580C] transition-colors flex-shrink-0">Upgrade</Link>
           </div>
         )}
-        {/* Proactive Nana AI Budget Alerts */
+        {/* Proactive Nana AI Budget Alerts */}
         {!loading && budgets.length > 0 && (
           <BudgetNanaPanel
             budgets={budgets}
