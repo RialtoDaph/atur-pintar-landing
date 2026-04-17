@@ -239,15 +239,10 @@ export default function Dashboard() {
         )}
 
         {showOnboarding && (
-          <div className="fixed inset-0 z-[100] bg-[#0A0A0A]">
-            <OnboardingQuestionnaire onClose={async () => {
-              setShowOnboarding(false);
-              localStorage.setItem("onboarding_done", "true");
-              await base44.auth.updateMe({ onboarding_completed: true });
-              loadData();
-              setShowNanaIntro(true);
-            }} />
-          </div>
+          <OnboardingQuestionnaire onClose={() => {
+            setShowOnboarding(false);
+            loadData();
+          }} />
         )}
 
         {showNanaIntro && (
