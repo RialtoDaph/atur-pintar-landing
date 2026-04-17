@@ -6,8 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
-import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import AccountsWidget from "@/components/dashboard/AccountsWidget";
@@ -38,7 +37,6 @@ export default function Dashboard() {
   const [showAddTransaction, setShowAddTransaction] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
   const [showSampleBanner, setShowSampleBanner] = useState(hasSampleData);
   const [lastTxAddedAt, setLastTxAddedAt] = useState(null);
@@ -240,19 +238,10 @@ export default function Dashboard() {
         )}
 
         {showOnboarding && (
-          <div className="fixed inset-0 z-[100] bg-[#0A0A0A]">
-            <OnboardingQuestionnaire onClose={async () => {
-              setShowOnboarding(false);
-              localStorage.setItem("onboarding_done", "true");
-              await base44.auth.updateMe({ onboarding_completed: true });
-              loadData();
-              setShowNanaIntro(true);
-            }} />
-          </div>
-        )}
-
-        {showNanaIntro && (
-          <NanaIntroModal onClose={() => setShowNanaIntro(false)} />
+          <OnboardingFlow onComplete={() => {
+            setShowOnboarding(false);
+            loadData();
+          }} />
         )}
       </div>
     </PullToRefresh>
