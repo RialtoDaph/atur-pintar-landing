@@ -228,11 +228,11 @@ export default function Transactions() {
               className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 tap-highlight-fix">
                 <Upload className="w-4 h-4 text-white" />
               </button>
-              <button data-tour="add-transaction-btn" onClick={() => setShowAddTx(true)} className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all tap-highlight-fix hidden"
+              
 
-              style={{ boxShadow: '0 4px 16px rgba(249,115,22,0.4)' }}>
-                <Plus className="w-5 h-5 text-white" />
-              </button>
+
+
+              
             </div>
           </div>
 
