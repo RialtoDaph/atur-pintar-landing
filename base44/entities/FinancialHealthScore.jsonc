@@ -1,0 +1,27 @@
+{
+  "name": "FinancialHealthScore",
+  "type": "object",
+  "properties": {
+    "month": {
+      "type": "string",
+      "description": "Bulan (YYYY-MM)"
+    },
+    "total_score": {
+      "type": "number",
+      "description": "Total skor finansial (0-1000)"
+    },
+    "breakdown": {
+      "type": "object",
+      "description": "Rincian skor per kategori"
+    }
+  },
+  "required": [
+    "month",
+    "total_score"
+  ],
+  "rls": {
+    "enabled": true,
+    "filter_field": "created_by",
+    "filter_value": "{{user.email}}"
+  }
+}

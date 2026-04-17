@@ -15,6 +15,10 @@ import { syncAccountBalance } from "@/components/utils/accountSync";
 import RecurringManager from "@/components/transactions/RecurringManager";
 import StreakWidget from "@/components/dashboard/StreakWidget";
 import { useGamification } from "@/hooks/useGamification";
+import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
+import FinancialHealthCard from "@/components/dashboard/FinancialHealthCard";
+import NanaInsightCard from "@/components/dashboard/NanaInsightCard";
+import DailyMissions from "@/components/dashboard/DailyMissions";
 
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
 
@@ -162,10 +166,10 @@ export default function Dashboard() {
         <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-16">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-[#8FA4C8] text-xs font-medium">{t('dashboard_greeting')}</p>
-                <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
-              </div>
+              <DashboardGreeting
+                user={user}
+                streak={gamification.profile?.daily_streak || 0}
+              />
               <div data-tour="add-transaction-btn" />
             </div>
 
@@ -204,6 +208,20 @@ export default function Dashboard() {
               levelUpPopup={gamification.levelUpPopup} setLevelUpPopup={gamification.setLevelUpPopup}
               xpFloatMsg={gamification.xpFloatMsg}
               streakResetMsg={gamification.streakResetMsg} setStreakResetMsg={gamification.setStreakResetMsg}
+            />
+          )}
+
+          {/* Financial Health Score */}
+          {user?.onboarding_completed && <FinancialHealthCard user={user} />}
+
+          {/* Nana Insight */}
+          {user?.onboarding_completed && <NanaInsightCard transactions={transactions} />}
+
+          {/* Daily Missions */}
+          {user?.onboarding_completed && (
+            <DailyMissions
+              user={user}
+              onXPGained={() => gamification.checkStreakOnLoad()}
             />
           )}
 
