@@ -3,7 +3,6 @@ import PullToRefresh from "@/components/utils/PullToRefresh";
 
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
@@ -168,14 +167,7 @@ export default function Dashboard() {
                 <p className="text-[#8FA4C8] text-xs font-medium">{t('dashboard_greeting')}</p>
                 <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
               </div>
-              <button
-                data-tour="add-transaction-btn"
-                onClick={() => setShowAddTransaction(true)}
-                className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all duration-150 tap-highlight-fix"
-                style={{ boxShadow: '0 4px 16px rgba(249,115,22,0.4)' }}
-              >
-                <Plus className="w-5 h-5 text-white" />
-              </button>
+              <div data-tour="add-transaction-btn" />
             </div>
 
             <BalanceCard
