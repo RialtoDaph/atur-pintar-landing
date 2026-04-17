@@ -183,7 +183,7 @@ export default function Nana() {
       </div>
 
       {/* Input */}
-      <div className="px-4 pb-4 pt-2 bg-[#F2F4F7] dark:bg-[#0F1114] border-t border-[#E2E8F0] dark:border-[#2D2D2D]">
+      <div className="px-4 pt-2 bg-[#F2F4F7] dark:bg-[#0F1114] border-t border-[#E2E8F0] dark:border-[#2D2D2D]" style={{paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))'}}>
         {isLimitReached ? (
           <div className="bg-white dark:bg-[#1A1E25] rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] p-4 text-center shadow-sm">
             <Crown className="w-5 h-5 text-[#FF6A00] mx-auto mb-2" />
