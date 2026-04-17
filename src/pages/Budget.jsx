@@ -8,7 +8,6 @@ import SavingsRecommendationWidget from "@/components/budget/SavingsRecommendati
 import BudgetNanaPanel from "@/components/budget/BudgetNanaPanel";
 import BudgetAlertChecker from "@/components/budget/BudgetAlertChecker";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import { awardXP } from "@/hooks/useGamification";
 
 const DEFAULT_CATEGORIES = [
   { key: "housing",       label_id: "Rumah/Sewa",         label_en: "Housing/Rent",    emoji: "🏠", color: "#4F7CFF" },
@@ -146,13 +145,12 @@ export default function BudgetPage() {
     if (editingBudget) {
       await base44.entities.Budget.update(editingBudget.id, { amount: data.amount });
     } else {
+      // Check for existing budget with same category+month before creating
       const existing = budgets.find(b => b.category === data.category && b.month === currentMonth);
       if (existing) {
         await base44.entities.Budget.update(existing.id, { amount: data.amount });
       } else {
         await base44.entities.Budget.create({ ...data, month: currentMonth });
-        // +20 XP for new budget
-        if (user?.email) awardXP(user.email, 20).catch(() => {});
       }
     }
     setShowAdd(false);

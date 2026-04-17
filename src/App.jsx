@@ -27,7 +27,6 @@ import AdminCategories from '@/pages/AdminCategories';
 import AdminSettings from '@/pages/AdminSettings';
 import MaintenancePage from '@/pages/MaintenancePage';
 import About from '@/pages/About';
-import Achievements from '@/pages/Achievements';
 import AdminProtect from '@/components/admin/AdminProtect';
 
 const { Pages, Layout } = pagesConfig;
@@ -123,7 +122,6 @@ const AuthenticatedApp = () => {
       <Route path="/AdminAnomalies" element={<Navigate to="/AdminDashboard" replace />} />
       <Route path="/AdminTransactions" element={<Navigate to="/AdminUsers" replace />} />
       <Route path="/About" element={<About />} />
-      <Route path="/Achievements" element={<LayoutWrapper currentPageName="Achievements"><Achievements /></LayoutWrapper>} />
       <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
       <Route path="*" element={<PageNotFound />} />

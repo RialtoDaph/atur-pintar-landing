@@ -5,7 +5,6 @@ import { useState } from "react";
 import { LEVELS, getLevelFromXP } from "@/hooks/useGamification";
 import StreakCelebrationPopup from "./StreakCelebrationPopup";
 import AchievementPopup from "./AchievementPopup";
-import LevelUpModal from "@/components/gamification/LevelUpModal";
 import { format } from "date-fns";
 
 export default function StreakWidget({
@@ -128,7 +127,34 @@ export default function StreakWidget({
 
       <AchievementPopup achievement={achievementPopup} onClose={() => setAchievementPopup(null)} />
 
-      <LevelUpModal levelData={levelUpPopup?.level} onClose={() => setLevelUpPopup(null)} />
+      {/* Level Up popup */}
+      <AnimatePresence>
+        {levelUpPopup && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setLevelUpPopup(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.4, y: 60 }} animate={{ scale: 1, y: 0 }}
+              transition={{ type: "spring", damping: 12 }}
+              className="bg-white rounded-3xl px-8 py-8 flex flex-col items-center gap-4 shadow-2xl mx-6 max-w-xs w-full"
+              onClick={e => e.stopPropagation()}
+            >
+              <motion.div animate={{ rotate: [0, -15, 15, -10, 10, 0] }} transition={{ duration: 0.8 }} className="text-6xl">⭐</motion.div>
+              <div className="text-center">
+                <p className="text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-1">Level Up!</p>
+                <h2 className="text-xl font-black text-[#1A1A1A]">Kamu sekarang Level {levelUpPopup.level.level}</h2>
+                <p className="text-sm font-semibold mt-1" style={{ color: levelUpPopup.level.color }}>{levelUpPopup.level.name}</p>
+              </div>
+              <button onClick={() => setLevelUpPopup(null)}
+                className="w-full py-3 rounded-2xl bg-[#FF6A00] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors">
+                Mantap! 🚀
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

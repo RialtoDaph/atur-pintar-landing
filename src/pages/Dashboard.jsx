@@ -3,6 +3,7 @@ import PullToRefresh from "@/components/utils/PullToRefresh";
 
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
@@ -17,10 +18,6 @@ import StreakWidget from "@/components/dashboard/StreakWidget";
 import { useGamification } from "@/hooks/useGamification";
 
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
-import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
-import FinancialHealthCard from "@/components/dashboard/FinancialHealthCard";
-import NanaInsightCard from "@/components/dashboard/NanaInsightCard";
-import DailyMissionsCard from "@/components/dashboard/DailyMissionsCard";
 
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
@@ -45,7 +42,6 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [showSampleBanner, setShowSampleBanner] = useState(hasSampleData);
   const [lastTxAddedAt, setLastTxAddedAt] = useState(null);
-  const [gamProfile, setGamProfile] = useState(null);
 
   const gamification = useGamification(user);
 
@@ -136,28 +132,6 @@ export default function Dashboard() {
     staleTime: 2 * 60 * 1000,
   });
 
-  const thisMonthKey = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const { data: fhsRecords = [] } = useQuery({
-    queryKey: ["fhs", user?.email, thisMonthKey],
-    queryFn: () => base44.entities.FinancialHealthScore.filter({ created_by: user.email, month: thisMonthKey }),
-    enabled,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: gamProfiles = [] } = useQuery({
-    queryKey: ["gam_profile", user?.email],
-    queryFn: async () => {
-      const list = await base44.entities.GamificationProfile.filter({ created_by: user.email });
-      if (list?.[0]) setGamProfile(list[0]);
-      return list;
-    },
-    enabled,
-    staleTime: 30 * 1000,
-  });
-
-  const fhsScore = fhsRecords?.[0]?.total_score ?? 0;
-  const activeGamProfile = gamProfile || gamProfiles?.[0] || null;
-
   const accountsTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
   const loading = goalsLoading || txLoading || budgetsLoading;
 
@@ -190,8 +164,18 @@ export default function Dashboard() {
         <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-16">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
-              <div data-tour="add-transaction-btn" />
+              <div>
+                <p className="text-[#8FA4C8] text-xs font-medium">{t('dashboard_greeting')}</p>
+                <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
+              </div>
+              <button
+                data-tour="add-transaction-btn"
+                onClick={() => setShowAddTransaction(true)}
+                className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all duration-150 tap-highlight-fix"
+                style={{ boxShadow: '0 4px 16px rgba(249,115,22,0.4)' }}
+              >
+                <Plus className="w-5 h-5 text-white" />
+              </button>
             </div>
 
             <BalanceCard
@@ -218,32 +202,6 @@ export default function Dashboard() {
               </div>
               <a href="/Subscription" className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold">Perpanjang</a>
             </div>
-          )}
-
-          {/* Financial Health Score */}
-          {user?.onboarding_completed && (
-            <FinancialHealthCard score={fhsScore} />
-          )}
-
-          {/* Nana Insight */}
-          {user?.onboarding_completed && (
-            <NanaInsightCard
-              todayExpense={(() => {
-                const todayStr = new Date().toISOString().split("T")[0];
-                return transactions
-                  .filter(t => t.date === todayStr && (t.type === "expense") && !t.is_deleted)
-                  .reduce((s, t) => s + (t.amount || 0), 0);
-              })()}
-            />
-          )}
-
-          {/* Daily Missions + Level Progress */}
-          {user?.onboarding_completed && (
-            <DailyMissionsCard
-              user={user}
-              gamificationProfile={activeGamProfile}
-              onProfileUpdate={setGamProfile}
-            />
           )}
 
           {/* Streak Widget */}
@@ -289,10 +247,15 @@ export default function Dashboard() {
         )}
 
         {showOnboarding && (
-          <OnboardingQuestionnaire onClose={() => {
-            setShowOnboarding(false);
-            loadData();
-          }} />
+          <div className="fixed inset-0 z-[100] bg-[#0A0A0A]">
+            <OnboardingQuestionnaire onClose={async () => {
+              setShowOnboarding(false);
+              localStorage.setItem("onboarding_done", "true");
+              await base44.auth.updateMe({ onboarding_completed: true });
+              loadData();
+              setShowNanaIntro(true);
+            }} />
+          </div>
         )}
 
         {showNanaIntro && (

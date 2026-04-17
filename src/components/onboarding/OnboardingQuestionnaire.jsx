@@ -1,717 +1,402 @@
-import { useState, useEffect } from "react";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ArrowRight, ArrowLeft, Camera, Upload, Plus, Trash2, Check, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { motion, AnimatePresence } from "framer-motion";
-import confetti from "canvas-confetti";
 
-// ─── Persona Config ─────────────────────────────────────────────────────────
-const PERSONAS = {
-  explorer: {
-    label: "🔥 Si Explorer Duit",
-    type: "explorer",
-    desc: "Kamu hidup di momen sekarang dan suka mencoba hal-hal baru dengan uangmu. Pengalaman dan kesenangan adalah prioritas, dan itu bukan hal yang salah! Kamu spontan, generous, dan mudah bergaul soal uang.",
-    strengths: ["Dermawan dan suka berbagi", "Hidup penuh dan nggak FOMO", "Adaptif dan fleksibel"],
-    growth: ["Mulai sisihkan sebelum dihabiskan", "Rencanakan 1 tujuan jangka pendek"],
-  },
-  pelit: {
-    label: "🥶 Si Hemat Ekstrem",
-    type: "pelit",
-    desc: "Kamu sangat sadar pengeluaran dan selalu mencari cara terbaik untuk menggunakan uang. Kamu jarang boros, tapi kadang terlalu ketat sampai lupa menikmati hidup.",
-    strengths: ["Sangat disiplin soal pengeluaran", "Selalu tahu kondisi keuangan", "Sulit dipengaruhi iklan"],
-    growth: ["Izinkan diri menikmati sesekali", "Mulai investasi supaya uang bekerja"],
-  },
-  mager: {
-    label: "😴 Si Mager",
-    type: "mager",
-    desc: "Kamu sudah tahu apa yang harus dilakukan, tapi eksekusinya sering tertunda. Niatmu baik, tapi energi buat mulai sering nggak ada. Tenang — semua orang pernah di posisi ini.",
-    strengths: ["Niat yang baik sudah ada", "Cukup stabil, nggak impulsif", "Terbuka untuk berubah"],
-    growth: ["Automasi tabungan supaya nggak perlu niat", "Mulai dari yang kecil, 1 langkah dulu"],
-  },
-  ambisius: {
-    label: "🎯 Si Ambisius",
-    type: "ambisius",
-    desc: "Kamu punya rencana, disiplin, dan visi yang jelas soal keuangan. Kamu tipe yang nabung di awal dan belanja dari sisa. Mayoritas orang belum ada di level ini — kamu di jalur yang benar.",
-    strengths: ["Disiplin dan terencana", "Nabung sebelum belanja", "Punya tujuan jangka panjang"],
-    growth: ["Jaga konsistensi saat life events", "Diversifikasi instrumen investasi"],
-  },
-  impulsif: {
-    label: "💫 Si Impulsif",
-    type: "impulsif",
-    desc: "Kamu spontan dan suka kebebasan, tapi kadang keputusan finansial dibuat dalam hitungan detik. Kamu energetik dan berani, tinggal sedikit rem untuk hasil yang lebih optimal.",
-    strengths: ["Berani dan decisif", "Nggak overthinking", "Suka mencoba hal baru"],
-    growth: ["Terapkan aturan 24 jam sebelum beli", "Pisahkan rekening belanja dan tabungan"],
-  },
-  balanced: {
-    label: "⭐ Si Balanced",
-    type: "balanced",
-    desc: "Kamu punya keseimbangan yang baik antara menikmati hidup dan merencanakan masa depan. Kamu realistis, konsisten, dan tahu kapan harus berhemat dan kapan bisa santai.",
-    strengths: ["Konsisten dan stabil", "Bisa menikmati hidup tanpa rasa bersalah", "Rencana yang realistis"],
-    growth: ["Tingkatkan investasi untuk wealth building", "Eksplorasi passive income"],
-  },
-};
+const STORAGE_KEY = "onboarding_progress_v2";
 
-const QUESTIONS = [
-  {
-    q: "Gajian masuk. Hal pertama yang kamu lakuin?",
-    opts: [
-      { key: "A", emoji: "🎉", text: "Transfer ke teman yang minta traktir" },
-      { key: "B", emoji: "📱", text: "Langsung cek wishlist yang udah lama disimpen" },
-      { key: "C", emoji: "💸", text: "Bayar tagihan dulu baru lihat sisanya" },
-      { key: "D", emoji: "🏦", text: "Langsung sisihkan buat tabungan, baru belanja" },
-    ],
-  },
-  {
-    q: "Akhir bulan, kondisi dompet kamu biasanya...",
-    opts: [
-      { key: "A", emoji: "😅", text: '"Kok tinggal segini? Ke mana aja ya?"' },
-      { key: "B", emoji: "😤", text: '"Masih ada sih, tapi entah cukup buat apa"' },
-      { key: "C", emoji: "😌", text: '"Sesuai rencana, cukup kok"' },
-      { key: "D", emoji: "😎", text: '"Masih ada sisa lumayan, udah nabung juga"' },
-    ],
-  },
-  {
-    q: "Teman tiba-tiba ajak makan di restoran fancy. Kamu...",
-    opts: [
-      { key: "A", emoji: "🚀", text: "Gas! YOLO, sekali-sekali" },
-      { key: "B", emoji: "🔍", text: "Ikut, tapi pesan yang paling murah di menu" },
-      { key: "C", emoji: "📊", text: "Cek dulu budget bulan ini, kalau ada — ayo" },
-      { key: "D", emoji: "🙏", text: "Maaf aku skip dulu, lagi ketat nih bulannya" },
-    ],
-  },
-  {
-    q: "Kalau ngomongin nabung, kamu lebih sering...",
-    opts: [
-      { key: "A", emoji: "💭", text: "Niatnya ada, eksekusinya entah" },
-      { key: "B", emoji: "🪣", text: "Nabung kalau sisa, jarang sisa" },
-      { key: "C", emoji: "📅", text: "Nabung rutin tapi jumlahnya kecil" },
-      { key: "D", emoji: "🎯", text: "Nabung di awal sebelum belanja apapun" },
-    ],
-  },
-  {
-    q: "Goal finansial kamu 1 tahun ke depan?",
-    opts: [
-      { key: "A", emoji: "🌊", text: "Gak mikir sejauh itu, jalani aja dulu" },
-      { key: "B", emoji: "🛡️", text: "Pengen punya tabungan darurat yang proper" },
-      { key: "C", emoji: "📈", text: "Mau mulai investasi tapi bingung dari mana" },
-      { key: "D", emoji: "🗺️", text: "Udah ada rencana, tinggal konsisten eksekusinya" },
-    ],
-  },
+const ACCOUNT_ICONS = ["💳", "🏦", "💵", "🏧", "📱", "💰", "🪙", "💼"];
+const ACCOUNT_TYPES = [
+  { value: "bank", label: "Bank" },
+  { value: "cash", label: "Cash / Tunai" },
+  { value: "ewallet", label: "E-Wallet" },
+  { value: "other", label: "Lainnya" },
+];
+const FINANCIAL_GOALS = [
+  { value: "save_more", label: "Menabung lebih banyak 🐷" },
+  { value: "pay_debt", label: "Melunasi utang 💳" },
+  { value: "control_spending", label: "Mengontrol pengeluaran 📊" },
+  { value: "financial_freedom", label: "Mencapai kebebasan finansial 🚀" },
+  { value: "other", label: "Lainnya" },
 ];
 
-const FIRST_GOALS = [
-  { key: "dana_darurat", emoji: "🆘", label: "Dana darurat" },
-  { key: "liburan", emoji: "✈️", label: "Liburan/travel" },
-  { key: "gadget", emoji: "📱", label: "Gadget baru" },
-  { key: "kursus", emoji: "🎓", label: "Kursus/skill up" },
-  { key: "kost", emoji: "🏠", label: "Biaya kost/rumah" },
-  { key: "spesial", emoji: "💍", label: "Sesuatu yang spesial" },
-  { key: "custom", emoji: "✏️", label: "Tulis sendiri..." },
-];
-
-const INCOME_RANGES = [
-  { key: "under_3jt", label: "Di bawah Rp 3 juta" },
-  { key: "3_5jt", label: "Rp 3–5 juta" },
-  { key: "5_8jt", label: "Rp 5–8 juta" },
-  { key: "8_15jt", label: "Rp 8–15 juta" },
-  { key: "above_15jt", label: "Di atas Rp 15 juta" },
-  { key: "prefer_not_to_say", label: "Belum mau cerita dulu 🙈" },
-];
-
-function determinePersona(answers) {
-  const counts = { A: 0, B: 0, C: 0, D: 0 };
-  answers.forEach(a => { if (counts[a] !== undefined) counts[a]++; });
-  const sorted = Object.entries(counts).sort((x, y) => y[1] - x[1]);
-  const top = sorted[0][0];
-  const second = sorted[1][0];
-  const topCount = sorted[0][1];
-  const secondCount = sorted[1][1];
-
-  // Mix detection
-  if (topCount <= 3 && secondCount >= 2) {
-    if ((top === "A" && second === "B") || (top === "B" && second === "A")) return "impulsif";
-    if ((top === "C" && second === "D") || (top === "D" && second === "C")) return "balanced";
-  }
-
-  const map = { A: "explorer", B: "pelit", C: "mager", D: "ambisius" };
-  return map[top] || "balanced";
+function fmtNum(val) {
+  const n = parseInt(String(val).replace(/\D/g, ""), 10) || 0;
+  return n > 0 ? n.toLocaleString("id-ID") : "";
 }
+function parseNum(val) { return parseInt(String(val).replace(/\D/g, ""), 10) || 0; }
 
-// ─── Screen components ───────────────────────────────────────────────────────
-
-function ScreenWrapper({ children }) {
+function ProgressBar({ step, total }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="flex flex-col min-h-full"
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function NanaAvatar({ size = "lg", excited = false }) {
-  const sz = size === "lg" ? "w-20 h-20 text-4xl" : "w-12 h-12 text-2xl";
-  return (
-    <motion.div
-      animate={excited ? { scale: [1, 1.15, 0.95, 1.05, 1], rotate: [0, -5, 5, -3, 0] } : {}}
-      transition={{ duration: 0.6, repeat: excited ? Infinity : 0, repeatDelay: 2 }}
-      className={`${sz} rounded-full bg-gradient-to-br from-[#FF6B35] to-[#FF9A5C] flex items-center justify-center shadow-lg mx-auto`}
-    >
-      ✨
-    </motion.div>
-  );
-}
-
-function CTAButton({ onClick, disabled, loading, children, secondary = false }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled || loading}
-      className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 ${
-        secondary
-          ? "border-2 border-[#FF6B35] text-[#FF6B35] bg-transparent"
-          : "bg-[#FF6B35] text-white shadow-lg shadow-[#FF6B35]/30"
-      }`}
-    >
-      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : children}
-    </button>
-  );
-}
-
-// ─── Screen 1: Splash & Welcome ─────────────────────────────────────────────
-function Screen1({ onNext }) {
-  return (
-    <ScreenWrapper>
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-10">
-        <motion.img
-          src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png"
-          alt="Atur Pintar"
-          className="w-16 h-16 mb-6"
-          initial={{ scale: 0, rotate: -20 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
-        />
-        <NanaAvatar excited />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-6"
-        >
-          <h1 className="text-3xl font-bold text-[#1A1A1A] mb-3">Halo! 👋</h1>
-          <p className="text-[#4A5568] text-sm leading-relaxed max-w-xs mx-auto">
-            Aku <strong>Nana</strong> — dan aku bakal jadi teman finansial kamu yang paling jujur (dan paling lucu) yang pernah ada.
-            <br /><br />
-            Sebelum mulai, aku mau kenalan dulu sama kamu. Cuma 2 menit. Janji.
-          </p>
-        </motion.div>
+    <div className="mb-6">
+      <div className="flex justify-between text-xs text-[#8FA4C8] mb-2">
+        <span className="font-semibold">Langkah {step} dari {total}</span>
+        <span>{Math.round((step / total) * 100)}%</span>
       </div>
-      <div className="px-6 pb-8">
-        <CTAButton onClick={onNext}>
-          Yuk Mulai → <ArrowRight className="w-4 h-4" />
-        </CTAButton>
+      <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
+        <div className="h-2 bg-[#FF6A00] rounded-full transition-all duration-500"
+          style={{ width: `${(step / total) * 100}%` }} />
       </div>
-    </ScreenWrapper>
-  );
-}
-
-// ─── Screen 3: Intro Quiz ────────────────────────────────────────────────────
-function Screen3({ onNext }) {
-  return (
-    <ScreenWrapper>
-      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-10">
-        <div className="text-5xl mb-5">🧠</div>
-        <h2 className="text-2xl font-bold text-[#1A1A1A] mb-3">Dulu kenalan,<br />baru kasih saran.</h2>
-        <p className="text-[#4A5568] text-sm leading-relaxed max-w-xs mx-auto mb-8">
-          5 pertanyaan singkat biar Nana tau gimana cara terbaik bantu kamu.
-          <br /><br />
-          Gak ada jawaban yang salah — yang salah itu kalau bohong ke diri sendiri. 😄
-        </p>
-        {/* Progress dots */}
-        <div className="flex gap-2 mb-8">
-          {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="w-2 h-2 rounded-full bg-[#E2E8F0]" />
-          ))}
-        </div>
-      </div>
-      <div className="px-6 pb-8">
-        <CTAButton onClick={onNext}>
-          Mulai Quiz → <ArrowRight className="w-4 h-4" />
-        </CTAButton>
-      </div>
-    </ScreenWrapper>
-  );
-}
-
-// ─── Screen 4–8: Quiz Questions ──────────────────────────────────────────────
-function QuizScreen({ questionIndex, totalQuestions, question, onAnswer }) {
-  const [selected, setSelected] = useState(null);
-
-  function handleSelect(key) {
-    setSelected(key);
-    setTimeout(() => onAnswer(key), 300);
-  }
-
-  return (
-    <ScreenWrapper>
-      {/* Progress */}
-      <div className="px-6 pt-6 pb-4">
-        <div className="flex justify-between text-xs text-[#8FA4C8] mb-2">
-          <span>Pertanyaan {questionIndex + 1} dari {totalQuestions}</span>
-          <span>{Math.round(((questionIndex + 1) / totalQuestions) * 100)}%</span>
-        </div>
-        <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-[#FF6B35] rounded-full"
-            initial={{ width: `${(questionIndex / totalQuestions) * 100}%` }}
-            animate={{ width: `${((questionIndex + 1) / totalQuestions) * 100}%` }}
-            transition={{ duration: 0.4 }}
-          />
-        </div>
-        {/* Step dots */}
-        <div className="flex gap-1.5 mt-2">
-          {Array.from({ length: totalQuestions }).map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 rounded-full flex-1 transition-all duration-300 ${i <= questionIndex ? "bg-[#FF6B35]" : "bg-[#E2E8F0]"}`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="flex-1 px-6 pb-6">
-        <h2 className="text-lg font-bold text-[#1A1A1A] mb-6 leading-snug">{question.q}</h2>
-        <div className="space-y-3">
-          {question.opts.map(opt => (
-            <motion.button
-              key={opt.key}
-              onClick={() => handleSelect(opt.key)}
-              whileTap={{ scale: 0.97 }}
-              className={`w-full text-left px-4 py-4 rounded-2xl border-2 flex items-center gap-3 transition-all duration-200 ${
-                selected === opt.key
-                  ? "border-[#FF6B35] bg-[#FF6B35]/10"
-                  : "border-[#E2E8F0] bg-white hover:border-[#FF6B35]/40"
-              }`}
-            >
-              <span className="text-2xl w-8 flex-shrink-0">{opt.emoji}</span>
-              <span className="text-sm font-medium text-[#1A1A1A] leading-snug">{opt.text}</span>
-              {selected === opt.key && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="ml-auto w-5 h-5 rounded-full bg-[#FF6B35] flex items-center justify-center flex-shrink-0"
-                >
-                  <span className="text-white text-xs">✓</span>
-                </motion.div>
-              )}
-            </motion.button>
-          ))}
-        </div>
-      </div>
-    </ScreenWrapper>
-  );
-}
-
-// ─── Screen 9: Persona Reveal ─────────────────────────────────────────────────
-function PersonaReveal({ persona, onNext }) {
-  const p = PERSONAS[persona];
-  return (
-    <ScreenWrapper>
-      <div className="flex-1 px-6 py-8 overflow-y-auto">
-        <div className="text-center mb-6">
-          <NanaAvatar excited size="lg" />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p className="text-[#8FA4C8] text-sm mt-4 mb-1">Kamu adalah...</p>
-            <h2 className="text-2xl font-bold text-[#1A1A1A]">{p.label}</h2>
-          </motion.div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-4"
-        >
-          <div className="bg-[#F8FAFC] rounded-2xl p-4">
-            <p className="text-sm text-[#4A5568] leading-relaxed">{p.desc}</p>
+      <div className="flex justify-between mt-2">
+        {["Profil", "Keuangan", "Rekening", "Selesai"].map((label, i) => (
+          <div key={i} className={`text-[10px] font-semibold ${i + 1 <= step ? "text-[#FF6A00]" : "text-[#CBD5E0]"}`}>
+            {label}
           </div>
-
-          <div className="bg-[#F0FDF4] rounded-2xl p-4">
-            <p className="text-xs font-bold text-[#16A34A] uppercase tracking-widest mb-3">Kekuatan kamu</p>
-            {p.strengths.map((s, i) => (
-              <div key={i} className="flex items-start gap-2 mb-1.5">
-                <span className="text-[#16A34A]">✅</span>
-                <span className="text-sm text-[#1A1A1A]">{s}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="bg-[#FFF7ED] rounded-2xl p-4">
-            <p className="text-xs font-bold text-[#EA580C] uppercase tracking-widest mb-3">Area berkembang</p>
-            {p.growth.map((g, i) => (
-              <div key={i} className="flex items-start gap-2 mb-1.5">
-                <span>📈</span>
-                <span className="text-sm text-[#1A1A1A]">{g}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
+        ))}
       </div>
-
-      <div className="px-6 pb-8">
-        <CTAButton onClick={onNext}>
-          Oke Nana, aku siap! →
-        </CTAButton>
-      </div>
-    </ScreenWrapper>
+    </div>
   );
 }
-
-// ─── Screen 10: First Goal ───────────────────────────────────────────────────
-function Screen10({ onNext }) {
-  const [selected, setSelected] = useState(null);
-  const [customGoal, setCustomGoal] = useState("");
-
-  function handleNext() {
-    const goal = selected === "custom" ? customGoal : selected;
-    onNext(goal);
-  }
-
-  return (
-    <ScreenWrapper>
-      <div className="flex-1 px-6 py-8 overflow-y-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <NanaAvatar size="sm" />
-          <div className="bg-[#F2F4F7] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
-            <p className="text-sm text-[#1A1A1A] leading-relaxed">
-              Satu hal dulu. Kamu mau nabung buat apa dalam 3 bulan ke depan?
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          {FIRST_GOALS.filter(g => g.key !== "custom").map(goal => (
-            <button
-              key={goal.key}
-              onClick={() => setSelected(goal.key)}
-              className={`py-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all ${
-                selected === goal.key
-                  ? "border-[#FF6B35] bg-[#FF6B35]/10"
-                  : "border-[#E2E8F0] bg-white"
-              }`}
-            >
-              <span className="text-3xl">{goal.emoji}</span>
-              <span className="text-xs font-semibold text-[#1A1A1A] text-center">{goal.label}</span>
-            </button>
-          ))}
-        </div>
-
-        <button
-          onClick={() => setSelected("custom")}
-          className={`w-full py-3 rounded-2xl border-2 flex items-center justify-center gap-2 transition-all mb-3 ${
-            selected === "custom"
-              ? "border-[#FF6B35] bg-[#FF6B35]/10"
-              : "border-dashed border-[#CBD5E0]"
-          }`}
-        >
-          <span>✏️</span>
-          <span className="text-sm font-medium text-[#4A5568]">Tulis sendiri...</span>
-        </button>
-
-        {selected === "custom" && (
-          <input
-            type="text"
-            placeholder="Nabung buat apa?"
-            className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35] bg-white mb-3"
-            value={customGoal}
-            onChange={e => setCustomGoal(e.target.value)}
-            autoFocus
-          />
-        )}
-
-        <p className="text-xs text-[#8FA4C8] text-center">
-          Ini bukan komitmen seumur hidup. Bisa diubah kapan saja. Yang penting mulai dulu.
-        </p>
-      </div>
-
-      <div className="px-6 pb-8">
-        <CTAButton
-          onClick={handleNext}
-          disabled={!selected || (selected === "custom" && !customGoal.trim())}
-        >
-          Lanjut <ArrowRight className="w-4 h-4" />
-        </CTAButton>
-      </div>
-    </ScreenWrapper>
-  );
-}
-
-// ─── Screen 11: Income Range ─────────────────────────────────────────────────
-function Screen11({ onNext, loading }) {
-  const [selected, setSelected] = useState(null);
-
-  return (
-    <ScreenWrapper>
-      <div className="flex-1 px-6 py-8 overflow-y-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <NanaAvatar size="sm" />
-          <div className="bg-[#F2F4F7] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
-            <p className="text-sm text-[#1A1A1A] leading-relaxed">
-              Terakhir — biar gue bisa bantu yang relevan, gue perlu tau income bulanan kamu.
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-2 mb-4">
-          {INCOME_RANGES.map(r => (
-            <button
-              key={r.key}
-              onClick={() => setSelected(r.key)}
-              className={`w-full text-left px-4 py-3.5 rounded-2xl border-2 text-sm font-medium transition-all ${
-                selected === r.key
-                  ? "border-[#FF6B35] bg-[#FF6B35]/10 text-[#FF6B35]"
-                  : "border-[#E2E8F0] bg-white text-[#1A1A1A]"
-              }`}
-            >
-              {selected === r.key ? "● " : "○ "}{r.label}
-            </button>
-          ))}
-        </div>
-
-        <p className="text-xs text-[#8FA4C8] text-center">
-          Data ini cuma buat Nana kasih saran yang relevan. Gak ada yang tau selain kamu dan Nana. 🔒
-        </p>
-      </div>
-
-      <div className="px-6 pb-8">
-        <CTAButton
-          onClick={() => onNext(selected)}
-          disabled={!selected}
-          loading={loading}
-        >
-          Selesai! <ArrowRight className="w-4 h-4" />
-        </CTAButton>
-      </div>
-    </ScreenWrapper>
-  );
-}
-
-// ─── Screen 12: Welcome to the Game ─────────────────────────────────────────
-function Screen12({ persona, primaryGoal, primaryGoalLabel, onDone }) {
-  useEffect(() => {
-    const end = Date.now() + 2500;
-    const frame = () => {
-      confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 }, colors: ["#FF6B35", "#FFD700", "#FF9A5C"] });
-      confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 }, colors: ["#FF6B35", "#FFD700", "#FF9A5C"] });
-      if (Date.now() < end) requestAnimationFrame(frame);
-    };
-    setTimeout(frame, 400);
-  }, []);
-
-  return (
-    <ScreenWrapper>
-      <div className="flex-1 px-6 py-8 overflow-y-auto">
-        <motion.div
-          className="text-center mb-8"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="text-5xl mb-4">🎉</div>
-          <h2 className="text-2xl font-bold text-[#1A1A1A] mb-2">Selamat datang di<br />Atur Pintar!</h2>
-          <p className="text-sm text-[#4A5568]">
-            Kamu resmi jadi <strong>Level 1 — Newbie Ngatur.</strong><br />
-            Dan perjalanan naik level dimulai sekarang.
-          </p>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-3 mb-6"
-        >
-          {/* XP Bar */}
-          <div className="bg-[#F8FAFC] rounded-2xl p-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-[#1A1A1A]">⚡ XP</span>
-              <span className="text-xs text-[#8FA4C8]">0 / 500</span>
-            </div>
-            <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-[#FF6B35] to-[#FFD700] rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: "2%" }}
-                transition={{ delay: 0.8, duration: 0.6 }}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-[#FFF7ED] rounded-2xl p-4 text-center">
-              <div className="text-2xl mb-1">🔥</div>
-              <p className="text-xs text-[#8FA4C8]">Streak</p>
-              <p className="text-sm font-bold text-[#1A1A1A]">Hari ke-1</p>
-            </div>
-            <div className="bg-[#F0FDF4] rounded-2xl p-4 text-center">
-              <div className="text-2xl mb-1">🎯</div>
-              <p className="text-xs text-[#8FA4C8]">Goal</p>
-              <p className="text-xs font-bold text-[#1A1A1A] leading-tight">{primaryGoalLabel || primaryGoal}</p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* First Mission */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="bg-gradient-to-r from-[#FF6B35] to-[#FF9A5C] rounded-2xl p-4 text-white"
-        >
-          <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-2">🏆 Mission Pertama</p>
-          <p className="text-sm font-semibold mb-3">Catat 1 pengeluaran hari ini → +10 XP</p>
-          <button
-            onClick={onDone}
-            className="bg-white text-[#FF6B35] text-xs font-bold px-4 py-2 rounded-xl"
-          >
-            Catat Sekarang →
-          </button>
-        </motion.div>
-      </div>
-
-      <div className="px-6 pb-8 pt-4">
-        <CTAButton onClick={onDone}>
-          Masuk ke Dashboard →
-        </CTAButton>
-      </div>
-    </ScreenWrapper>
-  );
-}
-
-// ─── Main Component ──────────────────────────────────────────────────────────
-const SCREEN = {
-  WELCOME: 0,
-  QUIZ_INTRO: 1,
-  QUIZ: 2,       // 5 sub-screens via questionIndex
-  PERSONA: 3,
-  GOAL: 4,
-  INCOME: 5,
-  WELCOME_GAME: 6,
-};
 
 export default function OnboardingQuestionnaire({ onClose }) {
-  const [screen, setScreen] = useState(SCREEN.WELCOME);
-  const [questionIndex, setQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState([]);
-  const [persona, setPersona] = useState(null);
-  const [primaryGoal, setPrimaryGoal] = useState(null);
-  const [primaryGoalLabel, setPrimaryGoalLabel] = useState(null);
+  const savedRaw = localStorage.getItem(STORAGE_KEY);
+  const saved = savedRaw ? JSON.parse(savedRaw) : {};
+
+  const [step, setStep] = useState(saved.step || 1);
   const [saving, setSaving] = useState(false);
 
-  function handleAnswer(key) {
-    const newAnswers = [...answers, key];
-    setAnswers(newAnswers);
+  // Step 1
+  const [photoUrl, setPhotoUrl] = useState(saved.photoUrl || "");
+  const [fullName, setFullName] = useState(saved.fullName || "");
+  const [phone, setPhone] = useState(saved.phone || "");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoRef = useRef(null);
+  const cameraRef = useRef(null);
 
-    if (questionIndex < QUESTIONS.length - 1) {
-      setQuestionIndex(i => i + 1);
-    } else {
-      // All questions done → compute persona
-      const p = determinePersona(newAnswers);
-      setPersona(p);
-      setScreen(SCREEN.PERSONA);
-    }
+  // Step 2
+  const [monthlyIncome, setMonthlyIncome] = useState(saved.monthlyIncome || 0);
+  const [primaryGoal, setPrimaryGoal] = useState(saved.primaryGoal || "");
+  const [occupation, setOccupation] = useState(saved.occupation || "");
+
+  // Step 3 — accounts
+  const [accounts, setAccounts] = useState(saved.accounts || []);
+  const [accName, setAccName] = useState("");
+  const [accType, setAccType] = useState("bank");
+  const [accBalance, setAccBalance] = useState(0);
+  const [accIcon, setAccIcon] = useState("🏦");
+  const [accError, setAccError] = useState("");
+
+  // Persist to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      step, photoUrl, fullName, phone, monthlyIncome, primaryGoal, occupation, accounts
+    }));
+  }, [step, photoUrl, fullName, phone, monthlyIncome, primaryGoal, occupation, accounts]);
+
+  async function handlePhotoUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPhoto(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setPhotoUrl(file_url);
+    setUploadingPhoto(false);
   }
 
-  function handleGoalNext(goal) {
-    const goalObj = FIRST_GOALS.find(g => g.key === goal);
-    setPrimaryGoal(goal);
-    setPrimaryGoalLabel(goalObj?.label || goal);
-    setScreen(SCREEN.INCOME);
+  function addAccount() {
+    if (!accName.trim()) { setAccError("Nama rekening wajib diisi"); return; }
+    setAccError("");
+    setAccounts(prev => [...prev, { id: Date.now(), name: accName.trim(), type: accType, balance: accBalance, icon: accIcon }]);
+    setAccName(""); setAccType("bank"); setAccBalance(0); setAccIcon("🏦");
   }
 
-  async function handleIncomeNext(incomeRange) {
+  async function handleFinish() {
     setSaving(true);
-    const today = new Date().toISOString().split("T")[0];
-    const personaData = PERSONAS[persona];
+    const promises = [];
 
-    await Promise.all([
-      // Save UserPersona
-      base44.entities.UserPersona.create({
-        persona_type: persona,
-        persona_label: personaData.label,
-        quiz_answers: answers,
-        primary_goal: primaryGoal,
-        primary_goal_label: primaryGoalLabel,
-        income_range: incomeRange,
-        onboarding_completed_at: today,
-      }),
-      // Mark user onboarding complete
-      base44.auth.updateMe({
-        onboarding_completed: true,
-        primary_goal: primaryGoal,
-      }),
-      // Init GamificationProfile
-      base44.entities.GamificationProfile.create({
-        total_points: 0,
-        level: 1,
-        daily_streak: 0,
-        last_activity_date: today,
-      }),
-    ]);
+    // Update user profile
+    promises.push(base44.auth.updateMe({
+      full_name: fullName,
+      photo_url: photoUrl || undefined,
+      phone,
+      monthly_income: monthlyIncome || undefined,
+      primary_goal: primaryGoal || undefined,
+      onboarding_completed: true,
+    }));
 
+    // Create accounts
+    promises.push(...accounts.map(acc =>
+      base44.entities.Account.create({
+        name: acc.name,
+        type: acc.type,
+        balance: acc.balance,
+        icon: acc.icon,
+        is_default: accounts.indexOf(acc) === 0,
+      })
+    ));
+
+    // Save monthly income as recurring transaction
+    if (monthlyIncome > 0) {
+      const firstAcc = accounts[0];
+      promises.push(base44.entities.Transaction.create({
+        amount: monthlyIncome,
+        type: "income",
+        category: "salary",
+        note: "Pendapatan bulanan",
+        date: new Date().toISOString().split("T")[0],
+        account_id: undefined,
+        is_recurring: true,
+        recurring_interval: "monthly",
+      }));
+    }
+
+    await Promise.all(promises);
+    localStorage.removeItem(STORAGE_KEY);
     setSaving(false);
-    setScreen(SCREEN.WELCOME_GAME);
+    onClose();
+    window.location.reload();
   }
+
+  const initials = fullName ? fullName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() : "?";
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white flex flex-col overflow-hidden">
-      <AnimatePresence mode="wait">
-        {screen === SCREEN.WELCOME && (
-          <Screen1 key="s1" onNext={() => setScreen(SCREEN.QUIZ_INTRO)} />
-        )}
-        {screen === SCREEN.QUIZ_INTRO && (
-          <Screen3 key="s3" onNext={() => { setScreen(SCREEN.QUIZ); setQuestionIndex(0); setAnswers([]); }} />
-        )}
-        {screen === SCREEN.QUIZ && (
-          <QuizScreen
-            key={`quiz-${questionIndex}`}
-            questionIndex={questionIndex}
-            totalQuestions={QUESTIONS.length}
-            question={QUESTIONS[questionIndex]}
-            onAnswer={handleAnswer}
-          />
-        )}
-        {screen === SCREEN.PERSONA && persona && (
-          <PersonaReveal key="persona" persona={persona} onNext={() => setScreen(SCREEN.GOAL)} />
-        )}
-        {screen === SCREEN.GOAL && (
-          <Screen10 key="goal" onNext={handleGoalNext} />
-        )}
-        {screen === SCREEN.INCOME && (
-          <Screen11 key="income" onNext={handleIncomeNext} loading={saving} />
-        )}
-        {screen === SCREEN.WELCOME_GAME && (
-          <Screen12
-            key="done"
-            persona={persona}
-            primaryGoal={primaryGoal}
-            primaryGoalLabel={primaryGoalLabel}
-            onDone={() => {
-              localStorage.setItem("onboarding_done", "true");
-              onClose();
-              window.location.reload();
-            }}
-          />
-        )}
-      </AnimatePresence>
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden max-h-[95dvh] overflow-y-auto">
+        <div className="p-6">
+          <ProgressBar step={step} total={4} />
+
+          {/* ===== STEP 1: Profil ===== */}
+          {step === 1 && (
+            <div>
+              <div className="text-4xl mb-2 text-center">👋</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] text-center mb-1">Halo! Kenalan dulu yuk</h2>
+              <p className="text-sm text-[#8FA4C8] text-center mb-6">Cerita sedikit tentang dirimu</p>
+
+              {/* Photo */}
+              <div className="flex flex-col items-center mb-5">
+                <div className="w-20 h-20 rounded-full bg-[#F2F4F7] border-2 border-dashed border-[#CBD5E0] flex items-center justify-center mb-2 overflow-hidden relative">
+                  {uploadingPhoto ? (
+                    <Loader2 className="w-6 h-6 text-[#8FA4C8] animate-spin" />
+                  ) : photoUrl ? (
+                    <img src={photoUrl} alt="profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-bold text-[#8FA4C8]">{initials}</span>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => cameraRef.current?.click()}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FF6A00]/10 text-[#FF6A00] text-xs font-semibold hover:bg-[#FF6A00]/20 transition-colors">
+                    <Camera className="w-3.5 h-3.5" /> Kamera
+                  </button>
+                  <button onClick={() => photoRef.current?.click()}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F2F4F7] text-[#4A5568] text-xs font-semibold hover:bg-[#E2E8F0] transition-colors">
+                    <Upload className="w-3.5 h-3.5" /> Upload
+                  </button>
+                </div>
+                <input ref={cameraRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handlePhotoUpload} />
+                <input ref={photoRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+              </div>
+
+              <div className="space-y-3 mb-6">
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    Nama Lengkap <span className="text-red-400">*</span>
+                  </label>
+                  <input type="text" placeholder="Masukkan nama lengkapmu"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                    value={fullName} onChange={e => setFullName(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    WhatsApp / HP <span className="text-[#CBD5E0]">(opsional)</span>
+                  </label>
+                  <input type="tel" placeholder="+62 8xx-xxxx-xxxx"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                    value={phone} onChange={e => setPhone(e.target.value)} />
+                </div>
+              </div>
+
+              <button onClick={() => { if (!fullName.trim()) return; setStep(2); }} disabled={!fullName.trim()}
+                className="w-full py-3.5 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-40">
+                Lanjut <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* ===== STEP 2: Keuangan ===== */}
+          {step === 2 && (
+            <div>
+              <div className="text-4xl mb-2 text-center">💰</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] text-center mb-1">Cerita tentang keuanganmu</h2>
+              <p className="text-sm text-[#8FA4C8] text-center mb-6">Ini membantu kami memberi rekomendasi yang tepat</p>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    Pendapatan Bulanan (Rp) <span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
+                    <input type="text" inputMode="numeric" placeholder="0"
+                      className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                      value={fmtNum(monthlyIncome)}
+                      onChange={e => setMonthlyIncome(parseNum(e.target.value))} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tujuan Keuangan Utama</label>
+                  <div className="space-y-2">
+                    {FINANCIAL_GOALS.map(g => (
+                      <button key={g.value} onClick={() => setPrimaryGoal(g.value)}
+                        className={`w-full text-left px-4 py-3 rounded-xl border text-sm font-semibold transition-all ${
+                          primaryGoal === g.value ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] hover:border-[#CBD5E0]"
+                        }`}>
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
+                    Pekerjaan <span className="text-[#CBD5E0]">(opsional)</span>
+                  </label>
+                  <input type="text" placeholder="Karyawan swasta, wiraswasta, dll"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                    value={occupation} onChange={e => setOccupation(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={() => setStep(1)}
+                  className="w-11 h-11 flex items-center justify-center rounded-xl border border-[#E2E8F0] text-[#4A5568] hover:bg-[#F8FAFC] flex-shrink-0">
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <button onClick={() => { if (!monthlyIncome) return; setStep(3); }} disabled={!monthlyIncome}
+                  className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-40">
+                  Lanjut <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ===== STEP 3: Rekening ===== */}
+          {step === 3 && (
+            <div>
+              <div className="text-4xl mb-2 text-center">🏦</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] text-center mb-1">Tambahkan rekeningmu</h2>
+              <p className="text-sm text-[#8FA4C8] text-center mb-1">Minimal 1 rekening diperlukan untuk mencatat transaksi</p>
+
+              {/* Added accounts */}
+              {accounts.length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {accounts.map(acc => (
+                    <div key={acc.id} className="flex items-center justify-between bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{acc.icon}</span>
+                        <div>
+                          <p className="text-sm font-semibold text-[#1A1A1A]">{acc.name}</p>
+                          <p className="text-xs text-[#8FA4C8]">{acc.type} · Rp {acc.balance.toLocaleString("id-ID")}</p>
+                        </div>
+                      </div>
+                      <button onClick={() => setAccounts(prev => prev.filter(a => a.id !== acc.id))}
+                        className="text-[#CBD5E0] hover:text-red-400 transition-colors">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add account form */}
+              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl p-4 mb-4">
+                <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-3">Tambah Rekening</p>
+
+                {/* Icon picker */}
+                <div className="flex gap-2 mb-3 flex-wrap">
+                  {ACCOUNT_ICONS.map(icon => (
+                    <button key={icon} onClick={() => setAccIcon(icon)}
+                      className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${
+                        accIcon === icon ? "bg-[#FF6A00] scale-110" : "bg-white border border-[#E2E8F0] hover:border-[#CBD5E0]"
+                      }`}>
+                      {icon}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <input type="text" placeholder="Nama rekening (misal: BCA Tabungan, OVO)"
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white"
+                    value={accName} onChange={e => { setAccName(e.target.value); setAccError(""); }} />
+                  {accError && <p className="text-xs text-red-500">{accError}</p>}
+
+                  <select value={accType} onChange={e => setAccType(e.target.value)}
+                    className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white">
+                    {ACCOUNT_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] text-sm">Rp</span>
+                    <input type="text" inputMode="numeric" placeholder="Saldo awal (boleh 0)"
+                      className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white"
+                      value={fmtNum(accBalance)}
+                      onChange={e => setAccBalance(parseNum(e.target.value))} />
+                  </div>
+
+                  <button onClick={addAccount}
+                    className="w-full py-2.5 rounded-xl border-2 border-dashed border-[#FF6A00] text-[#FF6A00] text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#FF6A00]/5 transition-colors">
+                    <Plus className="w-4 h-4" /> Tambah Rekening
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={() => setStep(2)}
+                  className="w-11 h-11 flex items-center justify-center rounded-xl border border-[#E2E8F0] text-[#4A5568] hover:bg-[#F8FAFC] flex-shrink-0">
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <button onClick={() => setStep(4)} disabled={accounts.length === 0}
+                  className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-40">
+                  {accounts.length === 0 ? "Tambah min. 1 rekening" : `Lanjut (${accounts.length} rekening) →`}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ===== STEP 4: Done ===== */}
+          {step === 4 && (
+            <div className="text-center">
+              <div className="text-6xl mb-4">🚀</div>
+              <h2 className="text-xl font-bold text-[#1A1A1A] mb-2">Semua siap!</h2>
+              <p className="text-sm text-[#4A5568] mb-5 leading-relaxed">
+                Halo, <strong>{fullName}</strong>! Akunmu sudah siap digunakan.
+              </p>
+
+              {/* Summary */}
+              <div className="bg-[#F8FAFC] rounded-2xl p-4 mb-6 text-left space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">💰</span>
+                  <div>
+                    <p className="text-xs text-[#8FA4C8]">Pendapatan bulanan</p>
+                    <p className="text-sm font-bold text-[#1A1A1A]">Rp {monthlyIncome.toLocaleString("id-ID")}</p>
+                  </div>
+                </div>
+                {accounts.map(acc => (
+                  <div key={acc.id} className="flex items-center gap-2">
+                    <span className="text-lg">{acc.icon}</span>
+                    <div>
+                      <p className="text-xs text-[#8FA4C8]">{acc.name}</p>
+                      <p className="text-sm font-bold text-[#1A1A1A]">Saldo: Rp {acc.balance.toLocaleString("id-ID")}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button onClick={handleFinish} disabled={saving}
+                className="w-full py-4 rounded-xl bg-[#FF6A00] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#e05e00] transition-colors disabled:opacity-50">
+                {saving ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</>
+                ) : (
+                  <><Check className="w-4 h-4" /> Mulai Pakai Atur Pintar!</>
+                )}
+              </button>
+
+              <button onClick={() => setStep(3)} className="mt-3 text-xs text-[#8FA4C8] hover:text-[#4A5568] transition-colors">
+                ← Kembali
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

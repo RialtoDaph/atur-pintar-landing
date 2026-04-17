@@ -1,12 +1,11 @@
 import { createPageUrl } from "@/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, Settings, Bell, Lightbulb, Search, Grid3x3, ArrowLeft, Wallet, Users, Sparkles, Plus } from "lucide-react";
-import AddTransactionModal from "@/components/transactions/AddTransactionModal";
+import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, Settings, Bell, Lightbulb, Search, Grid3x3, ArrowLeft, Wallet, Users } from "lucide-react";
 import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
 import AdminNotificationPanel from "@/components/notifications/AdminNotificationPanel";
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-
+import NanaFloatingChat from "@/components/nana/NanaFloatingChat";
 import ReminderNotificationPopup from "@/components/reminders/ReminderNotificationPopup";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
@@ -14,7 +13,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import TourGuide from "@/components/onboarding/TourGuide";
 function LayoutInner({ children, currentPageName }) {
   const [user, setUser] = useState(null);
-  const [showAddTransaction, setShowAddTransaction] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [showAlertsDrawer, setShowAlertsDrawer] = useState(false);
@@ -29,9 +27,9 @@ function LayoutInner({ children, currentPageName }) {
   const mainContentRef = useRef(null);
   const tabHistory = useRef({
     Dashboard: "Dashboard",
-    Nana: "Nana",
-    Analytics: "Analytics",
     Transactions: "Transactions",
+    Analytics: "Analytics",
+    Investments: "Investments",
     Menu: "Menu"
   });
 
@@ -120,15 +118,15 @@ function LayoutInner({ children, currentPageName }) {
   { name: "Settings", label: t('nav_settings'), icon: Settings, page: "Settings" }];
 
 
-  // Mobile: 4 main items + "Lainnya" (Budget moved to Menu)
+  // Mobile: only 4 main + "Lainnya"
   const mobileMainNav = [
   { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
-  { name: "Nana", label: "Nana AI", icon: Sparkles, page: "Nana" },
+  { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
   { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
-  { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" }];
+  { name: "Budget", label: t('nav_budget'), icon: PiggyBank, page: "Budget" }];
 
 
-  const mobileMorePages = ["Goals", "Debts", "Notifications", "Accounts", "SharedFinance", "Tips", "Settings", "Menu", "Budget"];
+  const mobileMorePages = ["Goals", "Debts", "Notifications", "Accounts", "SharedFinance", "Tips", "Settings", "Menu"];
 
   const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
@@ -160,12 +158,12 @@ function LayoutInner({ children, currentPageName }) {
 
   // Update tab history when navigating to a main page
   useEffect(() => {
-    const mobileMainNavNames = ["Dashboard", "Nana", "Analytics", "Transactions"];
-    const mobileMorePagesNames = ["Goals", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu", "Investments", "Budget", "Accounts", "SharedFinance", "Notifications"];
+    const mobileMainNav = ["Dashboard", "Transactions", "Analytics", "Budget"];
+    const mobileMorePages = ["Goals", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu", "Investments"];
 
-    if (mobileMainNavNames.includes(currentPageName)) {
+    if (mobileMainNav.includes(currentPageName)) {
       tabHistory.current[currentPageName] = currentPageName;
-    } else if (mobileMorePagesNames.includes(currentPageName)) {
+    } else if (mobileMorePages.includes(currentPageName)) {
       tabHistory.current["Menu"] = currentPageName;
     }
   }, [currentPageName]);
@@ -365,50 +363,8 @@ function LayoutInner({ children, currentPageName }) {
         </button>
       </div>}
 
-      {/* FAB - Add Transaction */}
-      {!anyModalOpen && !isNestedPage && (
-        <button
-          onClick={() => setShowAddTransaction(true)}
-          data-tour="add-transaction-btn"
-          className="fixed z-[55] bg-[#FF6B35] flex items-center justify-center rounded-full shadow-2xl active:scale-95 transition-all duration-150 tap-highlight-fix sm:hidden"
-          style={{
-            width: 56, height: 56,
-            bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))',
-            right: 20,
-            boxShadow: '0 4px 20px rgba(255,107,53,0.5)'
-          }}
-        >
-          <Plus className="w-7 h-7 text-white" />
-        </button>
-      )}
-
-      {/* FAB for desktop */}
-      {!anyModalOpen && (
-        <button
-          onClick={() => setShowAddTransaction(true)}
-          className="fixed z-[55] bg-[#FF6B35] items-center justify-center rounded-full shadow-2xl active:scale-95 transition-all duration-150 tap-highlight-fix hidden sm:flex"
-          style={{
-            width: 56, height: 56,
-            bottom: 32,
-            right: 32,
-            boxShadow: '0 4px 20px rgba(255,107,53,0.5)'
-          }}
-        >
-          <Plus className="w-7 h-7 text-white" />
-        </button>
-      )}
-
-      {showAddTransaction && (
-        <AddTransactionModal
-          goals={[]}
-          onClose={() => setShowAddTransaction(false)}
-          onSave={async (data) => {
-            await base44.entities.Transaction.create(data);
-            setShowAddTransaction(false);
-            window.dispatchEvent(new Event("refresh-dashboard"));
-          }}
-        />
-      )}
+      {/* Nana Floating Chat */}
+      <NanaFloatingChat />
 
       {/* Reminder Notification Popup */}
       <ReminderNotificationPopup user={user} />

@@ -1,6 +1,6 @@
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { Target, CreditCard, Lightbulb, ChevronRight, Bell, Settings, User, Wallet, Users, Flame, PiggyBank, Trophy } from "lucide-react";
+import { Target, CreditCard, Lightbulb, ChevronRight, Bell, Settings, User, Wallet, Users, Flame } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function Menu() {
@@ -11,7 +11,6 @@ export default function Menu() {
       items: [
         { label: t('nav_goals'), desc: "Pantau dan capai target keuanganmu", icon: Target, emoji: "🎯", page: "Goals", color: "#FF6A00" },
         { label: t('nav_debts'), desc: "Lacak cicilan dan sisa hutang", icon: CreditCard, emoji: "💳", page: "Debts", color: "#FF6B6B" },
-        { label: t('nav_budget'), desc: "Atur dan pantau anggaran bulananmu", icon: PiggyBank, emoji: "📊", page: "Budget", color: "#00C9A7" },
         { label: "Rekening & Dompet", desc: "Kelola rekening bank, e-wallet, dan cash", icon: Wallet, emoji: "🏦", page: "Accounts", color: "#388E3C" },
         { label: "Keuangan Bersama", desc: "Kelola keuangan bersama pasangan atau keluarga", icon: Users, emoji: "👨‍👩‍👧", page: "SharedFinance", color: "#9C27B0" },
       ],
@@ -21,7 +20,6 @@ export default function Menu() {
       items: [
         { label: "Notifikasi", desc: "Pengingat tagihan dan notifikasi cerdas", icon: Bell, emoji: "🔔", page: "Notifications", color: "#F5A623" },
         { label: "Daily Streak", desc: "Pantau streak dan pencapaian keuanganmu", icon: Flame, emoji: "🔥", page: "Dashboard", color: "#FF6A00" },
-        { label: "Achievement", desc: "Lihat semua pencapaian dan badge kamu", icon: Trophy, emoji: "🏅", page: "Achievements", color: "#FFD700" },
         { label: t('nav_tips'), desc: "Saran dan tips mengelola keuangan", icon: Lightbulb, emoji: "💡", page: "Tips", color: "#F5A623" },
       ],
     },
