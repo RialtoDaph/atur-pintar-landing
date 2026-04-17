@@ -4,6 +4,7 @@ import { Send, Sparkles, Plus, Crown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
+import { awardXP } from "@/hooks/useGamification";
 
 const FREE_MSG_LIMIT = 30;
 
@@ -19,7 +20,16 @@ export default function Nana() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(u => {
+      setUser(u);
+      // +5 XP for opening Nana, max 1x per day
+      const today = new Date().toISOString().split("T")[0];
+      const lastNanaOpen = localStorage.getItem("nana_xp_date");
+      if (lastNanaOpen !== today) {
+        localStorage.setItem("nana_xp_date", today);
+        awardXP(u.email, 5).catch(() => {});
+      }
+    }).catch(() => {});
     loadConversations();
   }, []);
 
@@ -85,6 +95,17 @@ export default function Nana() {
       const newCount = msgCount + 1;
       await base44.auth.updateMe({ nana_message_count: newCount, nana_message_month: currentMonth });
       setUser(u => ({ ...u, nana_message_count: newCount, nana_message_month: currentMonth }));
+    }
+
+    // +10 XP for sending message, max 3x per day
+    if (user?.email) {
+      const today = new Date().toISOString().split("T")[0];
+      const key = `nana_msg_xp_${today}`;
+      const count = parseInt(localStorage.getItem(key) || "0", 10);
+      if (count < 3) {
+        localStorage.setItem(key, String(count + 1));
+        awardXP(user.email, 10).catch(() => {});
+      }
     }
 
     setSending(false);
