@@ -34,7 +34,7 @@ const QUIZ_QUESTIONS = [
       { key: "A", emoji: "🔥", text: "Gas! YOLO, sekali-sekali" },
       { key: "B", emoji: "💭", text: "Ikut, tapi pesan yang paling murah di menu" },
       { key: "C", emoji: "📊", text: "Cek dulu budget bulan ini, kalau ada — ayo" },
-      { key: "D", emoji: "🙅", text: "Maaf gue skip dulu, lagi ketat nih bulannya" },
+      { key: "D", emoji: "🙅", text: "Maaf aku skip dulu, lagi ketat nih bulannya" },
     ],
   },
   {
@@ -75,7 +75,7 @@ const PERSONAS = {
   mager: {
     label: "😴 Si Mager",
     type: "mager",
-    desc: "Kamu udah tau apa yang harus dilakukan — tinggal eksekusinya aja! Niat ada, tapi action butuh sedikit dorongan. Nana bakal bantu kamu mulai.",
+    desc: "Kamu sudah tau apa yang harus dilakukan — tinggal eksekusinya aja! Niat ada, tapi action butuh sedikit dorongan. Nana bakal bantu kamu mulai.",
     strengths: ["Sadar tentang keuangan & mau belajar", "Tidak impulsif, lebih hati-hati", "Punya dasar yang bagus untuk berkembang"],
     growth: ["Mulai dari hal kecil, konsisten dulu", "Set reminder harian untuk catat pengeluaran"],
   },
@@ -158,7 +158,7 @@ function NanaAvatar({ size = 80, animate = false }) {
       animate={animate ? { scale: 1, rotate: 0 } : false}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       style={{ width: size, height: size }}
-      className="rounded-[30%] bg-black border-2 border-[#FF6A00] overflow-hidden mx-auto"
+      className="rounded-[30%] bg-[#F2F4F7] border-2 border-[#FF6A00] overflow-hidden mx-auto"
     >
       <img src={NANA_IMG} alt="Nana AI" className="w-full h-full object-contain" />
     </motion.div>
@@ -168,11 +168,11 @@ function NanaAvatar({ size = 80, animate = false }) {
 function QuizProgress({ current, total }) {
   return (
     <div className="mb-5">
-      <div className="flex justify-between text-xs text-[#8FA4C8] mb-2">
+      <div className="flex justify-between text-xs text-gray-500 mb-2">
         <span>Pertanyaan {current} dari {total}</span>
         <span>{Math.round((current / total) * 100)}%</span>
       </div>
-      <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
         <motion.div
           className="h-1.5 bg-[#FF6A00] rounded-full"
           animate={{ width: `${(current / total) * 100}%` }}
@@ -208,11 +208,11 @@ function ScreenWelcome({ onNext }) {
         transition={{ delay: 0.4 }}
         className="mt-5"
       >
-        <h1 className="text-3xl font-bold text-white mb-3">Halo! 👋</h1>
-        <p className="text-[#8FA4C8] text-sm leading-relaxed mb-8">
-          Gue <span className="text-[#FF6A00] font-bold">Nana</span> — dan gue bakal jadi teman finansial kamu yang paling jujur (dan paling lucu) yang pernah ada.
+        <h1 className="text-3xl font-bold text-gray-900 mb-3">Halo! 👋</h1>
+        <p className="text-gray-500 text-sm leading-relaxed mb-8">
+          Aku <span className="text-[#FF6A00] font-bold">Nana</span> — dan aku bakal jadi teman finansial kamu yang paling jujur (dan paling lucu) yang pernah ada.
           <br /><br />
-          Sebelum mulai, gue mau kenalan dulu sama kamu. Cuma 2 menit. Janji.
+          Sebelum mulai, aku mau kenalan dulu sama kamu. Cuma 2 menit. Janji.
         </p>
         <button
           onClick={onNext}
@@ -235,11 +235,11 @@ function ScreenQuizIntro({ onNext }) {
         transition={{ delay: 0.3 }}
         className="mt-5"
       >
-        <h2 className="text-2xl font-bold text-white mb-3">Dulu kenalan, baru kasih saran.</h2>
-        <p className="text-[#8FA4C8] text-sm leading-relaxed mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">Dulu kenalan, baru kasih saran.</h2>
+        <p className="text-gray-500 text-sm leading-relaxed mb-6">
           5 pertanyaan singkat biar Nana tau gimana cara terbaik bantu kamu.
           <br /><br />
-          Gak ada jawaban yang salah — yang salah itu kalau bohong ke diri sendiri. 😄
+          Tidak ada jawaban yang salah — yang salah itu kalau bohong ke diri sendiri. 😄
         </p>
         <div className="flex justify-center gap-2 mb-8">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -268,16 +268,16 @@ function ScreenQuiz({ questionIndex, answers, onAnswer }) {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h2 className="text-lg font-bold text-white mb-5 leading-snug">{q.q}</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-5 leading-snug">{q.q}</h2>
         <div className="space-y-3">
           {q.options.map(opt => (
             <button
               key={opt.key}
               onClick={() => onAnswer(opt.key)}
-              className="w-full text-left flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-[#FF6A00]/20 hover:border-[#FF6A00]/50 active:scale-[0.98] transition-all"
+              className="w-full text-left flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-[#FF6A00]/10 hover:border-[#FF6A00]/50 active:scale-[0.98] transition-all"
             >
               <span className="text-xl flex-shrink-0">{opt.emoji}</span>
-              <span className="text-sm text-white font-medium leading-snug">{opt.text}</span>
+              <span className="text-sm text-gray-800 font-medium leading-snug">{opt.text}</span>
             </button>
           ))}
         </div>
@@ -311,26 +311,26 @@ function ScreenPersona({ persona, onNext }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <p className="text-[#8FA4C8] text-xs text-center uppercase tracking-widest mb-1">Persona kamu</p>
-        <h2 className="text-2xl font-bold text-white text-center mb-3">{persona.label}</h2>
-        <p className="text-sm text-[#8FA4C8] leading-relaxed text-center mb-5">{persona.desc}</p>
+        <p className="text-gray-400 text-xs text-center uppercase tracking-widest mb-1">Persona kamu</p>
+        <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">{persona.label}</h2>
+        <p className="text-sm text-gray-500 leading-relaxed text-center mb-5">{persona.desc}</p>
 
-        <div className="bg-white/5 rounded-2xl p-4 mb-4 space-y-2">
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4 space-y-2">
           <p className="text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-2">Strengths</p>
           {persona.strengths.map((s, i) => (
             <div key={i} className="flex items-start gap-2">
-              <span className="text-green-400 mt-0.5">✅</span>
-              <span className="text-sm text-white">{s}</span>
+              <span className="text-green-500 mt-0.5">✅</span>
+              <span className="text-sm text-gray-800">{s}</span>
             </div>
           ))}
         </div>
 
-        <div className="bg-white/5 rounded-2xl p-4 mb-6 space-y-2">
-          <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-2">Growth Area</p>
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-6 space-y-2">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Growth Area</p>
           {persona.growth.map((g, i) => (
             <div key={i} className="flex items-start gap-2">
               <span className="text-sm mt-0.5">📈</span>
-              <span className="text-sm text-[#8FA4C8]">{g}</span>
+              <span className="text-sm text-gray-500">{g}</span>
             </div>
           ))}
         </div>
@@ -339,7 +339,7 @@ function ScreenPersona({ persona, onNext }) {
           onClick={onNext}
           className="w-full py-4 rounded-2xl bg-[#FF6A00] text-white font-bold text-base flex items-center justify-center gap-2 hover:bg-[#e05e00] active:scale-95 transition-all"
         >
-          Oke Nana, gue siap! <ArrowRight className="w-5 h-5" />
+          Oke Nana, aku siap! <ArrowRight className="w-5 h-5" />
         </button>
       </motion.div>
     </div>
@@ -360,9 +360,9 @@ function ScreenSetGoal({ onNext }) {
     <div className="px-6 py-6">
       <NanaAvatar size={64} animate />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <p className="text-center text-[#8FA4C8] text-sm mt-3 mb-2">Nana berkata:</p>
-        <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 mb-5 text-center">
-          <p className="text-white text-sm leading-relaxed">
+        <p className="text-center text-gray-400 text-sm mt-3 mb-2">Nana berkata:</p>
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-5 text-center">
+          <p className="text-gray-800 text-sm leading-relaxed">
             Satu hal dulu. Kamu mau nabung buat apa dalam 3 bulan ke depan? 🎯
           </p>
         </div>
@@ -374,12 +374,12 @@ function ScreenSetGoal({ onNext }) {
               onClick={() => setSelected(g.key)}
               className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-2xl border transition-all active:scale-95 ${
                 selected === g.key
-                  ? "border-[#FF6A00] bg-[#FF6A00]/20 text-white"
-                  : "border-white/10 bg-white/5 text-[#8FA4C8] hover:border-white/30"
+                  ? "border-[#FF6A00] bg-[#FF6A00]/10 text-gray-900"
+                  : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300"
               }`}
             >
               <span className="text-2xl">{g.emoji}</span>
-              <span className="text-xs font-semibold text-center leading-tight">{g.label}</span>
+              <span className={`text-xs font-semibold text-center leading-tight ${selected === g.key ? "text-[#FF6A00]" : "text-gray-600"}`}>{g.label}</span>
             </button>
           ))}
         </div>
@@ -388,14 +388,14 @@ function ScreenSetGoal({ onNext }) {
           <input
             type="text"
             placeholder="Tulis goal kamu di sini..."
-            className="w-full border border-white/20 rounded-xl px-4 py-3 text-sm text-white bg-white/5 focus:outline-none focus:ring-2 focus:ring-[#FF6A00] mb-4 placeholder-[#8FA4C8]"
+            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00] mb-4 placeholder-gray-400"
             value={customText}
             onChange={e => setCustomText(e.target.value)}
             autoFocus
           />
         )}
 
-        <p className="text-xs text-[#8FA4C8] text-center mb-4">
+        <p className="text-xs text-gray-400 text-center mb-4">
           Ini bukan komitmen seumur hidup. Bisa diubah kapan saja. Yang penting mulai dulu.
         </p>
 
@@ -418,10 +418,10 @@ function ScreenIncomeRange({ onNext, saving }) {
     <div className="px-6 py-6">
       <NanaAvatar size={64} animate />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-        <p className="text-center text-[#8FA4C8] text-sm mt-3 mb-2">Nana berkata:</p>
-        <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 mb-5 text-center">
-          <p className="text-white text-sm leading-relaxed">
-            Terakhir — biar gue bisa bantu yang relevan, gue perlu tau income bulanan kamu. 💰
+        <p className="text-center text-gray-400 text-sm mt-3 mb-2">Nana berkata:</p>
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 mb-5 text-center">
+          <p className="text-gray-800 text-sm leading-relaxed">
+            Terakhir — biar aku bisa bantu yang relevan, aku perlu tau income bulanan kamu. 💰
           </p>
         </div>
 
@@ -432,18 +432,18 @@ function ScreenIncomeRange({ onNext, saving }) {
               onClick={() => setSelected(r.key)}
               className={`w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border transition-all active:scale-[0.98] ${
                 selected === r.key
-                  ? "border-[#FF6A00] bg-[#FF6A00]/20 text-white"
-                  : "border-white/10 bg-white/5 text-[#8FA4C8] hover:border-white/30"
+                  ? "border-[#FF6A00] bg-[#FF6A00]/10 text-gray-900"
+                  : "border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300"
               }`}
             >
-              <span className={`w-4 h-4 rounded-full border-2 flex-shrink-0 transition-colors ${selected === r.key ? "border-[#FF6A00] bg-[#FF6A00]" : "border-[#8FA4C8]"}`} />
+              <span className={`w-4 h-4 rounded-full border-2 flex-shrink-0 transition-colors ${selected === r.key ? "border-[#FF6A00] bg-[#FF6A00]" : "border-gray-400"}`} />
               <span className="text-sm font-medium">{r.label}</span>
             </button>
           ))}
         </div>
 
-        <p className="text-xs text-[#8FA4C8] text-center mb-5">
-          Data ini cuma buat Nana kasih saran yang relevan. Gak ada yang tau selain kamu dan Nana.
+        <p className="text-xs text-gray-400 text-center mb-5">
+          Data ini cuma buat Nana kasih saran yang relevan. Tidak ada yang tau selain kamu dan Nana.
         </p>
 
         <button
@@ -486,18 +486,18 @@ function ScreenWelcomeGame({ goal, onFinish }) {
       <NanaAvatar size={80} animate />
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-        <h2 className="text-2xl font-bold text-white mt-4 mb-2">Selamat datang di Atur Pintar!</h2>
-        <p className="text-[#8FA4C8] text-sm leading-relaxed mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mt-4 mb-2">Selamat datang di Atur Pintar!</h2>
+        <p className="text-gray-500 text-sm leading-relaxed mb-6">
           Kamu resmi jadi <span className="text-[#FF6A00] font-bold">Level 1 — Newbie Ngatur</span>. Dan perjalanan naik level dimulai sekarang.
         </p>
 
         {/* XP Bar */}
-        <div className="bg-white/5 rounded-2xl p-4 mb-4">
-          <div className="flex justify-between text-xs text-[#8FA4C8] mb-1.5">
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4">
+          <div className="flex justify-between text-xs text-gray-500 mb-1.5">
             <span>⚡ XP</span>
             <span>0 / 500</span>
           </div>
-          <div className="h-2.5 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-[#FF6A00] rounded-full"
               initial={{ width: 0 }}
@@ -514,10 +514,10 @@ function ScreenWelcomeGame({ goal, onFinish }) {
             { icon: "🎯", label: "Goal", val: goalLabel },
             { icon: "⭐", label: "Level", val: "1 — Newbie" },
           ].map((s, i) => (
-            <div key={i} className="bg-white/5 rounded-xl p-2.5 text-center">
+            <div key={i} className="bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-center">
               <div className="text-lg mb-0.5">{s.icon}</div>
-              <div className="text-[10px] text-[#8FA4C8]">{s.label}</div>
-              <div className="text-xs font-bold text-white mt-0.5 leading-tight">{s.val}</div>
+              <div className="text-[10px] text-gray-400">{s.label}</div>
+              <div className="text-xs font-bold text-gray-800 mt-0.5 leading-tight">{s.val}</div>
             </div>
           ))}
         </div>
@@ -525,7 +525,7 @@ function ScreenWelcomeGame({ goal, onFinish }) {
         {/* First mission */}
         <div className="bg-[#FF6A00]/10 border border-[#FF6A00]/30 rounded-2xl p-4 mb-6 text-left">
           <p className="text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-1.5">🎮 Mission Pertama</p>
-          <p className="text-sm text-white leading-relaxed">
+          <p className="text-sm text-gray-800 leading-relaxed">
             Catat 1 pengeluaran hari ini → <span className="text-[#FF6A00] font-bold">+10 XP</span>
           </p>
         </div>
@@ -630,7 +630,7 @@ export default function OnboardingFlow({ onComplete }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#0A0A0A] flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[100] bg-white flex items-center justify-center overflow-hidden">
       <div className="w-full max-w-sm h-full overflow-y-auto flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
