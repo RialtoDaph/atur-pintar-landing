@@ -1,80 +1,66 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
+import PullToRefresh from "@/components/utils/PullToRefresh";
+
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { format, subDays } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
-
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
-import PullToRefresh from "@/components/utils/PullToRefresh";
-import RecurringManager from "@/components/transactions/RecurringManager";
+import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
+import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
+import BalanceCard from "@/components/dashboard/BalanceCard";
+import AccountsWidget from "@/components/dashboard/AccountsWidget";
 import { syncAccountBalance } from "@/components/utils/accountSync";
-import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
 
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import FHSCard from "@/components/dashboard/FHSCard";
-import NanaDailyInsight from "@/components/dashboard/NanaDailyInsight";
-import DailyMissions from "@/components/dashboard/DailyMissions";
-import LevelProgress, { getLevelDef } from "@/components/dashboard/LevelProgress";
-import BudgetOverview from "@/components/dashboard/BudgetOverview";
-import BalanceSummary from "@/components/dashboard/BalanceSummary";
+import RecurringManager from "@/components/transactions/RecurringManager";
+import StreakWidget from "@/components/dashboard/StreakWidget";
+import { useGamification } from "@/hooks/useGamification";
 
-// ── Level Up popup ────────────────────────────────────────────────────────────
-function LevelUpModal({ levelDef, onClose }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.4, y: 60 }} animate={{ scale: 1, y: 0 }}
-        transition={{ type: "spring", damping: 12 }}
-        className="bg-white rounded-3xl px-8 py-8 flex flex-col items-center gap-4 shadow-2xl mx-6 max-w-xs w-full"
-        onClick={e => e.stopPropagation()}
-      >
-        <motion.div animate={{ rotate: [0, -15, 15, -10, 10, 0] }} transition={{ duration: 0.8 }} className="text-6xl">⭐</motion.div>
-        <div className="text-center">
-          <p className="text-xs font-bold text-[#FF6B35] uppercase tracking-widest mb-1">⬆️ Level Up!</p>
-          <h2 className="text-xl font-black text-[#1A1A1A]">Kamu sekarang Level {levelDef.level}</h2>
-          <p className="text-base font-bold text-[#FF6B35] mt-1">{levelDef.name}</p>
-        </div>
-        <button onClick={onClose}
-          className="w-full py-3 rounded-2xl bg-[#FF6B35] text-white font-bold text-sm">
-          Keren! →
-        </button>
-      </motion.div>
-    </motion.div>
-  );
+import CashflowForecast from "@/components/dashboard/CashflowForecast";
+
+const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
+const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
+
+const LazyFallback = () => (
+  <div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
+);
+
+function getWidgets() {
+  const saved = localStorage.getItem("widgets");
+  if (saved) return JSON.parse(saved);
+  return { smartAlerts: true, cashflowForecast: true, subscriptionDetector: true, spendingChart: true, recentTransactions: true, savingsGoals: true };
 }
 
-// ── Main Dashboard ─────────────────────────────────────────────────────────────
 export default function Dashboard() {
+  const { t } = useAppSettings();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAddTransaction, setShowAddTransaction] = useState(false);
-  const [showAlertsDrawer, setShowAlertsDrawer] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [gamificationProfile, setGamificationProfile] = useState(null);
-  const [levelUpModal, setLevelUpModal] = useState(null);
+  const [widgets, setWidgets] = useState(getWidgets());
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showNanaIntro, setShowNanaIntro] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showSampleBanner, setShowSampleBanner] = useState(hasSampleData);
+  const [lastTxAddedAt, setLastTxAddedAt] = useState(null);
 
-  // ── Load user ────────────────────────────────────────────────────────────────
+  const gamification = useGamification(user);
+
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
       if (!u?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
         setShowOnboarding(true);
       }
-      // Subscription expiry check
-      if (u?.role !== "admin" && u?.subscription_status === "active") {
+      // Check subscription expiry on load — skip for admin
+      if (u?.role !== 'admin' && u?.subscription_status === "active") {
         const endDate = u?.subscription_end_date || u?.subscription_expiry;
-        if (endDate && endDate < new Date().toISOString().split("T")[0]) {
-          base44.auth.updateMe({ subscription_status: "expired", subscription_plan: "free" }).catch(() => {});
+        if (endDate) {
+          const today = new Date().toISOString().split("T")[0];
+          if (endDate < today) {
+            base44.auth.updateMe({ subscription_status: "expired", subscription_plan: "free" }).catch(() => {});
+          }
         }
       }
-      // Dedup once
+      // Run deduplication once per session
       if (u?.onboarding_completed && !sessionStorage.getItem("dedup_done")) {
         sessionStorage.setItem("dedup_done", "1");
         base44.functions.invoke("deduplicateUserData", {}).catch(() => {});
@@ -82,78 +68,56 @@ export default function Dashboard() {
     }).catch(() => {});
   }, []);
 
-  // ── Load gamification profile + streak check ─────────────────────────────────
+  // Check streak reset whenever user loads the dashboard
   useEffect(() => {
-    if (!user?.email) return;
-    loadGamificationProfile();
-    loadUnread();
+    if (user?.onboarding_completed) {
+      gamification.checkStreakOnLoad();
+    }
   }, [user?.email]);
 
-  async function loadGamificationProfile() {
-    const profiles = await base44.entities.GamificationProfile.filter({ created_by: user.email });
-    if (profiles.length === 0) return;
-    const p = profiles[0];
-    // Check streak reset
-    const today = format(new Date(), "yyyy-MM-dd");
-    const yesterday = format(subDays(new Date(), 1), "yyyy-MM-dd");
-    if (p.last_activity_date && p.last_activity_date !== today && p.last_activity_date !== yesterday && (p.daily_streak || 0) > 0) {
-      const updated = await base44.entities.GamificationProfile.update(p.id, { daily_streak: 0 });
-      setGamificationProfile(updated);
-    } else {
-      setGamificationProfile(p);
-    }
-  }
+  useEffect(() => {
+    const onStorage = () => setWidgets(getWidgets());
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
-  async function loadUnread() {
-    const alerts = await base44.entities.Alert.filter({ created_by: user.email, status: "unread" });
-    setUnreadCount(alerts.length);
-  }
+  useEffect(() => {
+    const onRefresh = () => loadData();
+    window.addEventListener("refresh-dashboard", onRefresh);
+    return () => window.removeEventListener("refresh-dashboard", onRefresh);
+  }, [user?.email]);
 
-  // ── Award XP from mission ─────────────────────────────────────────────────────
-  async function handleMissionXP(xpReward) {
+  useEffect(() => {
     if (!user?.email) return;
-    let p = gamificationProfile;
-    if (!p) {
-      const profiles = await base44.entities.GamificationProfile.filter({ created_by: user.email });
-      if (profiles.length === 0) return;
-      p = profiles[0];
-    }
-    const today = format(new Date(), "yyyy-MM-dd");
-    const yesterday = format(subDays(new Date(), 1), "yyyy-MM-dd");
-    const last = p.last_activity_date;
-    const oldXP = p.total_points || 0;
-    const newXP = oldXP + xpReward;
-    const oldLevel = getLevelDef(oldXP);
-    const newLevel = getLevelDef(newXP);
+    const unsub1 = base44.entities.Transaction.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
+    });
+    const unsub2 = base44.entities.SavingsGoal.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["goals", user.email] });
+    });
+    const unsub3 = base44.entities.Budget.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.email] });
+    });
+    return () => { unsub1(); unsub2(); unsub3(); };
+  }, [user?.email]);
 
-    let newStreak = p.daily_streak || 0;
-    let updates = { total_points: newXP, level: newLevel.level };
-
-    if (last !== today) {
-      newStreak = last === yesterday ? newStreak + 1 : 1;
-      updates.daily_streak = newStreak;
-      updates.last_activity_date = today;
-    }
-
-    const updated = await base44.entities.GamificationProfile.update(p.id, updates);
-    setGamificationProfile(updated);
-
-    if (newLevel.level > oldLevel.level) {
-      setLevelUpModal(newLevel);
-    }
-  }
-
-  // ── Queries ──────────────────────────────────────────────────────────────────
   const enabled = !!user?.onboarding_completed;
 
-  const { data: transactions = [] } = useQuery({
+  const { data: goals = [], isLoading: goalsLoading } = useQuery({
+    queryKey: ["goals", user?.email],
+    queryFn: () => base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
+    enabled,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const { data: transactions = [], isLoading: txLoading } = useQuery({
     queryKey: ["transactions_dashboard", user?.email],
     queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 100),
     enabled,
     staleTime: 2 * 60 * 1000,
   });
 
-  const { data: budgets = [] } = useQuery({
+  const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
     queryKey: ["budgets", user?.email],
     queryFn: () => base44.entities.Budget.filter({ created_by: user.email }),
     enabled,
@@ -167,54 +131,60 @@ export default function Dashboard() {
     staleTime: 2 * 60 * 1000,
   });
 
-  const { data: fhsList = [], isLoading: fhsLoading } = useQuery({
-    queryKey: ["fhs", user?.email],
-    queryFn: () => base44.entities.FinancialHealthScore.filter({ created_by: user.email }, "-created_date", 2),
-    enabled,
-    staleTime: 10 * 60 * 1000,
-  });
-
-  // ── Derived data ─────────────────────────────────────────────────────────────
-  const currentMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const today = format(new Date(), "yyyy-MM-dd");
-
-  const fhs = fhsList.find(f => f.month === currentMonth) || fhsList[0] || null;
-  const todayExpense = transactions
-    .filter(t => t.date === today && t.type === "expense" && !t.is_deleted)
-    .reduce((s, t) => s + t.amount, 0);
-
-  const streak = gamificationProfile?.daily_streak || 0;
+  const accountsTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
+  const loading = goalsLoading || txLoading || budgetsLoading;
 
   async function loadData() {
     await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["goals", user?.email] }),
       queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user?.email] }),
       queryClient.invalidateQueries({ queryKey: ["budgets", user?.email] }),
-      queryClient.invalidateQueries({ queryKey: ["accounts_dashboard", user?.email] }),
-      queryClient.invalidateQueries({ queryKey: ["fhs", user?.email] }),
     ]);
   }
+
+  const now = new Date();
+  const thisMonthTx = transactions.filter(t => {
+    const d = new Date(t.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+      && !(t.is_recurring === true && !t.is_recurring_child);
+  });
+
+  const allTx = transactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
+  const monthIncome = allTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const monthExpense = allTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
+  const totalSaved = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
 
   return (
     <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
         {user && <RecurringManager userEmail={user.email} />}
 
-        {/* Section 1: Greeting Header */}
-        <DashboardHeader
-          user={user}
-          streak={streak}
-          unreadCount={unreadCount}
-          onBellClick={() => setShowAlertsDrawer(true)}
-        />
+        {/* Top Header */}
+        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-16">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="text-[#8FA4C8] text-xs font-medium">{t('dashboard_greeting')}</p>
+                <h1 className="text-white text-xl font-bold mt-0.5">{t('dashboard_title')}</h1>
+              </div>
+              <div data-tour="add-transaction-btn" />
+            </div>
 
-        <div className="max-w-2xl mx-auto space-y-3 px-4 pt-3">
-          {/* Section 2: FHS Card — overlaps header slightly */}
-          <FHSCard fhs={fhs} loading={fhsLoading && enabled} />
+            <BalanceCard
+              income={monthIncome}
+              expense={monthExpense}
+              savings={totalSaved}
+              totalBalance={accounts.length > 0 ? accountsTotal : null}
+              loading={loading}
+            />
+          </div>
+        </div>
 
-          {/* Section 3: Nana Daily Insight */}
-          <NanaDailyInsight todayExpense={todayExpense} />
+        <div className="max-w-2xl mx-auto px-4 -mt-6 space-y-3">
+          {showSampleBanner && (
+            <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
+          )}
 
-          {/* Subscription expired warning */}
           {user?.subscription_status === "expired" && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
               <span className="text-lg">⚠️</span>
@@ -226,58 +196,58 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Section 4: Daily Missions */}
-          {enabled && (
-            <DailyMissions user={user} onXpGained={handleMissionXP} />
+          {/* Streak Widget */}
+          {user?.onboarding_completed && (
+            <StreakWidget
+              profile={gamification.profile}
+              streakPopup={gamification.streakPopup} setStreakPopup={gamification.setStreakPopup}
+              achievementPopup={gamification.achievementPopup} setAchievementPopup={gamification.setAchievementPopup}
+              levelUpPopup={gamification.levelUpPopup} setLevelUpPopup={gamification.setLevelUpPopup}
+              xpFloatMsg={gamification.xpFloatMsg}
+              streakResetMsg={gamification.streakResetMsg} setStreakResetMsg={gamification.setStreakResetMsg}
+            />
           )}
 
-          {/* Section 5: Level Progress */}
-          <LevelProgress profile={gamificationProfile} />
+          <Suspense fallback={<LazyFallback />}>
+            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+          </Suspense>
 
-          {/* Section 6: Budget Overview */}
-          <BudgetOverview budgets={budgets} transactions={transactions} />
+          {widgets.cashflowForecast && (
+            <Suspense fallback={<LazyFallback />}>
+              <CashflowForecast transactions={transactions} loading={loading} user={user} />
+            </Suspense>
+          )}
 
-          {/* Section 7: Balance Summary */}
-          <BalanceSummary accounts={accounts} />
+          {user?.onboarding_completed && <AccountsWidget user={user} />}
 
-          <div className="h-4" />
+          <div className="h-2" />
         </div>
 
-        {/* Add Transaction Modal */}
         {showAddTransaction && (
           <AddTransactionModal
-            goals={[]}
+            goals={goals}
             onClose={() => setShowAddTransaction(false)}
             onSave={async (data) => {
               await base44.entities.Transaction.create(data);
               if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
               setShowAddTransaction(false);
+              setLastTxAddedAt(Date.now());
+              gamification.onNewTransaction();
               loadData();
-              if (user) await handleMissionXP(10);
             }}
           />
         )}
 
-        {/* Onboarding */}
         {showOnboarding && (
           <OnboardingQuestionnaire onClose={() => {
             setShowOnboarding(false);
             loadData();
-            loadGamificationProfile();
           }} />
         )}
 
-        {/* Alerts Drawer */}
-        {showAlertsDrawer && (
-          <AlertsDrawer onClose={() => { setShowAlertsDrawer(false); setUnreadCount(0); }} user={user} />
+        {showNanaIntro && (
+          <NanaIntroModal onClose={() => setShowNanaIntro(false)} />
         )}
-
-        {/* Level Up Modal */}
-        <AnimatePresence>
-          {levelUpModal && (
-            <LevelUpModal levelDef={levelUpModal} onClose={() => setLevelUpModal(null)} />
-          )}
-        </AnimatePresence>
       </div>
     </PullToRefresh>
   );
