@@ -235,7 +235,7 @@ function ScreenQuizIntro({ onNext }) {
         transition={{ delay: 0.3 }}
         className="mt-5">
         
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">Dulu kenalan, baru kasih saran.</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-3">Kenalan dulu Yuk!</h2>
         <p className="text-gray-500 text-sm leading-relaxed mb-6">
           5 pertanyaan singkat biar Nana tau gimana cara terbaik bantu kamu.
           <br /><br />
