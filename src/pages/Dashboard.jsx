@@ -22,6 +22,7 @@ import FinancialHealthCard from "@/components/dashboard/FinancialHealthCard";
 import NanaInsightCard from "@/components/dashboard/NanaInsightCard";
 import DailyMissionsCard from "@/components/dashboard/DailyMissionsCard";
 import ReminderAlertWidget from "@/components/dashboard/ReminderAlertWidget";
+import BossBattleCard from "@/components/gamification/BossBattleCard";
 
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
@@ -241,6 +242,15 @@ export default function Dashboard() {
           {/* Daily Missions + Level Progress */}
           {user?.onboarding_completed && (
             <DailyMissionsCard
+              user={user}
+              gamificationProfile={activeGamProfile}
+              onProfileUpdate={setGamProfile}
+            />
+          )}
+
+          {/* Boss Battle */}
+          {user?.onboarding_completed && (
+            <BossBattleCard
               user={user}
               gamificationProfile={activeGamProfile}
               onProfileUpdate={setGamProfile}

@@ -1,0 +1,37 @@
+{
+  "name": "BossBattleContribution",
+  "type": "object",
+  "properties": {
+    "boss_id": {
+      "type": "string",
+      "description": "ID BossBattle"
+    },
+    "month": {
+      "type": "string",
+      "description": "YYYY-MM"
+    },
+    "damage_dealt": {
+      "type": "number"
+    },
+    "habits_completed": {
+      "type": "number"
+    },
+    "last_attack_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "total_damage_all_time": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "boss_id",
+    "month"
+  ],
+  "rls": {
+    "enabled": true,
+    "filter_field": "created_by",
+    "filter_value": "{{user.email}}"
+  }
+}

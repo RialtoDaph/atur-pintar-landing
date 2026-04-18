@@ -1,6 +1,6 @@
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { Target, CreditCard, Lightbulb, ChevronRight, Bell, Settings, User, Wallet, Users, Flame, PiggyBank, Trophy } from "lucide-react";
+import { Target, CreditCard, Lightbulb, ChevronRight, Bell, Settings, User, Wallet, Users, Flame, PiggyBank, Trophy, Gamepad2 } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function Menu() {
@@ -22,6 +22,7 @@ export default function Menu() {
         { label: "Notifikasi", desc: "Pengingat tagihan dan notifikasi cerdas", icon: Bell, emoji: "🔔", page: "Notifications", color: "#F5A623" },
         { label: "Daily Streak", desc: "Pantau streak dan pencapaian keuanganmu", icon: Flame, emoji: "🔥", page: "Dashboard", color: "#FF6A00" },
         { label: "Achievement", desc: "Lihat semua pencapaian dan badge kamu", icon: Trophy, emoji: "🏅", page: "Achievements", color: "#FFD700" },
+        { label: "Gamifikasi", desc: "Boss Battle, Challenge, Level & Achievement", icon: Gamepad2, emoji: "🎮", page: "Gamifikasi", color: "#8B5CF6" },
         { label: t('nav_tips'), desc: "Saran dan tips mengelola keuangan", icon: Lightbulb, emoji: "💡", page: "Tips", color: "#F5A623" },
       ],
     },
