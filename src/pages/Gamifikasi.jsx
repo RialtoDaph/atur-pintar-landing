@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ACHIEVEMENTS_DEF } from "@/hooks/useGamification";
 import BossBattleCard from "@/components/gamification/BossBattleCard";
 import ChallengeSection from "@/components/gamification/ChallengeSection";
+import LeaderboardTab from "@/components/gamification/LeaderboardTab";
 
 const LEVEL_THRESHOLDS = [
   { level: 1, name: "Newbie Ngatur", min: 0, max: 499 },
@@ -26,6 +27,7 @@ const TABS = [
   { key: "achievement", label: "Achievement", icon: "🏅" },
   { key: "challenge", label: "Challenge", icon: "🎯" },
   { key: "boss", label: "Boss Battle", icon: "👹" },
+  { key: "leaderboard", label: "Leaderboard", icon: "🏆" },
 ];
 
 export default function Gamifikasi() {
@@ -213,6 +215,11 @@ export default function Gamifikasi() {
             onProfileUpdate={setGamificationProfile}
             showHistory
           />
+        )}
+
+        {/* ── TAB: LEADERBOARD ── */}
+        {!loading && tab === "leaderboard" && (
+          <LeaderboardTab currentUser={user} />
         )}
 
         {/* ── TAB: BOSS BATTLE ── */}
