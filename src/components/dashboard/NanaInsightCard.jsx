@@ -1,37 +1,37 @@
 import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-
-const NANA_IMG = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png";
-
-function formatRupiah(n) {
-  return "Rp " + Math.abs(n).toLocaleString("id-ID");
-}
 
 function getNanaComment(amount) {
-  if (amount === 0) return "Belum ada catatan hari ini. Yuk mulai catat! 📝";
-  if (amount < 50000) return `Pengeluaran hari ini ${formatRupiah(amount)}. Hemat banget! 🎉`;
-  if (amount < 200000) return `Pengeluaran hari ini ${formatRupiah(amount)}. Masih aman nih! 😊`;
-  if (amount < 500000) return `Pengeluaran hari ini ${formatRupiah(amount)}. Mulai hati-hati ya! 👀`;
-  return `Pengeluaran hari ini ${formatRupiah(amount)}. Wah lumayan besar, review lagi yuk! 💸`;
+  if (amount === 0) return "";
+  if (amount < 50000) return "Hemat banget hari ini! 💪";
+  if (amount < 200000) return "Masih terkontrol. Good job!";
+  if (amount < 500000) return "Lumayan nih, pantau terus ya.";
+  return "Lumayan banyak nih — cek budgetmu! 👀";
 }
 
-export default function NanaInsightCard({ transactions = [] }) {
-  const today = new Date().toISOString().split("T")[0];
-  const todayExpense = transactions
-    .filter(t => t.date === today && t.type === "expense" && !t.is_deleted)
-    .reduce((s, t) => s + (t.amount || 0), 0);
-
-  const message = getNanaComment(todayExpense);
+export default function NanaInsightCard({ todayExpense }) {
+  const hasData = todayExpense > 0;
+  const comment = getNanaComment(todayExpense);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-[#F2F4F7] px-4 py-3 flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-[#F2F4F7] flex-shrink-0 overflow-hidden">
-        <img src={NANA_IMG} alt="Nana" className="w-full h-full object-contain" />
+    <div className="bg-white rounded-2xl shadow-sm p-4 flex items-start gap-3">
+      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FF6B35] to-[#FF9A5C] flex items-center justify-center flex-shrink-0 text-base shadow">
+        ✨
       </div>
-      <p className="flex-1 text-sm text-[#1A1A1A] leading-snug">{message}</p>
+      <div className="flex-1 min-w-0">
+        {hasData ? (
+          <p className="text-sm text-[#1A1A1A] leading-snug">
+            Pengeluaran hari ini <span className="font-bold text-[#FF6B35]">Rp {todayExpense.toLocaleString("id-ID")}</span>.{" "}
+            <span className="text-[#4A5568]">{comment}</span>
+          </p>
+        ) : (
+          <p className="text-sm text-[#4A5568] leading-snug">
+            Belum ada catatan hari ini. Yuk mulai catat! 📝
+          </p>
+        )}
+      </div>
       <Link
-        to={createPageUrl("Nana")}
-        className="flex-shrink-0 text-xs font-bold text-[#FF6A00] hover:text-[#e05e00] transition-colors whitespace-nowrap"
+        to="/Nana"
+        className="flex-shrink-0 text-[11px] font-bold text-[#FF6B35] bg-[#FFF0E8] px-2.5 py-1.5 rounded-xl whitespace-nowrap"
       >
         Tanya Nana →
       </Link>

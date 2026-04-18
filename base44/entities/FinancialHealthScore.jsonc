@@ -4,15 +4,16 @@
   "properties": {
     "month": {
       "type": "string",
-      "description": "Bulan (YYYY-MM)"
+      "description": "Bulan dalam format YYYY-MM"
     },
     "total_score": {
       "type": "number",
-      "description": "Total skor finansial (0-1000)"
+      "description": "Total skor kesehatan finansial (0-1000)",
+      "default": 0
     },
     "breakdown": {
       "type": "object",
-      "description": "Rincian skor per kategori"
+      "description": "Breakdown skor per komponen"
     }
   },
   "required": [

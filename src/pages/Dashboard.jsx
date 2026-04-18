@@ -3,10 +3,10 @@ import PullToRefresh from "@/components/utils/PullToRefresh";
 
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
+import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
+import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
 import BalanceCard from "@/components/dashboard/BalanceCard";
 import AccountsWidget from "@/components/dashboard/AccountsWidget";
@@ -15,12 +15,12 @@ import { syncAccountBalance } from "@/components/utils/accountSync";
 import RecurringManager from "@/components/transactions/RecurringManager";
 import StreakWidget from "@/components/dashboard/StreakWidget";
 import { useGamification } from "@/hooks/useGamification";
+
+import CashflowForecast from "@/components/dashboard/CashflowForecast";
 import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
 import FinancialHealthCard from "@/components/dashboard/FinancialHealthCard";
 import NanaInsightCard from "@/components/dashboard/NanaInsightCard";
-import DailyMissions from "@/components/dashboard/DailyMissions";
-
-import CashflowForecast from "@/components/dashboard/CashflowForecast";
+import DailyMissionsCard from "@/components/dashboard/DailyMissionsCard";
 
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
@@ -41,9 +41,11 @@ export default function Dashboard() {
   const [showAddTransaction, setShowAddTransaction] = useState(false);
   const [widgets, setWidgets] = useState(getWidgets());
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
   const [showSampleBanner, setShowSampleBanner] = useState(hasSampleData);
   const [lastTxAddedAt, setLastTxAddedAt] = useState(null);
+  const [gamProfile, setGamProfile] = useState(null);
 
   const gamification = useGamification(user);
 
@@ -134,6 +136,28 @@ export default function Dashboard() {
     staleTime: 2 * 60 * 1000,
   });
 
+  const thisMonthKey = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
+  const { data: fhsRecords = [] } = useQuery({
+    queryKey: ["fhs", user?.email, thisMonthKey],
+    queryFn: () => base44.entities.FinancialHealthScore.filter({ created_by: user.email, month: thisMonthKey }),
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: gamProfiles = [] } = useQuery({
+    queryKey: ["gam_profile", user?.email],
+    queryFn: async () => {
+      const list = await base44.entities.GamificationProfile.filter({ created_by: user.email });
+      if (list?.[0]) setGamProfile(list[0]);
+      return list;
+    },
+    enabled,
+    staleTime: 30 * 1000,
+  });
+
+  const fhsScore = fhsRecords?.[0]?.total_score ?? 0;
+  const activeGamProfile = gamProfile || gamProfiles?.[0] || null;
+
   const accountsTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
   const loading = goalsLoading || txLoading || budgetsLoading;
 
@@ -166,10 +190,7 @@ export default function Dashboard() {
         <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-16">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <DashboardGreeting
-                user={user}
-                streak={gamification.profile?.daily_streak || 0}
-              />
+              <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
               <div data-tour="add-transaction-btn" />
             </div>
 
@@ -199,6 +220,32 @@ export default function Dashboard() {
             </div>
           )}
 
+          {/* Financial Health Score */}
+          {user?.onboarding_completed && (
+            <FinancialHealthCard score={fhsScore} />
+          )}
+
+          {/* Nana Insight */}
+          {user?.onboarding_completed && (
+            <NanaInsightCard
+              todayExpense={(() => {
+                const todayStr = new Date().toISOString().split("T")[0];
+                return transactions
+                  .filter(t => t.date === todayStr && (t.type === "expense") && !t.is_deleted)
+                  .reduce((s, t) => s + (t.amount || 0), 0);
+              })()}
+            />
+          )}
+
+          {/* Daily Missions + Level Progress */}
+          {user?.onboarding_completed && (
+            <DailyMissionsCard
+              user={user}
+              gamificationProfile={activeGamProfile}
+              onProfileUpdate={setGamProfile}
+            />
+          )}
+
           {/* Streak Widget */}
           {user?.onboarding_completed && (
             <StreakWidget
@@ -208,20 +255,6 @@ export default function Dashboard() {
               levelUpPopup={gamification.levelUpPopup} setLevelUpPopup={gamification.setLevelUpPopup}
               xpFloatMsg={gamification.xpFloatMsg}
               streakResetMsg={gamification.streakResetMsg} setStreakResetMsg={gamification.setStreakResetMsg}
-            />
-          )}
-
-          {/* Financial Health Score */}
-          {user?.onboarding_completed && <FinancialHealthCard user={user} />}
-
-          {/* Nana Insight */}
-          {user?.onboarding_completed && <NanaInsightCard transactions={transactions} />}
-
-          {/* Daily Missions */}
-          {user?.onboarding_completed && (
-            <DailyMissions
-              user={user}
-              onXPGained={() => gamification.checkStreakOnLoad()}
             />
           )}
 
@@ -256,10 +289,14 @@ export default function Dashboard() {
         )}
 
         {showOnboarding && (
-          <OnboardingFlow onComplete={() => {
+          <OnboardingQuestionnaire onClose={() => {
             setShowOnboarding(false);
             loadData();
           }} />
+        )}
+
+        {showNanaIntro && (
+          <NanaIntroModal onClose={() => setShowNanaIntro(false)} />
         )}
       </div>
     </PullToRefresh>

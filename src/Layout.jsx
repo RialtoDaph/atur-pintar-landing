@@ -1,11 +1,12 @@
 import { createPageUrl } from "@/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, Settings, Bell, Lightbulb, Search, Grid3x3, ArrowLeft, Wallet, Users, Sparkles, Plus, List } from "lucide-react";
+import { LayoutDashboard, Target, ArrowLeftRight, BarChart2, PiggyBank, CreditCard, Settings, Bell, Lightbulb, Search, Grid3x3, ArrowLeft, Wallet, Users, Sparkles, Plus } from "lucide-react";
+import AddTransactionModal from "@/components/transactions/AddTransactionModal";
 import AlertsDrawer from "@/components/dashboard/AlertsDrawer";
 import AdminNotificationPanel from "@/components/notifications/AdminNotificationPanel";
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import AddTransactionModal from "@/components/transactions/AddTransactionModal";
+
 import ReminderNotificationPopup from "@/components/reminders/ReminderNotificationPopup";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
@@ -13,11 +14,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import TourGuide from "@/components/onboarding/TourGuide";
 function LayoutInner({ children, currentPageName }) {
   const [user, setUser] = useState(null);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [showAlertsDrawer, setShowAlertsDrawer] = useState(false);
   const [anyModalOpen, setAnyModalOpen] = useState(false);
-  const [showFABTx, setShowFABTx] = useState(false);
   const [unreadAlertCount, setUnreadAlertCount] = useState(0);
   const [showTour, setShowTour] = useState(false);
   const [unreadAdminCount, setUnreadAdminCount] = useState(0);
@@ -104,32 +105,30 @@ function LayoutInner({ children, currentPageName }) {
 
   const navItems = [
   { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
-  { name: "Nana", label: "Nana AI", icon: Sparkles, page: "Nana" },
-  { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
-  { name: "Transactions", label: t('nav_transactions'), icon: List, page: "Transactions" },
+  { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" },
   { name: "Goals", label: t('nav_goals'), icon: Target, page: "Goals" },
   { name: "Budget", label: t('nav_budget'), icon: PiggyBank, page: "Budget" },
   { name: "Debts", label: t('nav_debts'), icon: CreditCard, page: "Debts" },
   { name: "Accounts", label: "Rekening", icon: Wallet, page: "Accounts" },
   { name: "SharedFinance", label: "Keuangan Bersama", icon: Users, page: "SharedFinance" },
+  { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
   { name: "Tips", label: t('nav_tips'), icon: Lightbulb, page: "Tips", tourId: "tips-nav-link" }];
 
 
   const navSettingsItems = [
   { name: "Notifications", label: "Notifikasi", icon: Bell, page: "Notifications" },
-  { name: "Menu", label: t('nav_more'), icon: Grid3x3, page: "Menu" },
   { name: "Settings", label: t('nav_settings'), icon: Settings, page: "Settings" }];
 
 
-  // Mobile: 5 fixed items (no "Lainnya" expand)
+  // Mobile: 4 main items + "Lainnya" (Budget moved to Menu)
   const mobileMainNav = [
   { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
   { name: "Nana", label: "Nana AI", icon: Sparkles, page: "Nana" },
   { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
-  { name: "Transactions", label: "Transaksi", icon: List, page: "Transactions" },
-  { name: "Menu", label: t('nav_more'), icon: Grid3x3, page: "Menu" }];
+  { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" }];
 
-  const mobileMorePages = ["Goals", "Debts", "Budget", "Notifications", "Accounts", "SharedFinance", "Tips", "Settings", "Menu"];
+
+  const mobileMorePages = ["Goals", "Debts", "Notifications", "Accounts", "SharedFinance", "Tips", "Settings", "Menu", "Budget"];
 
   const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
@@ -161,12 +160,12 @@ function LayoutInner({ children, currentPageName }) {
 
   // Update tab history when navigating to a main page
   useEffect(() => {
-    const mainTabs = ["Dashboard", "Nana", "Analytics", "Transactions"];
-    const morePages = ["Goals", "Debts", "Budget", "Reminders", "Alerts", "Tips", "Settings", "Menu", "Investments", "Accounts", "SharedFinance", "Notifications"];
+    const mobileMainNavNames = ["Dashboard", "Nana", "Analytics", "Transactions"];
+    const mobileMorePagesNames = ["Goals", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu", "Investments", "Budget", "Accounts", "SharedFinance", "Notifications"];
 
-    if (mainTabs.includes(currentPageName)) {
+    if (mobileMainNavNames.includes(currentPageName)) {
       tabHistory.current[currentPageName] = currentPageName;
-    } else if (morePages.includes(currentPageName)) {
+    } else if (mobileMorePagesNames.includes(currentPageName)) {
       tabHistory.current["Menu"] = currentPageName;
     }
   }, [currentPageName]);
@@ -221,7 +220,7 @@ function LayoutInner({ children, currentPageName }) {
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">
-          {navItems.filter(item => !["Budget", "SharedFinance"].includes(item.page)).map((item) => {
+          {navItems.map((item) => {
             const active = currentPageName === item.page;
             return (
               <Link
@@ -340,44 +339,72 @@ function LayoutInner({ children, currentPageName }) {
       {/* Mobile bottom nav — hidden when any modal is open */}
       {!anyModalOpen && <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-[60] border-t border-white/10" style={{boxShadow: '0 -4px 24px rgba(0,0,0,0.5)', paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))'}}>
         {mobileMainNav.map((item) => {
-          const isMenu = item.page === "Menu";
-          const active = isMenu ? mobileMorePages.includes(currentPageName) : currentPageName === item.page;
+          const active = currentPageName === item.page;
           return (
             <button
               key={`tab-${item.page}`}
-              data-tour={item.page === "Menu" ? "mobile-more-tab" : undefined}
               onClick={() => handleTabClick(item.page)}
               className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
               active ? "text-[#F97316]" : "text-[#888]"}`}>
+              
               <item.icon className="w-5 h-5" />
               {item.label}
-            </button>
-          );
+            </button>);
+
         })}
+        {/* More button → goes to Menu page */}
+        <button
+          key="menu"
+          data-tour="mobile-more-tab"
+          onClick={() => handleTabClick("Menu")}
+          className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
+          mobileMorePages.includes(currentPageName) ? "text-[#F97316]" : "text-[#888]"}`}>
+          
+          <Grid3x3 className="w-5 h-5" />
+          {t('nav_more')}
+        </button>
       </div>}
 
-      {/* FAB — Floating Action Button for adding transactions */}
-      {!anyModalOpen && !["Nana"].includes(currentPageName) && (
+      {/* FAB - Add Transaction */}
+      {!anyModalOpen && !isNestedPage && (
         <button
-          onClick={() => setShowFABTx(true)}
-          className="fixed sm:hidden z-[59] bg-[#FF6B35] text-white rounded-full shadow-xl flex items-center justify-center active:scale-95 transition-all tap-highlight-fix"
+          onClick={() => setShowAddTransaction(true)}
+          data-tour="add-transaction-btn"
+          className="fixed z-[55] bg-[#FF6B35] flex items-center justify-center rounded-full shadow-2xl active:scale-95 transition-all duration-150 tap-highlight-fix sm:hidden"
           style={{
             width: 56, height: 56,
             bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))',
             right: 20,
-            boxShadow: '0 4px 20px rgba(255,107,53,0.55)',
+            boxShadow: '0 4px 20px rgba(255,107,53,0.5)'
           }}
         >
-          <Plus className="w-7 h-7" />
+          <Plus className="w-7 h-7 text-white" />
         </button>
       )}
 
-      {showFABTx && (
+      {/* FAB for desktop */}
+      {!anyModalOpen && (
+        <button
+          onClick={() => setShowAddTransaction(true)}
+          className="fixed z-[55] bg-[#FF6B35] items-center justify-center rounded-full shadow-2xl active:scale-95 transition-all duration-150 tap-highlight-fix hidden sm:flex"
+          style={{
+            width: 56, height: 56,
+            bottom: 32,
+            right: 32,
+            boxShadow: '0 4px 20px rgba(255,107,53,0.5)'
+          }}
+        >
+          <Plus className="w-7 h-7 text-white" />
+        </button>
+      )}
+
+      {showAddTransaction && (
         <AddTransactionModal
-          onClose={() => setShowFABTx(false)}
+          goals={[]}
+          onClose={() => setShowAddTransaction(false)}
           onSave={async (data) => {
             await base44.entities.Transaction.create(data);
-            setShowFABTx(false);
+            setShowAddTransaction(false);
             window.dispatchEvent(new Event("refresh-dashboard"));
           }}
         />

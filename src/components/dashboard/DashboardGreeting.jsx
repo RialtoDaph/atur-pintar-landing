@@ -1,27 +1,21 @@
-import { useMemo } from "react";
-import { Flame } from "lucide-react";
-
-function getGreeting(name) {
+export default function DashboardGreeting({ user, gamificationProfile }) {
   const hour = new Date().getHours();
-  const firstName = name ? name.split(" ")[0] : "Kamu";
-  if (hour >= 6 && hour < 11) return `Pagi, ${firstName}! ☀️`;
-  if (hour >= 11 && hour < 15) return `Halo, ${firstName}! 👋`;
-  if (hour >= 15 && hour < 19) return `Sore, ${firstName}! 🌤️`;
-  return `Malam, ${firstName}! 🌙`;
-}
+  const name = user?.full_name?.split(" ")[0] || "Kamu";
 
-export default function DashboardGreeting({ user, streak = 0 }) {
-  const greeting = useMemo(() => getGreeting(user?.full_name), [user?.full_name]);
+  let greeting;
+  if (hour >= 6 && hour < 11) greeting = `Pagi, ${name}! ☀️`;
+  else if (hour >= 11 && hour < 15) greeting = `Halo, ${name}! 👋`;
+  else if (hour >= 15 && hour < 19) greeting = `Sore, ${name}! 🌤️`;
+  else greeting = `Malam, ${name}! 🌙`;
+
+  const streak = gamificationProfile?.daily_streak ?? 0;
 
   return (
     <div className="flex items-center justify-between">
-      <div>
-        <p className="text-[#8FA4C8] text-xs font-medium">Selamat datang kembali</p>
-        <h1 className="text-white text-xl font-bold mt-0.5">{greeting}</h1>
-      </div>
-      <div className="flex items-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 px-3 py-1.5 rounded-full">
-        <Flame className="w-3.5 h-3.5 text-[#FF6A00]" />
-        <span className="text-[#FF6A00] text-xs font-bold">Streak {streak} hari</span>
+      <h2 className="text-white text-xl font-bold">{greeting}</h2>
+      <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
+        <span className="text-base">🔥</span>
+        <span className="text-white text-xs font-bold">Streak {streak} hari</span>
       </div>
     </div>
   );
