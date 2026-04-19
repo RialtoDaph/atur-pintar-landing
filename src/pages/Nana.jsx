@@ -51,13 +51,31 @@ export default function Nana() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const savedNanaMsgIds = useRef(new Set());
+
   useEffect(() => {
     if (!activeConv) return;
     const unsub = base44.agents.subscribeToConversation(activeConv.id, (data) => {
-      setMessages(data.messages || []);
+      const msgs = data.messages || [];
+      setMessages(msgs);
+      // Save new completed Nana (assistant) messages to NanaConversation entity
+      msgs.forEach(msg => {
+        if (msg.role === "assistant" && msg.id && !savedNanaMsgIds.current.has(msg.id) && msg.content) {
+          savedNanaMsgIds.current.add(msg.id);
+          if (user?.email) {
+            base44.entities.NanaConversation.create({
+              role: "nana",
+              message: msg.content,
+              session_date: today,
+              mood: todayMood?.mood || undefined,
+              message_type: "chat",
+            }).catch(() => {});
+          }
+        }
+      });
     });
     return unsub;
-  }, [activeConv?.id]);
+  }, [activeConv?.id, user?.email]);
 
   async function checkTodayMood(email) {
     try {
@@ -104,9 +122,11 @@ export default function Nana() {
       }
 
       setSending(true);
+      const moodMsg = `[mood:${moodObj.mood}] Hari ini gue lagi ${moodObj.label}`;
+      saveToNanaConversation("user", moodMsg, "chat");
       await base44.agents.addMessage(conv, {
         role: "user",
-        content: `[mood:${moodObj.mood}] Hari ini gue lagi ${moodObj.label}`,
+        content: moodMsg,
       });
     } catch (e) {
       console.error(e);
@@ -145,6 +165,24 @@ export default function Nana() {
   const msgCount = user?.nana_message_month === currentMonth ? (user?.nana_message_count || 0) : 0;
   const isLimitReached = !isPremium && msgCount >= FREE_MSG_LIMIT;
 
+  function detectMessageType(text) {
+    const lower = text.toLowerCase();
+    if (lower.includes("roast") || lower.includes("hina") || lower.includes("bully")) return "roast";
+    if (lower.includes("analisa") || lower.includes("analisis") || lower.includes("laporan") || lower.includes("review keuangan")) return "analysis";
+    return "chat";
+  }
+
+  async function saveToNanaConversation(role, message, messageType = "chat") {
+    if (!user?.email) return;
+    base44.entities.NanaConversation.create({
+      role,
+      message,
+      session_date: today,
+      mood: todayMood?.mood || undefined,
+      message_type: messageType,
+    }).catch(() => {});
+  }
+
   async function sendMessage(textOverride) {
     const text = typeof textOverride === "string" ? textOverride : input;
     if (!text.trim() || sending || isLimitReached) return;
@@ -161,6 +199,11 @@ export default function Nana() {
 
     setSending(true);
     setInput("");
+
+    const msgType = detectMessageType(text);
+    // Save user message to NanaConversation
+    saveToNanaConversation("user", text, msgType);
+
     await base44.agents.addMessage(conv, { role: "user", content: text });
 
     if (!isPremium) {

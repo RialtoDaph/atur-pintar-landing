@@ -15,6 +15,7 @@ import { syncAccountBalance } from "@/components/utils/accountSync";
 import RecurringManager from "@/components/transactions/RecurringManager";
 import StreakWidget from "@/components/dashboard/StreakWidget";
 import { useGamification } from "@/hooks/useGamification";
+import { useFinancialHealthScore } from "@/hooks/useFinancialHealthScore";
 
 import CashflowForecast from "@/components/dashboard/CashflowForecast";
 import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
@@ -50,6 +51,7 @@ export default function Dashboard() {
   const [gamProfile, setGamProfile] = useState(null);
 
   const gamification = useGamification(user);
+  useFinancialHealthScore(user);
 
   useEffect(() => {
     base44.auth.me().then(u => {

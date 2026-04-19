@@ -36,9 +36,9 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
     }).catch(() => {});
   }, []);
 
-  // Merge: GlobalCategory (admin) → DEFAULT_CATEGORIES fallback → custom
+  // Use GlobalCategory id as key so it matches Transaction.category
   const baseCategories = globalCategories.length > 0
-    ? globalCategories.map(c => ({ key: c.name.toLowerCase().replace(/\s+/g, '_'), label: c.name, emoji: c.emoji || '📦', color: c.color || '#95A5A6' }))
+    ? globalCategories.map(c => ({ key: c.id, label: c.name, emoji: c.emoji || '📦', color: c.color || '#95A5A6' }))
     : DEFAULT_CATEGORIES.map((c) => ({ key: c.key, label: lang === 'id' ? c.label_id : c.label_en, emoji: c.emoji, color: c.color }));
 
   const allCategories = [
