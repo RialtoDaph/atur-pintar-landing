@@ -13,7 +13,6 @@ import AccountsWidget from "@/components/dashboard/AccountsWidget";
 import { syncAccountBalance } from "@/components/utils/accountSync";
 
 import RecurringManager from "@/components/transactions/RecurringManager";
-import StreakWidget from "@/components/dashboard/StreakWidget";
 import { useGamification } from "@/hooks/useGamification";
 import { useFinancialHealthScore } from "@/hooks/useFinancialHealthScore";
 
@@ -259,17 +258,7 @@ export default function Dashboard() {
             />
           )}
 
-          {/* Streak Widget */}
-          {user?.onboarding_completed && (
-            <StreakWidget
-              profile={gamification.profile}
-              streakPopup={gamification.streakPopup} setStreakPopup={gamification.setStreakPopup}
-              achievementPopup={gamification.achievementPopup} setAchievementPopup={gamification.setAchievementPopup}
-              levelUpPopup={gamification.levelUpPopup} setLevelUpPopup={gamification.setLevelUpPopup}
-              xpFloatMsg={gamification.xpFloatMsg}
-              streakResetMsg={gamification.streakResetMsg} setStreakResetMsg={gamification.setStreakResetMsg}
-            />
-          )}
+
 
           <Suspense fallback={<LazyFallback />}>
             <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
