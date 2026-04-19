@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import {
   LogOut, Trash2, Crown, Pencil, Lock, ChevronRight,
-  Wallet, Plus, Star, RefreshCw, X, Check, AlertTriangle
+  Plus, Star, RefreshCw, X, Check, AlertTriangle
 } from "lucide-react";
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import EditProfileForm from "@/components/profile/EditProfileForm";
@@ -31,10 +31,10 @@ function formatRupiah(n) {
 }
 
 // ─── Account Modal ────────────────────────────────────────────────────────────
-function AccountModal({ account, onClose, onSave }) {
+function AccountModal({ account, defaultType, onClose, onSave }) {
   const [form, setForm] = useState({
     name: account?.name || "",
-    type: account?.type || "bank",
+    type: account?.type || defaultType || "bank",
     balance: account?.balance || 0,
     icon: account?.icon || "🏦",
     color: account?.color || "#F97316",
@@ -195,6 +195,7 @@ export default function ProfileSettings() {
   const [deletingAcc, setDeletingAcc] = useState(false);
   const [syncing, setSyncing] = useState(null);
   const [presetOpen, setPresetOpen] = useState(null);
+  const [defaultAccountType, setDefaultAccountType] = useState("bank");
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -345,96 +346,63 @@ export default function ProfileSettings() {
 
         {/* ── Rekening & Dompet ────────────────────────────── */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-[#F2F4F7]">
+          <div className="px-5 pt-4 pb-3 flex items-center justify-between">
             <div>
-              <p className="text-sm font-bold text-[#1A1A1A]">💳 Rekening & Dompet</p>
-              <p className="text-xs text-[#8FA4C8] mt-0.5">Total: <span className="font-semibold text-[#1A1A1A]">{formatRupiah(totalBalance)}</span> · {accounts.length} rekening</p>
+              <p className="text-base font-bold text-[#1A1A1A]">Rekening & Dompet</p>
+              <p className="text-xs text-[#8FA4C8] mt-0.5">Total: <span className="font-semibold text-[#1A1A1A]">{formatRupiah(totalBalance)}</span></p>
             </div>
-            <div className="flex gap-2">
-              {/* Preset quick-add */}
-              <div className="relative">
-                <button onClick={() => setPresetOpen(presetOpen ? null : "open")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2F4F7] rounded-xl text-xs font-semibold text-[#4A5568] hover:bg-[#E2E8F0] transition-colors">
-                  ⚡ Cepat
-                </button>
-                {presetOpen && (
-                  <div className="absolute right-0 top-9 z-30 bg-white rounded-2xl shadow-xl border border-[#F2F4F7] p-3 w-56">
-                    {ACCOUNT_PRESETS.map(preset => (
-                      <div key={preset.group} className="mb-2 last:mb-0">
-                        <p className="text-[10px] font-bold text-[#8FA4C8] uppercase mb-1">{preset.icon} {preset.group}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {preset.items.map(item => {
-                            const exists = accounts.some(a => a.name.toLowerCase() === item.toLowerCase());
-                            return (
-                              <button key={item} onClick={() => !exists && addPreset(preset, item)} disabled={exists}
-                                className={`text-[11px] px-2 py-1 rounded-lg font-medium transition-all ${exists ? "bg-green-50 text-green-500 cursor-default" : "bg-[#F2F4F7] text-[#4A5568] hover:bg-[#FF6A00]/10 hover:text-[#FF6A00]"}`}>
-                                {exists ? "✓ " : ""}{item}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                    <button onClick={() => setPresetOpen(null)} className="w-full mt-2 text-[10px] text-[#8FA4C8] hover:text-[#1A1A1A] transition-colors">Tutup</button>
-                  </div>
-                )}
-              </div>
-              <button onClick={() => { setEditAccount(null); setShowAccountModal(true); }}
-                className="flex items-center gap-1 px-3 py-1.5 bg-[#FF6A00] text-white rounded-xl text-xs font-semibold hover:bg-[#E55A00] transition-colors">
-                <Plus className="w-3.5 h-3.5" /> Tambah
-              </button>
-            </div>
+            <Link to={createPageUrl("Accounts")} className="text-xs font-semibold text-[#FF6A00] hover:opacity-80 transition-opacity">
+              Semua →
+            </Link>
           </div>
 
           {loadingAccounts ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-3 border-[#F2F4F7] border-t-[#F97316] rounded-full animate-spin" />
-            </div>
-          ) : accounts.length === 0 ? (
-            <div className="py-8 text-center px-5">
-              <p className="text-[#8FA4C8] text-sm mb-1">Belum ada rekening</p>
-              <p className="text-[#8FA4C8] text-xs">Tap "⚡ Cepat" untuk tambah dari preset atau "Tambah" untuk kustom</p>
+              <div className="w-6 h-6 border-2 border-[#F2F4F7] border-t-[#F97316] rounded-full animate-spin" />
             </div>
           ) : (
-            <div className="divide-y divide-[#F2F4F7]">
-              {accounts.map(acc => (
-                <div key={acc.id} className="flex items-center gap-3 px-4 py-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                    style={{ backgroundColor: (acc.color || "#FF6A00") + "20" }}>
-                    {acc.icon || "🏦"}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-semibold text-[#1A1A1A] truncate">{acc.name}</p>
-                      {acc.is_default && <span className="text-[9px] bg-[#F97316]/10 text-[#F97316] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0">Utama</span>}
-                    </div>
-                    <p className="text-xs font-medium mt-0.5" style={{ color: (acc.balance || 0) < 0 ? "#EF4444" : "#8FA4C8" }}>
-                      {formatRupiah(acc.balance)}
-                      <span className="ml-1 text-[#8FA4C8] font-normal">{typeLabel[acc.type]}</span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-0.5 flex-shrink-0">
-                    <button onClick={() => syncBalance(acc)} disabled={syncing === acc.id}
-                      className="p-1.5 rounded-lg hover:bg-blue-50 text-[#8FA4C8] hover:text-blue-500 transition-colors" title="Sinkronkan Saldo">
-                      <RefreshCw className={`w-3.5 h-3.5 ${syncing === acc.id ? 'animate-spin' : ''}`} />
-                    </button>
-                    {!acc.is_default && (
-                      <button onClick={() => setDefault(acc)}
-                        className="p-1.5 rounded-lg hover:bg-amber-50 text-[#8FA4C8] hover:text-amber-500 transition-colors" title="Jadikan Utama">
-                        <Star className="w-3.5 h-3.5" />
+            <div className="px-5 pb-5 space-y-4">
+              {[
+                { key: "bank", label: "BANK", icon: "🏦", addLabel: "+ Tambah Bank" },
+                { key: "ewallet", label: "E-WALLET", icon: "📱", addLabel: "+ Tambah E-Wallet" },
+                { key: "cash", label: "CASH", icon: "💵", addLabel: "+ Tambah Cash" },
+                { key: "other", label: "LAINNYA", icon: "💳", addLabel: "+ Tambah Lainnya" },
+              ].map(group => {
+                const groupAccounts = accounts.filter(a => a.type === group.key);
+                return (
+                  <div key={group.key}>
+                    <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-2">{group.label}</p>
+                    <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+                      {groupAccounts.map(acc => (
+                        <button key={acc.id}
+                          onClick={() => { setEditAccount(acc); setShowAccountModal(true); }}
+                          className="flex-shrink-0 w-32 bg-white border border-[#E2E8F0] rounded-2xl p-3 text-left hover:border-[#F97316]/50 hover:shadow-sm transition-all">
+                          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-lg mb-2"
+                            style={{ backgroundColor: (acc.color || "#FF6A00") + "20" }}>
+                            {acc.icon || group.icon}
+                          </div>
+                          <p className="text-xs font-semibold text-[#1A1A1A] truncate leading-tight">{acc.name}</p>
+                          {acc.is_default && <span className="text-[8px] font-bold text-[#F97316]">Utama</span>}
+                          <p className="text-[10px] font-bold mt-1 truncate" style={{ color: (acc.balance || 0) < 0 ? "#EF4444" : "#27AE60" }}>
+                            {formatRupiah(acc.balance)}
+                          </p>
+                        </button>
+                      ))}
+                      {/* Add card */}
+                      <button
+                        onClick={() => {
+                          setEditAccount(null);
+                          setDefaultAccountType(group.key);
+                          setShowAccountModal(true);
+                        }}
+                        className="flex-shrink-0 w-32 border-2 border-dashed border-[#E2E8F0] rounded-2xl p-3 flex flex-col items-center justify-center gap-1 hover:border-[#F97316] hover:bg-[#FFF7ED] transition-all min-h-[88px]">
+                        <Plus className="w-4 h-4 text-[#8FA4C8]" />
+                        <p className="text-[10px] font-medium text-[#8FA4C8] text-center leading-tight">{group.addLabel}</p>
                       </button>
-                    )}
-                    <button onClick={() => { setEditAccount(acc); setShowAccountModal(true); }}
-                      className="p-1.5 rounded-lg hover:bg-[#F2F4F7] text-[#8FA4C8] transition-colors">
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => confirmDelete(acc)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-[#8FA4C8] hover:text-red-500 transition-colors">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -527,6 +495,7 @@ export default function ProfileSettings() {
       {showAccountModal && (
         <AccountModal
           account={editAccount}
+          defaultType={!editAccount ? defaultAccountType : undefined}
           onClose={() => { setShowAccountModal(false); setEditAccount(null); }}
           onSave={(acc) => {
             if (editAccount?.id) {
