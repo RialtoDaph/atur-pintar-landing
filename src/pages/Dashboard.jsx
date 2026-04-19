@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import PullToRefresh from "@/components/utils/PullToRefresh";
+
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AddTransactionModal from "@/components/transactions/AddTransactionModal";
@@ -7,30 +8,45 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
 import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
+import BalanceCard from "@/components/dashboard/BalanceCard";
+import AccountsWidget from "@/components/dashboard/AccountsWidget";
 import { syncAccountBalance } from "@/components/utils/accountSync";
+
 import RecurringManager from "@/components/transactions/RecurringManager";
 import { useGamification } from "@/hooks/useGamification";
 import { useFinancialHealthScore } from "@/hooks/useFinancialHealthScore";
-import { Plus } from "lucide-react";
 
-// Dashboard widgets
-import GreetingMoodWidget from "@/components/dashboard/GreetingMoodWidget";
-import NetWorthSnapshot from "@/components/dashboard/NetWorthSnapshot";
-import BudgetProgressWidget from "@/components/dashboard/BudgetProgressWidget";
-import RecentTransactionsWidget from "@/components/dashboard/RecentTransactionsWidget";
-import ActiveAlertsWidget from "@/components/dashboard/ActiveAlertsWidget";
-import SavingsGoalWidget from "@/components/dashboard/SavingsGoalWidget";
-import StreakMissionWidget from "@/components/dashboard/StreakMissionWidget";
-import FHSWidget from "@/components/dashboard/FHSWidget";
-import NanaQuickPrompt from "@/components/dashboard/NanaQuickPrompt";
+import CashflowForecast from "@/components/dashboard/CashflowForecast";
+import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
+import FinancialHealthCard from "@/components/dashboard/FinancialHealthCard";
+import NanaInsightCard from "@/components/dashboard/NanaInsightCard";
+import DailyMissionsCard from "@/components/dashboard/DailyMissionsCard";
+import ReminderAlertWidget from "@/components/dashboard/ReminderAlertWidget";
+import BossBattleCard from "@/components/gamification/BossBattleCard";
+
+const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
+const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
+
+const LazyFallback = () => (
+  <div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
+);
+
+function getWidgets() {
+  const saved = localStorage.getItem("widgets");
+  if (saved) return JSON.parse(saved);
+  return { smartAlerts: true, cashflowForecast: true, subscriptionDetector: true, spendingChart: true, recentTransactions: true, savingsGoals: true };
+}
 
 export default function Dashboard() {
+  const { t } = useAppSettings();
   const queryClient = useQueryClient();
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [widgets, setWidgets] = useState(getWidgets());
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
   const [showSampleBanner, setShowSampleBanner] = useState(hasSampleData);
+  const [lastTxAddedAt, setLastTxAddedAt] = useState(null);
   const [gamProfile, setGamProfile] = useState(null);
 
   const gamification = useGamification(user);
@@ -42,12 +58,17 @@ export default function Dashboard() {
       if (!u?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
         setShowOnboarding(true);
       }
+      // Check subscription expiry on load — skip for admin
       if (u?.role !== 'admin' && u?.subscription_status === "active") {
         const endDate = u?.subscription_end_date || u?.subscription_expiry;
-        if (endDate && endDate < new Date().toISOString().split("T")[0]) {
-          base44.auth.updateMe({ subscription_status: "expired", subscription_plan: "free" }).catch(() => {});
+        if (endDate) {
+          const today = new Date().toISOString().split("T")[0];
+          if (endDate < today) {
+            base44.auth.updateMe({ subscription_status: "expired", subscription_plan: "free" }).catch(() => {});
+          }
         }
       }
+      // Run deduplication once per session
       if (u?.onboarding_completed && !sessionStorage.getItem("dedup_done")) {
         sessionStorage.setItem("dedup_done", "1");
         base44.functions.invoke("deduplicateUserData", {}).catch(() => {});
@@ -55,15 +76,36 @@ export default function Dashboard() {
     }).catch(() => {});
   }, []);
 
+  // Check streak reset whenever user loads the dashboard
   useEffect(() => {
-    if (user?.onboarding_completed) gamification.checkStreakOnLoad();
+    if (user?.onboarding_completed) {
+      gamification.checkStreakOnLoad();
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
+    const onStorage = () => setWidgets(getWidgets());
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  useEffect(() => {
+    const onRefresh = () => loadData();
+    window.addEventListener("refresh-dashboard", onRefresh);
+    return () => window.removeEventListener("refresh-dashboard", onRefresh);
   }, [user?.email]);
 
   useEffect(() => {
     if (!user?.email) return;
-    const unsub1 = base44.entities.Transaction.subscribe(() => queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] }));
-    const unsub2 = base44.entities.SavingsGoal.subscribe(() => queryClient.invalidateQueries({ queryKey: ["goals", user.email] }));
-    const unsub3 = base44.entities.Budget.subscribe(() => queryClient.invalidateQueries({ queryKey: ["budgets", user.email] }));
+    const unsub1 = base44.entities.Transaction.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
+    });
+    const unsub2 = base44.entities.SavingsGoal.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["goals", user.email] });
+    });
+    const unsub3 = base44.entities.Budget.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["budgets", user.email] });
+    });
     return () => { unsub1(); unsub2(); unsub3(); };
   }, [user?.email]);
 
@@ -90,7 +132,7 @@ export default function Dashboard() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const { data: accounts = [], isLoading: accountsLoading } = useQuery({
+  const { data: accounts = [] } = useQuery({
     queryKey: ["accounts_dashboard", user?.email],
     queryFn: () => base44.entities.Account.filter({ created_by: user.email }),
     enabled,
@@ -116,32 +158,56 @@ export default function Dashboard() {
     staleTime: 30 * 1000,
   });
 
+  const fhsScore = fhsRecords?.[0]?.total_score ?? 0;
   const activeGamProfile = gamProfile || gamProfiles?.[0] || null;
-  const loading = goalsLoading || txLoading || budgetsLoading || accountsLoading;
+
+  const accountsTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
+  const loading = goalsLoading || txLoading || budgetsLoading;
 
   async function loadData() {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ["goals", user?.email] }),
       queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user?.email] }),
       queryClient.invalidateQueries({ queryKey: ["budgets", user?.email] }),
-      queryClient.invalidateQueries({ queryKey: ["accounts_dashboard", user?.email] }),
     ]);
   }
 
+  const now = new Date();
+  const thisMonthTx = transactions.filter(t => {
+    const d = new Date(t.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+      && !(t.is_recurring === true && !t.is_recurring_child);
+  });
+
+  const allTx = transactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
+  const monthIncome = allTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const monthExpense = allTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
+  const totalSaved = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
+
   return (
     <PullToRefresh onRefresh={loadData}>
-      <div className="min-h-screen bg-[#F2F4F7]">
+      <div className="min-h-screen bg-[#F2F4F7] pb-8">
         {user && <RecurringManager userEmail={user.email} />}
 
-        {/* 1. Greeting + Mood */}
-        <GreetingMoodWidget user={user} />
+        {/* Top Header */}
+        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-16">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
+              <div data-tour="add-transaction-btn" />
+            </div>
 
-        {/* 2. Net Worth Snapshot */}
-        <NetWorthSnapshot accounts={accounts} transactions={transactions} loading={accountsLoading} />
+            <BalanceCard
+              income={monthIncome}
+              expense={monthExpense}
+              savings={totalSaved}
+              totalBalance={accounts.length > 0 ? accountsTotal : null}
+              loading={loading}
+            />
+          </div>
+        </div>
 
-        {/* Main content */}
-        <div className="max-w-lg mx-auto px-4 pt-6 pb-28 space-y-6">
-
+        <div className="max-w-2xl mx-auto px-4 -mt-6 space-y-3">
           {showSampleBanner && (
             <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
           )}
@@ -157,54 +223,59 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* 4. Budget Bulan Ini */}
+          {/* Financial Health Score */}
           {user?.onboarding_completed && (
-            <BudgetProgressWidget budgets={budgets} transactions={transactions} loading={budgetsLoading} user={user} />
+            <FinancialHealthCard score={fhsScore} />
           )}
 
-          {/* 5. Transaksi Terbaru */}
+          {/* Nana Insight */}
           {user?.onboarding_completed && (
-            <RecentTransactionsWidget transactions={transactions} loading={txLoading} />
+            <NanaInsightCard
+              todayExpense={(() => {
+                const todayStr = new Date().toISOString().split("T")[0];
+                return transactions
+                  .filter(t => t.date === todayStr && (t.type === "expense") && !t.is_deleted)
+                  .reduce((s, t) => s + (t.amount || 0), 0);
+              })()}
+            />
           )}
 
-          {/* 6. Alert Aktif */}
+          {/* Daily Missions + Level Progress */}
           {user?.onboarding_completed && (
-            <ActiveAlertsWidget user={user} />
-          )}
-
-          {/* 7. Savings Goals */}
-          {user?.onboarding_completed && (
-            <SavingsGoalWidget goals={goals} loading={goalsLoading} />
-          )}
-
-          {/* 8. Streak & Daily Mission */}
-          {user?.onboarding_completed && (
-            <StreakMissionWidget
+            <DailyMissionsCard
               user={user}
               gamificationProfile={activeGamProfile}
               onProfileUpdate={setGamProfile}
             />
           )}
 
-          {/* 9. Financial Health Score */}
+          {/* Boss Battle */}
           {user?.onboarding_completed && (
-            <FHSWidget fhsRecord={fhsRecords?.[0] || null} />
+            <BossBattleCard
+              user={user}
+              gamificationProfile={activeGamProfile}
+              onProfileUpdate={setGamProfile}
+            />
           )}
 
-          {/* 10. Nana Quick Prompt */}
-          {user?.onboarding_completed && (
-            <NanaQuickPrompt />
+
+
+          <Suspense fallback={<LazyFallback />}>
+            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+          </Suspense>
+
+          {widgets.cashflowForecast && (
+            <Suspense fallback={<LazyFallback />}>
+              <CashflowForecast transactions={transactions} loading={loading} user={user} />
+            </Suspense>
           )}
+
+          {user?.onboarding_completed && <ReminderAlertWidget user={user} />}
+
+          {user?.onboarding_completed && <AccountsWidget user={user} />}
+
+          <div className="h-2" />
         </div>
-
-        {/* 3. FAB Catat Transaksi */}
-        <button
-          onClick={() => setShowAddTransaction(true)}
-          className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-8 z-[55] bg-[#FF6B35] flex items-center justify-center rounded-full shadow-2xl active:scale-95 transition-all duration-150 tap-highlight-fix"
-          style={{ width: 60, height: 60, boxShadow: "0 4px 24px rgba(255,107,53,0.5)" }}
-        >
-          <Plus className="w-7 h-7 text-white" />
-        </button>
 
         {showAddTransaction && (
           <AddTransactionModal
@@ -214,6 +285,7 @@ export default function Dashboard() {
               await base44.entities.Transaction.create(data);
               if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
               setShowAddTransaction(false);
+              setLastTxAddedAt(Date.now());
               gamification.onNewTransaction();
               loadData();
             }}
@@ -221,7 +293,10 @@ export default function Dashboard() {
         )}
 
         {showOnboarding && (
-          <OnboardingQuestionnaire onClose={() => { setShowOnboarding(false); loadData(); }} />
+          <OnboardingQuestionnaire onClose={() => {
+            setShowOnboarding(false);
+            loadData();
+          }} />
         )}
 
         {showNanaIntro && (
