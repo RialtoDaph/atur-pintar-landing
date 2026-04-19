@@ -361,11 +361,52 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                   </div>
                 )
               )}
-              {favTab === "all" && (
-                <div className="flex flex-wrap gap-1.5">
-                  {filteredCats.map(cat => <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />)}
-                </div>
-              )}
+              {favTab === "all" && (() => {
+                // Check if new grouped structure exists
+                const hasGrouped = filteredCats.some(c => c.is_subcategory === true || c.is_subcategory === false && c.sort_order > 0);
+                if (hasGrouped) {
+                  const parents = filteredCats.filter(c => c.is_subcategory === false).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+                  const subs = filteredCats.filter(c => c.is_subcategory === true).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+                  // Ungrouped (no parent_category field at all)
+                  const ungrouped = filteredCats.filter(c => c.is_subcategory === undefined && !c.parent_category);
+                  return (
+                    <div className="space-y-3">
+                      {parents.map(parent => {
+                        const children = subs.filter(s => s.parent_category === parent.id);
+                        if (children.length === 0) return null;
+                        return (
+                          <div key={parent.id}>
+                            <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                              <span>{parent.emoji}</span> {parent.name}
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {children.map(cat => (
+                                <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {ungrouped.length > 0 && (
+                        <div>
+                          <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Lainnya</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {ungrouped.map(cat => (
+                              <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                // Fallback: flat list
+                return (
+                  <div className="flex flex-wrap gap-1.5">
+                    {filteredCats.map(cat => <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />)}
+                  </div>
+                );
+              })()}
 
               {/* AI suggestion */}
               {suggestion && !category && (
