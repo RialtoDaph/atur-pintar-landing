@@ -11,12 +11,14 @@ export default function DashboardGreeting({ user, gamificationProfile }) {
   const streak = gamificationProfile?.daily_streak ?? 0;
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between mb-4">
       <h2 className="text-white text-xl font-bold">{greeting}</h2>
-      <div className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
-        <span className="text-base">🔥</span>
-        <span className="text-white text-xs font-bold">Streak {streak} hari</span>
-      </div>
+      {streak > 0 && (
+        <div className="flex items-center gap-1 bg-white/10 px-2.5 py-1 rounded-full">
+          <span className="text-sm">🔥</span>
+          <span className="text-white text-[11px] font-bold">{streak}hari</span>
+        </div>
+      )}
     </div>
   );
 }

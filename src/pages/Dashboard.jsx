@@ -8,17 +8,14 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import OnboardingQuestionnaire from "@/components/onboarding/OnboardingQuestionnaire";
 import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
-import BalanceCard from "@/components/dashboard/BalanceCard";
-import AccountsWidget from "@/components/dashboard/AccountsWidget";
+import BalanceCardCarousel from "@/components/dashboard/BalanceCardCarousel";
+import TodayTransactionsCard from "@/components/dashboard/TodayTransactionsCard";
 import { syncAccountBalance } from "@/components/utils/accountSync";
 
 import RecurringManager from "@/components/transactions/RecurringManager";
 import { useGamification } from "@/hooks/useGamification";
-import { useFinancialHealthScore } from "@/hooks/useFinancialHealthScore";
 
-import CashflowForecast from "@/components/dashboard/CashflowForecast";
 import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
-import FinancialHealthCard from "@/components/dashboard/FinancialHealthCard";
 import NanaInsightCard from "@/components/dashboard/NanaInsightCard";
 import DailyMissionsCard from "@/components/dashboard/DailyMissionsCard";
 import ReminderAlertWidget from "@/components/dashboard/ReminderAlertWidget";
@@ -26,6 +23,7 @@ import BossBattleCard from "@/components/gamification/BossBattleCard";
 
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
+const CashflowForecast = lazy(() => import("@/components/dashboard/CashflowForecast"));
 
 const LazyFallback = () => (
   <div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
@@ -50,7 +48,6 @@ export default function Dashboard() {
   const [gamProfile, setGamProfile] = useState(null);
 
   const gamification = useGamification(user);
-  useFinancialHealthScore(user);
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -139,14 +136,6 @@ export default function Dashboard() {
     staleTime: 2 * 60 * 1000,
   });
 
-  const thisMonthKey = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`;
-  const { data: fhsRecords = [] } = useQuery({
-    queryKey: ["fhs", user?.email, thisMonthKey],
-    queryFn: () => base44.entities.FinancialHealthScore.filter({ created_by: user.email, month: thisMonthKey }),
-    enabled,
-    staleTime: 5 * 60 * 1000,
-  });
-
   const { data: gamProfiles = [] } = useQuery({
     queryKey: ["gam_profile", user?.email],
     queryFn: async () => {
@@ -158,8 +147,14 @@ export default function Dashboard() {
     staleTime: 30 * 1000,
   });
 
-  const fhsScore = fhsRecords?.[0]?.total_score ?? 0;
   const activeGamProfile = gamProfile || gamProfiles?.[0] || null;
+
+  const { data: allCategories = [] } = useQuery({
+    queryKey: ["categories", user?.email],
+    queryFn: () => base44.entities.GlobalCategory.list(),
+    enabled,
+    staleTime: 10 * 60 * 1000,
+  });
 
   const accountsTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
   const loading = goalsLoading || txLoading || budgetsLoading;
@@ -173,16 +168,17 @@ export default function Dashboard() {
   }
 
   const now = new Date();
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
+  const todayStr = now.toISOString().split("T")[0];
+  
+  // Filter transactions from day 1 of month to today
   const thisMonthTx = transactions.filter(t => {
     const d = new Date(t.date);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
-      && !(t.is_recurring === true && !t.is_recurring_child);
+    return t.date >= firstDayOfMonth && t.date <= todayStr && !t.is_deleted;
   });
 
-  const allTx = transactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
-  const monthIncome = allTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const monthExpense = allTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
-  const totalSaved = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
+  const monthIncome = thisMonthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+  const monthExpense = thisMonthTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
 
   return (
     <PullToRefresh onRefresh={loadData}>
@@ -190,24 +186,23 @@ export default function Dashboard() {
         {user && <RecurringManager userEmail={user.email} />}
 
         {/* Top Header */}
-        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-16">
+        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-8">
           <div className="max-w-2xl mx-auto">
-            <div className="flex items-center justify-between mb-4">
-              <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
-              <div data-tour="add-transaction-btn" />
-            </div>
+            {/* 1. Greeting */}
+            <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
 
-            <BalanceCard
+            {/* 2. Balance Card Carousel */}
+            <BalanceCardCarousel
               income={monthIncome}
               expense={monthExpense}
-              savings={totalSaved}
-              totalBalance={accounts.length > 0 ? accountsTotal : null}
+              savings={0}
+              accounts={accounts}
               loading={loading}
             />
           </div>
         </div>
 
-        <div className="max-w-2xl mx-auto px-4 -mt-6 space-y-3">
+        <div className="max-w-2xl mx-auto px-4 space-y-3">
           {showSampleBanner && (
             <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
           )}
@@ -223,24 +218,21 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Financial Health Score */}
-          {user?.onboarding_completed && (
-            <FinancialHealthCard score={fhsScore} />
-          )}
+          {/* 3. Peringatan Anggaran */}
+          <Suspense fallback={<LazyFallback />}>
+            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+          </Suspense>
 
-          {/* Nana Insight */}
+          {/* 4. Misi Hari Ini */}
           {user?.onboarding_completed && (
             <NanaInsightCard
-              todayExpense={(() => {
-                const todayStr = new Date().toISOString().split("T")[0];
-                return transactions
-                  .filter(t => t.date === todayStr && (t.type === "expense") && !t.is_deleted)
-                  .reduce((s, t) => s + (t.amount || 0), 0);
-              })()}
+              todayExpense={transactions
+                .filter(t => t.date === todayStr && t.type === "expense" && !t.is_deleted)
+                .reduce((s, t) => s + (t.amount || 0), 0)}
             />
           )}
 
-          {/* Daily Missions + Level Progress */}
+          {/* 5. Banner Belum Catat */}
           {user?.onboarding_completed && (
             <DailyMissionsCard
               user={user}
@@ -249,7 +241,7 @@ export default function Dashboard() {
             />
           )}
 
-          {/* Boss Battle */}
+          {/* 6. Daily Mission Card */}
           {user?.onboarding_completed && (
             <BossBattleCard
               user={user}
@@ -258,21 +250,12 @@ export default function Dashboard() {
             />
           )}
 
-
-
-          <Suspense fallback={<LazyFallback />}>
-            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
-          </Suspense>
-
-          {widgets.cashflowForecast && (
-            <Suspense fallback={<LazyFallback />}>
-              <CashflowForecast transactions={transactions} loading={loading} user={user} />
-            </Suspense>
+          {/* 7. Transaksi Overview Hari Ini */}
+          {user?.onboarding_completed && (
+            <TodayTransactionsCard transactions={transactions} allCategories={allCategories} />
           )}
 
           {user?.onboarding_completed && <ReminderAlertWidget user={user} />}
-
-          {user?.onboarding_completed && <AccountsWidget user={user} />}
 
           <div className="h-2" />
         </div>
