@@ -341,7 +341,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[11px] text-[#8FA4C8]">kategori</p>
-                <p className="text-[10px] text-[#8FA4C8]">tekan lama = favorit</p>
+                <p className="text-[10px] text-[#8FA4C8]">★ = tambah/hapus favorit</p>
               </div>
               {/* Sub-tabs */}
               <div className="flex border border-[#E2E8F0] rounded-lg overflow-hidden mb-2">
@@ -357,53 +357,54 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                   <p className="text-[11px] text-[#8FA4C8] text-center py-3">Belum ada favorit. Buka tab Semua, tekan lama chip untuk bintangi.</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
-                    {favCats.map(cat => <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />)}
+                    {favCats.map(cat => <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onFavToggle={() => updateFavorites(cat.id)} />)}
                   </div>
                 )
               )}
               {favTab === "all" && (() => {
-                // Check if new grouped structure exists
-                const hasGrouped = filteredCats.some(c => c.is_subcategory === true || c.is_subcategory === false && c.sort_order > 0);
-                if (hasGrouped) {
-                  const parents = filteredCats.filter(c => c.is_subcategory === false).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-                  const subs = filteredCats.filter(c => c.is_subcategory === true).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-                  // Ungrouped (no parent_category field at all)
-                  const ungrouped = filteredCats.filter(c => c.is_subcategory === undefined && !c.parent_category);
+                const parents = filteredCats.filter(c => !c.is_subcategory).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+                const subs = filteredCats.filter(c => c.is_subcategory === true).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+                if (parents.length > 0) {
                   return (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {parents.map(parent => {
-                        const children = subs.filter(s => s.parent_category === parent.id);
-                        if (children.length === 0) return null;
+                        const children = subs.filter(s => s.parent_category === parent.name);
                         return (
                           <div key={parent.id}>
-                            <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-1.5 flex items-center gap-1">
-                              <span>{parent.emoji}</span> {parent.name}
-                            </p>
-                            <div className="flex flex-wrap gap-1.5">
-                              {children.map(cat => (
-                                <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />
-                              ))}
+                            {/* Parent header — tappable to select parent itself + fav star */}
+                            <div className="flex items-center justify-between mb-2">
+                              <button
+                                onClick={() => setCategory(category === parent.id ? "" : parent.id)}
+                                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all"
+                                style={{
+                                  backgroundColor: category === parent.id ? typeColor + "15" : "#F2F4F7",
+                                  border: `1.5px solid ${category === parent.id ? typeColor : "transparent"}`
+                                }}>
+                                <span className="text-base">{parent.emoji}</span>
+                                <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: category === parent.id ? typeColor : "#4A5568" }}>{parent.name}</span>
+                              </button>
+                              <button onClick={() => updateFavorites(parent.id)} className="p-1 rounded-full transition-all active:scale-90">
+                                <span className={`text-base ${favIds.includes(parent.id) ? "text-yellow-400" : "text-[#CBD5E0]"}`}>★</span>
+                              </button>
                             </div>
+                            {/* Sub-chips */}
+                            {children.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 pl-2 border-l-2 border-[#F2F4F7]">
+                                {children.map(cat => (
+                                  <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onFavToggle={() => updateFavorites(cat.id)} />
+                                ))}
+                              </div>
+                            )}
                           </div>
                         );
                       })}
-                      {ungrouped.length > 0 && (
-                        <div>
-                          <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Lainnya</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {ungrouped.map(cat => (
-                              <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   );
                 }
                 // Fallback: flat list
                 return (
                   <div className="flex flex-wrap gap-1.5">
-                    {filteredCats.map(cat => <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onLongPress={() => updateFavorites(cat.id)} />)}
+                    {filteredCats.map(cat => <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onFavToggle={() => updateFavorites(cat.id)} />)}
                   </div>
                 );
               })()}
@@ -499,24 +500,32 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   );
 }
 
-function CatChip({ cat, selected, typeColor, isFav, onSelect, onLongPress }) {
+function CatChip({ cat, selected, typeColor, isFav, onSelect, onFavToggle, onLongPress }) {
   const longPressTimer = useRef(null);
-  function startPress() { longPressTimer.current = setTimeout(() => { onLongPress(); }, 500); }
+  function startPress() { if (onLongPress) { longPressTimer.current = setTimeout(() => { onLongPress(); }, 500); } }
   function endPress() { clearTimeout(longPressTimer.current); }
   return (
-    <button
-      onMouseDown={startPress} onMouseUp={endPress} onMouseLeave={endPress}
-      onTouchStart={startPress} onTouchEnd={endPress}
-      onContextMenu={e => { e.preventDefault(); onLongPress(); }}
-      onClick={onSelect}
-      className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold border transition-all relative"
+    <div className="flex items-center rounded-full border transition-all overflow-hidden"
       style={{
         backgroundColor: selected ? typeColor + "20" : "#F2F4F7",
         borderColor: selected ? typeColor : "#E2E8F0",
-        color: selected ? typeColor : "#4A5568"
       }}>
-      <span>{cat.emoji}</span>{cat.name}
-      {isFav && <span className="text-[9px] text-yellow-400 ml-0.5">★</span>}
-    </button>
+      <button
+        onMouseDown={startPress} onMouseUp={endPress} onMouseLeave={endPress}
+        onTouchStart={startPress} onTouchEnd={endPress}
+        onClick={onSelect}
+        className="flex items-center gap-1 pl-2.5 pr-1.5 py-1.5 text-[11px] font-semibold"
+        style={{ color: selected ? typeColor : "#4A5568" }}>
+        <span>{cat.emoji}</span>{cat.name}
+      </button>
+      {onFavToggle && (
+        <button
+          onClick={e => { e.stopPropagation(); onFavToggle(); }}
+          className="pr-2 py-1.5 text-[11px] leading-none active:scale-90 transition-transform"
+        >
+          <span style={{ color: isFav ? "#FBBF24" : "#CBD5E0" }}>★</span>
+        </button>
+      )}
+    </div>
   );
 }
