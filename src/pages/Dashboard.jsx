@@ -202,12 +202,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="max-w-2xl mx-auto px-4 space-y-3">
-          {showSampleBanner && (
+        {showSampleBanner && (
+          <div className="max-w-2xl mx-auto px-4">
             <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
-          )}
+          </div>
+        )}
 
-          {user?.subscription_status === "expired" && (
+        {user?.subscription_status === "expired" && (
+          <div className="max-w-2xl mx-auto px-4">
             <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
               <span className="text-lg">⚠️</span>
               <div className="flex-1">
@@ -216,12 +218,15 @@ export default function Dashboard() {
               </div>
               <a href="/Subscription" className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold">Perpanjang</a>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* 3. Peringatan Anggaran */}
-          <Suspense fallback={<LazyFallback />}>
-            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
-          </Suspense>
+        {/* 3. Peringatan Anggaran - positioned in middle line */}
+        <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+          <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+        </Suspense>
+
+        <div className="max-w-2xl mx-auto px-4 space-y-3">
 
           {/* 4. Misi Hari Ini */}
           {user?.onboarding_completed && (

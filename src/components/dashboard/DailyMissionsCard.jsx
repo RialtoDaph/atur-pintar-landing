@@ -70,8 +70,8 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
   async function handleComplete(mission) {
     if (mission.is_completed) return;
 
-    // Optimistic update
-    setMissions(prev => prev.map(m => m.id === mission.id ? { ...m, is_completed: true } : m));
+    // Optimistic update - remove completed mission from list
+    setMissions(prev => prev.filter(m => m.id !== mission.id));
 
     // Update mission
     await base44.entities.DailyMission.update(mission.id, { is_completed: true });
@@ -146,7 +146,7 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
           <span className="text-xs text-[#8FA4C8] font-semibold">{completed}/{missions.length} selesai</span>
         </div>
 
-        {allDone ? (
+        {missions.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -160,21 +160,14 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
               <button
                 key={m.id}
                 onClick={() => handleComplete(m)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${
-                  m.is_completed
-                    ? "border-[#E2E8F0] bg-[#F8FAFC] opacity-60"
-                    : "border-[#E2E8F0] bg-white hover:border-[#FF6B35]/40 active:scale-98"
-                }`}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-[#E2E8F0] bg-white hover:border-[#FF6B35]/40 active:scale-98 transition-all"
               >
                 <span className="text-xl flex-shrink-0">{m.icon}</span>
-                <span className={`flex-1 text-sm font-medium text-left ${m.is_completed ? "line-through text-[#8FA4C8]" : "text-[#1A1A1A]"}`}>
+                <span className="flex-1 text-sm font-medium text-left text-[#1A1A1A]">
                   {m.title}
                 </span>
                 <span className="text-xs font-bold text-[#FF6B35] flex-shrink-0">+{m.xp_reward} XP</span>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                  m.is_completed ? "bg-[#16A34A] border-[#16A34A]" : "border-[#CBD5E0]"
-                }`}>
-                  {m.is_completed && <span className="text-white text-[10px]">✓</span>}
+                <div className="w-5 h-5 rounded-full border-2 border-[#CBD5E0] flex items-center justify-center flex-shrink-0">
                 </div>
               </button>
             ))}

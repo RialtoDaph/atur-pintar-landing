@@ -29,7 +29,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
       content: (
         <div className="space-y-3">
           <p className="text-[#8FA4C8] text-xs font-medium uppercase">Ringkasan Bulanan</p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 mb-3">
             <div className="flex flex-col items-center bg-white/5 rounded-xl py-3 px-2">
               <div className="bg-green-500/20 rounded-full w-9 h-9 flex items-center justify-center mb-2 ring-1 ring-green-500/30">
                 <TrendingUp className="w-4 h-4 text-[#99ff80]" />
@@ -44,12 +44,14 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
               <p className="text-[#8FA4C8] text-[9px] mb-1 font-medium uppercase tracking-wider">Pengeluaran</p>
               <p className="text-white text-xs font-bold">{compactRupiah(expense)}</p>
             </div>
-            <div className="flex flex-col items-center bg-white/5 rounded-xl py-3 px-2">
-              <div className="bg-blue-500/20 rounded-full w-9 h-9 flex items-center justify-center mb-2 ring-1 ring-blue-500/30">
-                <PiggyBank className="w-4 h-4 text-[#80b3ff]" />
-              </div>
-              <p className="text-[#8FA4C8] text-[9px] mb-1 font-medium uppercase tracking-wider">Tabungan</p>
-              <p className="text-white text-xs font-bold">{compactRupiah(selisih)}</p>
+          </div>
+          <div className="bg-white/10 rounded-xl py-3 px-3 flex items-center justify-between">
+            <div>
+              <p className="text-[#8FA4C8] text-[9px] font-medium uppercase tracking-wider">Saldo Bulan Ini</p>
+              <p className={`text-white text-sm font-bold ${selisih >= 0 ? "text-[#99ff80]" : "text-[#ff6666]"}`}>{compactRupiah(selisih)}</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
+              <PiggyBank className={`w-6 h-6 ${selisih >= 0 ? "text-[#99ff80]" : "text-[#ff6666]"}`} />
             </div>
           </div>
         </div>

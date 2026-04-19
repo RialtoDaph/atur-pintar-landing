@@ -370,15 +370,15 @@ function LayoutInner({ children, currentPageName }) {
         <button
           onClick={() => setShowAddTransaction(true)}
           data-tour="add-transaction-btn"
-          className="fixed z-[55] bg-[#FF6B35] flex items-center justify-center rounded-full shadow-2xl active:scale-95 transition-all duration-150 tap-highlight-fix sm:hidden"
+          className="fixed z-[55] bg-[#FF6B35] flex items-center justify-center rounded-full shadow-lg active:scale-95 transition-all duration-150 tap-highlight-fix sm:hidden"
           style={{
-            width: 56, height: 56,
-            bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))',
-            right: 20,
-            boxShadow: '0 4px 20px rgba(255,107,53,0.5)'
+            width: 44, height: 44,
+            bottom: 'calc(76px + env(safe-area-inset-bottom, 0px))',
+            right: 16,
+            boxShadow: '0 2px 12px rgba(255,107,53,0.4)'
           }}
         >
-          <Plus className="w-7 h-7 text-white" />
+          <Plus className="w-5 h-5 text-white" />
         </button>
       )}
 
@@ -386,15 +386,15 @@ function LayoutInner({ children, currentPageName }) {
       {!anyModalOpen && (
         <button
           onClick={() => setShowAddTransaction(true)}
-          className="fixed z-[55] bg-[#FF6B35] items-center justify-center rounded-full shadow-2xl active:scale-95 transition-all duration-150 tap-highlight-fix hidden sm:flex"
+          className="fixed z-[55] bg-[#FF6B35] items-center justify-center rounded-full shadow-lg active:scale-95 transition-all duration-150 tap-highlight-fix hidden sm:flex"
           style={{
-            width: 56, height: 56,
-            bottom: 32,
-            right: 32,
-            boxShadow: '0 4px 20px rgba(255,107,53,0.5)'
+            width: 48, height: 48,
+            bottom: 24,
+            right: 24,
+            boxShadow: '0 2px 12px rgba(255,107,53,0.4)'
           }}
         >
-          <Plus className="w-7 h-7 text-white" />
+          <Plus className="w-5 h-5 text-white" />
         </button>
       )}
 
