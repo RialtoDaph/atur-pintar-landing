@@ -1,14 +1,19 @@
+import { useState } from "react";
+
 /**
  * AccountLogo - Display account/institution logo
  * Shows logo_url as 32x32px image with fallback to emoji icon
  */
 export default function AccountLogo({ logoUrl, icon, bgColor = "#FF6A00" }) {
-  if (logoUrl) {
+  const [imgError, setImgError] = useState(false);
+
+  if (logoUrl && !imgError) {
     return (
       <img
         src={logoUrl}
         alt="Logo"
         className="w-8 h-8 rounded-full object-contain bg-white"
+        onError={() => setImgError(true)}
       />
     );
   }
