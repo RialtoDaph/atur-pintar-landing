@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, CheckCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import AccountAvatar from "@/components/ui/AccountAvatar";
 
 function formatIDR(n) {
   return "Rp" + Math.round(n || 0).toLocaleString("id-ID");
@@ -68,13 +69,7 @@ export default function AccountPickerModal({ isOpen, onClose, onConfirm, title, 
                 return (
                   <button key={acc.id} onClick={() => setSelected(acc.id)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${isSelected ? "border-[#FF6A00] bg-[#FFF5EB]" : "border-[#E2E8F0] hover:border-[#CBD5E0]"}`}>
-                    {acc.logo_url ? (
-                      <img src={acc.logo_url} alt="" className="w-10 h-10 rounded-lg object-contain flex-shrink-0" onError={(e) => e.style.display = 'none'} />
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold text-white flex-shrink-0" style={{ backgroundColor: acc.color || "#FF6A00" }}>
-                        {acc.icon || "💳"}
-                      </div>
-                    )}
+                    <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#FF6A00"} size="w-10 h-10" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#1A1A1A]">{acc.name}</p>
                       <p className="text-xs text-[#8FA4C8]">{formatIDR(acc.balance || 0)}</p>

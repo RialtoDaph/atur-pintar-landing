@@ -3,6 +3,7 @@ import { X, Settings2, GripVertical } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { parseRupiah } from "@/components/utils/parseRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import AccountAvatar from "@/components/ui/AccountAvatar";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
@@ -184,13 +185,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                         : "border-[#E2E8F0] bg-[#F8FAFC] text-[#4A5568]"
                     }`}
                   >
-                    {acc.logo_url ? (
-                      <img src={acc.logo_url} alt="" className="w-5 h-5 rounded-full object-contain flex-shrink-0" onError={(e) => e.style.display = 'none'} />
-                    ) : (
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: acc.color || "#FF6A00" }}>
-                        {acc.icon || "💳"}
-                      </div>
-                    )}
+                    <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#FF6A00"} size="w-5 h-5" />
                     {acc.name}
                   </button>
                 ))}

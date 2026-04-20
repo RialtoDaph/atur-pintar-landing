@@ -3,6 +3,7 @@ import { X, Camera, Loader2, Scissors, Upload, Sparkles, History, ChevronDown } 
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import AccountAvatar from "@/components/ui/AccountAvatar";
 import SplitBillModal from "./SplitBillModal";
 import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
 
@@ -356,13 +357,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                           backgroundColor: active ? "#FFF7ED" : "#F8FAFC",
                           color: active ? "#EA580C" : "#4A5568"
                         }}>
-                        {acc.logo_url ? (
-                          <img src={acc.logo_url} alt="" className="w-5 h-5 rounded-full object-contain flex-shrink-0" onError={(e) => e.style.display = 'none'} />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: acc.color || "#FF6A00" }}>
-                            {acc.icon || "💳"}
-                          </div>
-                        )}
+                        <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#FF6A00"} size="w-5 h-5" />
                         {acc.name}
                       </button>
                     );
