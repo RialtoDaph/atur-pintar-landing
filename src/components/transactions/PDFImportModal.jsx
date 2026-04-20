@@ -117,9 +117,15 @@ export default function PDFImportModal({ onClose, onSuccess }) {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setFileUrl(file_url);
 
-      // Ask AI to extract structured table from the file
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Kamu adalah OCR untuk mutasi rekening bank Indonesia.
+      // Ask AI to extract structured table from the file (with timeout)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+      
+      let result;
+      try {
+        result = await Promise.race([
+          base44.integrations.Core.InvokeLLM({
+            prompt: `Kamu adalah OCR untuk mutasi rekening bank Indonesia.
 Dari file ini, ekstrak SEMUA baris transaksi sebagai tabel terstruktur.
 Kembalikan field "fields" berisi array nama kolom yang ada,
 dan "rows" berisi array objek dengan pasangan key-value sesuai kolom tersebut.
@@ -132,15 +138,20 @@ PENTING:
 - Kembalikan semua baris transaksi yang ada
 
 Format: { "fields": ["col1","col2",...], "rows": [{"col1": "val", ...}, ...] }`,
-        file_urls: [file_url],
-        response_json_schema: {
-          type: "object",
-          properties: {
-            fields: { type: "array", items: { type: "string" } },
-            rows: { type: "array", items: { type: "object", additionalProperties: true } }
-          }
-        }
-      });
+            file_urls: [file_url],
+            response_json_schema: {
+              type: "object",
+              properties: {
+                fields: { type: "array", items: { type: "string" } },
+                rows: { type: "array", items: { type: "object", additionalProperties: true } }
+              }
+            }
+          }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Pemrosesan timeout")), 55000))
+        ]);
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       const fields = result.fields || [];
       const rows = result.rows || [];
@@ -186,7 +197,8 @@ Format: { "fields": ["col1","col2",...], "rows": [{"col1": "val", ...}, ...] }`,
       setMapping(autoMap);
       setStep("map");
     } catch (e) {
-      toast.error("Gagal membaca file: " + e.message);
+      const msg = e.message.includes("timeout") ? "Pemrosesan terlalu lama. Coba file yang lebih kecil atau jenis bank lain." : "Gagal membaca file: " + e.message;
+      toast.error(msg);
     }
     setLoading(false);
   }
@@ -327,7 +339,8 @@ Format: { "fields": ["col1","col2",...], "rows": [{"col1": "val", ...}, ...] }`,
                   </div>
                   <div className="text-center">
                     <p className="font-bold text-[#1A1A1A] text-sm">Membaca file...</p>
-                    <p className="text-xs text-[#8FA4C8] mt-1">AI sedang menganalisis, harap tunggu</p>
+                    <p className="text-xs text-[#8FA4C8] mt-1">Ini mungkin memakan waktu 30-60 detik</p>
+                    <p className="text-[10px] text-[#CBD5E0] mt-2">Jika lebih dari 1 menit, coba file yang lebih kecil</p>
                   </div>
                 </div>
               ) : (
