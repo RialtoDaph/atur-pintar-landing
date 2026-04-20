@@ -10,7 +10,7 @@ export function AppConfigProvider({ children }) {
   useEffect(() => {
     async function loadConfig() {
       try {
-        const records = await base44.asServiceRole.entities.AppConfig.list();
+        const records = await base44.entities.AppConfig.list();
         setConfig(records?.[0] || getDefaults());
       } catch (error) {
         console.error('Error loading AppConfig:', error);
