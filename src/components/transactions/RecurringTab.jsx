@@ -278,6 +278,38 @@ export default function RecurringTab({ user, globalCategories }) {
         </Section>
       )}
 
+      {/* All registered recurring */}
+      {recurring.length > 0 && (
+        <Section title="Semua transaksi rutin terdaftar">
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-[#F0F2F5]">
+            {recurring.sort((a, b) => (a.note || "").localeCompare(b.note || "")).map((tx, idx) => {
+              const isExpense = tx.type === "expense";
+              const isDone = tx.recurring_last_generated && tx.recurring_last_generated.substring(0, 7) >= thisMonth();
+              return (
+                <div key={tx.id} className={`flex items-center gap-3 px-4 py-3 ${idx < recurring.length - 1 ? "border-b border-[#F2F4F7]" : ""}`}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-base flex-shrink-0"
+                    style={{ backgroundColor: isExpense ? "#EF444415" : "#22C55E15" }}>
+                    {getCatEmoji(tx.category)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[#1A1A1A] truncate">{tx.note || "Transaksi Rutin"}</p>
+                    <p className="text-[11px] text-[#8FA4C8]">{INTERVAL_LABELS[tx.recurring_interval] || "Bulanan"}</p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-bold" style={{ color: isExpense ? "#EF4444" : "#22C55E" }}>
+                      {isExpense ? "−" : "+"}{formatIDR(tx.amount)}
+                    </p>
+                    <p className="text-[10px]" style={{ color: isDone ? "#22C55E" : "#F59E0B" }}>
+                      {isDone ? "✓ selesai" : "pending"}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      )}
+
       {recurring.length === 0 && debts.length === 0 && (
         <EmptyState icon="🔄" text={"Belum ada transaksi rutin.\nTambah transaksi dan aktifkan toggle 'Berulang' untuk mulai."} />
       )}
