@@ -249,6 +249,7 @@ export default function Transactions() {
             <TxLanggananTab
               subscriptions={subscriptions}
               formatCurrency={formatCurrency}
+              onRefresh={fetchData}
             />
           )}
         </motion.div>

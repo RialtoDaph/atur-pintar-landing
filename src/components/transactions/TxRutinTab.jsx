@@ -95,22 +95,7 @@ function RecurringCard({ tx, categories, idx }) {
 export default function TxRutinTab({ debts, recurringTxs, categories }) {
   return (
     <div className="px-3 pb-4 space-y-6 pt-3">
-      {/* Section A: Cicilan & Utang */}
-      <div>
-        <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-wider px-1 mb-2">Cicilan & Utang</p>
-        {debts.length === 0 ? (
-          <div className="bg-white rounded-2xl p-5 text-center shadow-sm">
-            <p className="text-2xl mb-2">✅</p>
-            <p className="text-sm text-[#8FA4C8]">Tidak ada cicilan aktif</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {debts.map((debt, idx) => <DebtCard key={debt.id} debt={debt} idx={idx} />)}
-          </div>
-        )}
-      </div>
-
-      {/* Section B: Rutin Berkala */}
+      {/* Section A: Rutin Berkala */}
       <div>
         <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-wider px-1 mb-2">Rutin Berkala</p>
         {recurringTxs.length === 0 ? (
@@ -123,6 +108,21 @@ export default function TxRutinTab({ debts, recurringTxs, categories }) {
             {recurringTxs.map((tx, idx) => (
               <RecurringCard key={tx.id} tx={tx} categories={categories} idx={idx} />
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Section B: Cicilan & Utang */}
+      <div>
+        <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-wider px-1 mb-2">Cicilan & Utang</p>
+        {debts.length === 0 ? (
+          <div className="bg-white rounded-2xl p-5 text-center shadow-sm">
+            <p className="text-2xl mb-2">✅</p>
+            <p className="text-sm text-[#8FA4C8]">Tidak ada cicilan aktif</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {debts.map((debt, idx) => <DebtCard key={debt.id} debt={debt} idx={idx} />)}
           </div>
         )}
       </div>
