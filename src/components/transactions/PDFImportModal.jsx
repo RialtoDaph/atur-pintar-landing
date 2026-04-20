@@ -165,33 +165,44 @@ Format: { "fields": ["col1","col2",...], "rows": [{"col1": "val", ...}, ...] }`,
       setExtractedFields(fields);
       setExtractedRows(rows);
 
-      // Auto-detect mapping
+      // Auto-detect mapping dengan AI untuk akurasi lebih tinggi
       const autoMap = { date: "", amount: "", debit: "", credit: "", note: "", type: "" };
-      fields.forEach(f => {
-        const lower = f.toLowerCase();
-        if (!autoMap.date && (lower.includes("tanggal") || lower.includes("date") || lower.includes("tgl") || lower.includes("waktu"))) autoMap.date = f;
-        if (!autoMap.debit && (lower.includes("debet") || lower.includes("debit") || lower === "keluar" || lower.includes("db"))) autoMap.debit = f;
-        if (!autoMap.credit && (lower.includes("kredit") || lower.includes("credit") || lower === "masuk" || lower.includes("cr"))) autoMap.credit = f;
-        if (!autoMap.amount && !autoMap.debit && (lower.includes("nominal") || lower.includes("jumlah") || lower.includes("amount") || lower === "nilai")) autoMap.amount = f;
-        if (!autoMap.note && (lower.includes("keterangan") || lower.includes("deskripsi") || lower.includes("catatan") || lower.includes("description") || lower.includes("note") || lower.includes("merchant"))) autoMap.note = f;
-        if (!autoMap.type && (lower === "type" || lower === "tipe" || lower.includes("jenis") || lower === "db/cr")) autoMap.type = f;
+      
+      // Gunakan AI untuk memahami kolom dengan lebih akurat
+      const mapResult = await base44.integrations.Core.InvokeLLM({
+        prompt: `Diberikan daftar nama kolom dari file bank/e-wallet:
+${JSON.stringify(fields)}
+
+Identifikasi dan kembalikan mapping untuk setiap tipe kolom dalam format JSON:
+{
+  "date": "nama kolom untuk tanggal transaksi",
+  "debit": "nama kolom untuk pengeluaran/debet (atau null)",
+  "credit": "nama kolom untuk pemasukan/kredit (atau null)",
+  "amount": "nama kolom untuk nominal total (jika ada kolom tunggal)",
+  "note": "nama kolom untuk keterangan/deskripsi transaksi",
+  "type": "nama kolom untuk jenis transaksi DB/CR/IN/OUT (atau null)"
+}
+
+Pastikan:
+- Hanya gunakan nama kolom yang benar-benar ada di daftar
+- Jika tidak yakin, return null untuk field tersebut
+- Prioritas: date WAJIB ada, amount/debit-credit WAJIB ada minimal salah satu`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            date: { type: ["string", "null"] },
+            debit: { type: ["string", "null"] },
+            credit: { type: ["string", "null"] },
+            amount: { type: ["string", "null"] },
+            note: { type: ["string", "null"] },
+            type: { type: ["string", "null"] }
+          }
+        }
       });
 
-      // Apply template hints
-      if (selectedTemplate && selectedTemplate.id !== "auto") {
-        const hints = {
-          bca: { date: "Tanggal", note: "Keterangan", debit: "Debet", credit: "Kredit" },
-          mandiri: { date: "Tanggal Transaksi", note: "Deskripsi Transaksi", debit: "Nominal Debet", credit: "Nominal Kredit" },
-          bri: { date: "TANGGAL", note: "KETERANGAN", amount: "NOMINAL", type: "DB/CR" },
-          bni: { date: "Tanggal", note: "Keterangan", debit: "Debit", credit: "Kredit" },
-          gopay: { date: "Tanggal", note: "Keterangan", amount: "Nominal", type: "Jenis" },
-          ovo: { date: "Date", note: "Description", amount: "Amount", type: "Type" },
-          dana: { date: "Tanggal", note: "Keterangan", amount: "Nominal", type: "Tipe" },
-          shopee: { date: "Waktu Transaksi", note: "Keterangan", amount: "Jumlah", type: "Tipe Transaksi" },
-        }[selectedTemplate.id] || {};
-        for (const [key, colName] of Object.entries(hints)) {
-          if (fields.includes(colName)) autoMap[key] = colName;
-        }
+      // Apply AI mapping
+      for (const [key, val] of Object.entries(mapResult)) {
+        if (val && fields.includes(val)) autoMap[key] = val;
       }
 
       setMapping(autoMap);
