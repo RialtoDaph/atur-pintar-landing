@@ -1,0 +1,67 @@
+{
+  "name": "DetectedSubscription",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Detected subscription/recurring expense name"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Detected amount"
+    },
+    "billing_cycle": {
+      "type": "string",
+      "enum": [
+        "weekly",
+        "monthly",
+        "yearly"
+      ],
+      "default": "monthly"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category key"
+    },
+    "next_due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Predicted next due date"
+    },
+    "last_seen_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last transaction date detected"
+    },
+    "occurrence_count": {
+      "type": "number",
+      "description": "How many times this pattern was detected"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "dismissed"
+      ],
+      "default": "pending",
+      "description": "User review status"
+    },
+    "transaction_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Sample transaction notes that matched this pattern"
+    }
+  },
+  "required": [
+    "name",
+    "amount"
+  ],
+  "rls": {
+    "enabled": true,
+    "filter_field": "created_by",
+    "filter_value": "{{user.email}}"
+  }
+}

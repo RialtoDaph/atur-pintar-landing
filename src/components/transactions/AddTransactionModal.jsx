@@ -102,17 +102,38 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   function handleNoteChange(val) {
     setNote(val);
     clearTimeout(suggestTimer.current);
-    if (!category && val.trim().length >= 2) {
+    if (!category && val.trim().length >= 3) {
       suggestTimer.current = setTimeout(async () => {
-        const lower = val.toLowerCase();
-        const learns = await base44.entities.CategoryLearning.filter({ created_by: (await base44.auth.me()).email }).catch(() => []);
-        const match = (learns || []).find(l => l.note_fragment && lower.includes(l.note_fragment.toLowerCase()) && l.count >= 2);
-        if (match) {
-          const cat = globalCategories.find(c => c.id === match.category);
-          if (cat) setSuggestion(cat);
+        try {
+          // Try backend categorization (learning + rules + AI)
+          const res = await base44.functions.invoke("categorizeTransaction", { note: val, type: tab });
+          const result = res.data || {};
+
+          if (result.category) {
+            // Direct category ID from learning
+            const cat = globalCategories.find(c => c.id === result.category);
+            if (cat) { setSuggestion({ ...cat, source: result.source }); return; }
+          }
+          if (result.category_name) {
+            // Category name match from rules or AI
+            const cat = globalCategories.find(c =>
+              c.name.toLowerCase() === result.category_name.toLowerCase() ||
+              c.name.toLowerCase().includes(result.category_name.toLowerCase())
+            );
+            if (cat) { setSuggestion({ ...cat, source: result.source }); return; }
+          }
+        } catch {
+          // Fallback: local CategoryLearning check
+          const lower = val.toLowerCase();
+          const learns = await base44.entities.CategoryLearning.filter({ created_by: (await base44.auth.me()).email }).catch(() => []);
+          const match = (learns || []).sort((a, b) => (b.count || 1) - (a.count || 1)).find(l => l.note_fragment && lower.includes(l.note_fragment.toLowerCase()) && l.count >= 2);
+          if (match) {
+            const cat = globalCategories.find(c => c.id === match.category);
+            if (cat) setSuggestion(cat);
+          }
         }
-      }, 1200);
-    } else {
+      }, 900);
+    } else if (!val.trim()) {
       setSuggestion(null);
     }
   }
@@ -417,10 +438,13 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
               {/* AI suggestion */}
               {suggestion && !category && (
-                <div className="mt-2 flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
-                  <span className="text-xs text-blue-600">💡 Biasanya:</span>
+                <div className="mt-2 flex items-center gap-2 bg-[#FFF7ED] border border-[#F97316]/20 rounded-xl px-3 py-2">
+                  <span className="text-xs text-[#F97316]">
+                    {suggestion.source === 'learning' ? '🧠' : suggestion.source === 'rules' ? '⚡' : '✨'}
+                  </span>
+                  <span className="text-xs text-[#EA580C] font-medium">Saran:</span>
                   <button onClick={() => { setCategory(suggestion.id); setSuggestion(null); }}
-                    className="flex items-center gap-1 text-xs font-bold text-white bg-blue-500 px-2.5 py-1 rounded-lg">
+                    className="flex items-center gap-1 text-xs font-bold text-white bg-[#F97316] px-2.5 py-1 rounded-lg">
                     {suggestion.emoji} {suggestion.name}
                   </button>
                   <button onClick={() => setSuggestion(null)} className="ml-auto text-[10px] text-[#8FA4C8]">✕</button>

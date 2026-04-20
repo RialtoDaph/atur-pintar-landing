@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import AccountPickerModal from "./AccountPickerModal";
-import { Plus, X } from "lucide-react";
+import SmartSubscriptionDetector from "./SmartSubscriptionDetector";
+import { Plus, X, Zap } from "lucide-react";
 
 function formatIDR(n) { return "Rp" + Math.round(n || 0).toLocaleString("id-ID"); }
 function today() { return new Date().toLocaleDateString("en-CA"); }
@@ -43,6 +44,7 @@ export default function SubscriptionTab({ user }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [addForm, setAddForm] = useState({ name: "", icon: "", amount: "", billing_cycle: "monthly", next_due_date: today(), notes: "" });
   const [saving, setSaving] = useState(false);
+  const [subView, setSubView] = useState("list"); // "list" | "detect"
 
   const load = useCallback(async () => {
     if (!user?.email) return;
@@ -113,7 +115,24 @@ export default function SubscriptionTab({ user }) {
   if (loading) return <div className="p-8 flex justify-center"><div className="w-6 h-6 border-2 border-[#F97316] border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
-    <div className="space-y-5 pb-8">
+    <div className="space-y-4 pb-8">
+      {/* Sub-view toggle */}
+      <div className="flex bg-[#F2F4F7] rounded-xl p-0.5">
+        <button onClick={() => setSubView("list")}
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${subView === "list" ? "bg-white text-[#1A1A1A] shadow-sm" : "text-[#8FA4C8]"}`}>
+          Daftar Langganan
+        </button>
+        <button onClick={() => setSubView("detect")}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${subView === "detect" ? "bg-white text-[#1A1A1A] shadow-sm" : "text-[#8FA4C8]"}`}>
+          <Zap className="w-3 h-3" /> Deteksi Otomatis
+        </button>
+      </div>
+
+      {subView === "detect" && (
+        <SmartSubscriptionDetector user={user} onConfirmed={() => { setSubView("list"); load(); }} />
+      )}
+
+      {subView === "list" && <div className="space-y-5">
       {/* Summary */}
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-white rounded-xl p-3 shadow-sm border border-[#F0F2F5]">
@@ -165,6 +184,7 @@ export default function SubscriptionTab({ user }) {
         className="w-full py-3.5 rounded-xl border-2 border-dashed border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8] hover:border-[#F97316] hover:text-[#F97316] transition-colors flex items-center justify-center gap-2">
         <Plus className="w-4 h-4" /> Tambah Langganan
       </button>
+      </div>}
 
       {/* Account Picker */}
       {pickerSub && (
