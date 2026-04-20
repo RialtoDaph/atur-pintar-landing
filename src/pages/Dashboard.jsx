@@ -186,7 +186,7 @@ export default function Dashboard() {
         {user && <RecurringManager userEmail={user.email} />}
 
         {/* Top Header */}
-        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-8">
+        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-14">
           <div className="max-w-2xl mx-auto">
             {/* 1. Greeting */}
             <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
@@ -202,14 +202,21 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Budget Widget — overlaps header/body boundary */}
+        <div className="max-w-2xl mx-auto px-4 -mt-8 relative z-10">
+          <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+          </Suspense>
+        </div>
+
         {showSampleBanner && (
-          <div className="max-w-2xl mx-auto px-4">
+          <div className="max-w-2xl mx-auto px-4 mt-3">
             <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
           </div>
         )}
 
         {user?.subscription_status === "expired" && (
-          <div className="max-w-2xl mx-auto px-4">
+          <div className="max-w-2xl mx-auto px-4 mt-3">
             <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
               <span className="text-lg">⚠️</span>
               <div className="flex-1">
@@ -221,12 +228,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* 3. Peringatan Anggaran - positioned in middle line */}
-        <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-          <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
-        </Suspense>
-
-        <div className="max-w-2xl mx-auto px-4 space-y-3">
+        <div className="max-w-2xl mx-auto px-4 space-y-3 mt-3">
 
           {/* 4. Misi Hari Ini */}
           {user?.onboarding_completed && (

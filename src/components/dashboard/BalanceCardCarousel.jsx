@@ -1,101 +1,156 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
-import { useAppSettings } from "@/components/utils/useAppSettings";
+import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function compactRupiah(value) {
   const abs = Math.abs(value);
   const sign = value < 0 ? "-" : "";
-  if (abs >= 1_000_000_000) return `${sign}Rp ${(abs / 1_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} M`;
-  if (abs >= 1_000_000) return `${sign}Rp ${(abs / 1_000_000).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Jt`;
-  if (abs >= 1_000) return `${sign}Rp ${(abs / 1_000).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 1 })} rb`;
-  return `${sign}Rp ${abs.toLocaleString('id-ID')}`;
+  if (abs >= 1_000_000_000) return `${sign}${(abs / 1_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} M`;
+  if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Jt`;
+  if (abs >= 1_000) return `${sign}${(abs / 1_000).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} rb`;
+  return `${sign}${abs.toLocaleString('id-ID')}`;
 }
 
 export default function BalanceCardCarousel({ income, expense, savings, accounts, loading }) {
-  const { t } = useAppSettings();
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+
   const now = new Date();
   const monthName = now.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
   const totalBalance = accounts.reduce((s, a) => s + (a.balance || 0), 0);
   const selisih = income - expense;
+  const savingRate = income > 0 ? Math.round((selisih / income) * 100) : 0;
+
+  if (loading) {
+    return <div className="rounded-2xl animate-pulse h-36 bg-white/10" />;
+  }
 
   const slides = [
     {
-      title: `Bulan Ini (${monthName})`,
+      key: "monthly",
       content: (
-        <div className="space-y-3">
-          <p className="text-[#8FA4C8] text-xs font-medium uppercase">Ringkasan Bulanan</p>
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div className="flex flex-col items-center bg-white/5 rounded-xl py-3 px-2">
-              <div className="bg-green-500/20 rounded-full w-9 h-9 flex items-center justify-center mb-2 ring-1 ring-green-500/30">
-                <TrendingUp className="w-4 h-4 text-[#99ff80]" />
-              </div>
-              <p className="text-[#8FA4C8] text-[9px] mb-1 font-medium uppercase tracking-wider">Pemasukan</p>
-              <p className="text-white text-xs font-bold">{compactRupiah(income)}</p>
-            </div>
-            <div className="flex flex-col items-center bg-white/5 rounded-xl py-3 px-2">
-              <div className="bg-red-500/20 rounded-full w-9 h-9 flex items-center justify-center mb-2 ring-1 ring-red-500/30">
-                <TrendingDown className="w-4 h-4 text-[#ff6666]" />
-              </div>
-              <p className="text-[#8FA4C8] text-[9px] mb-1 font-medium uppercase tracking-wider">Pengeluaran</p>
-              <p className="text-white text-xs font-bold">{compactRupiah(expense)}</p>
-            </div>
-          </div>
-          <div className="bg-white/10 rounded-xl py-3 px-3 flex items-center justify-between">
+        <div>
+          <p className="text-white/50 text-[10px] font-semibold uppercase tracking-widest mb-1">Bulan Ini · {monthName}</p>
+          <div className="flex items-end justify-between mb-4">
             <div>
-              <p className="text-[#8FA4C8] text-[9px] font-medium uppercase tracking-wider">Saldo Bulan Ini</p>
-              <p className={`text-white text-sm font-bold ${selisih >= 0 ? "text-[#99ff80]" : "text-[#ff6666]"}`}>{compactRupiah(selisih)}</p>
+              <p className="text-white/60 text-xs mb-0.5">Sisa Bulan Ini</p>
+              <p className={`text-3xl font-black tracking-tight ${selisih >= 0 ? "text-white" : "text-red-400"}`}>
+                Rp {compactRupiah(selisih)}
+              </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
-              <PiggyBank className={`w-6 h-6 ${selisih >= 0 ? "text-[#99ff80]" : "text-[#ff6666]"}`} />
+            {income > 0 && (
+              <div className="text-right">
+                <p className="text-white/50 text-[10px] mb-0.5">Saving rate</p>
+                <p className={`text-lg font-bold ${savingRate >= 0 ? "text-[#99ff80]" : "text-red-400"}`}>{savingRate}%</p>
+              </div>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <div className="flex-1 flex items-center gap-2 bg-white/8 rounded-xl px-3 py-2">
+              <div className="w-7 h-7 rounded-full bg-green-500/20 flex items-center justify-center">
+                <TrendingUp className="w-3.5 h-3.5 text-[#99ff80]" />
+              </div>
+              <div>
+                <p className="text-white/50 text-[9px] uppercase tracking-wider">Masuk</p>
+                <p className="text-white text-xs font-bold">Rp {compactRupiah(income)}</p>
+              </div>
+            </div>
+            <div className="flex-1 flex items-center gap-2 bg-white/8 rounded-xl px-3 py-2">
+              <div className="w-7 h-7 rounded-full bg-red-500/20 flex items-center justify-center">
+                <TrendingDown className="w-3.5 h-3.5 text-[#ff8080]" />
+              </div>
+              <div>
+                <p className="text-white/50 text-[9px] uppercase tracking-wider">Keluar</p>
+                <p className="text-white text-xs font-bold">Rp {compactRupiah(expense)}</p>
+              </div>
             </div>
           </div>
         </div>
       )
     },
     {
-      title: "Total Keseluruhan",
+      key: "total",
       content: (
-        <div className="space-y-4 flex flex-col items-center justify-center">
-          <p className="text-[#8FA4C8] text-xs font-medium uppercase">Total Saldo Semua Rekening</p>
-          <p className={`font-black text-4xl tracking-tight ${totalBalance >= 0 ? "text-white" : "text-red-400"}`}>
-            {compactRupiah(totalBalance)}
-          </p>
-          <p className="text-[#8FA4C8] text-xs">{accounts.length} rekening terhubung</p>
-          <button
-            onClick={() => navigate("/Accounts")}
-            className="px-4 py-2 bg-[#FF6A00] text-white rounded-lg text-xs font-semibold hover:bg-[#E55A00] transition-colors"
-          >
-            Lihat Rekening
-          </button>
+        <div>
+          <p className="text-white/50 text-[10px] font-semibold uppercase tracking-widest mb-1">Semua Rekening</p>
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <p className="text-white/60 text-xs mb-0.5">Total Saldo</p>
+              <p className={`text-3xl font-black tracking-tight ${totalBalance >= 0 ? "text-white" : "text-red-400"}`}>
+                Rp {compactRupiah(totalBalance)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-white/50 text-[10px] mb-0.5">{accounts.length} rekening</p>
+              <Wallet className="w-5 h-5 text-white/40 ml-auto" />
+            </div>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {accounts.slice(0, 3).map(a => (
+              <div key={a.id} className="flex items-center gap-1.5 bg-white/8 rounded-lg px-2.5 py-1.5">
+                <span className="text-xs">{a.icon || "💳"}</span>
+                <div>
+                  <p className="text-white/60 text-[9px]">{a.name}</p>
+                  <p className="text-white text-[10px] font-bold">Rp {compactRupiah(a.balance || 0)}</p>
+                </div>
+              </div>
+            ))}
+            {accounts.length > 3 && (
+              <button
+                onClick={() => navigate("/Accounts")}
+                className="flex items-center gap-1 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-2.5 py-1.5 text-[#FF9A50] text-[10px] font-semibold"
+              >
+                +{accounts.length - 3} lagi
+              </button>
+            )}
+            {accounts.length === 0 && (
+              <button
+                onClick={() => navigate("/Accounts")}
+                className="flex items-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 py-1.5 text-[#FF9A50] text-xs font-semibold"
+              >
+                + Tambah Rekening
+              </button>
+            )}
+          </div>
         </div>
       )
     }
   ];
 
-  if (loading) {
-    return <div className="bg-gradient-to-br from-[#161616] to-[#1a1a1a] rounded-2xl p-5 animate-pulse h-48" />;
-  }
-
   return (
-    <div data-tour="balance-card" className="space-y-3">
-      <div className="bg-gradient-to-br from-[#1a1a1a] via-[#161616] to-[#111] rounded-2xl p-5 border border-[#2a2a2a] shadow-2xl" style={{boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,106,0,0.08)'}}>
-        <p className="text-[#8FA4C8] text-[10px] font-bold uppercase tracking-[0.15em] mb-4 text-center">{slides[currentSlide].title}</p>
+    <div data-tour="balance-card" className="relative">
+      {/* Card */}
+      <div
+        className="rounded-2xl p-4 relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, #1e1e1e 0%, #161616 50%, #0f0f0f 100%)',
+          border: '1px solid rgba(255,255,255,0.07)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,106,0,0.06)'
+        }}
+      >
+        {/* Subtle orange glow top-right */}
+        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-10 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #FF6A00 0%, transparent 70%)' }} />
+
+        {/* Content */}
         {slides[currentSlide].content}
+
+        {/* Swipe arrows */}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-30">
+          <button onClick={() => setCurrentSlide((currentSlide + 1) % slides.length)} className="text-white">
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
-      
-      {/* Dot Indicator */}
-      <div className="flex items-center justify-center gap-2">
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-1.5 mt-2">
         {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentSlide(idx)}
-            className={`h-2 rounded-full transition-all ${
-              idx === currentSlide ? "w-6 bg-[#FF6A00]" : "w-2 bg-white/30 hover:bg-white/50"
+            className={`rounded-full transition-all duration-200 ${
+              idx === currentSlide ? "w-5 h-1.5 bg-[#FF6A00]" : "w-1.5 h-1.5 bg-white/25"
             }`}
           />
         ))}
