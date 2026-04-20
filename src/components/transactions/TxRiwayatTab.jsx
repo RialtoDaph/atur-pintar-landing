@@ -159,7 +159,7 @@ export default function TxRiwayatTab({ transactions, categories, accounts, forma
   }
 
   return (
-    <div className="pb-28">
+    <div className="pb-4">
       {/* Sub-tabs */}
       <div className="flex gap-2 px-4 py-3">
         {SUB_TABS.map(s => (

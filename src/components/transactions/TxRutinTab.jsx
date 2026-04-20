@@ -94,7 +94,7 @@ function RecurringCard({ tx, categories, idx }) {
 
 export default function TxRutinTab({ debts, recurringTxs, categories }) {
   return (
-    <div className="px-3 pb-28 space-y-6 pt-3">
+    <div className="px-3 pb-4 space-y-6 pt-3">
       {/* Section A: Cicilan & Utang */}
       <div>
         <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-wider px-1 mb-2">Cicilan & Utang</p>

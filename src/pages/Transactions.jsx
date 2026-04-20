@@ -126,15 +126,21 @@ export default function Transactions() {
 
   return (
     <div className="min-h-screen bg-[#F2F4F7]">
-      {/* ===== HEADER ===== */}
-      <div className="bg-[#0A0A0A] px-4 pt-3 pb-0">
-        {/* Top row */}
-        <div className="flex items-center justify-between mb-3">
+      {/* ===== STICKY HEADER ===== */}
+      <div className="sticky top-0 z-30 bg-[#0A0A0A]">
+        {/* Top row — hanya tampil di desktop (mobile sudah ada dari Layout) */}
+        <div className="hidden sm:flex items-center justify-between px-4 pt-3 pb-0 mb-3">
           <div>
             <p className="text-white text-base font-bold">Transaksi</p>
             <p className="text-[#8FA4C8] text-xs">{MONTHS[filters.month]} {filters.year}</p>
           </div>
-          <div className="flex items-center gap-2">
+        </div>
+
+        {/* Action buttons row — tampil di semua ukuran */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-0 sm:pt-0">
+          {/* Bulan/Tahun label untuk mobile */}
+          <p className="text-[#8FA4C8] text-xs sm:hidden">{MONTHS[filters.month]} {filters.year}</p>
+          <div className="flex items-center gap-2 ml-auto">
             <button
               onClick={() => setShowSearch(s => !s)}
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors tap-highlight-fix ${showSearch ? "bg-[#F97316]" : "bg-white/10"} text-white`}
@@ -164,9 +170,9 @@ export default function Transactions() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="overflow-hidden"
+              className="overflow-hidden px-4"
             >
-              <div className="relative mb-3">
+              <div className="relative my-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8FA4C8]" />
                 <input
                   autoFocus
@@ -187,11 +193,13 @@ export default function Transactions() {
 
         {/* Spending bar — only on Riwayat tab */}
         {activeTab === "riwayat" && monthExpenses.length > 0 && (
-          <SpendingBar transactions={monthExpenses} categories={categories} />
+          <div className="px-0">
+            <SpendingBar transactions={monthExpenses} categories={categories} />
+          </div>
         )}
 
         {/* Tabs */}
-        <div className="flex mt-3">
+        <div className="flex mt-2">
           {TABS.map(tab => (
             <button
               key={tab.key}

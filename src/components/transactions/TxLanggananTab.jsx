@@ -22,7 +22,7 @@ export default function TxLanggananTab({ subscriptions, formatCurrency }) {
   }, [subscriptions]);
 
   return (
-    <div className="pb-28 pt-3">
+    <div className="pb-4 pt-3">
       {/* Summary banner */}
       <div className="mx-3 bg-[#1A1E25] rounded-2xl p-4 mb-4 shadow-sm">
         <p className="text-[11px] text-[#8FA4C8] mb-1">Total per bulan</p>
