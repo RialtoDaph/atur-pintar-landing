@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
-import { SlidersHorizontal, Search, X, Upload, ScanLine } from "lucide-react";
+import { SlidersHorizontal, Search, X, ScanLine } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import SpendingBar from "@/components/transactions/SpendingBar";
@@ -8,7 +8,6 @@ import TxRiwayatTab from "@/components/transactions/TxRiwayatTab";
 import TxRutinTab from "@/components/transactions/TxRutinTab";
 import TxLanggananTab from "@/components/transactions/TxLanggananTab";
 import TxFilterBottomSheet from "@/components/transactions/TxFilterBottomSheet";
-import CSVImportModal from "@/components/transactions/CSVImportModal";
 import PDFImportModal from "@/components/transactions/PDFImportModal";
 
 const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -47,7 +46,6 @@ export default function Transactions() {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [showCSV, setShowCSV] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -151,9 +149,6 @@ export default function Transactions() {
             </button>
             <button onClick={() => setShowPDF(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix" title="Scan PDF/Screenshot">
               <ScanLine className="w-4 h-4" />
-            </button>
-            <button onClick={() => setShowCSV(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix" title="Import CSV">
-              <Upload className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowFilter(true)}
@@ -267,9 +262,6 @@ export default function Transactions() {
         onApply={f => { setFilters(f); saveFilters(f); }}
         onClose={() => setShowFilter(false)}
       />
-
-      {/* CSV Import */}
-      {showCSV && <CSVImportModal onClose={() => { setShowCSV(false); fetchData(); }} />}
 
       {/* PDF/Screenshot Import */}
       {showPDF && <PDFImportModal onClose={() => { setShowPDF(false); fetchData(); }} onSuccess={fetchData} />}
