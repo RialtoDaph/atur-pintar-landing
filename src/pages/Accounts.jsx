@@ -26,6 +26,7 @@ function AccountModal({ account, onClose, onSave }) {
     balance: account?.balance || 0,
     icon: account?.icon || "🏦",
     color: account?.color || "#F97316",
+    logo_url: account?.logo_url || "",
     institution: account?.institution || "",
     is_default: account?.is_default || false,
   });
@@ -103,6 +104,21 @@ function AccountModal({ account, onClose, onSave }) {
               className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
             />
           </div>
+          {/* Logo URL */}
+          <div>
+            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Logo URL (opsional)</p>
+            <input
+              value={form.logo_url}
+              onChange={e => setForm(f => ({ ...f, logo_url: e.target.value }))}
+              placeholder="https://... (atau biarkan kosong)"
+              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
+            />
+            {form.logo_url && (
+              <div className="mt-2 flex items-center justify-center p-2 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                <img src={form.logo_url} alt="Logo preview" className="h-8 object-contain" onError={(e) => e.target.style.display = 'none'} />
+              </div>
+            )}
+          </div>
           {/* Default toggle */}
           <div className="flex items-center justify-between">
             <div>
@@ -114,7 +130,7 @@ function AccountModal({ account, onClose, onSave }) {
               <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${form.is_default ? "left-6" : "left-1"}`} />
             </button>
           </div>
-        </div>
+          </div>
         <div className="px-5 pb-6 pt-2">
           <button onClick={handleSave} disabled={saving || !form.name.trim()}
             className="w-full py-3.5 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
@@ -239,13 +255,13 @@ export default function Accounts() {
           accounts.map(acc => (
             <div key={acc.id} className={`bg-white rounded-2xl p-4 border transition-all duration-200 hover:shadow-lg ${acc.is_default ? "border-[#F97316]/40 shadow-md" : "border-[#F0F2F5] shadow-md"}`}>
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: acc.logo_url ? "transparent" : (acc.color || "#FF6A00") + "20" }}>
-                  {acc.logo_url ? (
-                    <img src={acc.logo_url} alt="Logo" className="w-full h-full object-contain rounded-2xl" />
-                  ) : (
+                {acc.logo_url ? (
+                  <img src={acc.logo_url} alt="Logo" className="w-12 h-12 rounded-2xl object-contain" onError={(e) => e.style.display = 'none'} />
+                ) : (
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: (acc.color || "#FF6A00") + "20" }}>
                     <div className="text-2xl">{acc.icon || "🏦"}</div>
-                  )}
-                </div>
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-[#1A1A1A] text-sm">{acc.name}</p>

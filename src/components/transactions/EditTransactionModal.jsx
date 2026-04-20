@@ -173,16 +173,28 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
           {accounts.length > 0 && (
             <div className="mb-4">
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Rekening</label>
-              <select
-                value={form.account_id}
-                onChange={(e) => setForm({ ...form, account_id: e.target.value })}
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
-              >
-                <option value="">Pilih rekening</option>
+              <div className="flex flex-wrap gap-2">
                 {accounts.map(acc => (
-                  <option key={acc.id} value={acc.id}>{acc.icon || "💳"} {acc.name}</option>
+                  <button
+                    key={acc.id}
+                    onClick={() => setForm({ ...form, account_id: acc.id })}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border-[1.5px] transition-all ${
+                      form.account_id === acc.id
+                        ? "border-[#FF6A00] bg-[#FFF7ED] text-[#EA580C]"
+                        : "border-[#E2E8F0] bg-[#F8FAFC] text-[#4A5568]"
+                    }`}
+                  >
+                    {acc.logo_url ? (
+                      <img src={acc.logo_url} alt="" className="w-5 h-5 rounded-full object-contain flex-shrink-0" onError={(e) => e.style.display = 'none'} />
+                    ) : (
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ backgroundColor: acc.color || "#FF6A00" }}>
+                        {acc.icon || "💳"}
+                      </div>
+                    )}
+                    {acc.name}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           )}
 
