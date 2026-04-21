@@ -103,7 +103,10 @@ export default function Dashboard() {
     const unsub3 = base44.entities.Budget.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ["budgets", user.email] });
     });
-    return () => { unsub1(); unsub2(); unsub3(); };
+    const unsub4 = base44.entities.Account.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["accounts_dashboard", user.email] });
+    });
+    return () => { unsub1(); unsub2(); unsub3(); unsub4(); };
   }, [user?.email]);
 
   const enabled = !!user?.onboarding_completed;

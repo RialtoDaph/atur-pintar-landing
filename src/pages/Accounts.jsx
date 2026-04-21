@@ -55,11 +55,36 @@ function AccountModal({ account, onClose, onSave }) {
   async function handleSave() {
     if (!form.name.trim()) { toast.error("Pilih rekening terlebih dahulu"); return; }
     setSaving(true);
+    const balance = form.balance || 0;
     if (account?.id) {
       const updated = await base44.entities.Account.update(account.id, form);
+      // Jika saldo berubah, catat sebagai penyesuaian saldo
+      const oldBalance = account.balance || 0;
+      const diff = balance - oldBalance;
+      if (diff !== 0) {
+        await base44.entities.Transaction.create({
+          account_id: account.id,
+          amount: Math.abs(diff),
+          type: diff > 0 ? "income" : "expense",
+          category: "other",
+          note: `Penyesuaian saldo ${form.name}`,
+          date: new Date().toISOString().split("T")[0],
+        });
+      }
       onSave(updated);
     } else {
       const created = await base44.entities.Account.create(form);
+      // Catat saldo awal sebagai transaksi income jika > 0
+      if (balance > 0) {
+        await base44.entities.Transaction.create({
+          account_id: created.id,
+          amount: balance,
+          type: "income",
+          category: "other",
+          note: `Saldo awal ${form.name}`,
+          date: new Date().toISOString().split("T")[0],
+        });
+      }
       onSave(created);
     }
     setSaving(false);

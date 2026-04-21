@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { TrendingUp, TrendingDown, ChevronLeft, ChevronRight, Wallet } from "lucide-react";
+import { useState, useRef } from "react";
+import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function compactRupiah(value) {
@@ -14,6 +14,25 @@ function compactRupiah(value) {
 export default function BalanceCardCarousel({ income, expense, savings, accounts, loading }) {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+
+  function handleTouchStart(e) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+  function handleTouchMove(e) {
+    touchEndX.current = e.touches[0].clientX;
+  }
+  function handleTouchEnd() {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) setCurrentSlide(s => (s + 1) % slides.length);
+      else setCurrentSlide(s => (s - 1 + slides.length) % slides.length);
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  }
 
   const now = new Date();
   const monthName = now.toLocaleString('id-ID', { month: 'long', year: 'numeric' });
@@ -121,12 +140,16 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
     <div data-tour="balance-card" className="relative">
       {/* Card */}
       <div
-        className="rounded-2xl p-4 relative overflow-hidden"
+        className="rounded-2xl p-4 relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
         style={{
           background: 'linear-gradient(135deg, #1e1e1e 0%, #161616 50%, #0f0f0f 100%)',
           border: '1px solid rgba(255,255,255,0.07)',
           boxShadow: '0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,106,0,0.06)'
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onClick={() => setCurrentSlide(s => (s + 1) % slides.length)}
       >
         {/* Subtle orange glow top-right */}
         <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-10 pointer-events-none"
@@ -134,13 +157,6 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
 
         {/* Content */}
         {slides[currentSlide].content}
-
-        {/* Swipe arrows */}
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-30">
-          <button onClick={() => setCurrentSlide((currentSlide + 1) % slides.length)} className="text-white">
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
       </div>
 
       {/* Dot indicators */}
