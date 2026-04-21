@@ -41,6 +41,7 @@ export default function BudgetPage() {
   const [transactions, setTransactions] = useState([]);
   const [transactions3M, setTransactions3M] = useState([]);
   const [customCategories, setCustomCategories] = useState([]);
+  const [globalCategories, setGlobalCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
@@ -76,11 +77,12 @@ export default function BudgetPage() {
     })();
 
     try {
-      const [bRaw, txAll, cats, g] = await Promise.all([
+      const [bRaw, txAll, cats, g, globalCats] = await Promise.all([
         base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }, 'created_date'),
         base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
         base44.entities.CustomCategory.list("-created_date"),
         base44.entities.SavingsGoal.filter({ created_by: user.email, status: "active" }),
+        base44.entities.GlobalCategory.filter({ is_active: true }, "sort_order"),
       ]);
 
       // Dedup budgets: for each (category+month), keep only the OLDEST record
@@ -100,15 +102,16 @@ export default function BudgetPage() {
       setTransactions3M(prev3Tx);
       setCustomCategories(cats);
       setGoals(g);
+      setGlobalCategories(globalCats || []);
     } finally {
       setLoading(false);
     }
   }
 
-  // Merge default + custom category metadata
+  // Build category metadata map — keyed by GlobalCategory.id
   const categoryMap = {};
-  DEFAULT_CATEGORIES.forEach(c => {
-    categoryMap[c.key] = { label: lang === "id" ? c.label_id : c.label_en, emoji: c.emoji, color: c.color };
+  globalCategories.forEach(c => {
+    categoryMap[c.id] = { label: c.name, emoji: c.emoji, color: c.color || "#95A5A6" };
   });
   customCategories.forEach(c => {
     categoryMap[`custom_${c.id}`] = { label: c.name, emoji: c.emoji, color: c.color || "#95A5A6" };
@@ -118,6 +121,7 @@ export default function BudgetPage() {
     return categoryMap[key] || { label: key, emoji: "📦", color: "#95A5A6" };
   }
 
+  // Aggregate spending by category key (GlobalCategory.id or custom_<id>)
   const spendingByCategory = {};
   transactions.forEach(tx => {
     const key = tx.category || "other";

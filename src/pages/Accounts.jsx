@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Wallet, Plus, Pencil, Trash2, Star, X, Check, AlertTriangle, RefreshCw } from "lucide-react";
+import { Wallet, Plus, Pencil, Trash2, Star, X, Check, AlertTriangle, RefreshCw, Search } from "lucide-react";
 import { toast } from "sonner";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 
@@ -31,6 +31,35 @@ function AccountModal({ account, onClose, onSave }) {
     is_default: account?.is_default || false,
   });
   const [saving, setSaving] = useState(false);
+  const [defaultAccounts, setDefaultAccounts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [showTemplates, setShowTemplates] = useState(!account?.id);
+
+  useEffect(() => {
+    if (!account?.id) {
+      base44.entities.DefaultAccount.filter({ is_active: true }, "sort_order").then(list => {
+        setDefaultAccounts(list || []);
+      }).catch(() => {});
+    }
+  }, [account?.id]);
+
+  function applyTemplate(da) {
+    setForm(f => ({
+      ...f,
+      name: da.name,
+      type: da.type || "bank",
+      icon: da.icon || "🏦",
+      color: da.color || "#F97316",
+      logo_url: da.logo_url || "",
+      institution: da.institution || da.name,
+    }));
+    setShowTemplates(false);
+  }
+
+  const filteredDefaults = defaultAccounts.filter(da =>
+    da.name.toLowerCase().includes(search.toLowerCase()) ||
+    (da.institution || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   async function handleSave() {
     if (!form.name.trim()) return;
@@ -53,6 +82,49 @@ function AccountModal({ account, onClose, onSave }) {
           <button onClick={onClose} className="p-2 rounded-xl hover:bg-[#F2F4F7]"><X className="w-5 h-5 text-[#8FA4C8]" /></button>
         </div>
         <div className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+          {/* Template picker for new accounts */}
+          {!account?.id && defaultAccounts.length > 0 && (
+            <div>
+              <button
+                onClick={() => setShowTemplates(t => !t)}
+                className="w-full flex items-center justify-between py-2.5 px-3 bg-[#F2F4F7] rounded-xl text-xs font-semibold text-[#4A5568] mb-2"
+              >
+                <span>🏦 Pilih dari template institusi</span>
+                <span className="text-[#8FA4C8]">{showTemplates ? "▲" : "▼"}</span>
+              </button>
+              {showTemplates && (
+                <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
+                  <div className="flex items-center gap-2 px-3 py-2 border-b border-[#F2F4F7]">
+                    <Search className="w-3.5 h-3.5 text-[#8FA4C8]" />
+                    <input
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      placeholder="Cari bank, e-wallet..."
+                      className="flex-1 text-xs text-[#1A1A1A] outline-none bg-transparent"
+                    />
+                  </div>
+                  <div className="max-h-44 overflow-y-auto divide-y divide-[#F2F4F7]">
+                    {filteredDefaults.map(da => (
+                      <button
+                        key={da.id}
+                        onClick={() => applyTemplate(da)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-colors text-left"
+                      >
+                        <AccountAvatar logoUrl={da.logo_url} name={da.name} color={da.color || "#F97316"} size="w-8 h-8" />
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-[#1A1A1A] truncate">{da.name}</p>
+                          <p className="text-[10px] text-[#8FA4C8]">{da.type === "bank" ? "Bank" : da.type === "ewallet" ? "E-Wallet" : da.type}</p>
+                        </div>
+                      </button>
+                    ))}
+                    {filteredDefaults.length === 0 && (
+                      <p className="text-xs text-[#8FA4C8] text-center py-4">Tidak ada hasil</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           {/* Icon picker */}
           <div>
             <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">Icon</p>
