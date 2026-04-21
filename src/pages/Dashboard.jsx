@@ -112,7 +112,7 @@ export default function Dashboard() {
       clearTimeout(acctTimer);
       acctTimer = setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["accounts_dashboard", user.email] });
-      }, 1500);
+      }, 300);
     });
     return () => { unsub1(); unsub2(); unsub3(); unsub4(); clearTimeout(txTimer); clearTimeout(acctTimer); };
   }, [user?.email]);
@@ -132,6 +132,7 @@ export default function Dashboard() {
     enabled,
     staleTime: 0,
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
@@ -145,8 +146,8 @@ export default function Dashboard() {
     queryKey: ["accounts_dashboard", user?.email],
     queryFn: () => base44.entities.Account.filter({ created_by: user.email }),
     enabled,
-    staleTime: 30 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   const { data: gamProfiles = [] } = useQuery({

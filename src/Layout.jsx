@@ -415,7 +415,8 @@ function LayoutInner({ children, currentPageName }) {
           await base44.entities.Transaction.create(data);
           if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
           setShowAddTransaction(false);
-          window.dispatchEvent(new Event("refresh-dashboard"));
+          // Small delay to let account balance update propagate, then refresh dashboard
+          setTimeout(() => window.dispatchEvent(new Event("refresh-dashboard")), 400);
         }} />
 
       }
