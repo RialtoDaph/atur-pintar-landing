@@ -94,8 +94,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!user?.email) return;
+    // Debounce helpers to prevent rapid-fire invalidations causing rate limits
+    let txTimer, acctTimer;
     const unsub1 = base44.entities.Transaction.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
+      clearTimeout(txTimer);
+      txTimer = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
+      }, 1500);
     });
     const unsub2 = base44.entities.SavingsGoal.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ["goals", user.email] });
@@ -104,9 +109,12 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["budgets", user.email] });
     });
     const unsub4 = base44.entities.Account.subscribe(() => {
-      queryClient.invalidateQueries({ queryKey: ["accounts_dashboard", user.email] });
+      clearTimeout(acctTimer);
+      acctTimer = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["accounts_dashboard", user.email] });
+      }, 1500);
     });
-    return () => { unsub1(); unsub2(); unsub3(); unsub4(); };
+    return () => { unsub1(); unsub2(); unsub3(); unsub4(); clearTimeout(txTimer); clearTimeout(acctTimer); };
   }, [user?.email]);
 
   const enabled = !!user?.onboarding_completed;
