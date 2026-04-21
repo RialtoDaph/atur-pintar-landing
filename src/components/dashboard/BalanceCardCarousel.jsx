@@ -4,12 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 
 function compactRupiah(value) {
-  const abs = Math.abs(value);
-  const sign = value < 0 ? "-" : "";
-  if (abs >= 1_000_000_000) return `${sign}${(abs / 1_000_000_000).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} M`;
-  if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toLocaleString('id-ID', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Jt`;
-  if (abs >= 1_000) return `${sign}${(abs / 1_000).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} rb`;
-  return `${sign}${abs.toLocaleString('id-ID')}`;
+  return Math.abs(value).toLocaleString('id-ID');
 }
 
 export default function BalanceCardCarousel({ income, expense, savings, accounts, loading }) {
