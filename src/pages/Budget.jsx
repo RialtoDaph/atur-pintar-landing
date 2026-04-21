@@ -70,6 +70,7 @@ export default function BudgetPage() {
   }, [user?.email, debouncedLoad]);
 
   async function loadData() {
+    if (!user?.email) return;
     setLoading(true);
     const monthStart = `${currentMonth}-01`;
     const [year, month] = currentMonth.split("-").map(Number);
