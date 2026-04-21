@@ -57,13 +57,27 @@ export default function Transactions() {
     return `${sym}${formatted}`;
   }, [settings]);
 
-  async function fetchData() {
+  const fetchingRef = useState(false);
+
+  async function fetchData(forceRefresh = false) {
+    if (fetchingRef[0]) return;
+    fetchingRef[1](true);
     setLoading(true);
     try {
       const user = await base44.auth.me();
-      const [txs, cats, accs] = await Promise.all([
+
+      // Use cached categories if available (they rarely change)
+      let cats;
+      const cachedCats = !forceRefresh && sessionStorage.getItem("tx_categories");
+      if (cachedCats) {
+        cats = JSON.parse(cachedCats);
+      } else {
+        cats = await base44.entities.GlobalCategory.list("sort_order");
+        sessionStorage.setItem("tx_categories", JSON.stringify(cats));
+      }
+
+      const [txs, accs] = await Promise.all([
         base44.entities.Transaction.filter({ created_by: user.email, is_deleted: false }, "-date"),
-        base44.entities.GlobalCategory.list("sort_order"),
         base44.entities.Account.filter({ created_by: user.email }, "name"),
       ]);
       setTransactions(txs || []);
@@ -83,6 +97,7 @@ export default function Transactions() {
       }));
     } finally {
       setLoading(false);
+      fetchingRef[1](false);
     }
   }
 
