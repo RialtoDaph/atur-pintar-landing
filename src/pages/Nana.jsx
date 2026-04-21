@@ -241,32 +241,36 @@ export default function Nana() {
     <div className="flex flex-col bg-[#F2F4F7] dark:bg-[#0F1114]" style={{ height: 'calc(100dvh - 56px - env(safe-area-inset-bottom, 0px))' }}>
 
       {/* Header */}
-      <div className="bg-[#0A0A0A] px-5 pt-3 pb-3 flex items-center justify-between border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
-            <img src={NANA_AVATAR} alt="Nana" className="w-full h-full object-cover" />
-            <span className="absolute bottom-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-[#0A0A0A]" />
-          </div>
-          <div>
-            <p className="text-white font-bold text-sm leading-tight">Nana AI ✨</p>
-            <p className="text-green-400 text-[10px] font-medium">Online — siap bantu kamu 🟢</p>
-            <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-              {hasMood && (
-                <span className="text-[10px] bg-white/10 text-white px-1.5 py-0.5 rounded-full">
-                  {MOOD_EMOJIS[todayMood.mood]} {todayMood.mood_label}
-                </span>
-              )}
-              {todayXP > 0 && (
-                <span className="text-[10px] bg-[#FF6A00]/20 text-[#FF9A40] px-1.5 py-0.5 rounded-full font-bold">
-                  +{todayXP} XP hari ini
-                </span>
-              )}
+      <div className="bg-[#0A0A0A] px-4 pt-3 pb-3 flex items-center justify-between border-b border-white/10">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative flex-shrink-0">
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+              <img src={NANA_AVATAR} alt="Nana" className="w-full h-full object-cover" />
             </div>
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-[#0A0A0A]" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-white font-bold text-sm leading-tight">Nana AI ✨</p>
+            <p className="text-green-400 text-[10px] font-medium">Online · siap bantu kamu</p>
+            {(hasMood || todayXP > 0) && (
+              <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                {hasMood && (
+                  <span className="text-[10px] bg-white/10 text-white px-1.5 py-0.5 rounded-full">
+                    {MOOD_EMOJIS[todayMood.mood]} {todayMood.mood_label}
+                  </span>
+                )}
+                {todayXP > 0 && (
+                  <span className="text-[10px] bg-[#FF6A00]/20 text-[#FF9A40] px-1.5 py-0.5 rounded-full font-bold">
+                    +{todayXP} XP
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <button
           onClick={newConversation}
-          className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+          className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors flex-shrink-0"
           title={t('nana_new_chat_title')}
         >
           <Plus className="w-4 h-4 text-white" />
@@ -291,12 +295,14 @@ export default function Nana() {
                 <div className="w-6 h-6 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
               </div>
             ) : visibleMessages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center gap-3 pt-10">
-                <div className="w-14 h-14 rounded-full bg-[#FF6A00]/10 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-[#FF6A00]" />
+              <div className="flex flex-col items-center justify-center h-full text-center gap-4 px-6">
+                <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg">
+                  <img src={NANA_AVATAR} alt="Nana" className="w-full h-full object-cover" />
                 </div>
-                <p className="text-[#0A0A0A] dark:text-white font-bold text-base">{t('nana_greeting')}</p>
-                <p className="text-[#8FA4C8] text-sm max-w-xs">{t('nana_greeting_desc')}</p>
+                <div>
+                  <p className="text-[#0A0A0A] dark:text-white font-bold text-lg mb-1">{t('nana_greeting')}</p>
+                  <p className="text-[#8FA4C8] text-sm max-w-xs leading-relaxed">{t('nana_greeting_desc')}</p>
+                </div>
               </div>
             ) : (
               visibleMessages.map((msg, i) => {
@@ -356,13 +362,13 @@ export default function Nana() {
           </div>
 
           {/* Input area */}
-          <div className="px-4 pb-3 pt-2 bg-[#F2F4F7] dark:bg-[#0F1114] border-t border-[#E2E8F0] dark:border-[#2D2D2D]">
+          <div className="px-4 pb-4 pt-2 bg-[#F2F4F7] dark:bg-[#0F1114] border-t border-[#E2E8F0] dark:border-[#2D2D2D]">
             {isLimitReached ? (
-              <div className="bg-white dark:bg-[#1A1E25] rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] p-4 text-center shadow-sm">
-                <Crown className="w-5 h-5 text-[#FF6A00] mx-auto mb-2" />
-                <p className="text-xs font-semibold text-[#1A1A1A] dark:text-white mb-1">Batas pesan tercapai ({FREE_MSG_LIMIT}/bulan)</p>
-                <p className="text-[10px] text-[#8FA4C8] mb-3">Upgrade ke Premium untuk chat tanpa batas.</p>
-                <Link to="/Subscription" className="inline-block px-4 py-1.5 bg-[#FF6A00] text-white rounded-xl text-xs font-semibold hover:bg-[#e05e00] transition-colors">
+              <div className="bg-white dark:bg-[#1A1E25] rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] p-5 text-center shadow-sm">
+                <Crown className="w-6 h-6 text-[#FF6A00] mx-auto mb-2" />
+                <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white mb-1">Batas pesan tercapai</p>
+                <p className="text-xs text-[#8FA4C8] mb-4">{msgCount}/{FREE_MSG_LIMIT} pesan bulan ini. Upgrade untuk chat tanpa batas.</p>
+                <Link to="/Subscription" className="inline-block px-5 py-2 bg-[#FF6A00] text-white rounded-xl text-sm font-semibold hover:bg-[#e05e00] transition-colors">
                   Upgrade Premium
                 </Link>
               </div>
@@ -371,12 +377,10 @@ export default function Nana() {
                 {!isPremium && (
                   <p className="text-[10px] text-[#8FA4C8] text-center mb-2">{msgCount}/{FREE_MSG_LIMIT} pesan bulan ini</p>
                 )}
-                <div className="mb-2">
-                  <NanaQuickActions onSelect={sendMessage} disabled={sending} />
-                </div>
-                <div className="flex gap-2 bg-white dark:bg-[#1A1E25] rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] px-4 py-2 shadow-sm">
+                <NanaQuickActions onSelect={sendMessage} disabled={sending} />
+                <div className="flex items-end gap-2 mt-2 bg-white dark:bg-[#1A1E25] rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] px-4 py-2.5 shadow-sm">
                   <textarea
-                    className="flex-1 text-sm text-[#1A1A1A] dark:text-white resize-none outline-none bg-transparent placeholder:text-[#C0C9D8] dark:placeholder:text-[#8FA4C8] max-h-24"
+                    className="flex-1 text-sm text-[#1A1A1A] dark:text-white resize-none outline-none bg-transparent placeholder:text-[#C0C9D8] dark:placeholder:text-[#8FA4C8] max-h-24 leading-relaxed"
                     rows={1}
                     placeholder={t('nana_input_placeholder')}
                     value={input}
@@ -386,7 +390,7 @@ export default function Nana() {
                   <button
                     onClick={() => sendMessage()}
                     disabled={!input.trim() || sending}
-                    className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end"
+                    className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
                   >
                     <Send className="w-3.5 h-3.5 text-white" />
                   </button>

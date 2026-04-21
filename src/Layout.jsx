@@ -122,9 +122,11 @@ function LayoutInner({ children, currentPageName }) {
 
 
   // Mobile: 4 main items + "Lainnya" (Budget moved to Menu)
+  const NANA_AVATAR_URL = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png";
+
   const mobileMainNav = [
   { name: "Dashboard", label: t('nav_home'), icon: LayoutDashboard, page: "Dashboard" },
-  { name: "Nana", label: "Nana AI", icon: Sparkles, page: "Nana" },
+  { name: "Nana", label: "Nana AI", icon: null, page: "Nana", avatarUrl: NANA_AVATAR_URL },
   { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
   { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" }];
 
@@ -348,7 +350,13 @@ function LayoutInner({ children, currentPageName }) {
               className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
               active ? "text-[#F97316]" : "text-[#888]"}`}>
               
-              <item.icon className="w-5 h-5" />
+              {item.avatarUrl ? (
+                <div className={`w-5 h-5 rounded-full overflow-hidden flex-shrink-0 ${active ? "ring-2 ring-[#F97316]" : ""}`}>
+                  <img src={item.avatarUrl} alt={item.label} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <item.icon className="w-5 h-5" />
+              )}
               {item.label}
             </button>);
 
