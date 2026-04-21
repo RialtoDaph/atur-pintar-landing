@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import AccountAvatar from "@/components/ui/AccountAvatar";
 
 function compactRupiah(value) {
   const abs = Math.abs(value);
@@ -107,7 +108,11 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
           <div className="flex gap-2 flex-wrap">
             {accounts.slice(0, 3).map(a => (
               <div key={a.id} className="flex items-center gap-1.5 bg-white/8 rounded-lg px-2.5 py-1.5">
-                <span className="text-xs">{a.icon || "💳"}</span>
+                {a.logo_url ? (
+                  <AccountAvatar logoUrl={a.logo_url} name={a.name} color={a.color || "#FF6A00"} size="h-5 w-5" />
+                ) : (
+                  <span className="text-xs">{a.icon || "💳"}</span>
+                )}
                 <div>
                   <p className="text-white/60 text-[9px]">{a.name}</p>
                   <p className="text-white text-[10px] font-bold">Rp {compactRupiah(a.balance || 0)}</p>

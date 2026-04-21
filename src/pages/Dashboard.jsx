@@ -128,9 +128,10 @@ export default function Dashboard() {
 
   const { data: transactions = [], isLoading: txLoading } = useQuery({
     queryKey: ["transactions_dashboard", user?.email],
-    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 100),
+    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email, is_deleted: false }, "-date", 200),
     enabled,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
