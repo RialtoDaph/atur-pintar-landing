@@ -103,27 +103,35 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
             {parents.map(parent => {
               const children = subs.filter(s => s.parent_category === parent.name && !isTaken(s.id));
               const isOpen = openParent === parent.id;
-              const isSelected = category === parent.id || children.some(c => c.id === category);
-              // skip parent if no children available and parent itself is taken
-              if (children.length === 0 && isTaken(parent.id)) return null;
+              const isParentSelected = category === parent.id;
+              const isChildSelected = children.some(c => c.id === category);
+              const isSelected = isParentSelected || isChildSelected;
+              // skip if parent is taken AND no children
+              if (isTaken(parent.id) && children.length === 0) return null;
               return (
                 <div key={parent.id} className="rounded-xl overflow-hidden border transition-all"
                   style={{ borderColor: isSelected ? "#FF6A0060" : "#E2E8F0" }}>
-                  {/* Parent row */}
-                  <button
-                    onClick={() => setOpenParent(isOpen ? null : parent.id)}
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors"
-                    style={{ backgroundColor: isSelected ? "#FF6A0010" : "#F8FAFC" }}>
-                    <span className="text-lg">{parent.emoji}</span>
-                    <span className="text-xs font-semibold flex-1" style={{ color: isSelected ? "#FF6A00" : "#1A1A1A" }}>{parent.name}</span>
-                    {children.some(c => c.id === category) && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#FF6A0020] text-[#FF6A00]">
-                        {children.find(c => c.id === category)?.name}
-                      </span>
+                  {/* Parent row — click selects parent, chevron expands subs */}
+                  <div className="flex items-center" style={{ backgroundColor: isSelected ? "#FF6A0010" : "#F8FAFC" }}>
+                    <button
+                      onClick={() => !isTaken(parent.id) && setCategory(isParentSelected ? "" : parent.id)}
+                      disabled={isTaken(parent.id)}
+                      className="flex items-center gap-2.5 px-3 py-2.5 flex-1 text-left transition-colors disabled:opacity-40">
+                      <span className="text-lg">{parent.emoji}</span>
+                      <span className="text-xs font-semibold flex-1" style={{ color: isSelected ? "#FF6A00" : "#1A1A1A" }}>{parent.name}</span>
+                      {isChildSelected && (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#FF6A0020] text-[#FF6A00]">
+                          {children.find(c => c.id === category)?.name}
+                        </span>
+                      )}
+                    </button>
+                    {children.length > 0 && (
+                      <button onClick={() => setOpenParent(isOpen ? null : parent.id)} className="px-3 py-2.5">
+                        <ChevronDown className="w-3.5 h-3.5 text-[#8FA4C8] flex-shrink-0 transition-transform"
+                          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
+                      </button>
                     )}
-                    <ChevronDown className="w-3.5 h-3.5 text-[#8FA4C8] flex-shrink-0 transition-transform"
-                      style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
-                  </button>
+                  </div>
                   {/* Sub-categories */}
                   {isOpen && children.length > 0 && (
                     <div className="px-3 py-2 flex flex-wrap gap-1.5 border-t border-[#F2F4F7] bg-white">

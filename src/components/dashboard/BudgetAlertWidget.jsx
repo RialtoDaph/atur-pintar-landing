@@ -6,19 +6,15 @@ import { createPageUrl } from "@/utils";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-const DEFAULT_CATEGORIES = {
-  housing: { label: "Housing", emoji: "🏠", color: "#4F7CFF" },
-  food: { label: "Food", emoji: "🍔", color: "#00C9A7" },
-  transport: { label: "Transport", emoji: "🚗", color: "#F5A623" },
-  health: { label: "Health", emoji: "❤️", color: "#FF6B6B" },
-  entertainment: { label: "Entertainment", emoji: "🎬", color: "#9B59B6" },
-  shopping: { label: "Shopping", emoji: "🛍️", color: "#E91E8C" },
-  subscriptions: { label: "Subscriptions", emoji: "📱", color: "#1ABC9C" },
-  other: { label: "Other", emoji: "📦", color: "#95A5A6" },
-};
-
 export default function BudgetAlertWidget({ transactions = [], loading = false, budgets = [] }) {
   const { formatCurrency, t } = useAppSettings();
+  const [globalCategories, setGlobalCategories] = useState([]);
+
+  useEffect(() => {
+    base44.entities.GlobalCategory.filter({ is_active: true }, "sort_order").then(cats => {
+      setGlobalCategories(cats || []);
+    }).catch(() => {});
+  }, []);
   const currentMonth = useMemo(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -82,7 +78,8 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
 
       <div className="px-4 pb-4 flex gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {allBudgets.map(b => {
-          const cat = DEFAULT_CATEGORIES[b.category] || { label: b.category, emoji: "📦", color: "#95A5A6" };
+          const catData = globalCategories.find(c => c.id === b.category);
+          const cat = catData ? { label: catData.name, emoji: catData.emoji, color: catData.color || "#95A5A6" } : { label: b.category, emoji: "📦", color: "#95A5A6" };
           const isOver = b.percent > 100;
           const isNear = b.percent >= 80 && !isOver;
 

@@ -4,15 +4,6 @@ import { Wallet, Plus, Pencil, Trash2, Star, X, Check, AlertTriangle, RefreshCw,
 import { toast } from "sonner";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 
-const ACCOUNT_TYPES = [
-  { key: "bank", label: "Bank", icon: "🏦", color: "#1976D2" },
-  { key: "cash", label: "Cash", icon: "💵", color: "#388E3C" },
-  { key: "ewallet", label: "E-Wallet", icon: "📱", color: "#7B1FA2" },
-  { key: "other", label: "Lainnya", icon: "💳", color: "#F57C00" },
-];
-
-const DEFAULT_ICONS = ["🏦", "💵", "📱", "💳", "🏧", "🐷", "💰", "🎯"];
-const DEFAULT_COLORS = ["#F97316", "#1976D2", "#388E3C", "#7B1FA2", "#F57C00", "#E91E63", "#00BCD4", "#607D8B"];
 
 function formatRupiah(n) {
   if (n === undefined || n === null) return "Rp 0";
@@ -62,7 +53,7 @@ function AccountModal({ account, onClose, onSave }) {
   );
 
   async function handleSave() {
-    if (!form.name.trim()) return;
+    if (!form.name.trim()) { toast.error("Pilih rekening terlebih dahulu"); return; }
     setSaving(true);
     if (account?.id) {
       const updated = await base44.entities.Account.update(account.id, form);
@@ -82,16 +73,26 @@ function AccountModal({ account, onClose, onSave }) {
           <button onClick={onClose} className="p-2 rounded-xl hover:bg-[#F2F4F7]"><X className="w-5 h-5 text-[#8FA4C8]" /></button>
         </div>
         <div className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
-          {/* Template picker for new accounts */}
-          {!account?.id && defaultAccounts.length > 0 && (
-            <div>
-              <button
-                onClick={() => setShowTemplates(t => !t)}
-                className="w-full flex items-center justify-between py-2.5 px-3 bg-[#F2F4F7] rounded-xl text-xs font-semibold text-[#4A5568] mb-2"
-              >
-                <span>🏦 Pilih dari template institusi</span>
-                <span className="text-[#8FA4C8]">{showTemplates ? "▲" : "▼"}</span>
-              </button>
+
+          {/* NEW ACCOUNT: template picker first */}
+          {!account?.id && (
+            <>
+              {/* Selected preview or prompt */}
+              {form.name ? (
+                <div className="flex items-center gap-3 p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl">
+                  <AccountAvatar logoUrl={form.logo_url} name={form.name} color={form.color || "#F97316"} size="w-10 h-10" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-[#1A1A1A]">{form.name}</p>
+                    <p className="text-[10px] text-[#8FA4C8]">{form.type === "bank" ? "Bank" : form.type === "ewallet" ? "E-Wallet" : form.type === "cash" ? "Cash" : "Lainnya"}</p>
+                  </div>
+                  <button onClick={() => { setForm(f => ({ ...f, name: "", logo_url: "", color: "#F97316", type: "bank" })); setShowTemplates(true); }}
+                    className="text-xs text-[#F97316] font-semibold">Ganti</button>
+                </div>
+              ) : (
+                <p className="text-xs text-[#8FA4C8] text-center py-1">Pilih institusi di bawah</p>
+              )}
+
+              {/* Template list */}
               {showTemplates && (
                 <div className="border border-[#E2E8F0] rounded-xl overflow-hidden">
                   <div className="flex items-center gap-2 px-3 py-2 border-b border-[#F2F4F7]">
@@ -103,17 +104,14 @@ function AccountModal({ account, onClose, onSave }) {
                       className="flex-1 text-xs text-[#1A1A1A] outline-none bg-transparent"
                     />
                   </div>
-                  <div className="max-h-44 overflow-y-auto divide-y divide-[#F2F4F7]">
+                  <div className="max-h-52 overflow-y-auto divide-y divide-[#F2F4F7]">
                     {filteredDefaults.map(da => (
-                      <button
-                        key={da.id}
-                        onClick={() => applyTemplate(da)}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-colors text-left"
-                      >
+                      <button key={da.id} onClick={() => applyTemplate(da)}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-colors text-left">
                         <AccountAvatar logoUrl={da.logo_url} name={da.name} color={da.color || "#F97316"} size="w-8 h-8" />
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-[#1A1A1A] truncate">{da.name}</p>
-                          <p className="text-[10px] text-[#8FA4C8]">{da.type === "bank" ? "Bank" : da.type === "ewallet" ? "E-Wallet" : da.type}</p>
+                          <p className="text-[10px] text-[#8FA4C8]">{da.type === "bank" ? "Bank" : da.type === "ewallet" ? "E-Wallet" : da.type === "cash" ? "Cash" : "Lainnya"}</p>
                         </div>
                       </button>
                     ))}
@@ -123,74 +121,41 @@ function AccountModal({ account, onClose, onSave }) {
                   </div>
                 </div>
               )}
+            </>
+          )}
+
+          {/* EDIT: show account preview */}
+          {account?.id && (
+            <div className="flex items-center gap-3 p-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-2xl">
+              <AccountAvatar logoUrl={account.logo_url} name={account.name} color={account.color || "#F97316"} size="w-10 h-10" />
+              <div>
+                <p className="text-sm font-bold text-[#1A1A1A]">{account.name}</p>
+                <p className="text-[10px] text-[#8FA4C8]">{account.type === "bank" ? "Bank" : account.type === "ewallet" ? "E-Wallet" : account.type === "cash" ? "Cash" : "Lainnya"}</p>
+              </div>
             </div>
           )}
-          {/* Icon picker */}
+
+          {/* Balance input — always shown */}
           <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">Icon</p>
-            <div className="flex gap-2 flex-wrap">
-              {DEFAULT_ICONS.map(ic => (
-                <button key={ic} onClick={() => setForm(f => ({ ...f, icon: ic }))}
-                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all ${form.icon === ic ? "ring-2 ring-[#F97316] bg-[#F97316]/10" : "bg-[#F2F4F7]"}`}>
-                  {ic}
-                </button>
-              ))}
+            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">
+              {account?.id ? "Saldo Saat Ini" : "Saldo Awal"}
+            </p>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={form._balanceDisplay ?? (form.balance ? Number(form.balance).toLocaleString("id-ID") : "")}
+                onChange={e => {
+                  const raw = e.target.value.replace(/[^0-9]/g, "");
+                  setForm(f => ({ ...f, balance: parseFloat(raw) || 0, _balanceDisplay: raw === "" ? "" : Number(raw).toLocaleString("id-ID") }));
+                }}
+                placeholder="0"
+                className="w-full pl-10 pr-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30 font-bold"
+              />
             </div>
           </div>
-          {/* Name */}
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Nama Rekening</p>
-            <input
-              value={form.name}
-              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              placeholder="e.g., Rekening BCA, OVO, Dompet"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
-            />
-          </div>
-          {/* Type */}
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">Jenis</p>
-            <div className="grid grid-cols-2 gap-2">
-              {ACCOUNT_TYPES.map(t => (
-                <button key={t.key} onClick={() => setForm(f => ({ ...f, type: t.key, icon: f.icon || t.icon }))}
-                  className={`py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all ${
-                    form.type === t.key ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#1A1A1A]"
-                  }`}>
-                  {t.icon} {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          {/* Balance */}
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Saldo Awal</p>
-            <input
-              type="text"
-              inputMode="numeric"
-              value={form._balanceDisplay ?? (form.balance ? Number(form.balance).toLocaleString("id-ID") : "")}
-              onChange={e => {
-                const raw = e.target.value.replace(/[^0-9]/g, "");
-                setForm(f => ({ ...f, balance: parseFloat(raw) || 0, _balanceDisplay: raw === "" ? "" : Number(raw).toLocaleString("id-ID") }));
-              }}
-              placeholder="0"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
-            />
-          </div>
-          {/* Logo URL */}
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Logo URL (opsional)</p>
-            <input
-              value={form.logo_url}
-              onChange={e => setForm(f => ({ ...f, logo_url: e.target.value }))}
-              placeholder="https://... (atau biarkan kosong)"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
-            />
-            {form.logo_url && (
-              <div className="mt-2 flex items-center justify-center p-2 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                <img src={form.logo_url} alt="Logo preview" className="h-8 object-contain" onError={(e) => e.target.style.display = 'none'} />
-              </div>
-            )}
-          </div>
+
           {/* Default toggle */}
           <div className="flex items-center justify-between">
             <div>
@@ -202,9 +167,9 @@ function AccountModal({ account, onClose, onSave }) {
               <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${form.is_default ? "left-6" : "left-1"}`} />
             </button>
           </div>
-          </div>
+        </div>
         <div className="px-5 pb-6 pt-2">
-          <button onClick={handleSave} disabled={saving || !form.name.trim()}
+          <button onClick={handleSave} disabled={saving || (!account?.id && !form.name.trim())}
             className="w-full py-3.5 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
             {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
             {account?.id ? "Simpan Perubahan" : "Buat Rekening"}
