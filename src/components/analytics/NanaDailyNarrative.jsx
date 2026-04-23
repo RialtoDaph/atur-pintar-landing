@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const NANA_AVATAR = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png";
 
@@ -70,22 +71,28 @@ export default function NanaDailyNarrative({ user, savingRate, budgets, transact
   if (!narrative) return null;
 
   return (
-    <button
-      onClick={() => setExpanded(e => !e)}
-      className="w-full text-left bg-white rounded-2xl shadow-sm border-l-4 border-[#FF6A00] overflow-hidden tap-highlight-fix"
-    >
-      <div className="flex items-center gap-3 p-4">
-        <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#FF6A00]/30">
+    <div className="bg-white rounded-2xl shadow-sm border-l-4 border-[#FF6A00] overflow-hidden">
+      <div className="flex items-start gap-3 p-4">
+        <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#FF6A00]/30 mt-0.5">
           <img src={NANA_AVATAR} alt="Nana" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-[#FF6A00] uppercase tracking-widest mb-0.5">Nana bilang</p>
-          <p className={`text-xs text-[#1A1A1A] leading-relaxed ${expanded ? "" : "truncate"}`}>{narrative}</p>
-        </div>
-        <div className="flex-shrink-0 text-[#8FA4C8]">
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          <p className="text-[10px] font-bold text-[#FF6A00] uppercase tracking-widest mb-1">Nana bilang</p>
+          <motion.div
+            animate={{ height: expanded ? "auto" : "2.8em" }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <p className="text-xs text-[#1A1A1A] leading-relaxed">{narrative}</p>
+          </motion.div>
+          <button
+            onClick={() => setExpanded(e => !e)}
+            className="mt-1.5 text-[10px] font-semibold text-[#FF6A00] hover:opacity-75 transition-opacity tap-highlight-fix"
+          >
+            {expanded ? "Tutup" : "Baca selengkapnya"}
+          </button>
         </div>
       </div>
-    </button>
+    </div>
   );
 }

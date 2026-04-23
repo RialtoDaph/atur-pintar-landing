@@ -18,7 +18,6 @@ import HeroSummaryCard from "@/components/analytics/HeroSummaryCard";
 import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChart";
 import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
 import NanaDailyNarrative from "@/components/analytics/NanaDailyNarrative";
-import NanaCtaButton from "@/components/analytics/NanaCtaButton";
 import { Flame } from "lucide-react";
 
 const DEFAULT_ANALYTICS_CARDS = [
@@ -378,143 +377,108 @@ export default function Analytics() {
         />
 
         {/* Hero Summary Card — selalu tampil di paling atas */}
-        <div className="relative">
-          <HeroSummaryCard
-            goals={goals}
-            investments={investments}
-            debts={debts}
-            transactions={transactions}
-            user={user}
-            hasPrevData={hasPrevData}
-            prevIncome={prevIncome}
-            prevExpenses={prevExpenses}
-            prevSavingsRate={prevSavingsRate}
-          />
-          <div className="absolute top-4 right-4">
-            <NanaCtaButton message="Nana, analisis tren keuangan aku dong" />
-          </div>
-        </div>
+        <HeroSummaryCard
+          goals={goals}
+          investments={investments}
+          debts={debts}
+          transactions={transactions}
+          user={user}
+          hasPrevData={hasPrevData}
+          prevIncome={prevIncome}
+          prevExpenses={prevExpenses}
+          prevSavingsRate={prevSavingsRate}
+        />
 
         {/* AI Financial Narrative */}
-        <div className="relative">
-          <AIFinancialNarrative
-            trendData={trendData}
-            pieData={pieData}
-            totalIncome={totalIncome}
-            totalExpenses={periodExpenses}
-            savingsRate={savingsRate}
-            periodLabel={formatPeriodLabel(isPremium ? filterPeriod : "3")}
-            periodSubtitle={periodSubtitle}
-            goals={goals}
-            hasPrevData={hasPrevData}
-            prevIncome={prevIncome}
-            prevExpenses={prevExpenses}
-            prevSavingsRate={prevSavingsRate}
-          />
-          <div className="absolute top-4 right-4 z-10">
-            <NanaCtaButton message="Nana, analisis tren keuangan aku dong" />
-          </div>
-        </div>
+        <AIFinancialNarrative
+          trendData={trendData}
+          pieData={pieData}
+          totalIncome={totalIncome}
+          totalExpenses={periodExpenses}
+          savingsRate={savingsRate}
+          periodLabel={formatPeriodLabel(isPremium ? filterPeriod : "3")}
+          periodSubtitle={periodSubtitle}
+          goals={goals}
+          hasPrevData={hasPrevData}
+          prevIncome={prevIncome}
+          prevExpenses={prevExpenses}
+          prevSavingsRate={prevSavingsRate}
+        />
 
         {/* Net Worth Card */}
         {isCardVisible("net_worth") && (
-          <div className="relative">
-            {isPremium ? (
-              <NetWorthCard
-                goals={goals}
-                investments={investments}
-                debts={debts}
-                transactions={transactions}
-                periodSubtitle={periodSubtitle}
-              />
-            ) : (
-              <PremiumBlurCard title="📊 Kekayaan Bersih (Net Worth)">
-                <NetWorthCard goals={goals} investments={investments} debts={debts} transactions={transactions} periodSubtitle={periodSubtitle} />
-              </PremiumBlurCard>
-            )}
-            <div className="absolute top-4 right-4 z-10">
-              <NanaCtaButton message="Nana, bagaimana cara meningkatkan kekayaan bersih aku?" />
-            </div>
-          </div>
+          isPremium ? (
+            <NetWorthCard
+              goals={goals}
+              investments={investments}
+              debts={debts}
+              transactions={transactions}
+              periodSubtitle={periodSubtitle}
+            />
+          ) : (
+            <PremiumBlurCard title="📊 Kekayaan Bersih (Net Worth)">
+              <NetWorthCard goals={goals} investments={investments} debts={debts} transactions={transactions} periodSubtitle={periodSubtitle} />
+            </PremiumBlurCard>
+          )
         )}
 
         {/* Daily Spending Card */}
         {isCardVisible("daily_spending") && (
-          <div className="relative">
-            {isPremium ? (
-              <DailySpendingCard
-                transactions={transactions}
-                filterPeriod={filterPeriod}
-                customDateRange={customDateRange}
-                periodSubtitle={periodSubtitle}
-              />
-            ) : (
-              <PremiumBlurCard title="📈 Pengeluaran Harian">
-                <DailySpendingCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} periodSubtitle={periodSubtitle} />
-              </PremiumBlurCard>
-            )}
-            <div className="absolute top-4 right-4 z-10">
-              <NanaCtaButton message="Nana, pengeluaran harianku terlalu tinggi tidak?" />
-            </div>
-          </div>
+          isPremium ? (
+            <DailySpendingCard
+              transactions={transactions}
+              filterPeriod={filterPeriod}
+              customDateRange={customDateRange}
+              periodSubtitle={periodSubtitle}
+            />
+          ) : (
+            <PremiumBlurCard title="📈 Pengeluaran Harian">
+              <DailySpendingCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} periodSubtitle={periodSubtitle} />
+            </PremiumBlurCard>
+          )
         )}
 
         {/* Portfolio Summary */}
         {isCardVisible("portfolio_summary") && (
-          <div className="relative">
-            {isPremium ? (
-              <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-                <PortfolioSummary user={user} periodSubtitle={periodSubtitle} />
-              </Suspense>
-            ) : (
-              <PremiumBlurCard title="💼 Ringkasan Portofolio Investasi">
-                <div className="bg-white rounded-2xl h-32 shadow-sm" />
-              </PremiumBlurCard>
-            )}
-            <div className="absolute top-4 right-4 z-10">
-              <NanaCtaButton message="Nana, bagaimana performa investasi aku sejauh ini?" />
-            </div>
-          </div>
+          isPremium ? (
+            <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+              <PortfolioSummary user={user} periodSubtitle={periodSubtitle} />
+            </Suspense>
+          ) : (
+            <PremiumBlurCard title="💼 Ringkasan Portofolio Investasi">
+              <div className="bg-white rounded-2xl h-32 shadow-sm" />
+            </PremiumBlurCard>
+          )
         )}
 
         {/* Category Breakdown (Expense + Income tabs) */}
         {isCardVisible("spending_chart") && (
-          <div className="relative">
-            {isPremium ? (
-              <CategoryBreakdownChart
-                transactions={filteredTxForPeriod}
-                loading={loading}
-                periodSubtitle={periodSubtitle}
-              />
-            ) : (
-              <PremiumBlurCard title="🛍️ Kategori Keuangan">
-                <CategoryBreakdownChart transactions={filteredTxForPeriod} loading={loading} periodSubtitle={periodSubtitle} />
-              </PremiumBlurCard>
-            )}
-            <div className="absolute top-4 right-4 z-10">
-              <NanaCtaButton message="Nana, kategori pengeluaran mana yang perlu aku kurangi?" />
-            </div>
-          </div>
-        )}
-
-        {/* Budget vs Aktual */}
-        <div className="relative">
-          {isPremium ? (
-            <BudgetActualWidget
-              budgets={budgets}
-              transactions={transactions}
-              allCategoriesConfig={allCategoriesConfig}
+          isPremium ? (
+            <CategoryBreakdownChart
+              transactions={filteredTxForPeriod}
+              loading={loading}
               periodSubtitle={periodSubtitle}
             />
           ) : (
-            <PremiumBlurCard title="💸 Budget vs Aktual">
-              <BudgetActualWidget budgets={budgets} transactions={transactions} allCategoriesConfig={allCategoriesConfig} periodSubtitle={periodSubtitle} />
+            <PremiumBlurCard title="🛍️ Kategori Keuangan">
+              <CategoryBreakdownChart transactions={filteredTxForPeriod} loading={loading} periodSubtitle={periodSubtitle} />
             </PremiumBlurCard>
-          )}
-          <div className="absolute top-4 right-4 z-10">
-            <NanaCtaButton message="Nana, bantu aku evaluasi budget bulan ini dong" />
-          </div>
-        </div>
+          )
+        )}
+
+        {/* Budget vs Aktual */}
+        {isPremium ? (
+          <BudgetActualWidget
+            budgets={budgets}
+            transactions={transactions}
+            allCategoriesConfig={allCategoriesConfig}
+            periodSubtitle={periodSubtitle}
+          />
+        ) : (
+          <PremiumBlurCard title="💸 Budget vs Aktual">
+            <BudgetActualWidget budgets={budgets} transactions={transactions} allCategoriesConfig={allCategoriesConfig} periodSubtitle={periodSubtitle} />
+          </PremiumBlurCard>
+        )}
 
       </div>
 

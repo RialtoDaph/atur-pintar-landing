@@ -74,7 +74,7 @@ export default function BudgetActualWidget({ budgets, transactions, allCategorie
     const barColor = pct > 90 ? "#FF6B6B" : pct > 70 ? "#F5A623" : "#00C9A7";
 
     return { ...b, catConfig, spent, pct, isOver, isNear, isWarning, barColor };
-  });
+  }).sort((a, b) => b.pct - a.pct);
 
   const overCount = budgetItems.filter(b => b.pct > 100).length;
   const nearCount = budgetItems.filter(b => b.pct >= 90 && b.pct <= 100).length;
@@ -157,7 +157,7 @@ export default function BudgetActualWidget({ budgets, transactions, allCategorie
           className="mt-4 w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-[#FF6A00] py-2.5 rounded-xl bg-[#FF6A00]/8 hover:bg-[#FF6A00]/15 transition-colors tap-highlight-fix"
         >
           {showAll
-            ? <><ChevronUp className="w-3.5 h-3.5" /> Sembunyikan</>
+            ? <><ChevronUp className="w-3.5 h-3.5" /> Tutup</>
             : <><ChevronDown className="w-3.5 h-3.5" /> Lihat {hiddenCount} budget lainnya</>
           }
         </button>
