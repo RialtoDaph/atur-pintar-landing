@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const NANA_AVATAR = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png";
 
@@ -59,6 +60,7 @@ function generateNarrative({ firstName, savingRate, budgets, transactions, strea
 
 export default function NanaDailyNarrative({ user, savingRate, budgets, transactions, streak, netWorth, debts, allCategoriesConfig }) {
   const firstName = user?.full_name?.split(" ")[0] || "Kamu";
+  const [expanded, setExpanded] = useState(false);
 
   const narrative = useMemo(() => {
     if (!user) return null;
@@ -68,16 +70,22 @@ export default function NanaDailyNarrative({ user, savingRate, budgets, transact
   if (!narrative) return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border-l-4 border-[#FF6A00] overflow-hidden">
-      <div className="flex items-start gap-3 p-4">
-        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#FF6A00]/30">
+    <button
+      onClick={() => setExpanded(e => !e)}
+      className="w-full text-left bg-white rounded-2xl shadow-sm border-l-4 border-[#FF6A00] overflow-hidden tap-highlight-fix"
+    >
+      <div className="flex items-center gap-3 p-4">
+        <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#FF6A00]/30">
           <img src={NANA_AVATAR} alt="Nana" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-[#FF6A00] uppercase tracking-widest mb-1">Nana bilang</p>
-          <p className="text-xs sm:text-sm text-[#1A1A1A] leading-relaxed">{narrative}</p>
+          <p className="text-[10px] font-bold text-[#FF6A00] uppercase tracking-widest mb-0.5">Nana bilang</p>
+          <p className={`text-xs text-[#1A1A1A] leading-relaxed ${expanded ? "" : "truncate"}`}>{narrative}</p>
+        </div>
+        <div className="flex-shrink-0 text-[#8FA4C8]">
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       </div>
-    </div>
+    </button>
   );
 }

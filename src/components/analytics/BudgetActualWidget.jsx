@@ -3,10 +3,14 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { ChevronDown, ChevronUp } from "lucide-react";
+
+const MAX_VISIBLE = 3;
 
 export default function BudgetActualWidget({ budgets, transactions, allCategoriesConfig, periodSubtitle }) {
   const { formatCurrency } = useAppSettings();
   const [globalCategories, setGlobalCategories] = useState([]);
+  const [showAll, setShowAll] = useState(false);
   const now = new Date();
 
   useEffect(() => {
@@ -91,6 +95,9 @@ export default function BudgetActualWidget({ budgets, transactions, allCategorie
     footerColor = "text-[#00C9A7]";
   }
 
+  const visibleItems = showAll ? budgetItems : budgetItems.slice(0, MAX_VISIBLE);
+  const hiddenCount = budgetItems.length - MAX_VISIBLE;
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5 pr-14">
       <div className="mb-4">
@@ -99,7 +106,7 @@ export default function BudgetActualWidget({ budgets, transactions, allCategorie
       </div>
 
       <div className="space-y-4">
-        {budgetItems.map((item, i) => (
+        {visibleItems.map((item, i) => (
           <div key={item.id || i}>
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-1.5 min-w-0">
@@ -143,6 +150,18 @@ export default function BudgetActualWidget({ budgets, transactions, allCategorie
           </div>
         ))}
       </div>
+
+      {hiddenCount > 0 && (
+        <button
+          onClick={() => setShowAll(s => !s)}
+          className="mt-4 w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-[#FF6A00] py-2.5 rounded-xl bg-[#FF6A00]/8 hover:bg-[#FF6A00]/15 transition-colors tap-highlight-fix"
+        >
+          {showAll
+            ? <><ChevronUp className="w-3.5 h-3.5" /> Sembunyikan</>
+            : <><ChevronDown className="w-3.5 h-3.5" /> Lihat {hiddenCount} budget lainnya</>
+          }
+        </button>
+      )}
 
       <div className={`mt-4 pt-3 border-t border-[#F2F4F7] text-xs font-medium ${footerColor}`}>
         {footerText}
