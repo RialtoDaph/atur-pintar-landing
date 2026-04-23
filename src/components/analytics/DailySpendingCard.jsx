@@ -1,26 +1,22 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts";
-import { ChevronRight, TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
+import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
 import { createPageUrl } from "@/utils";
-import { useNavigate } from "react-router-dom";
-import { formatRupiah } from "@/components/utils/formatRupiah";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { Link } from "react-router-dom";
 
 export default function DailySpendingCard({
   transactions,
   filterPeriod,
   customDateRange,
-  onNavigateToDetail
+  periodSubtitle,
 }) {
-  const navigate = useNavigate();
-  const { formatShortNumber } = useAppSettings();
+  const { formatShortNumber, formatCurrency } = useAppSettings();
   const [expanded, setExpanded] = useState(true);
   const now = new Date();
 
   const getMonthRange = () => {
-    if (customDateRange) {
-      return customDateRange;
-    }
+    if (customDateRange) return customDateRange;
     const months = parseInt(filterPeriod);
     return {
       start: new Date(now.getFullYear(), now.getMonth() - (months - 1), 1),
@@ -30,43 +26,35 @@ export default function DailySpendingCard({
 
   const monthRange = getMonthRange();
 
-  // Get all months in range
   const monthDiff =
     (monthRange.end.getFullYear() - monthRange.start.getFullYear()) * 12 +
     (monthRange.end.getMonth() - monthRange.start.getMonth());
 
-  // Calculate monthly expenses for current period
   const currentMonthlyData = Array.from({ length: monthDiff + 1 }, (_, i) => {
     const d = new Date(monthRange.start.getFullYear(), monthRange.start.getMonth() + i, 1);
     const month = d.getMonth();
     const year = d.getFullYear();
     const monthTx = transactions.filter(t => {
       const td = new Date(t.date);
-      return (
-        td.getMonth() === month &&
-        td.getFullYear() === year &&
-        t.type === "expense"
-      );
+      return td.getMonth() === month && td.getFullYear() === year && t.type === "expense";
     });
     const total = monthTx.reduce((s, t) => s + t.amount, 0);
     return {
       name: d.toLocaleDateString("id-ID", { month: "short" }),
       value: total,
-      label: d.toLocaleDateString("id-ID", { month: "2-digit", year: "2-digit" })
     };
   });
 
-  // Calculate daily average for current period
-  const fullPeriodEnd = new Date(monthRange.end.getFullYear(), monthRange.end.getMonth() + 1, 0);
-  const periodStart = monthRange.start;
+  const currentTotal = currentMonthlyData.reduce((s, m) => s + m.value, 0);
+
+  // Hitung hari aktual dalam periode yang dipilih (start → end)
   const totalDays = Math.max(
-    Math.ceil((fullPeriodEnd - periodStart) / (1000 * 60 * 60 * 24)) + 1,
+    Math.ceil((monthRange.end - monthRange.start) / (1000 * 60 * 60 * 24)) + 1,
     1
   );
-  const currentTotal = currentMonthlyData.reduce((s, m) => s + m.value, 0);
   const currentDailyAvg = currentTotal / totalDays;
 
-  // Calculate previous period for trend
+  // Previous period untuk trend
   const prevMonthRange = {
     start: new Date(monthRange.start.getFullYear(), monthRange.start.getMonth() - (monthDiff + 1), 1),
     end: new Date(monthRange.start.getFullYear(), monthRange.start.getMonth(), 0),
@@ -82,11 +70,7 @@ export default function DailySpendingCard({
     const year = d.getFullYear();
     const monthTx = transactions.filter(t => {
       const td = new Date(t.date);
-      return (
-        td.getMonth() === month &&
-        td.getFullYear() === year &&
-        t.type === "expense"
-      );
+      return td.getMonth() === month && td.getFullYear() === year && t.type === "expense";
     });
     return monthTx.reduce((s, t) => s + t.amount, 0);
   });
@@ -101,9 +85,7 @@ export default function DailySpendingCard({
   const trendDiff = currentDailyAvg - prevDailyAvg;
   const isTrendPositive = trendDiff >= 0;
 
-  const handleNavigate = () => {
-    navigate(`${createPageUrl("SpendingDetail")}?type=daily&period=${filterPeriod}`);
-  };
+  const isEmpty = currentTotal === 0;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -115,7 +97,7 @@ export default function DailySpendingCard({
           </div>
           <div>
             <p className="text-sm font-bold text-[#1A1A1A]">Pengeluaran Harian</p>
-            <p className="text-xs text-[#8FA4C8]">Rata-rata per hari dalam periode</p>
+            <p className="text-xs text-[#8FA4C8]">{periodSubtitle || "Rata-rata per hari dalam periode"}</p>
           </div>
         </div>
         <button
@@ -127,45 +109,59 @@ export default function DailySpendingCard({
       </div>
 
       {expanded && (
-        <>
-          {/* Chart */}
-          <div className="px-4 sm:px-5">
-            <ResponsiveContainer width="100%" height={180}>
-              <ComposedChart data={currentMonthlyData}>
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  formatter={(value) => [formatRupiah(value), undefined]}
-                  contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
-                />
-                <Bar dataKey="value" fill="#FF6B6B" radius={[6, 6, 0, 0]} />
-                <Line dataKey="value" stroke="#FF6B6B" strokeDasharray="5,5" dot={false} strokeWidth={2} />
-              </ComposedChart>
-            </ResponsiveContainer>
+        isEmpty ? (
+          <div className="flex flex-col items-center justify-center px-6 py-8 text-center">
+            <span className="text-4xl mb-3">📅</span>
+            <p className="font-semibold text-[#1A1A1A] text-sm mb-1">Hari-harimu masih kosong di sini!</p>
+            <p className="text-xs text-[#8FA4C8] mb-4">Catat pengeluaran pertamamu hari ini dan lihat polamu berkembang</p>
+            <Link
+              to={createPageUrl("Transactions")}
+              className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors"
+            >
+              Catat Sekarang
+            </Link>
           </div>
-
-          {/* Summary */}
-          <div className="px-4 sm:px-5 mt-4 flex items-baseline gap-2">
-            <p className="text-sm text-[#8FA4C8]">Ø</p>
-            <p className="text-xl sm:text-2xl font-bold text-[#0A0A0A]">{formatShortNumber(currentDailyAvg)}</p>
-            <p className="text-sm text-[#8FA4C8]">/Hari</p>
-          </div>
-
-          {/* Trend */}
-          <div className="px-4 sm:px-5 mt-2 flex items-center gap-2 pb-4 sm:pb-5">
-            <div className="flex items-center gap-1">
-              {isTrendPositive ? (
-                <TrendingUp className="w-4 h-4 text-[#FF6B6B]" />
-              ) : (
-                <TrendingDown className="w-4 h-4 text-[#00C9A7]" />
-              )}
-              <span className={`text-sm font-semibold ${isTrendPositive ? "text-[#FF6B6B]" : "text-[#00C9A7]"}`}>
-                {isTrendPositive ? "+" : ""}{formatShortNumber(trendDiff)}
-              </span>
+        ) : (
+          <>
+            {/* Chart */}
+            <div className="px-4 sm:px-5">
+              <ResponsiveContainer width="100%" height={180}>
+                <ComposedChart data={currentMonthlyData}>
+                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => formatShortNumber(v)} />
+                  <Tooltip
+                    formatter={(value) => [formatCurrency(value), undefined]}
+                    contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
+                  />
+                  <Bar dataKey="value" fill="#FF6B6B" radius={[6, 6, 0, 0]} />
+                  <Line dataKey="value" stroke="#FF6B6B" strokeDasharray="5,5" dot={false} strokeWidth={2} />
+                </ComposedChart>
+              </ResponsiveContainer>
             </div>
-            <span className="text-xs text-[#8FA4C8]">vs periode sebelumnya</span>
-          </div>
-        </>
+
+            {/* Summary */}
+            <div className="px-4 sm:px-5 mt-4 flex items-baseline gap-2">
+              <p className="text-sm text-[#8FA4C8]">Ø</p>
+              <p className="text-xl sm:text-2xl font-bold text-[#0A0A0A]">{formatShortNumber(currentDailyAvg)}</p>
+              <p className="text-sm text-[#8FA4C8]">/Hari</p>
+            </div>
+
+            {/* Trend */}
+            <div className="px-4 sm:px-5 mt-2 flex items-center gap-2 pb-4 sm:pb-5">
+              <div className="flex items-center gap-1">
+                {isTrendPositive ? (
+                  <TrendingUp className="w-4 h-4 text-[#FF6B6B]" />
+                ) : (
+                  <TrendingDown className="w-4 h-4 text-[#00C9A7]" />
+                )}
+                <span className={`text-sm font-semibold ${isTrendPositive ? "text-[#FF6B6B]" : "text-[#00C9A7]"}`}>
+                  {isTrendPositive ? "+" : ""}{formatShortNumber(trendDiff)}
+                </span>
+              </div>
+              <span className="text-xs text-[#8FA4C8]">vs periode sebelumnya</span>
+            </div>
+          </>
+        )
       )}
     </div>
   );

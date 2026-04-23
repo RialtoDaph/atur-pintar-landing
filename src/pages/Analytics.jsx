@@ -2,27 +2,20 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import PremiumGate from "@/components/subscription/PremiumGate";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { LayoutList, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { LayoutList } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { Suspense, lazy } from "react";
 const PortfolioSummary = lazy(() => import("@/components/dashboard/PortfolioSummary"));
-const GoalsMiniList = lazy(() => import("@/components/dashboard/GoalsMiniList"));
 import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import PremiumBlurCard from "@/components/subscription/PremiumBlurCard";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
 import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
-
-import FinancialCalendar from "@/components/analytics/FinancialCalendar";
 import DateRangeFilter from "@/components/analytics/DateRangeFilter";
 import DailySpendingCard from "@/components/analytics/DailySpendingCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "net_worth", visible: true },
-  { id: "financial_calendar", visible: true },
   { id: "daily_spending", visible: true },
   { id: "spending_chart", visible: true },
   { id: "portfolio_summary", visible: true },
@@ -42,6 +35,28 @@ const DEFAULT_CATEGORIES_FLAT = [
   { key: "other", i18nKey: "cat_other", emoji: "📦", color: "#8FA4C8" },
 ];
 
+// Format subtitle periode yang human-readable
+function buildPeriodSubtitle(filterPeriod, customDateRange) {
+  const now = new Date();
+  const MONTHS_ID = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+
+  if (customDateRange) {
+    const s = customDateRange.start;
+    const e = customDateRange.end;
+    if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
+      return `${MONTHS_ID[s.getMonth()]} ${s.getFullYear()}`;
+    }
+    return `${MONTHS_ID[s.getMonth()]} - ${MONTHS_ID[e.getMonth()]} ${e.getFullYear()}`;
+  }
+
+  const months = parseInt(filterPeriod);
+  if (months === 1) {
+    return `${MONTHS_ID[now.getMonth()]} ${now.getFullYear()}`;
+  }
+  const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+  return `${MONTHS_ID[start.getMonth()]} - ${MONTHS_ID[now.getMonth()]} ${now.getFullYear()}`;
+}
+
 export default function Analytics() {
   const { t, formatShortNumber, formatCurrency } = useAppSettings();
   const queryClient = useQueryClient();
@@ -56,12 +71,10 @@ export default function Analytics() {
     base44.auth.me().then(u => setUser(u)).catch(() => {});
   }, []);
 
-  // Real-time subscriptions — sama seperti Dashboard agar cache selalu sinkron
   useEffect(() => {
     if (!user?.email) return;
     const unsub1 = base44.entities.Transaction.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ["transactions_analytics", user.email] });
-      queryClient.invalidateQueries({ queryKey: ["transactions_dashboard", user.email] });
     });
     const unsub2 = base44.entities.SavingsGoal.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ["goals", user.email] });
@@ -74,12 +87,11 @@ export default function Analytics() {
 
   const enabled = !!user?.email;
 
-  // Query key TERPISAH dari Dashboard agar limit 300 tidak konflik dengan cache 100
   const { data: rawTransactions = [], isLoading: txLoading } = useQuery({
     queryKey: ["transactions_analytics", user?.email],
     queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
     enabled,
-    staleTime: 0, // selalu ambil data terbaru
+    staleTime: 0,
   });
 
   const { data: goals = [], isLoading: goalsLoading } = useQuery({
@@ -117,7 +129,6 @@ export default function Analytics() {
     staleTime: 10 * 60 * 1000,
   });
 
-  // Load analytics card settings from AppSettings
   const { data: settingsList = [] } = useQuery({
     queryKey: ["app_settings", user?.email],
     queryFn: () => base44.entities.AppSettings.list(),
@@ -130,14 +141,14 @@ export default function Analytics() {
     if (userSettings) {
       setAppSettings(userSettings);
       if (userSettings.analytics_cards && userSettings.analytics_cards.length > 0) {
-        setAnalyticsCards(userSettings.analytics_cards);
+        // Filter out financial_calendar if still in saved settings
+        const filtered = userSettings.analytics_cards.filter(c => c.id !== "financial_calendar");
+        setAnalyticsCards(filtered);
       }
     }
   }, [settingsList, user?.settings_id]);
 
-  // Filter recurring templates (is_recurring=true & bukan child) dari semua kalkulasi
   const transactions = rawTransactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
-
   const loading = txLoading || goalsLoading || budgetsLoading;
 
   const localizedMonths = useMemo(() => {
@@ -171,8 +182,6 @@ export default function Analytics() {
     }
   };
 
-  const formatYAxisTick = useCallback((value) => formatShortNumber(value), [formatShortNumber]);
-
   const isCardVisible = (id) => {
     const card = analyticsCards.find(c => c.id === id);
     return card ? card.visible : true;
@@ -199,9 +208,7 @@ export default function Analytics() {
 
   const now = new Date();
   const getMonthRange = () => {
-    if (customDateRange) {
-      return customDateRange;
-    }
+    if (customDateRange) return customDateRange;
     const months = parseInt(filterPeriod);
     return {
       start: new Date(now.getFullYear(), now.getMonth() - (months - 1), 1),
@@ -234,7 +241,6 @@ export default function Analytics() {
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && t.type === "expense";
   });
 
-  // Filtered expenses based on selected period (for category breakdown)
   const filteredExpenses = transactions.filter(t => {
     if (t.type !== "expense") return false;
     const d = new Date(t.date);
@@ -258,32 +264,19 @@ export default function Analytics() {
 
   const totalExpenses = filteredExpenses.reduce((s, t) => s + t.amount, 0);
 
-
-
-  const budgetData = budgets.map(b => {
-    const catConfig = allCategoriesConfig[b.category] || {};
-    const spent = thisMonthTx.filter(t => t.category === b.category).reduce((s, t) => s + t.amount, 0);
-    return { name: (catConfig.emoji || "") + " " + (catConfig.label || b.category), budget: b.amount, spent };
-  });
-
-  const goalsData = goals.map(g => ({
-    name: g.name,
-    current: g.current_amount || 0,
-    target: g.target_amount,
-    progress: ((g.current_amount || 0) / (g.target_amount || 1)) * 100,
-    color: g.color || "#FF6A00"
-  }));
-
-  const totalInvested = investments.reduce((s, inv) => s + inv.initial_amount, 0);
-  const totalCurrentValue = investments.reduce((s, inv) => s + inv.current_value, 0);
-  const investmentReturn = totalCurrentValue - totalInvested;
-
   const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
 
   const totalIncome = trendData.reduce((sum, month) => sum + month.Income, 0);
   const periodExpenses = trendData.reduce((sum, month) => sum + month.Expenses, 0);
   const netCashflow = totalIncome - periodExpenses;
   const savingsRate = totalIncome > 0 ? ((netCashflow / totalIncome) * 100).toFixed(1) : 0;
+
+  const periodSubtitle = buildPeriodSubtitle(filterPeriod, customDateRange);
+
+  const filteredTxForPeriod = transactions.filter(t => {
+    const d = new Date(t.date);
+    return d >= monthRange.start && d <= monthRange.end;
+  });
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
@@ -307,12 +300,11 @@ export default function Analytics() {
 
       <div className="max-w-4xl mx-auto px-5 mt-4 space-y-5">
 
-        {/* Filter - Compact at top */}
         <div className="relative">
           <DateRangeFilter onFilterChange={handleFilterChange} defaultPeriod="6" />
         </div>
 
-        {/* AI Financial Narrative — visible to all, but free users only see 3 months */}
+        {/* AI Financial Narrative */}
         <AIFinancialNarrative
           trendData={trendData}
           pieData={pieData}
@@ -320,6 +312,7 @@ export default function Analytics() {
           totalExpenses={periodExpenses}
           savingsRate={savingsRate}
           periodLabel={formatPeriodLabel(isPremium ? filterPeriod : "3")}
+          periodSubtitle={periodSubtitle}
           goals={goals}
         />
 
@@ -331,23 +324,11 @@ export default function Analytics() {
               investments={investments}
               debts={debts}
               transactions={transactions}
+              periodSubtitle={periodSubtitle}
             />
           ) : (
             <PremiumBlurCard title="📊 Kekayaan Bersih (Net Worth)">
-              <NetWorthCard goals={goals} investments={investments} debts={debts} transactions={transactions} />
-            </PremiumBlurCard>
-          )
-        )}
-
-
-
-        {/* Calendar Section */}
-        {isCardVisible("financial_calendar") && (
-          isPremium ? (
-            <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
-          ) : (
-            <PremiumBlurCard title="📅 Kalender Keuangan">
-              <FinancialCalendar transactions={transactions} debts={debts} goals={goals} />
+              <NetWorthCard goals={goals} investments={investments} debts={debts} transactions={transactions} periodSubtitle={periodSubtitle} />
             </PremiumBlurCard>
           )
         )}
@@ -355,10 +336,15 @@ export default function Analytics() {
         {/* Daily Spending Card */}
         {isCardVisible("daily_spending") && (
           isPremium ? (
-            <DailySpendingCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} />
+            <DailySpendingCard
+              transactions={transactions}
+              filterPeriod={filterPeriod}
+              customDateRange={customDateRange}
+              periodSubtitle={periodSubtitle}
+            />
           ) : (
             <PremiumBlurCard title="📈 Pengeluaran Harian">
-              <DailySpendingCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} />
+              <DailySpendingCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} periodSubtitle={periodSubtitle} />
             </PremiumBlurCard>
           )
         )}
@@ -367,7 +353,7 @@ export default function Analytics() {
         {isCardVisible("portfolio_summary") && (
           isPremium ? (
             <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-              <PortfolioSummary user={user} />
+              <PortfolioSummary user={user} periodSubtitle={periodSubtitle} />
             </Suspense>
           ) : (
             <PremiumBlurCard title="💼 Ringkasan Portofolio Investasi">
@@ -379,25 +365,20 @@ export default function Analytics() {
         {/* Spending by Category */}
         {isCardVisible("spending_chart") && (
           isPremium ? (
-            <SpendingChart transactions={transactions.filter(t => {
-              const d = new Date(t.date);
-              return d >= monthRange.start && d <= monthRange.end;
-            })} loading={loading} />
+            <SpendingChart
+              transactions={filteredTxForPeriod}
+              loading={loading}
+              periodSubtitle={periodSubtitle}
+            />
           ) : (
             <PremiumBlurCard title="🛍️ Pengeluaran per Kategori">
-              <SpendingChart transactions={transactions.filter(t => {
-                const d = new Date(t.date);
-                return d >= monthRange.start && d <= monthRange.end;
-              })} loading={loading} />
+              <SpendingChart transactions={filteredTxForPeriod} loading={loading} periodSubtitle={periodSubtitle} />
             </PremiumBlurCard>
           )
         )}
 
-
-
       </div>
 
-      {/* Card Manager Modal */}
       {showCardManager && (
         <AnalyticsCardManager
           cards={analyticsCards}

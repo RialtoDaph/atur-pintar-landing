@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 const DEFAULT_CONFIG = {
   housing: { label: "Housing", color: "#4F7CFF", emoji: "🏠" },
@@ -19,7 +21,7 @@ const DEFAULT_CONFIG = {
 
 const INITIAL_VISIBLE = 4;
 
-export default function SpendingChart({ transactions, loading }) {
+export default function SpendingChart({ transactions, loading, periodSubtitle }) {
   const { formatCurrency } = useAppSettings();
   const [customCats, setCustomCats] = useState([]);
   const [showAll, setShowAll] = useState(false);
@@ -37,7 +39,6 @@ export default function SpendingChart({ transactions, loading }) {
   customCats.forEach(c => {
     const entry = { label: c.name, color: c.color || "#95A5A6", emoji: c.emoji || "📦" };
     categoryConfig[`custom_${c.id}`] = entry;
-    // also map by plain id in case transactions stored it without prefix
     categoryConfig[c.id] = entry;
   });
 
@@ -58,11 +59,35 @@ export default function SpendingChart({ transactions, loading }) {
   const total = data.reduce((s, d) => s + d.value, 0);
 
   if (loading) return <div className="bg-white rounded-2xl shadow-sm h-48 animate-pulse" />;
-  if (data.length === 0) return null;
+
+  if (data.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm p-5">
+        <div className="mb-3">
+          <h2 className="font-bold text-[#1A1A1A] text-base">Pengeluaran per Kategori</h2>
+          {periodSubtitle && <p className="text-xs text-[#8FA4C8] mt-0.5">{periodSubtitle}</p>}
+        </div>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <span className="text-4xl mb-3">🛍️</span>
+          <p className="font-semibold text-[#1A1A1A] text-sm mb-1">Belum ada pengeluaran yang tercatat!</p>
+          <p className="text-xs text-[#8FA4C8] mb-4">Catat transaksi pertamamu biar kita tahu kamu paling boros di mana</p>
+          <Link
+            to={createPageUrl("Transactions")}
+            className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors"
+          >
+            Catat Transaksi
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5">
-      <h2 className="font-bold text-[#1A1A1A] text-base mb-3">Pengeluaran per Kategori</h2>
+      <div className="mb-3">
+        <h2 className="font-bold text-[#1A1A1A] text-base">Pengeluaran per Kategori</h2>
+        {periodSubtitle && <p className="text-xs text-[#8FA4C8] mt-0.5">{periodSubtitle}</p>}
+      </div>
       <div className="w-full h-36">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>

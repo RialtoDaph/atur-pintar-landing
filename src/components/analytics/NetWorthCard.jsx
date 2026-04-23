@@ -1,8 +1,10 @@
 import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
-export default function NetWorthCard({ goals, investments, debts, transactions }) {
+export default function NetWorthCard({ goals, investments, debts, transactions, periodSubtitle }) {
   const { formatCurrency } = useAppSettings();
   const [expanded, setExpanded] = useState(true);
 
@@ -10,18 +12,16 @@ export default function NetWorthCard({ goals, investments, debts, transactions }
   const totalSavings = goals.reduce((s, g) => s + (g.current_amount || 0), 0);
   const totalInvestments = investments.reduce((s, i) => s + (i.current_value || 0), 0);
 
-  // Cash on hand: sum of all income - expenses (all time, not filtered by period)
   const allIncome = transactions.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
   const allExpenses = transactions.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
   const cashBalance = Math.max(allIncome - allExpenses, 0);
 
   const totalAssets = Math.max(cashBalance, 0) + totalSavings + totalInvestments;
-
-  // Liabilities
   const totalDebts = debts.filter(d => d.status === "active").reduce((s, d) => s + (d.remaining_amount || 0), 0);
-
   const netWorth = totalAssets - totalDebts;
   const isPositive = netWorth >= 0;
+
+  const isEmpty = totalAssets === 0 && totalDebts === 0;
 
   // Financial Health Score (0-100)
   let score = 50;
@@ -58,7 +58,7 @@ export default function NetWorthCard({ goals, investments, debts, transactions }
           </div>
           <div>
             <p className="text-sm font-bold text-[#1A1A1A]">Kekayaan Bersih</p>
-            <p className="text-xs text-[#8FA4C8]">Aset dikurangi utang aktif</p>
+            <p className="text-xs text-[#8FA4C8]">{periodSubtitle || "Aset dikurangi utang aktif"}</p>
           </div>
         </div>
         <button
@@ -70,47 +70,61 @@ export default function NetWorthCard({ goals, investments, debts, transactions }
       </div>
 
       {expanded && (
-        <div className="px-4 sm:px-5 pb-5 space-y-4">
-          {/* Net Worth Big Number */}
-          <div className="flex items-center gap-3">
-            <div className={`px-3 py-1.5 rounded-full text-xs font-bold`} style={{ backgroundColor: scoreLabel.color + "20", color: scoreLabel.color }}>
-              Skor {score} · {scoreLabel.label}
-            </div>
-            <p className={`text-xl font-bold ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-              {isPositive ? "" : "-"}{formatCurrency(Math.abs(netWorth))}
-            </p>
+        isEmpty ? (
+          <div className="flex flex-col items-center justify-center px-6 py-8 text-center">
+            <span className="text-4xl mb-3">🏦</span>
+            <p className="font-semibold text-[#1A1A1A] text-sm mb-1">Kekayaan bersihmu masih misterius nih!</p>
+            <p className="text-xs text-[#8FA4C8] mb-4">Tambahkan rekening dan tabungan kamu biar kita bisa hitung bareng</p>
+            <Link
+              to={createPageUrl("Accounts")}
+              className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors"
+            >
+              Tambah Rekening
+            </Link>
           </div>
+        ) : (
+          <div className="px-4 sm:px-5 pb-5 space-y-4">
+            {/* Net Worth Big Number */}
+            <div className="flex items-center gap-3">
+              <div className={`px-3 py-1.5 rounded-full text-xs font-bold`} style={{ backgroundColor: scoreLabel.color + "20", color: scoreLabel.color }}>
+                Skor {score} · {scoreLabel.label}
+              </div>
+              <p className={`text-xl font-bold ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                {isPositive ? "" : "-"}{formatCurrency(Math.abs(netWorth))}
+              </p>
+            </div>
 
-          {/* Health score bar */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-[#8FA4C8]">Kesehatan Finansial</p>
-              <p className="text-xs font-bold" style={{ color: scoreLabel.color }}>{score}/100</p>
+            {/* Health score bar */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-[#8FA4C8]">Kesehatan Finansial</p>
+                <p className="text-xs font-bold" style={{ color: scoreLabel.color }}>{score}/100</p>
+              </div>
+              <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${score}%`, backgroundColor: scoreLabel.color }}
+                />
+              </div>
             </div>
-            <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${score}%`, backgroundColor: scoreLabel.color }}
-              />
-            </div>
-          </div>
 
-          {/* Breakdown */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-[#F2F4F7] rounded-xl p-2.5 text-center">
-              <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Tabungan</p>
-              <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalSavings)}</p>
-            </div>
-            <div className="bg-[#F2F4F7] rounded-xl p-2.5 text-center">
-              <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Investasi</p>
-              <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalInvestments)}</p>
-            </div>
-            <div className="bg-[#FF6B6B]/10 rounded-xl p-2.5 text-center">
-              <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Utang</p>
-              <p className="text-xs font-bold text-[#FF6B6B]">-{formatCurrency(totalDebts)}</p>
+            {/* Breakdown */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-[#F2F4F7] rounded-xl p-2.5 text-center">
+                <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Tabungan</p>
+                <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalSavings)}</p>
+              </div>
+              <div className="bg-[#F2F4F7] rounded-xl p-2.5 text-center">
+                <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Investasi</p>
+                <p className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(totalInvestments)}</p>
+              </div>
+              <div className="bg-[#FF6B6B]/10 rounded-xl p-2.5 text-center">
+                <p className="text-[9px] text-[#8FA4C8] mb-1 font-medium">Utang</p>
+                <p className="text-xs font-bold text-[#FF6B6B]">-{formatCurrency(totalDebts)}</p>
+              </div>
             </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );
