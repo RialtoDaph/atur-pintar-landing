@@ -77,9 +77,9 @@ function shuffle(arr) {return [...arr].sort(() => Math.random() - 0.5);}
 function FomoToast({ data, visible }) {
   return (
     <div style={{
-      position: "fixed", top: 68, left: 12, zIndex: 9999, maxWidth: 210,
-      background: "#1c1c1e", borderRadius: 10, padding: "7px 11px",
-      boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
+      position: "fixed", top: 68, left: 12, zIndex: 9999, maxWidth: 220,
+      background: "#ffffff", borderRadius: 10, padding: "7px 11px",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
       opacity: visible ? 1 : 0,
       transform: visible ? "translateY(0)" : "translateY(-8px)",
       transition: "opacity 0.35s ease, transform 0.35s ease",
@@ -88,15 +88,35 @@ function FomoToast({ data, visible }) {
       <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
         <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", flexShrink: 0 }} />
         <div>
-          <p style={{ margin: 0, fontSize: 10, color: "#fff", lineHeight: 1.4 }}>
+          <p style={{ margin: 0, fontSize: 10, color: "#111", lineHeight: 1.4 }}>
             <span style={{ color: "#f97316", fontWeight: 700 }}>{data.name}</span>
             {" "}dari {data.city} bergabung 🎉
           </p>
-          <p style={{ margin: "1px 0 0", fontSize: 9, color: "#555" }}>{data.time}</p>
+          <p style={{ margin: "1px 0 0", fontSize: 9, color: "#999" }}>{data.time}</p>
         </div>
       </div>
     </div>);
 
+}
+
+// ─── Scroll Progress ──────────────────────────────────────────────────────────
+function ScrollProgress() {
+  const [pct, setPct] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const el = document.documentElement;
+      const scrolled = el.scrollTop || document.body.scrollTop;
+      const total = el.scrollHeight - el.clientHeight;
+      setPct(total > 0 ? (scrolled / total) * 100 : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <div style={{ position: "fixed", right: 4, top: "50%", transform: "translateY(-50%)", zIndex: 9998, height: 160, width: 3, borderRadius: 4, background: "rgba(255,106,0,0.12)", pointerEvents: "none" }}>
+      <div style={{ width: "100%", height: `${pct}%`, background: "#FF6A00", borderRadius: 4, transition: "height 0.1s" }} />
+    </div>
+  );
 }
 
 // ─── NANA Chat Demo ───────────────────────────────────────────────────────────
@@ -120,6 +140,13 @@ function getNanaReply(input) {
   return "Pertanyaan yang bagus! Tapi untuk jawaban yang benar-benar personal, aku butuh lihat kondisi keuangan kamu yang sesungguhnya. Daftar dulu — begitu akses dibuka, kita bisa ngobrol lebih dalam dengan data yang nyata.";
 }
 
+const QUICK_QUESTIONS = [
+  { emoji: "💰", label: "Cara nabung yang bener", text: "Cara nabung yang bener itu gimana?" },
+  { emoji: "📉", label: "Kok selalu boros?", text: "Kok aku selalu boros ya?" },
+  { emoji: "📈", label: "Mulai investasi", text: "Gimana cara mulai investasi?" },
+  { emoji: "💸", label: "Atur hutang", text: "Gimana cara atur hutang yang banyak?" },
+];
+
 function NanaChatDemo({ scrollToWaitingList }) {
   const [messages, setMessages] = useState([
   { role: "nana", text: "Halo! Aku Nana, asisten keuangan kamu 👋 Tanya apa saja soal keuangan — nabung, investasi, hutang, atau apapun yang lagi bikin pusing." }]
@@ -128,19 +155,19 @@ function NanaChatDemo({ scrollToWaitingList }) {
   const [typing, setTyping] = useState(false);
   const [questionsLeft, setQuestionsLeft] = useState(2);
   const [done, setDone] = useState(false);
+  const [showQuick, setShowQuick] = useState(true);
   const bottomRef = useRef(null);
 
   useEffect(() => {bottomRef.current?.scrollIntoView({ behavior: "smooth" });}, [messages, typing]);
 
-  const handleSend = () => {
-    if (!input.trim() || typing || done) return;
-    const userText = input.trim();
+  const sendMessage = (text) => {
+    if (!text.trim() || typing || done) return;
+    setShowQuick(false);
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", text: userText }]);
+    setMessages((prev) => [...prev, { role: "user", text }]);
     setTyping(true);
-
     setTimeout(() => {
-      const reply = getNanaReply(userText);
+      const reply = getNanaReply(text);
       setMessages((prev) => [...prev, { role: "nana", text: reply }]);
       setTyping(false);
       const newLeft = questionsLeft - 1;
@@ -154,58 +181,75 @@ function NanaChatDemo({ scrollToWaitingList }) {
     }, 1500);
   };
 
+  const handleSend = () => sendMessage(input.trim());
+
   return (
-    <section id="nana-demo" className="pb-24 px-5 sm:px-12 lg:px-20 relative z-10">
-      <div className="max-w-2xl mx-auto">
+    <section id="nana-demo" className="pb-16 px-5 sm:px-12 lg:px-20 relative z-10">
+      <div className="max-w-xl mx-auto">
         <Reveal>
-          <h2 className="text-3xl sm:text-4xl font-black text-white mb-2 text-center">Kenalan sama Nana — AI bestie finansialmu.</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-white mb-1 text-center">Kenalan sama Nana.</h2>
         </Reveal>
         <Reveal delay={60}>
-          <p className="text-center text-white/40 text-sm mb-8">Tanya apa saja soal keuangan. Nana siap bantu.</p>
+          <p className="text-center text-white/40 text-xs mb-6">AI bestie finansialmu — tanya apa saja soal keuangan.</p>
         </Reveal>
         <Reveal delay={120}>
           <div className="card-d rounded-2xl overflow-hidden">
             {/* Header */}
-            <div className="flex items-center gap-3 p-4 border-b border-white/8">
-              <div className="w-9 h-9 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center flex-shrink-0">
-                {NANA_AVATAR_URL ? <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/51c7f5e6a_Nana_AI.png" alt="Nana" className="w-full h-full object-cover" onError={(e) => {e.target.style.display = "none";}} /> : <span className="text-white font-black text-sm">N</span>}
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-white/8">
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center flex-shrink-0">
+                <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/51c7f5e6a_Nana_AI.png" alt="Nana" className="w-full h-full object-cover" onError={(e) => {e.target.style.display = "none";}} />
               </div>
               <div>
-                <p className="text-white text-xs font-bold">Nana AI</p>
-                <div className="flex items-center gap-1.5">
+                <p className="text-white text-xs font-bold leading-none">Nana AI</p>
+                <div className="flex items-center gap-1 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
                   <p className="text-white/40 text-[10px]">Online</p>
                 </div>
               </div>
-              {questionsLeft > 0 &&
-              <div className="ml-auto text-[10px] text-white/30">{questionsLeft} pertanyaan tersisa</div>
+              {questionsLeft > 0 && !done &&
+              <div className="ml-auto text-[10px] text-white/25 bg-white/5 px-2 py-1 rounded-full">{questionsLeft} pertanyaan gratis</div>
               }
             </div>
 
+            {/* Quick questions */}
+            {showQuick && !done && (
+              <div className="px-4 pt-3 pb-1">
+                <p className="text-white/30 text-[10px] mb-2">Mau tanya soal apa?</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {QUICK_QUESTIONS.map((q, i) => (
+                    <button key={i} onClick={() => sendMessage(q.text)} disabled={typing}
+                      className="flex items-center gap-1 text-[10px] text-white/70 border border-white/10 hover:border-[#FF6A00]/50 hover:text-white bg-white/4 hover:bg-[#FF6A00]/10 rounded-full px-2.5 py-1 transition-all disabled:opacity-40">
+                      <span>{q.emoji}</span> {q.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Messages */}
-            <div className="p-4 space-y-3 max-h-72 overflow-y-auto">
+            <div className="p-4 space-y-3 max-h-64 overflow-y-auto">
               {messages.map((m, i) =>
-              <div key={i} className={`flex gap-2.5 ${m.role === "user" ? "justify-end" : ""}`}>
+              <div key={i} className={`flex gap-2 ${m.role === "user" ? "justify-end" : ""}`}>
                   {m.role === "nana" &&
-                <div className="w-7 h-7 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center flex-shrink-0 mt-0.5">
                       <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/51c7f5e6a_Nana_AI.png" alt="N" className="w-full h-full object-cover" onError={(e) => {e.target.style.display = "none";}} />
                     </div>
                 }
-                  <div className={`rounded-2xl px-4 py-3 max-w-[85%] text-xs leading-relaxed ${m.role === "nana" ? "bg-white/8 rounded-tl-sm text-white/85" : "bg-[#FF6A00] rounded-tr-sm text-white"}`}>
+                  <div className={`rounded-2xl px-3 py-2.5 max-w-[85%] text-xs leading-relaxed ${m.role === "nana" ? "bg-white/6 rounded-tl-sm text-white/80" : "bg-[#FF6A00] rounded-tr-sm text-white"}`}>
                     {m.text}
                   </div>
                   {m.role === "user" &&
-                <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white font-black text-[10px] flex-shrink-0">K</div>
+                <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white font-black text-[9px] flex-shrink-0 mt-0.5">K</div>
                 }
                 </div>
               )}
               {typing &&
-              <div className="flex gap-2.5">
-                  <div className="w-7 h-7 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center flex-shrink-0">
-                    <img src={NANA_AVATAR_URL} alt="N" className="w-full h-full object-cover" onError={(e) => {e.target.style.display = "none";}} />
+              <div className="flex gap-2">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center flex-shrink-0">
+                    <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/51c7f5e6a_Nana_AI.png" alt="N" className="w-full h-full object-cover" onError={(e) => {e.target.style.display = "none";}} />
                   </div>
-                  <div className="bg-white/8 rounded-2xl rounded-tl-sm px-4 py-3">
-                    <span className="text-white/50 text-xs">Nana sedang mengetik<span className="typing-dots">...</span></span>
+                  <div className="bg-white/6 rounded-2xl rounded-tl-sm px-3 py-2.5">
+                    <span className="text-white/40 text-xs">Nana mengetik<span className="typing-dots">...</span></span>
                   </div>
                 </div>
               }
@@ -213,27 +257,18 @@ function NanaChatDemo({ scrollToWaitingList }) {
             </div>
 
             {/* Input */}
-            <div className="p-3 border-t border-white/8">
+            <div className="px-3 pb-3 border-t border-white/8 pt-2">
               {done ?
               <button onClick={scrollToWaitingList} className="w-full py-3 bg-[#FF6A00] rounded-xl text-white text-sm font-bold hover:bg-[#e05e00] transition-colors">
                   Amankan Tempatku →
                 </button> :
-
               <div className="flex gap-2">
-                  <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder="Tulis pertanyaanmu..."
-                  disabled={typing || done} className="bg-[hsl(var(--card-foreground))] text-white px-4 py-2.5 text-xs rounded-xl flex-1 border border-white/10 placeholder-white/30 outline-none focus:border-[#FF6A00]/50 disabled:opacity-40" />
-                
-                
-                  <button
-                  onClick={handleSend}
-                  disabled={typing || !input.trim() || done}
-                  className="w-10 h-10 rounded-xl bg-[#FF6A00] flex items-center justify-center text-white hover:bg-[#e05e00] transition-colors disabled:opacity-40">
-                  
-                    <ArrowRight className="w-4 h-4" />
+                  <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Atau ketik sendiri..." disabled={typing || done}
+                  className="bg-white/5 text-white px-3 py-2.5 text-xs rounded-xl flex-1 border border-white/8 placeholder-white/25 outline-none focus:border-[#FF6A00]/40 disabled:opacity-40" />
+                  <button onClick={handleSend} disabled={typing || !input.trim() || done}
+                  className="w-9 h-9 rounded-xl bg-[#FF6A00] flex items-center justify-center text-white hover:bg-[#e05e00] transition-colors disabled:opacity-40">
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               }
@@ -540,6 +575,9 @@ export default function LandingPage() {
       {/* FOMO Toast */}
       {fomoToast && <FomoToast data={fomoToast} visible={fomoVisible} />}
 
+      {/* Scroll Progress */}
+      <ScrollProgress />
+
       {/* ── NAV ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center px-5 sm:px-12 lg:px-20 py-3 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/5">
         <div className="flex items-center gap-2">
@@ -601,7 +639,7 @@ export default function LandingPage() {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
               <button
-                onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => document.getElementById("video-section")?.scrollIntoView({ behavior: "smooth" })}
                 className="flex items-center gap-2 text-white/60 hover:text-white border border-white/10 hover:border-white/25 font-semibold text-sm px-6 py-4 rounded-2xl transition-all w-full sm:w-auto justify-center">
                 
                 Lihat cara kerjanya dulu ↓
@@ -806,6 +844,25 @@ export default function LandingPage() {
 
       {/* ── WAITING LIST ── */}
       <WaitingListSection fomoCounter={fomoCounter} incrementCounter={incrementCounter} />
+
+      {/* ── CLOSING INFO ── */}
+      <section className="pb-12 px-5 sm:px-12 lg:px-20 relative z-10">
+        <div className="max-w-lg mx-auto text-center">
+          <div className="card-d rounded-2xl px-6 py-5 border border-[#FF6A00]/15">
+            <p className="text-[#FF6A00] text-[10px] font-black uppercase tracking-widest mb-1">⏳ Early Access</p>
+            <p className="text-white/60 text-xs mb-3 leading-relaxed">Pendaftaran waiting list akan segera ditutup setelah kuota awal terpenuhi.</p>
+            <div className="flex flex-col gap-1.5 text-left max-w-xs mx-auto">
+              {["Early access sebelum publik", 'Badge "Founding Member" permanen di profilmu', "30 hari Premium gratis"].map((b, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-green-400 text-xs flex-shrink-0">✅</span>
+                  <span className="text-white/55 text-xs">{b}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-white/25 text-[10px] mt-3">Gratis · Tanpa kartu kredit · Tanpa syarat tersembunyi</p>
+          </div>
+        </div>
+      </section>
 
       {/* ── FINAL CTA (hidden when feature_waiting_list) ── */}
       {!featureWaitingList &&
