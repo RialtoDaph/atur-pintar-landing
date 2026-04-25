@@ -395,7 +395,7 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
             </div>
             <div>
               <label className="text-white/60 text-xs mb-1.5 block">Kota domisili *</label>
-              <input required value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} placeholder="Jakarta, Bandung, dll..." className="bg-[hsl(var(--card-foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border border-white/10 placeholder-white/25 outline-none focus:border-[#FF6A00]/50" />
+              <input required value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} placeholder="Jakarta, Bandung, dll..." className="bg-[hsl(var(--card-foreground))] text-white px-4 py-3 text-sm opacity-100 rounded-xl w-full border border-white/10 placeholder-white/25 outline-none focus:border-[#FF6A00]/50" />
             </div>
             <div>
               <label className="text-white/60 text-xs mb-1.5 block">Tantangan terbesar mengatur uang saat ini (opsional)</label>
