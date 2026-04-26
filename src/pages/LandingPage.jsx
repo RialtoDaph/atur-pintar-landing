@@ -771,7 +771,7 @@ export default function LandingPage() {
               <div className="iphone-notch" />
               <div className="overflow-hidden rounded-[30px] bg-black" style={{ aspectRatio: "9/16" }}>
                 <iframe
-                  src={VIDEO_URL} className="px-4 w-full h-full"
+                  src={VIDEO_URL} className="px-3 w-full h-full"
 
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
