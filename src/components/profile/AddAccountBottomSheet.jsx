@@ -18,6 +18,7 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
   const [selected, setSelected] = useState(null);
   const [balanceDisplay, setBalanceDisplay] = useState("");
   const [saving, setSaving] = useState(false);
+  const [failedLogos, setFailedLogos] = useState(new Set());
 
   useEffect(() => {
     base44.entities.DefaultAccount.filter({ type: accountType, is_active: true }, "sort_order")
@@ -109,10 +110,11 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
                       className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: (acc.color || "#F97316") + "20" }}
                     >
-                      {acc.logo_url ? (
-                        <img src={acc.logo_url} alt="Logo" className="w-8 h-8 object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling?.style.removeProperty('display'); }} />
-                      ) : null}
-                      <span className="text-xl" style={{ display: acc.logo_url ? 'none' : 'block' }}>{acc.icon || "🏦"}</span>
+                      {acc.logo_url && !failedLogos.has(acc.id) ? (
+                        <img src={acc.logo_url} alt="Logo" className="w-8 h-8 object-contain" onError={() => setFailedLogos(prev => new Set([...prev, acc.id]))} />
+                      ) : (
+                        <span className="text-xl">{acc.icon || "🏦"}</span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#1A1A1A]">{acc.name}</p>
@@ -141,10 +143,11 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                    style={{ backgroundColor: (selected.color || "#F97316") + "20" }}
                  >
-                   {selected.logo_url ? (
-                     <img src={selected.logo_url} alt="Logo" className="w-6 h-6 object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling?.style.removeProperty('display'); }} />
-                   ) : null}
-                   <span className="text-lg" style={{ display: selected.logo_url ? 'none' : 'block' }}>{selected.icon || "🏦"}</span>
+                   {selected.logo_url && !failedLogos.has(selected.id) ? (
+                     <img src={selected.logo_url} alt="Logo" className="w-6 h-6 object-contain" onError={() => setFailedLogos(prev => new Set([...prev, selected.id]))} />
+                   ) : (
+                     <span className="text-lg">{selected.icon || "🏦"}</span>
+                   )}
                  </div>
                  <div>
                    <p className="text-sm font-bold text-[#1A1A1A]">{selected.name}</p>
