@@ -52,29 +52,44 @@ export default function Nana() {
   }, [messages]);
 
   const savedNanaMsgIds = useRef(new Set());
+  const pendingSaveTimers = useRef({});
 
   useEffect(() => {
     if (!activeConv) return;
     const unsub = base44.agents.subscribeToConversation(activeConv.id, (data) => {
       const msgs = data.messages || [];
       setMessages(msgs);
-      // Save new completed Nana (assistant) messages to NanaConversation entity
+      // Save completed Nana (assistant) messages — debounce to avoid saving partial streaming chunks
       msgs.forEach(msg => {
-        if (msg.role === "assistant" && msg.id && !savedNanaMsgIds.current.has(msg.id) && msg.content) {
-          savedNanaMsgIds.current.add(msg.id);
-          if (user?.email) {
-            base44.entities.NanaConversation.create({
-              role: "nana",
-              message: msg.content,
-              session_date: today,
-              mood: todayMood?.mood || undefined,
-              message_type: "chat",
-            }).catch(() => {});
+        if (msg.role === "assistant" && msg.id && msg.content && !savedNanaMsgIds.current.has(msg.id)) {
+          // Cancel any pending save for this message (content may still be streaming)
+          if (pendingSaveTimers.current[msg.id]) {
+            clearTimeout(pendingSaveTimers.current[msg.id]);
           }
+          // Debounce: save 1.5s after last update for this message id
+          pendingSaveTimers.current[msg.id] = setTimeout(() => {
+            // Re-check it's not already saved
+            if (savedNanaMsgIds.current.has(msg.id)) return;
+            savedNanaMsgIds.current.add(msg.id);
+            delete pendingSaveTimers.current[msg.id];
+            if (user?.email) {
+              base44.entities.NanaConversation.create({
+                role: "nana",
+                message: msg.content,
+                session_date: today,
+                mood: todayMood?.mood || undefined,
+                message_type: "chat",
+              }).catch(() => {});
+            }
+          }, 1500);
         }
       });
     });
-    return unsub;
+    return () => {
+      unsub();
+      // Clear all pending timers on cleanup
+      Object.values(pendingSaveTimers.current).forEach(t => clearTimeout(t));
+    };
   }, [activeConv?.id, user?.email]);
 
   async function checkTodayMood(email) {

@@ -6,7 +6,7 @@ import { base44 } from "@/api/base44Client";
  * when spending approaches or exceeds budget limits.
  * Runs once per session per month to avoid duplicate alerts.
  */
-export default function BudgetAlertChecker({ user, budgets, spendingByCategory }) {
+export default function BudgetAlertChecker({ user, budgets, spendingByCategory, categoryMap = {} }) {
   const checkedRef = useRef(false);
 
   useEffect(() => {
@@ -21,6 +21,20 @@ export default function BudgetAlertChecker({ user, budgets, spendingByCategory }
     checkAndCreateAlerts();
   }, [user, budgets, spendingByCategory]);
 
+  async function resolveCategoryName(categoryKey) {
+    // If it looks like a raw ID (24-char hex), look it up in GlobalCategory
+    if (!categoryKey) return "kategori ini";
+    // Try categoryMap first (passed from parent)
+    if (categoryMap[categoryKey]) return categoryMap[categoryKey];
+    // Try GlobalCategory lookup
+    try {
+      const cats = await base44.entities.GlobalCategory.filter({ id: categoryKey });
+      if (cats?.[0]?.name) return cats[0].name;
+    } catch {}
+    // Fallback: humanize the key
+    return categoryKey.replace(/_/g, " ") || "kategori ini";
+  }
+
   async function checkAndCreateAlerts() {
     const alertsToCreate = [];
 
@@ -34,7 +48,8 @@ export default function BudgetAlertChecker({ user, budgets, spendingByCategory }
       const isOver = pct >= 100;
 
       const alertType = isOver ? "budget_exceeded" : "bill_upcoming";
-      const catLabel = budget.category;
+      // Resolve human-readable category name
+      const catLabel = await resolveCategoryName(budget.category);
       const overage = isOver ? `Rp ${Math.round(spent - budget.amount).toLocaleString("id-ID")}` : "";
       const remaining = !isOver ? `Rp ${Math.round(budget.amount - spent).toLocaleString("id-ID")}` : "";
 

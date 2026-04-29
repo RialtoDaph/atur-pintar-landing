@@ -57,16 +57,22 @@ Deno.serve(async (req) => {
 
         // Calculate price change percentage
         const oldPrice = investment.price_per_unit || newPrice;
-        const changePercent = Math.abs((newPrice - oldPrice) / oldPrice * 100);
+        const changePercent = oldPrice > 0 ? Math.abs((newPrice - oldPrice) / oldPrice * 100) : 0;
 
-        // Update investment
-        const newValue = investment.quantity * newPrice;
-        await base44.entities.Investment.update(investment.id, {
+        // Build update — only set current_value when quantity is valid and newPrice was actually fetched
+        const updatePayload = {
           price_per_unit: newPrice,
-          current_value: newValue,
           last_price_update: new Date().toISOString().split('T')[0],
-          daily_change_pct: changePercent
-        });
+          daily_change_pct: changePercent,
+        };
+
+        // Only update current_value if quantity exists AND newPrice is a real fetched value (not same as original)
+        if (investment.quantity != null && investment.quantity > 0 && newPrice > 0) {
+          updatePayload.current_value = investment.quantity * newPrice;
+        }
+        // For reksa_dana with no price source: keep current_value unchanged (do not overwrite)
+
+        await base44.entities.Investment.update(investment.id, updatePayload);
 
         // Create alert if change > 5%
         if (changePercent > 5) {
