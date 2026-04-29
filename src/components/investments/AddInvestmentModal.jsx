@@ -74,18 +74,44 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
           {/* 1. Dompet investasi */}
           <div>
             <label className={labelCls}>{lang === "en" ? "Wallet / Platform" : "Dompet / Platform"}</label>
-            <select
-              className={inputCls}
-              value={form.account_id}
-              onChange={e => setForm(f => ({ ...f, account_id: e.target.value }))}
-            >
-              <option value="">{lang === "en" ? "-- Select wallet --" : "-- Pilih dompet --"}</option>
-              {accounts.map(acc => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.icon ? `${acc.icon} ` : ""}{acc.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  const list = document.getElementById('account-list');
+                  list?.classList.toggle('hidden');
+                }}
+                className={`${inputCls} text-left flex items-center gap-2 justify-between`}
+              >
+                <span>
+                  {form.account_id
+                    ? accounts.find(a => a.id === form.account_id)?.name || (lang === "en" ? "-- Select wallet --" : "-- Pilih dompet --")
+                    : (lang === "en" ? "-- Select wallet --" : "-- Pilih dompet --")}
+                </span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              <div id="account-list" className="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-[#E2E8F0] rounded-xl shadow-lg z-10">
+                {accounts.map(acc => (
+                  <button
+                    key={acc.id}
+                    onClick={() => {
+                      setForm(f => ({ ...f, account_id: acc.id }));
+                      document.getElementById('account-list')?.classList.add('hidden');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0 text-left transition-colors"
+                  >
+                    {acc.logo_url ? (
+                      <img src={acc.logo_url} alt={acc.name} className="w-6 h-6 object-contain flex-shrink-0" />
+                    ) : acc.icon ? (
+                      <span className="text-lg flex-shrink-0">{acc.icon}</span>
+                    ) : null}
+                    <span className="text-sm font-medium text-[#1A1A1A]">{acc.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* 2. Nama aset */}
