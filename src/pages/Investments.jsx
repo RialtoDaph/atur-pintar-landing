@@ -60,6 +60,17 @@ export default function InvestmentsPage() {
   async function handleDelete(id) {
      if (!window.confirm(t('investments_delete_confirm') || "Hapus investasi ini?")) return;
      try {
+       const investmentToDelete = investments.find(inv => inv.id === id);
+
+       // Sync back to account if account_id exists
+       if (investmentToDelete?.account_id && investmentToDelete?.current_value) {
+         const account = accounts.find(a => a.id === investmentToDelete.account_id);
+         if (account) {
+           const newBalance = (account.balance || 0) - investmentToDelete.current_value;
+           await base44.entities.Account.update(investmentToDelete.account_id, { balance: newBalance });
+         }
+       }
+
        setInvestments(prev => prev.filter(inv => inv.id !== id));
        await base44.entities.Investment.delete(id);
      } catch (error) {
@@ -76,9 +87,33 @@ export default function InvestmentsPage() {
   async function handleSave(data) {
      try {
        if (editingInv) {
+         // Update investment
+         const oldAmount = editingInv.current_value || 0;
+         const newAmount = data.current_value || 0;
+         const diff = newAmount - oldAmount;
+
          await base44.entities.Investment.update(editingInv.id, data);
+
+         // Sync to account if account_id exists and value changed
+         if (data.account_id && diff !== 0) {
+           const account = accounts.find(a => a.id === data.account_id);
+           if (account) {
+             const newBalance = (account.balance || 0) + diff;
+             await base44.entities.Account.update(data.account_id, { balance: newBalance });
+           }
+         }
        } else {
-         await base44.entities.Investment.create(data);
+         // Create investment
+         const created = await base44.entities.Investment.create(data);
+
+         // Sync to account if account_id exists
+         if (data.account_id && data.current_value) {
+           const account = accounts.find(a => a.id === data.account_id);
+           if (account) {
+             const newBalance = (account.balance || 0) + data.current_value;
+             await base44.entities.Account.update(data.account_id, { balance: newBalance });
+           }
+         }
        }
        setShowAdd(false);
        setEditingInv(null);
