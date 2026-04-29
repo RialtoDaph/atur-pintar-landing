@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import PremiumBlurCard from "@/components/subscription/PremiumBlurCard";
-import { Plus, Trash2, TrendingUp } from "lucide-react";
+import { Plus, Trash2, TrendingUp, ArrowUp, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AddInvestmentModal from "@/components/investments/AddInvestmentModal.jsx";
+import AddInvestmentTransactionModal from "@/components/investments/AddInvestmentTransactionModal.jsx";
 import DiversificationChart from "@/components/investments/DiversificationChart";
 import PortfolioTrendChart from "@/components/investments/PortfolioTrendChart";
 import RiskProfileRecommendation from "@/components/investments/RiskProfileRecommendation";
@@ -16,6 +17,7 @@ import InvestmentNanaPanel from "@/components/investments/InvestmentNanaPanel";
 
 export default function InvestmentsPage() {
   const { formatCurrency, t, settings } = useAppSettings();
+  const lang = settings.language === "en" ? "en" : "id";
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -24,6 +26,8 @@ export default function InvestmentsPage() {
   const [showWatchlist, setShowWatchlist] = useState(false);
   const [watchlist, setWatchlist] = useState([]);
   const [accounts, setAccounts] = useState([]);
+  const [showAddTx, setShowAddTx] = useState(null);
+  const [transactions, setTransactions] = useState({});
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -40,22 +44,33 @@ export default function InvestmentsPage() {
   }, [user?.email]);
 
   async function loadData() {
-     setLoading(true);
-     try {
-       const [inv, watch, accs] = await Promise.all([
-         base44.entities.Investment.filter({ created_by: user.email }, "-created_date"),
-         base44.entities.InvestmentWatchlist.filter({ created_by: user.email }, "-created_date").catch(() => []),
-         base44.entities.Account.filter({ created_by: user.email }).catch(() => []),
-       ]);
-       setInvestments(inv);
-       setWatchlist(watch);
-       setAccounts(accs || []);
-     } catch (error) {
-       console.error("Failed to load investments:", error);
-     } finally {
-       setLoading(false);
-     }
-   }
+      setLoading(true);
+      try {
+        const [inv, watch, accs, txs] = await Promise.all([
+          base44.entities.Investment.filter({ created_by: user.email }, "-created_date"),
+          base44.entities.InvestmentWatchlist.filter({ created_by: user.email }, "-created_date").catch(() => []),
+          base44.entities.Account.filter({ created_by: user.email }).catch(() => []),
+          base44.entities.InvestmentTransaction.list().catch(() => []),
+        ]);
+        setInvestments(inv);
+        setWatchlist(watch);
+        setAccounts(accs || []);
+
+        // Group transactions by investment_id
+        const txsByInv = {};
+        (txs || []).forEach(tx => {
+          if (!txsByInv[tx.investment_id]) {
+            txsByInv[tx.investment_id] = [];
+          }
+          txsByInv[tx.investment_id].push(tx);
+        });
+        setTransactions(txsByInv);
+      } catch (error) {
+        console.error("Failed to load investments:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
   async function handleDelete(id) {
      if (!window.confirm(t('investments_delete_confirm') || "Hapus investasi ini?")) return;
@@ -87,39 +102,30 @@ export default function InvestmentsPage() {
   async function handleSave(data) {
      try {
        if (editingInv) {
-         // Update investment
-         const oldAmount = editingInv.current_value || 0;
-         const newAmount = data.current_value || 0;
-         const diff = newAmount - oldAmount;
-
          await base44.entities.Investment.update(editingInv.id, data);
-
-         // Sync to account if account_id exists and value changed
-         if (data.account_id && diff !== 0) {
-           const account = accounts.find(a => a.id === data.account_id);
-           if (account) {
-             const newBalance = (account.balance || 0) + diff;
-             await base44.entities.Account.update(data.account_id, { balance: newBalance });
-           }
-         }
        } else {
-         // Create investment
-         const created = await base44.entities.Investment.create(data);
-
-         // Sync to account if account_id exists
-         if (data.account_id && data.current_value) {
-           const account = accounts.find(a => a.id === data.account_id);
-           if (account) {
-             const newBalance = (account.balance || 0) + data.current_value;
-             await base44.entities.Account.update(data.account_id, { balance: newBalance });
-           }
-         }
+         await base44.entities.Investment.create(data);
        }
        setShowAdd(false);
        setEditingInv(null);
        loadData();
      } catch (error) {
        console.error("Save investment failed:", error);
+       throw error;
+     }
+   }
+
+  async function handleAddTransaction(txData) {
+     try {
+       await base44.entities.InvestmentTransaction.create(txData);
+       // Recalculate investment value
+       await base44.functions.invoke('recalculateInvestmentValue', {
+         investment_id: txData.investment_id,
+       });
+       setShowAddTx(null);
+       loadData();
+     } catch (error) {
+       console.error("Save transaction failed:", error);
        throw error;
      }
    }
@@ -204,58 +210,124 @@ export default function InvestmentsPage() {
             <p className="text-[#8FA4C8] text-sm mt-1">{t('investments_empty_desc')}</p>
           </div>
         ) : (
-          investments.map(inv => {
-            const type = INVESTMENT_TYPES_MAP[inv.type] || INVESTMENT_TYPES_MAP.lainnya;
-            const typeLabel = settings.language === 'en' ? type.label_en : type.label_id;
-            const gain = inv.current_value - inv.initial_amount;
-            const gainPct = inv.initial_amount > 0 ? ((gain / inv.initial_amount) * 100).toFixed(2) : 0;
-            const isPositive = gain >= 0;
-            const portfolioWeight = totalValue > 0 ? ((inv.current_value / totalValue) * 100).toFixed(1) : 0;
-            const walletAccount = accounts.find(a => a.id === inv.account_id);
-            return (
-              <Link
-                key={inv.id}
-                to={`${createPageUrl("InvestmentDetail")}?id=${inv.id}`}
-                className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow block"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center text-xl">
-                      {inv.icon || type.emoji}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#1A1A1A]">{inv.name}</p>
-                      <p className="text-xs text-[#8FA4C8]">
-                        {typeLabel} · {portfolioWeight}%
-                        {walletAccount && <span className="ml-1">· {walletAccount.icon || "💼"} {walletAccount.name}</span>}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2" onClick={(e) => e.preventDefault()}>
-                  <button onClick={() => handleEdit(inv)} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors">
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-between items-end">
-                  <div>
-                     <p className="text-xs text-[#8FA4C8]">{t('current_value')}</p>
-                     <p className="font-bold text-[#1A1A1A] text-lg">{formatCurrency(inv.current_value)}</p>
+         investments.map(inv => {
+           const type = INVESTMENT_TYPES_MAP[inv.type] || INVESTMENT_TYPES_MAP.lainnya;
+           const typeLabel = settings.language === 'en' ? type.label_en : type.label_id;
+           const gain = inv.current_value - inv.initial_amount;
+           const gainPct = inv.initial_amount > 0 ? ((gain / inv.initial_amount) * 100).toFixed(2) : 0;
+           const isPositive = gain >= 0;
+           const portfolioWeight = totalValue > 0 ? ((inv.current_value / totalValue) * 100).toFixed(1) : 0;
+           const walletAccount = accounts.find(a => a.id === inv.account_id);
+
+           // Calculate 1-month ago value (sum of transactions before 30 days)
+           const thirtyDaysAgo = new Date();
+           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+           const txsBefore30days = (transactions[inv.id] || [])
+             .filter(tx => new Date(tx.transaction_date) < thirtyDaysAgo)
+             .sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date))[0];
+
+           let valueMonth = inv.initial_amount;
+           if (txsBefore30days) {
+             // Recalculate from initial to that point
+             const relevantTxs = (transactions[inv.id] || [])
+               .filter(tx => new Date(tx.transaction_date) <= new Date(txsBefore30days.transaction_date));
+             valueMonth = inv.initial_amount;
+             for (const tx of relevantTxs) {
+               if (tx.type === 'buy') valueMonth += tx.total_amount || 0;
+               else if (tx.type === 'sell') valueMonth -= tx.total_amount || 0;
+               else if (tx.type === 'dividend') valueMonth += tx.total_amount || 0;
+               else if (tx.type === 'adjustment') valueMonth = tx.total_amount || 0;
+             }
+           }
+
+           const fluktuasi = inv.current_value - valueMonth;
+           const fluktuasiPct = valueMonth > 0 ? ((fluktuasi / valueMonth) * 100).toFixed(2) : 0;
+           const flukPositive = fluktuasi >= 0;
+
+           return (
+             <div key={inv.id} className="bg-white rounded-2xl p-5 shadow-sm">
+               <div className="flex items-start justify-between mb-3">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center text-xl">
+                     {inv.icon || type.emoji}
                    </div>
-                   <div className="text-right">
-                     <p className="text-xs text-[#8FA4C8]">{t('profit_loss')}</p>
-                     <p className={`font-bold text-base ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                       {isPositive ? "+" : ""}{formatCurrency(gain)} ({isPositive ? "+" : ""}{gainPct}%)
+                   <div>
+                     <p className="font-semibold text-[#1A1A1A]">{inv.name}</p>
+                     <p className="text-xs text-[#8FA4C8]">
+                       {typeLabel} · {portfolioWeight}%
+                       {walletAccount && <span className="ml-1">· {walletAccount.icon || "💼"} {walletAccount.name}</span>}
                      </p>
                    </div>
-                </div>
-                {inv.notes && <p className="text-xs text-[#8FA4C8] mt-2 italic">{inv.notes}</p>}
-              </Link>
-            );
-          })
+                 </div>
+                 <div className="flex items-center gap-1" onClick={(e) => e.preventDefault()}>
+                   <button onClick={() => { setEditingInv(inv); setShowAdd(true); }} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors p-2">
+                     <Pencil className="w-4 h-4" />
+                   </button>
+                   <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors p-2">
+                     <Trash2 className="w-4 h-4" />
+                   </button>
+                 </div>
+               </div>
+
+               {/* Metrics grid */}
+               <div className="grid grid-cols-2 gap-3 mb-4">
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Modal Awal" : "Modal Awal"}</p>
+                   <p className="text-sm font-bold text-[#1A1A1A] mt-1">{formatCurrency(inv.initial_amount)}</p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Value Now" : "Nilai Sekarang"}</p>
+                   <p className="text-sm font-bold text-[#1A1A1A] mt-1">{formatCurrency(inv.current_value)}</p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Return (Rp)" : "Return (Rp)"}</p>
+                   <p className={`text-sm font-bold mt-1 ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                     {isPositive ? "+" : ""}{formatCurrency(gain)}
+                   </p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Return (%)" : "Return (%)"}</p>
+                   <p className={`text-sm font-bold mt-1 ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                     {isPositive ? "+" : ""}{gainPct}%
+                   </p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg col-span-2">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "30-Day Change" : "Perubahan 30 Hari"}</p>
+                   <div className="flex items-center gap-1 mt-1">
+                     {flukPositive ? (
+                       <ArrowUp className="w-4 h-4 text-[#00C9A7]" />
+                     ) : (
+                       <ArrowDown className="w-4 h-4 text-[#FF6B6B]" />
+                     )}
+                     <p className={`text-sm font-bold ${flukPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                       {flukPositive ? "+" : ""}{formatCurrency(fluktuasi)} ({flukPositive ? "+" : ""}{fluktuasiPct}%)
+                     </p>
+                   </div>
+                 </div>
+               </div>
+
+               {/* Transaction history & add button */}
+               <div className="border-t border-[#F2F4F7] pt-3">
+                 <button
+                   onClick={() => setShowAddTx(inv.id)}
+                   className="text-xs font-semibold text-[#FF6A00] hover:text-[#e05e00]"
+                 >
+                   + {lang === "en" ? "Add Transaction" : "Tambah Transaksi"}
+                 </button>
+               </div>
+
+               {/* Detail link */}
+               <Link
+                 to={`${createPageUrl("InvestmentDetail")}?id=${inv.id}`}
+                 className="text-xs font-semibold text-[#8FA4C8] hover:text-[#1A1A1A] block mt-2"
+               >
+                 {lang === "en" ? "View Details →" : "Lihat Detail →"}
+               </Link>
+
+               {inv.notes && <p className="text-xs text-[#8FA4C8] mt-2 italic">{inv.notes}</p>}
+             </div>
+           );
+         })
         )}
 
         {watchlist.length > 0 && (
@@ -305,6 +377,14 @@ export default function InvestmentsPage() {
             setEditingInv(null);
           }}
           onSave={handleSave}
+        />
+      )}
+
+      {showAddTx && (
+        <AddInvestmentTransactionModal
+          investment={investments.find(i => i.id === showAddTx)}
+          onClose={() => setShowAddTx(null)}
+          onSave={handleAddTransaction}
         />
       )}
     </div>

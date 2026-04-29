@@ -16,7 +16,6 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
     name: investment?.name || "",
     type: investment?.type || "reksa_dana",
     initial_amount: investment?.initial_amount?.toString() || "",
-    current_value: investment?.current_value?.toString() || "",
     purchase_date: investment?.purchase_date || "",
     notes: investment?.notes || "",
   });
@@ -33,7 +32,6 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
   async function handleSave() {
     const name = form.name.trim();
     const initial = parseFloat(form.initial_amount) || 0;
-    const current = parseFloat(form.current_value) || 0;
     if (!name || initial <= 0) return;
 
     setSaving(true);
@@ -43,7 +41,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
         name,
         type: form.type,
         initial_amount: initial,
-        current_value: current > 0 ? current : initial,
+        current_value: initial,
         purchase_date: form.purchase_date || undefined,
         notes: form.notes || undefined,
       });
@@ -155,21 +153,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
             />
           </div>
 
-          {/* 4. Nilai saat ini */}
-          <div>
-            <label className={labelCls}>{lang === "en" ? "Current Value (Rp)" : "Nilai Saat Ini (Rp)"}</label>
-            <input
-              type="number"
-              min="0"
-              placeholder={lang === "en" ? "Leave empty = same as purchase" : "Kosongkan = sama dengan nominal beli"}
-              className={inputCls}
-              value={form.current_value}
-              onChange={e => setForm(f => ({ ...f, current_value: e.target.value }))}
-            />
-            <p className="text-xs text-[#8FA4C8] mt-1">
-              {lang === "en" ? "Update manually whenever the value changes." : "Update manual setiap nilai berubah."}
-            </p>
-          </div>
+
 
           {/* 5. Tanggal beli */}
           <div>
