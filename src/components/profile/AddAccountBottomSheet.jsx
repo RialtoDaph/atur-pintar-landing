@@ -106,7 +106,15 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
                     }}
                   >
                     {acc.logo_url ? (
-                       <AccountLogo logoUrl={acc.logo_url} size="w-11 h-11" />
+                       <AccountLogo 
+                         logoUrl={acc.logo_url} 
+                         size="w-11 h-11"
+                         fallback={
+                           <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (acc.color || "#F97316") + "20" }}>
+                             <span className="text-xl">{acc.icon || "🏦"}</span>
+                           </div>
+                         }
+                       />
                      ) : (
                        <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (acc.color || "#F97316") + "20" }}>
                          <span className="text-xl">{acc.icon || "🏦"}</span>
@@ -133,14 +141,22 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
           {selected && (
            <div className="px-5 pb-4 pt-2">
              <div className="bg-[#F8FAFC] rounded-2xl p-4 border border-[#E2E8F0]">
-               <div className="flex items-center gap-3 mb-4">
-                 {selected.logo_url ? (
-                   <AccountLogo logoUrl={selected.logo_url} size="w-10 h-10" />
-                 ) : (
-                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (selected.color || "#F97316") + "20" }}>
-                     <span className="text-xl">{selected.icon || "🏦"}</span>
-                   </div>
-                 )}
+             <div className="flex items-center gap-3 mb-4">
+               {selected.logo_url ? (
+                 <AccountLogo 
+                   logoUrl={selected.logo_url} 
+                   size="w-10 h-10"
+                   fallback={
+                     <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (selected.color || "#F97316") + "20" }}>
+                       <span className="text-xl">{selected.icon || "🏦"}</span>
+                     </div>
+                   }
+                 />
+               ) : (
+                 <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (selected.color || "#F97316") + "20" }}>
+                   <span className="text-xl">{selected.icon || "🏦"}</span>
+                 </div>
+               )}
                   <div>
                     <p className="text-sm font-bold text-[#1A1A1A]">{selected.name}</p>
                     <p className="text-xs text-[#8FA4C8]">Dipilih ✓</p>
