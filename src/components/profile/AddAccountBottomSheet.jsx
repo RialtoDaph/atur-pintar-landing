@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { X, Check, ChevronRight } from "lucide-react";
-import AccountLogo from "@/components/transactions/AccountLogo";
+import AccountAvatar from "@/components/ui/AccountAvatar";
 
 function formatRupiah(n) {
   if (!n) return "";
@@ -18,7 +18,6 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
   const [selected, setSelected] = useState(null);
   const [balanceDisplay, setBalanceDisplay] = useState("");
   const [saving, setSaving] = useState(false);
-  const [failedLogos, setFailedLogos] = useState(new Set());
 
   useEffect(() => {
     base44.entities.DefaultAccount.filter({ type: accountType, is_active: true }, "sort_order")
@@ -106,18 +105,7 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
                       backgroundColor: isSelected ? "#FFF7ED" : "#FAFAFA",
                     }}
                   >
-                    {acc.logo_url && !failedLogos.has(acc.id) ? (
-                       <img 
-                         src={acc.logo_url} 
-                         alt="Logo" 
-                         className="w-11 h-11 rounded-xl object-contain" 
-                         onError={() => setFailedLogos(prev => new Set([...prev, acc.id]))}
-                       />
-                     ) : (
-                       <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (acc.color || "#F97316") + "20" }}>
-                         <span className="text-xl">{acc.icon || "🏦"}</span>
-                       </div>
-                     )}
+                    <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#F97316"} size="w-11 h-11" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#1A1A1A]">{acc.name}</p>
                       {acc.institution && acc.institution !== acc.name && (
@@ -140,18 +128,7 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
            <div className="px-5 pb-4 pt-2">
              <div className="bg-[#F8FAFC] rounded-2xl p-4 border border-[#E2E8F0]">
                <div className="flex items-center gap-3 mb-4">
-                 {selected.logo_url && !failedLogos.has(selected.id) ? (
-                   <img 
-                     src={selected.logo_url} 
-                     alt="Logo" 
-                     className="w-10 h-10 rounded-xl object-contain" 
-                     onError={() => setFailedLogos(prev => new Set([...prev, selected.id]))}
-                   />
-                 ) : (
-                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (selected.color || "#F97316") + "20" }}>
-                     <span className="text-xl">{selected.icon || "🏦"}</span>
-                   </div>
-                 )}
+                 <AccountAvatar logoUrl={selected.logo_url} name={selected.name} color={selected.color || "#F97316"} size="w-10 h-10" />
                   <div>
                     <p className="text-sm font-bold text-[#1A1A1A]">{selected.name}</p>
                     <p className="text-xs text-[#8FA4C8]">Dipilih ✓</p>
