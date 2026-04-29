@@ -7,6 +7,7 @@ import BudgetCard from "@/components/budget/BudgetCard";
 import SavingsRecommendationWidget from "@/components/budget/SavingsRecommendationWidget";
 import BudgetNanaPanel from "@/components/budget/BudgetNanaPanel";
 import BudgetAlertChecker from "@/components/budget/BudgetAlertChecker";
+import BudgetChartSection from "@/components/budget/BudgetChartSection";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { awardXP } from "@/hooks/useGamification";
 import { updateStreak, completeMission } from "@/hooks/useGamificationActions";
@@ -326,6 +327,16 @@ export default function BudgetPage() {
             budgets={budgets}
             spendingByCategory={spendingByCategory}
             categoryMap={Object.fromEntries(Object.entries(categoryMap).map(([k, v]) => [k, v.label]))}
+          />
+        )}
+
+        {/* Visual Budget Chart */}
+        {!loading && budgets.length > 0 && (
+          <BudgetChartSection
+            budgets={budgets}
+            spendingByCategory={spendingByCategory}
+            getCategoryMeta={getCategoryMeta}
+            formatCurrency={formatCurrency}
           />
         )}
 

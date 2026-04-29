@@ -18,6 +18,7 @@ import HeroSummaryCard from "@/components/analytics/HeroSummaryCard";
 import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChart";
 import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
 import NanaDailyNarrative from "@/components/analytics/NanaDailyNarrative";
+import SpendingStatsCard from "@/components/analytics/SpendingStatsCard";
 import { Flame } from "lucide-react";
 
 const DEFAULT_ANALYTICS_CARDS = [
@@ -465,6 +466,12 @@ export default function Analytics() {
             </PremiumBlurCard>
           )
         )}
+
+        {/* Spending Statistics */}
+        <SpendingStatsCard
+          transactions={transactions.filter(t => !t.is_deleted)}
+          allCategoriesConfig={allCategoriesConfig}
+        />
 
         {/* Budget vs Aktual */}
         {isPremium ? (
