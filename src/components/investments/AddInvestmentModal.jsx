@@ -22,7 +22,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
 
   useEffect(() => {
     base44.auth.me().then(u => {
-      base44.entities.Account.filter({ created_by: u.email })
+      base44.entities.Account.filter({ created_by: u.email, type: "investment" })
         .then(accs => setAccounts(accs || []))
         .catch(() => {});
     }).catch(() => {});
@@ -74,44 +74,50 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
           {/* 1. Dompet investasi */}
           <div>
             <label className={labelCls}>{lang === "en" ? "Wallet / Platform" : "Dompet / Platform"}</label>
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  const list = document.getElementById('account-list');
-                  list?.classList.toggle('hidden');
-                }}
-                className={`${inputCls} text-left flex items-center gap-2 justify-between`}
-              >
-                <span>
-                  {form.account_id
-                    ? accounts.find(a => a.id === form.account_id)?.name || (lang === "en" ? "-- Select wallet --" : "-- Pilih dompet --")
-                    : (lang === "en" ? "-- Select wallet --" : "-- Pilih dompet --")}
-                </span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-              </button>
-              <div id="account-list" className="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-[#E2E8F0] rounded-xl shadow-lg z-10">
-                {accounts.map(acc => (
-                  <button
-                    key={acc.id}
-                    onClick={() => {
-                      setForm(f => ({ ...f, account_id: acc.id }));
-                      document.getElementById('account-list')?.classList.add('hidden');
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0 text-left transition-colors"
-                  >
-                    {acc.logo_url ? (
-                      <img src={acc.logo_url} alt={acc.name} className="w-6 h-6 object-contain flex-shrink-0" />
-                    ) : acc.icon ? (
-                      <span className="text-lg flex-shrink-0">{acc.icon}</span>
-                    ) : null}
-                    <span className="text-sm font-medium text-[#1A1A1A]">{acc.name}</span>
-                  </button>
-                ))}
+            {accounts.length === 0 ? (
+              <div className="border border-[#E2E8F0] rounded-xl px-4 py-3 bg-[#FFF5F5] text-sm text-[#C84545]">
+                {lang === "en" ? "No investment wallets yet. Please add one first." : "Belum ada dompet investasi. Silakan tambahkan terlebih dahulu."}
               </div>
-            </div>
+            ) : (
+              <div className="relative">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const list = document.getElementById('account-list');
+                    list?.classList.toggle('hidden');
+                  }}
+                  className={`${inputCls} text-left flex items-center gap-2 justify-between`}
+                >
+                  <span>
+                    {form.account_id
+                      ? accounts.find(a => a.id === form.account_id)?.name || (lang === "en" ? "-- Select wallet --" : "-- Pilih dompet --")
+                      : (lang === "en" ? "-- Select wallet --" : "-- Pilih dompet --")}
+                  </span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </button>
+                <div id="account-list" className="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-[#E2E8F0] rounded-xl shadow-lg z-10">
+                  {accounts.map(acc => (
+                    <button
+                      key={acc.id}
+                      onClick={() => {
+                        setForm(f => ({ ...f, account_id: acc.id }));
+                        document.getElementById('account-list')?.classList.add('hidden');
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F8FAFC] border-b border-[#E2E8F0] last:border-b-0 text-left transition-colors"
+                    >
+                      {acc.logo_url ? (
+                        <img src={acc.logo_url} alt={acc.name} className="w-6 h-6 object-contain flex-shrink-0" />
+                      ) : acc.icon ? (
+                        <span className="text-lg flex-shrink-0">{acc.icon}</span>
+                      ) : null}
+                      <span className="text-sm font-medium text-[#1A1A1A]">{acc.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 2. Nama aset */}
@@ -126,30 +132,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
             />
           </div>
 
-          {/* 3. Tipe investasi */}
-          <div>
-            <label className={labelCls}>{lang === "en" ? "Type" : "Tipe"}</label>
-            <div className="grid grid-cols-4 gap-2">
-              {INVESTMENT_TYPES_LIST.map(type => (
-                <button
-                  key={type.key}
-                  onClick={() => setForm(f => ({ ...f, type: type.key }))}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${
-                    form.type === type.key
-                      ? "border-[#FF6A00] bg-[#FF6A00]/10"
-                      : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
-                  }`}
-                >
-                  <span className="text-xl">{type.emoji}</span>
-                  <span className="text-[10px] font-medium text-[#4A5568] text-center leading-tight">
-                    {lang === "en" ? type.label_en : type.label_id}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 4. Nominal beli */}
+          {/* 3. Nominal beli */}
           <div>
             <label className={labelCls}>{lang === "en" ? "Purchase Amount (Rp)" : "Nominal Beli (Rp)"}</label>
             <input
@@ -162,7 +145,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
             />
           </div>
 
-          {/* 5. Nilai saat ini */}
+          {/* 4. Nilai saat ini */}
           <div>
             <label className={labelCls}>{lang === "en" ? "Current Value (Rp)" : "Nilai Saat Ini (Rp)"}</label>
             <input
@@ -178,7 +161,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
             </p>
           </div>
 
-          {/* 6. Tanggal beli */}
+          {/* 5. Tanggal beli */}
           <div>
             <label className={labelCls}>{lang === "en" ? "Purchase Date" : "Tanggal Beli"}</label>
             <input
@@ -189,7 +172,7 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
             />
           </div>
 
-          {/* 7. Catatan opsional */}
+          {/* 6. Catatan opsional */}
           <div>
             <label className={labelCls}>{lang === "en" ? "Notes (optional)" : "Catatan (opsional)"}</label>
             <input
