@@ -18,7 +18,6 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
   const [selected, setSelected] = useState(null);
   const [balanceDisplay, setBalanceDisplay] = useState("");
   const [saving, setSaving] = useState(false);
-  const [failedLogos, setFailedLogos] = useState({});
 
   useEffect(() => {
     base44.entities.DefaultAccount.filter({ type: accountType, is_active: true }, "sort_order")
@@ -106,16 +105,13 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
                       backgroundColor: isSelected ? "#FFF7ED" : "#FAFAFA",
                     }}
                   >
-                    <div
-                      className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: !acc.logo_url || failedLogos[acc.id] ? (acc.color || "#F97316") + "20" : "transparent" }}
-                    >
-                      {acc.logo_url && !failedLogos[acc.id] ? (
-                        <img src={acc.logo_url} alt="Logo" className="w-8 h-8 object-contain" onError={() => setFailedLogos(p => ({ ...p, [acc.id]: true }))} />
-                      ) : (
+                    {acc.logo_url ? (
+                      <img src={acc.logo_url} alt="Logo" className="w-11 h-11 rounded-xl object-contain" />
+                    ) : (
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (acc.color || "#F97316") + "20" }}>
                         <span className="text-xl">{acc.icon || "🏦"}</span>
-                      )}
-                    </div>
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#1A1A1A]">{acc.name}</p>
                       {acc.institution && acc.institution !== acc.name && (
@@ -138,16 +134,13 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
            <div className="px-5 pb-4 pt-2">
              <div className="bg-[#F8FAFC] rounded-2xl p-4 border border-[#E2E8F0]">
                <div className="flex items-center gap-3 mb-4">
-                 <div
-                   className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                   style={{ backgroundColor: !selected.logo_url || failedLogos[selected.id] ? (selected.color || "#F97316") + "20" : "transparent" }}
-                 >
-                   {selected.logo_url && !failedLogos[selected.id] ? (
-                      <img src={selected.logo_url} alt="Logo" className="w-6 h-6 object-contain" onError={() => setFailedLogos(p => ({ ...p, [selected.id]: true }))} />
-                    ) : (
-                      <span className="text-xl">{selected.icon || "🏦"}</span>
-                    )}
-                 </div>
+                 {selected.logo_url ? (
+                   <img src={selected.logo_url} alt="Logo" className="w-10 h-10 rounded-xl object-contain" />
+                 ) : (
+                   <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: (selected.color || "#F97316") + "20" }}>
+                     <span className="text-xl">{selected.icon || "🏦"}</span>
+                   </div>
+                 )}
                   <div>
                     <p className="text-sm font-bold text-[#1A1A1A]">{selected.name}</p>
                     <p className="text-xs text-[#8FA4C8]">Dipilih ✓</p>
