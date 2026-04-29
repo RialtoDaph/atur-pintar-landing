@@ -15,6 +15,7 @@ import DateRangeFilter from "@/components/analytics/DateRangeFilter";
 import DailySpendingCard from "@/components/analytics/DailySpendingCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
 import HeroSummaryCard from "@/components/analytics/HeroSummaryCard";
+import FinancialScoreCard from "@/components/analytics/FinancialScoreCard";
 import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChart";
 import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
 import { Flame } from "lucide-react";
@@ -362,6 +363,9 @@ export default function Analytics() {
         <div className="relative">
           <DateRangeFilter onFilterChange={handleFilterChange} defaultPeriod="6" />
         </div>
+
+        {/* Financial Score Card — paling atas */}
+        <FinancialScoreCard user={user} />
 
         {/* Hero Summary Card — selalu tampil di paling atas */}
         <HeroSummaryCard

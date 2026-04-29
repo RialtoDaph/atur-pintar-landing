@@ -24,18 +24,11 @@ function DeltaBadge({ current, prev, higherIsBetter = true }) {
 export default function HeroSummaryCard({ goals, investments, debts, transactions, user, hasPrevData, prevIncome, prevExpenses, prevSavingsRate }) {
   const { formatShortNumber, formatCurrency } = useAppSettings();
   const [gamification, setGamification] = useState(null);
-  const [healthScore, setHealthScore] = useState(null);
 
   useEffect(() => {
     if (!user?.email) return;
     base44.entities.GamificationProfile.filter({ created_by: user.email })
       .then(data => { if (data.length > 0) setGamification(data[0]); })
-      .catch(() => {});
-
-    const now = new Date();
-    const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-    base44.entities.FinancialHealthScore.filter({ created_by: user.email, month: monthStr })
-      .then(data => { if (data.length > 0) setHealthScore(data[0]); })
       .catch(() => {});
   }, [user?.email]);
 
@@ -104,10 +97,6 @@ export default function HeroSummaryCard({ goals, investments, debts, transaction
     },
   ];
 
-  const scoreColor = healthScore?.total_score >= 700 ? "text-[#00C9A7]"
-    : healthScore?.total_score >= 400 ? "text-[#F5A623]"
-    : "text-[#FF6B6B]";
-
   return (
     <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -126,20 +115,7 @@ export default function HeroSummaryCard({ goals, investments, debts, transaction
         })}
       </div>
 
-      {/* Financial Health Score — small inline card */}
-      <Link to={createPageUrl("Gamifikasi")} className="flex items-center justify-between bg-[#F2F4F7] rounded-xl px-3 py-2.5 mt-1 hover:bg-[#eceef2] transition-colors">
-        <div className="flex items-center gap-2">
-          <span className="text-base">❤️</span>
-          <span className="text-xs text-[#4A5568] font-medium">Skor Finansial</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className={`text-sm font-bold ${healthScore?.total_score != null ? scoreColor : "text-[#8FA4C8]"}`}>
-            {healthScore?.total_score != null ? `${healthScore.total_score}` : "—"}
-          </span>
-          <span className="text-[10px] text-[#8FA4C8]">/1000</span>
-          <span className="text-[10px] text-[#FF6A00] font-semibold ml-1">Lihat →</span>
-        </div>
-      </Link>
+
     </div>
   );
 }
