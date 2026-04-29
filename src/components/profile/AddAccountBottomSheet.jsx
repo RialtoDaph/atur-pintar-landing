@@ -28,19 +28,23 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
   async function handleSave() {
     if (!selected) return;
     setSaving(true);
-    const balance = parseNum(balanceDisplay);
-    const created = await base44.entities.Account.create({
-      name: selected.name,
-      type: selected.type,
-      icon: selected.icon || "🏦",
-      color: selected.color || "#F97316",
-      institution: selected.institution || selected.name,
-      logo_url: selected.logo_url || undefined,
-      balance,
-      is_default: false,
-    });
-    onSave(created);
-    setSaving(false);
+    try {
+      const balance = parseNum(balanceDisplay);
+      const created = await base44.entities.Account.create({
+        name: selected.name,
+        type: selected.type,
+        icon: selected.icon || "🏦",
+        color: selected.color || "#F97316",
+        institution: selected.institution || selected.name,
+        logo_url: selected.logo_url || undefined,
+        balance,
+        is_default: false,
+      });
+      onSave(created);
+      onClose();
+    } finally {
+      setSaving(false);
+    }
   }
 
   const typeLabel = { bank: "Bank", ewallet: "E-Wallet", cash: "Cash", investment: "Investasi" };
@@ -132,41 +136,24 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
           {selected && (
            <div className="px-5 pb-4 pt-2">
              <div className="bg-[#F8FAFC] rounded-2xl p-4 border border-[#E2E8F0]">
-               <div className="flex items-center gap-3 mb-4">
-                 <div
-                   className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                   style={{ backgroundColor: selected.logo_url ? "transparent" : (selected.color || "#F97316") + "20" }}
-                 >
-                   {selected.logo_url ? (
-                      <img src={selected.logo_url} alt="Logo" className="w-6 h-6 object-contain" onError={(e) => e.target.style.display = 'none'} />
-                    ) : (
-                      <span className="text-xl">{selected.icon || "🏦"}</span>
-                    )}
-                 </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#1A1A1A]">{selected.name}</p>
-                    <p className="text-xs text-[#8FA4C8]">Sudah dipilih ✓</p>
-                  </div>
-                </div>
-
-                <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">Saldo Awal</p>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#8FA4C8]">Rp</span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={balanceDisplay}
-                    onChange={e => {
-                      const raw = e.target.value.replace(/[^0-9]/g, "");
-                      setBalanceDisplay(raw === "" ? "" : Number(raw).toLocaleString("id-ID"));
-                    }}
-                    placeholder="0"
-                    className="w-full pl-10 pr-4 py-3 bg-white rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
-                  />
-                </div>
-                <p className="text-[10px] text-[#8FA4C8] mt-1.5">Bisa diisi 0 dan diperbarui nanti</p>
-              </div>
-            </div>
+               <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-3">Saldo Awal (Opsional)</p>
+               <div className="relative mb-2">
+                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#8FA4C8]">Rp</span>
+                 <input
+                   type="text"
+                   inputMode="numeric"
+                   value={balanceDisplay}
+                   onChange={e => {
+                     const raw = e.target.value.replace(/[^0-9]/g, "");
+                     setBalanceDisplay(raw === "" ? "" : Number(raw).toLocaleString("id-ID"));
+                   }}
+                   placeholder="0"
+                   className="w-full pl-10 pr-4 py-3 bg-white rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
+                 />
+               </div>
+               <p className="text-[10px] text-[#8FA4C8]">Tidak ada saldo awal berarti mulai dari Rp 0</p>
+             </div>
+           </div>
           )}
         </div>
 
