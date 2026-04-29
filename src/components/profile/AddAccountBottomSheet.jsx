@@ -42,7 +42,7 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
     setSaving(false);
   }
 
-  const typeLabel = { bank: "Bank", ewallet: "E-Wallet", cash: "Cash", investasi: "Investasi" };
+  const typeLabel = { bank: "Bank", ewallet: "E-Wallet", cash: "Cash", investment: "Investasi" };
 
   return (
     <>
