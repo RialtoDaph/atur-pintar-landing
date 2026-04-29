@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Moon, Sun, Check, MessageSquare, ShieldCheck, MapPin } from "lucide-react";
+import { Moon, Sun, Check, MessageSquare, ShieldCheck, MapPin, Download } from "lucide-react";
+import ExportLaporanModal from "@/components/analytics/ExportLaporanModal";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
 import { useAppSettings } from "@/components/utils/useAppSettings";
@@ -32,6 +33,7 @@ export default function Settings() {
   const [currency, setCurrency] = useState("IDR");
   const [language, setLanguage] = useState("id");
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showExport, setShowExport] = useState(false);
   const [restartingTour, setRestartingTour] = useState(false);
   const navigate = useNavigate();
 
@@ -181,6 +183,23 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Ekspor Laporan */}
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
+          <div className="px-5 pt-4 pb-2">
+            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">Data & Ekspor</p>
+          </div>
+          <button
+            onClick={() => setShowExport(true)}
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-t border-[#F2F4F7]"
+          >
+            <Download className="w-5 h-5 text-[#FF6A00]" />
+            <div className="text-left">
+              <p className="font-medium text-[#1A1A1A] text-sm">Ekspor Laporan</p>
+              <p className="text-xs text-[#8FA4C8]">Unduh transaksi sebagai CSV atau PDF</p>
+            </div>
+          </button>
+        </div>
+
         {/* Integrasi & Export */}
         <div className="bg-white rounded-2xl shadow-md p-5 border border-[#F0F2F5]">
           <IntegrationSettings />
@@ -284,6 +303,10 @@ export default function Settings() {
 
       {showFeedback && (
         <FeedbackModal user={user} onClose={() => setShowFeedback(false)} />
+      )}
+
+      {showExport && (
+        <ExportLaporanModal user={user} onClose={() => setShowExport(false)} />
       )}
     </div>
   );

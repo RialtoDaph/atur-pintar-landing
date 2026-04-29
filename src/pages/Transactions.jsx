@@ -9,6 +9,7 @@ import TxRutinTab from "@/components/transactions/TxRutinTab";
 import TxLanggananTab from "@/components/transactions/TxLanggananTab";
 import TxFilterBottomSheet from "@/components/transactions/TxFilterBottomSheet";
 import PDFImportModal from "@/components/transactions/PDFImportModal";
+import ReceiptScanModal from "@/components/transactions/ReceiptScanModal";
 
 const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
@@ -47,6 +48,7 @@ export default function Transactions() {
   const [showSearch, setShowSearch] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
+  const [showReceiptScan, setShowReceiptScan] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const formatCurrency = useCallback((amount) => {
@@ -161,6 +163,9 @@ export default function Transactions() {
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors tap-highlight-fix ${showSearch ? "bg-[#F97316]" : "bg-white/10"} text-white`}
             >
               <Search className="w-4 h-4" />
+            </button>
+            <button onClick={() => setShowReceiptScan(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix" title="Scan Struk">
+              <span className="text-sm">🧾</span>
             </button>
             <button onClick={() => setShowPDF(true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix" title="Scan PDF/Screenshot">
               <ScanLine className="w-4 h-4" />
@@ -280,6 +285,14 @@ export default function Transactions() {
 
       {/* PDF/Screenshot Import */}
       {showPDF && <PDFImportModal onClose={() => { setShowPDF(false); fetchData(); }} onSuccess={fetchData} />}
+
+      {/* Receipt Scan */}
+      {showReceiptScan && (
+        <ReceiptScanModal
+          onClose={() => setShowReceiptScan(false)}
+          onSuccess={() => { setShowReceiptScan(false); fetchData(); }}
+        />
+      )}
     </div>
   );
 }

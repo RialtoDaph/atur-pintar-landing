@@ -20,6 +20,7 @@ import NanaInsightCard from "@/components/dashboard/NanaInsightCard";
 import DailyMissionsCard from "@/components/dashboard/DailyMissionsCard";
 import ReminderAlertWidget from "@/components/dashboard/ReminderAlertWidget";
 import BossBattleCard from "@/components/gamification/BossBattleCard";
+import WeeklyRecapCard from "@/components/dashboard/WeeklyRecapCard";
 
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
@@ -278,6 +279,9 @@ export default function Dashboard() {
           )}
 
           {user?.onboarding_completed && <ReminderAlertWidget user={user} />}
+
+          {/* Weekly Recap */}
+          {user?.onboarding_completed && <WeeklyRecapCard user={user} />}
 
           <div className="h-2" />
         </div>
