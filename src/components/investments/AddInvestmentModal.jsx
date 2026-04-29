@@ -3,10 +3,12 @@ import { X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { INVESTMENT_TYPES_LIST } from "./investmentConstants";
+import { useNavigate } from "react-router-dom";
 
 export default function AddInvestmentModal({ onClose, onSave, investment = null }) {
   const { settings } = useAppSettings();
   const lang = settings.language === "en" ? "en" : "id";
+  const navigate = useNavigate();
 
   const [accounts, setAccounts] = useState([]);
   const [form, setForm] = useState({
@@ -75,8 +77,16 @@ export default function AddInvestmentModal({ onClose, onSave, investment = null 
           <div>
             <label className={labelCls}>{lang === "en" ? "Wallet / Platform" : "Dompet / Platform"}</label>
             {accounts.length === 0 ? (
-              <div className="border border-[#E2E8F0] rounded-xl px-4 py-3 bg-[#FFF5F5] text-sm text-[#C84545]">
-                {lang === "en" ? "No investment wallets yet. Please add one first." : "Belum ada dompet investasi. Silakan tambahkan terlebih dahulu."}
+              <div className="border border-[#E2E8F0] rounded-xl px-4 py-3 bg-[#FFF5F5] space-y-2">
+                <p className="text-sm text-[#C84545]">
+                  {lang === "en" ? "No investment wallets yet. Please add one first." : "Belum ada dompet investasi. Silakan tambahkan terlebih dahulu."}
+                </p>
+                <button
+                  onClick={() => navigate("/Accounts")}
+                  className="text-xs font-semibold text-[#FF6A00] hover:text-[#e05e00] underline"
+                >
+                  {lang === "en" ? "Go to Accounts" : "Buka Rekening"}
+                </button>
               </div>
             ) : (
               <div className="relative">
