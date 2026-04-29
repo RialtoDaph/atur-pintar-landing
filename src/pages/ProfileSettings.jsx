@@ -23,7 +23,7 @@ const ACCOUNT_PRESETS = [
   { group: "Cash", icon: "💵", color: "#388E3C", items: ["Dompet", "Celengan", "Kas"] },
 ];
 
-const TYPE_MAP = { "Bank": "bank", "E-Wallet": "ewallet", "Cash": "cash" };
+const TYPE_MAP = { "Bank": "bank", "E-Wallet": "ewallet", "Cash": "cash", "Investment": "investment" };
 const DEFAULT_ICONS = ["🏦", "💵", "📱", "💳", "🏧", "🐷", "💰", "🎯"];
 const DEFAULT_COLORS = ["#F97316", "#1976D2", "#388E3C", "#7B1FA2", "#F57C00", "#E91E63", "#00BCD4", "#607D8B"];
 
@@ -369,6 +369,7 @@ export default function ProfileSettings() {
               {[
                 { key: "bank", label: "BANK", icon: "🏦" },
                 { key: "ewallet", label: "E-WALLET", icon: "📱" },
+                { key: "investment", label: "INVESTASI", icon: "📈" },
                 { key: "cash", label: "CASH", icon: "💵" },
               ].map(group => {
                 const groupAccounts = accounts.filter(a => a.type === group.key);
