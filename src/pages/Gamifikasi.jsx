@@ -149,7 +149,7 @@ export default function Gamifikasi() {
                 <p className="text-[10px] text-[#8FA4C8] font-semibold mt-0.5">🔥 Streak</p>
               </div>
               <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
-                <p className="text-2xl font-black text-[#FF6B35]">{fhsScore?.score || "--"}</p>
+                <p className="text-2xl font-black text-[#FF6B35]">{fhsScore?.total_score ?? "--"}</p>
                 <p className="text-[10px] text-[#8FA4C8] font-semibold mt-0.5">❤️ FHS Score</p>
               </div>
               <div className="bg-white rounded-2xl shadow-sm p-4 text-center">
