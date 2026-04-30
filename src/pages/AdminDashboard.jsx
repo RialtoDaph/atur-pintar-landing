@@ -7,6 +7,7 @@ import AdminStreakManager from "@/components/admin/AdminStreakManager";
 import { Users, TrendingUp, DollarSign, Clock, AlertTriangle, RefreshCw, CheckCircle2, UserX, Send, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
+import AdminWaitingListSection from "@/components/admin/AdminWaitingListSection";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -274,10 +275,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Streak Manager */}
+        {/* Waiting List Section */}
         <div className="mt-6">
-          <AdminStreakManager onActionComplete={loadStats} />
+          <AdminWaitingListSection />
         </div>
+
+        {/* Streak Manager */}
+         <div className="mt-6">
+           <AdminStreakManager onActionComplete={loadStats} />
+         </div>
 
         {/* Not Onboarded Modal */}
         {notOnboardedModal && (
