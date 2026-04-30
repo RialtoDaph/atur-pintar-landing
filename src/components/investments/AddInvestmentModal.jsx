@@ -30,11 +30,11 @@ export default function AddInvestmentModal({ onClose, onSave }) {
 
   async function handleSave() {
     const name = form.name.trim();
-    if (!name) return;
+    if (!name || !form.account_id) return;
     setSaving(true);
     try {
       await onSave({
-        account_id: form.account_id || undefined,
+        account_id: form.account_id,
         name,
         type: form.type,
         purchase_date: form.purchase_date || undefined,
@@ -154,7 +154,7 @@ export default function AddInvestmentModal({ onClose, onSave }) {
 
         <button
           onClick={handleSave}
-          disabled={saving || !form.name.trim()}
+          disabled={saving || !form.name.trim() || !form.account_id}
           className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
         >
           {saving ? "Menyimpan..." : (lang === "en" ? "Add Investment" : "Tambah Investasi")}
