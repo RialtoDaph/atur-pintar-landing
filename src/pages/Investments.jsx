@@ -1,259 +1,134 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import PremiumBlurCard from "@/components/subscription/PremiumBlurCard";
-import { Plus, Trash2, TrendingUp, TrendingDown, Pencil, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Trash2, TrendingUp, ArrowUp, ArrowDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import AddInvestmentModal from "@/components/investments/AddInvestmentModal.jsx";
+import AddInvestmentTransactionModal from "@/components/investments/AddInvestmentTransactionModal.jsx";
+import DiversificationChart from "@/components/investments/DiversificationChart";
+import PortfolioTrendChart from "@/components/investments/PortfolioTrendChart";
+import RiskProfileRecommendation from "@/components/investments/RiskProfileRecommendation";
+import EducationResources from "@/components/investments/EducationResources";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { INVESTMENT_TYPES_MAP } from "@/components/investments/investmentConstants";
+import { Pencil } from "lucide-react";
+import InvestmentNanaPanel from "@/components/investments/InvestmentNanaPanel";
 
-// ── Add Investment Modal ─────────────────────────────────────────────────────
-function AddInvestmentModal({ investment, onClose, onSave }) {
-  const [accounts, setAccounts] = useState([]);
-  const [form, setForm] = useState({
-    name: investment?.name || "",
-    type: investment?.type || "reksa_dana",
-    account_id: investment?.account_id || "",
-    initial_amount: investment?.initial_amount || "",
-    purchase_date: investment?.purchase_date || new Date().toISOString().split("T")[0],
-    notes: investment?.notes || "",
-  });
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    base44.entities.DefaultAccount.filter({ type: "investasi", is_active: true }, "sort_order")
-      .then(setAccounts).catch(() => {});
-  }, []);
-
-  async function handleSave() {
-    if (!form.name || !form.initial_amount) return;
-    setSaving(true);
-    const data = {
-      ...form,
-      initial_amount: parseFloat(String(form.initial_amount).replace(/[^0-9.]/g, "")) || 0,
-      current_value: investment?.current_value ?? (parseFloat(String(form.initial_amount).replace(/[^0-9.]/g, "")) || 0),
-    };
-    // On new investment, set current_value = initial_amount
-    if (!investment) data.current_value = data.initial_amount;
-    await onSave(data);
-    setSaving(false);
-  }
-
-  const TYPES = ["saham","reksa_dana","crypto","deposito","emas","lainnya"];
-
-  return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-xl max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#F2F4F7]">
-          <p className="font-bold text-[#1A1A1A]">{investment ? "Edit Investasi" : "Tambah Investasi"}</p>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-[#F2F4F7] text-[#8FA4C8]">✕</button>
-        </div>
-        <div className="px-5 py-4 space-y-4 overflow-y-auto flex-1">
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Nama Investasi</p>
-            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              placeholder="Contoh: Saham BBCA, Bibit, Bitcoin"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Tipe</p>
-            <div className="grid grid-cols-3 gap-2">
-              {TYPES.map(t => {
-                const meta = INVESTMENT_TYPES_MAP[t] || {};
-                return (
-                  <button key={t} onClick={() => setForm(f => ({ ...f, type: t }))}
-                    className={`py-2 px-2 rounded-xl text-xs font-semibold border-2 transition-all ${form.type === t ? "border-[#F97316] bg-[#FFF7ED] text-[#F97316]" : "border-[#E2E8F0] text-[#4A5568]"}`}>
-                    {meta.emoji} {meta.label_id || t}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Platform/Akun (Opsional)</p>
-            <select value={form.account_id} onChange={e => setForm(f => ({ ...f, account_id: e.target.value }))}
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none">
-              <option value="">Pilih platform</option>
-              {accounts.map(a => <option key={a.id} value={a.id}>{a.icon} {a.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Modal Awal</p>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
-              <input type="text" inputMode="numeric"
-                value={form.initial_amount ? Number(String(form.initial_amount).replace(/[^0-9]/g,"")).toLocaleString("id-ID") : ""}
-                onChange={e => {
-                  const raw = e.target.value.replace(/[^0-9]/g, "");
-                  setForm(f => ({ ...f, initial_amount: raw }));
-                }}
-                placeholder="0"
-                className="w-full pl-10 pr-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30 font-bold" />
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Tanggal Beli</p>
-            <input type="date" value={form.purchase_date} onChange={e => setForm(f => ({ ...f, purchase_date: e.target.value }))}
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Catatan (Opsional)</p>
-            <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-              placeholder="Catatan tambahan..."
-              rows={2}
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none resize-none" />
-          </div>
-        </div>
-        <div className="px-5 pb-6 pt-2">
-          <button onClick={handleSave} disabled={saving || !form.name || !form.initial_amount}
-            className="w-full py-3.5 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
-            {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : null}
-            {investment ? "Simpan Perubahan" : "Tambah Investasi"}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Add Transaction Modal ────────────────────────────────────────────────────
-function AddTransactionModal({ investment, onClose, onSave }) {
-  const [form, setForm] = useState({
-    type: "buy",
-    amount: "",
-    transaction_date: new Date().toISOString().split("T")[0],
-    notes: "",
-  });
-  const [saving, setSaving] = useState(false);
-
-  async function handleSave() {
-    if (!form.amount) return;
-    setSaving(true);
-    await onSave({
-      investment_id: investment.id,
-      type: form.type,
-      total_amount: parseFloat(String(form.amount).replace(/[^0-9.]/g, "")) || 0,
-      transaction_date: form.transaction_date,
-      notes: form.notes,
-    });
-    setSaving(false);
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-sm shadow-xl">
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#F2F4F7]">
-          <div>
-            <p className="font-bold text-[#1A1A1A]">Tambah Transaksi</p>
-            <p className="text-xs text-[#8FA4C8]">{investment.name}</p>
-          </div>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-[#F2F4F7] text-[#8FA4C8]">✕</button>
-        </div>
-        <div className="px-5 py-4 space-y-4">
-          {/* Type toggle */}
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => setForm(f => ({ ...f, type: "buy" }))}
-              className={`py-3 rounded-xl font-bold text-sm border-2 transition-all ${form.type === "buy" ? "border-[#00C9A7] bg-[#00C9A7]/10 text-[#00C9A7]" : "border-[#E2E8F0] text-[#4A5568]"}`}>
-              📈 Beli
-            </button>
-            <button onClick={() => setForm(f => ({ ...f, type: "sell" }))}
-              className={`py-3 rounded-xl font-bold text-sm border-2 transition-all ${form.type === "sell" ? "border-[#FF6B6B] bg-[#FF6B6B]/10 text-[#FF6B6B]" : "border-[#E2E8F0] text-[#4A5568]"}`}>
-              📉 Jual
-            </button>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Nominal</p>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
-              <input type="text" inputMode="numeric"
-                value={form.amount ? Number(String(form.amount).replace(/[^0-9]/g,"")).toLocaleString("id-ID") : ""}
-                onChange={e => {
-                  const raw = e.target.value.replace(/[^0-9]/g, "");
-                  setForm(f => ({ ...f, amount: raw }));
-                }}
-                placeholder="0"
-                className="w-full pl-10 pr-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30 font-bold" />
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Tanggal</p>
-            <input type="date" value={form.transaction_date} onChange={e => setForm(f => ({ ...f, transaction_date: e.target.value }))}
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] mb-1.5">Catatan (Opsional)</p>
-            <input value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-              placeholder="Catatan..."
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none" />
-          </div>
-        </div>
-        <div className="px-5 pb-6 pt-2">
-          <button onClick={handleSave} disabled={saving || !form.amount}
-            className="w-full py-3.5 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
-            {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : null}
-            Simpan Transaksi
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Main Page ────────────────────────────────────────────────────────────────
 export default function InvestmentsPage() {
-  const { formatCurrency } = useAppSettings();
+  const { formatCurrency, t, settings } = useAppSettings();
+  const lang = settings.language === "en" ? "en" : "id";
   const [investments, setInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [editingInv, setEditingInv] = useState(null);
-  const [showAddTx, setShowAddTx] = useState(null);
   const [user, setUser] = useState(null);
+  const [showWatchlist, setShowWatchlist] = useState(false);
+  const [watchlist, setWatchlist] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+  const [showAddTx, setShowAddTx] = useState(null);
+  const [transactions, setTransactions] = useState({});
 
   useEffect(() => {
-    base44.auth.me().then(u => { setUser(u); }).catch(() => {});
+    base44.auth.me().then(u => {
+      setUser(u);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => { if (user) loadData(); }, [user]);
 
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub = base44.entities.Investment.subscribe(() => loadData());
+    return unsub;
+  }, [user?.email]);
+
   async function loadData() {
-    setLoading(true);
-    const inv = await base44.entities.Investment.filter({ created_by: user.email }, "-created_date").catch(() => []);
-    setInvestments(inv || []);
-    setLoading(false);
+      setLoading(true);
+      try {
+        const [inv, watch, accs, txs] = await Promise.all([
+          base44.entities.Investment.filter({ created_by: user.email }, "-created_date"),
+          base44.entities.InvestmentWatchlist.filter({ created_by: user.email }, "-created_date").catch(() => []),
+          base44.entities.Account.filter({ created_by: user.email }).catch(() => []),
+          base44.entities.InvestmentTransaction.list().catch(() => []),
+        ]);
+        setInvestments(inv);
+        setWatchlist(watch);
+        setAccounts(accs || []);
+
+        // Group transactions by investment_id
+        const txsByInv = {};
+        (txs || []).forEach(tx => {
+          if (!txsByInv[tx.investment_id]) {
+            txsByInv[tx.investment_id] = [];
+          }
+          txsByInv[tx.investment_id].push(tx);
+        });
+        setTransactions(txsByInv);
+      } catch (error) {
+        console.error("Failed to load investments:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+  async function handleDelete(id) {
+     if (!window.confirm(t('investments_delete_confirm') || "Hapus investasi ini?")) return;
+     try {
+       const investmentToDelete = investments.find(inv => inv.id === id);
+
+       // Sync back to account if account_id exists
+       if (investmentToDelete?.account_id && investmentToDelete?.current_value) {
+         const account = accounts.find(a => a.id === investmentToDelete.account_id);
+         if (account) {
+           const newBalance = (account.balance || 0) - investmentToDelete.current_value;
+           await base44.entities.Account.update(investmentToDelete.account_id, { balance: newBalance });
+         }
+       }
+
+       setInvestments(prev => prev.filter(inv => inv.id !== id));
+       await base44.entities.Investment.delete(id);
+     } catch (error) {
+       console.error("Delete investment failed:", error);
+       loadData();
+     }
+   }
+
+  function handleEdit(inv) {
+    setEditingInv(inv);
+    setShowAdd(true);
   }
 
   async function handleSave(data) {
-    if (editingInv) {
-      await base44.entities.Investment.update(editingInv.id, data);
-    } else {
-      await base44.entities.Investment.create(data);
-    }
-    setShowAdd(false);
-    setEditingInv(null);
-    loadData();
-  }
+     try {
+       if (editingInv) {
+         await base44.entities.Investment.update(editingInv.id, data);
+       } else {
+         await base44.entities.Investment.create(data);
+       }
+       setShowAdd(false);
+       setEditingInv(null);
+       loadData();
+     } catch (error) {
+       console.error("Save investment failed:", error);
+       throw error;
+     }
+   }
 
   async function handleAddTransaction(txData) {
-    // Create the transaction record
-    await base44.entities.InvestmentTransaction.create(txData);
-
-    // Update current_value: buy = add, sell = subtract
-    const inv = investments.find(i => i.id === txData.investment_id);
-    if (inv) {
-      const delta = txData.type === "buy" ? txData.total_amount : -txData.total_amount;
-      const newValue = (inv.current_value || 0) + delta;
-      await base44.entities.Investment.update(txData.investment_id, { current_value: newValue });
-    }
-
-    setShowAddTx(null);
-    loadData();
-  }
-
-  async function handleDelete(id) {
-    if (!window.confirm("Hapus investasi ini?")) return;
-    await base44.entities.Investment.delete(id);
-    setInvestments(prev => prev.filter(i => i.id !== id));
-  }
+     try {
+       await base44.entities.InvestmentTransaction.create(txData);
+       // Recalculate investment value
+       await base44.functions.invoke('recalculateInvestmentValue', {
+         investment_id: txData.investment_id,
+       });
+       setShowAddTx(null);
+       loadData();
+     } catch (error) {
+       console.error("Save transaction failed:", error);
+       throw error;
+     }
+   }
 
   const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
 
@@ -280,154 +155,233 @@ export default function InvestmentsPage() {
               </div>
             </div>
           </PremiumBlurCard>
+          <PremiumBlurCard>
+            <div className="bg-white rounded-2xl p-6 shadow-sm h-40" />
+          </PremiumBlurCard>
         </div>
       </div>
     );
   }
 
-  const totalModal = investments.reduce((s, i) => s + (i.initial_amount || 0), 0);
-  const totalNilai = investments.reduce((s, i) => s + (i.current_value || 0), 0);
-  const totalUntungRugi = totalNilai - totalModal;
-  const isPortfolioPositive = totalUntungRugi >= 0;
+  const totalInvested = investments.reduce((s, i) => s + i.initial_amount, 0);
+  const totalValue = investments.reduce((s, i) => s + i.current_value, 0);
+  const totalGain = totalValue - totalInvested;
+  const gainPercent = totalInvested > 0 ? ((totalGain / totalInvested) * 100).toFixed(2) : 0;
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
-      {/* Header */}
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-[#8FA4C8] text-sm font-medium">Portofolio</p>
-              <h1 className="text-white text-2xl font-bold mt-0.5">Investasi</h1>
+              <p className="text-[#8FA4C8] text-sm font-medium">{t('investments_portfolio')}</p>
+              <h1 className="text-white text-2xl font-bold mt-0.5">{t('investments_title')}</h1>
             </div>
             <button
-              onClick={() => { setEditingInv(null); setShowAdd(true); }}
-              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg"
+              onClick={() => setShowAdd(true)}
+              className="w-10 h-10 rounded-full bg-[#FF6A00] flex items-center justify-center shadow-lg hover:bg-[#e05e00] transition-colors"
             >
               <Plus className="w-5 h-5 text-white" />
             </button>
           </div>
 
-          {/* Portfolio Summary */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-white/10 rounded-2xl p-3 border border-white/5">
-              <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase">Total Modal</p>
-              <p className="text-white text-sm font-bold mt-1">{formatCurrency(totalModal)}</p>
-            </div>
-            <div className="bg-white/10 rounded-2xl p-3 border border-white/5">
-              <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase">Nilai Sekarang</p>
-              <p className="text-white text-sm font-bold mt-1">{formatCurrency(totalNilai)}</p>
-            </div>
-            <div className="bg-white/10 rounded-2xl p-3 border border-white/5">
-              <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase">Untung/Rugi</p>
-              <div className="flex items-center gap-1 mt-1">
-                {isPortfolioPositive
-                  ? <ArrowUp className="w-3 h-3 text-[#00C9A7]" />
-                  : <ArrowDown className="w-3 h-3 text-[#FF6B6B]" />}
-                <p className={`text-sm font-bold ${isPortfolioPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                  {formatCurrency(Math.abs(totalUntungRugi))}
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* Portfolio trend chart embedded in dark header */}
+          <PortfolioTrendChart
+            investments={investments}
+            totalValue={totalValue}
+            totalInvested={totalInvested}
+            darkMode={true}
+          />
         </div>
       </div>
 
-      {/* Investment Cards */}
-      <div className="max-w-2xl mx-auto px-5 mt-4 space-y-3">
+      <div className="max-w-2xl mx-auto px-5 mt-4 space-y-4">
+        {/* Diversification and assets below */}
+
+        {/* Diversification pie */}
+        <DiversificationChart investments={investments} totalValue={totalValue} formatCurrency={formatCurrency} />
+
         {loading ? (
-          [...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-40 animate-pulse" />)
+          [...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-24 animate-pulse" />)
         ) : investments.length === 0 ? (
-          <div className="bg-white rounded-2xl p-10 text-center shadow-sm mt-4">
+          <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
             <TrendingUp className="w-10 h-10 text-[#8FA4C8] mx-auto mb-3" />
-            <p className="text-[#4A5568] font-semibold">Belum ada investasi</p>
-            <p className="text-[#8FA4C8] text-sm mt-1">Tap + untuk menambahkan investasi pertamamu</p>
-            <button onClick={() => setShowAdd(true)}
-              className="mt-4 px-5 py-2.5 bg-[#F97316] text-white rounded-full text-sm font-bold">
-              Tambah Investasi
-            </button>
+            <p className="text-[#4A5568] font-semibold">{t('investments_empty_title')}</p>
+            <p className="text-[#8FA4C8] text-sm mt-1">{t('investments_empty_desc')}</p>
           </div>
-        ) : investments.map(inv => {
-          const type = INVESTMENT_TYPES_MAP[inv.type] || INVESTMENT_TYPES_MAP.lainnya;
-          const gain = (inv.current_value || 0) - (inv.initial_amount || 0);
-          const gainPct = inv.initial_amount > 0 ? ((gain / inv.initial_amount) * 100).toFixed(1) : "0.0";
-          const isPos = gain >= 0;
+        ) : (
+         investments.map(inv => {
+           const type = INVESTMENT_TYPES_MAP[inv.type] || INVESTMENT_TYPES_MAP.lainnya;
+           const typeLabel = settings.language === 'en' ? type.label_en : type.label_id;
+           const gain = inv.current_value - inv.initial_amount;
+           const gainPct = inv.initial_amount > 0 ? ((gain / inv.initial_amount) * 100).toFixed(2) : 0;
+           const isPositive = gain >= 0;
+           const portfolioWeight = totalValue > 0 ? ((inv.current_value / totalValue) * 100).toFixed(1) : 0;
+           const walletAccount = accounts.find(a => a.id === inv.account_id);
 
-          return (
-            <div key={inv.id} className="bg-white rounded-2xl p-5 shadow-sm">
-              {/* Card Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#F97316]/10 flex items-center justify-center text-xl">
-                    {type.emoji}
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#1A1A1A]">{inv.name}</p>
-                    <p className="text-xs text-[#8FA4C8]">{type.label_id}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => { setEditingInv(inv); setShowAdd(true); }}
-                    className="p-2 text-[#CBD5E0] hover:text-[#F97316] transition-colors">
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => handleDelete(inv.id)}
-                    className="p-2 text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+           // Calculate 1-month ago value (sum of transactions before 30 days)
+           const thirtyDaysAgo = new Date();
+           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+           const txsBefore30days = (transactions[inv.id] || [])
+             .filter(tx => new Date(tx.transaction_date) < thirtyDaysAgo)
+             .sort((a, b) => new Date(b.transaction_date) - new Date(a.transaction_date))[0];
 
-              {/* Metrics */}
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                <div className="p-3 bg-[#F8FAFC] rounded-xl">
-                  <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">Modal Awal</p>
-                  <p className="text-sm font-bold text-[#1A1A1A] mt-1">{formatCurrency(inv.initial_amount)}</p>
-                </div>
-                <div className="p-3 bg-[#F8FAFC] rounded-xl">
-                  <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">Nilai Skrg</p>
-                  <p className="text-sm font-bold text-[#1A1A1A] mt-1">{formatCurrency(inv.current_value)}</p>
-                </div>
-                <div className={`p-3 rounded-xl ${isPos ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
-                  <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">Untung/Rugi</p>
-                  <div className="flex flex-col mt-1">
-                    <p className={`text-xs font-bold ${isPos ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                      {isPos ? "+" : ""}{formatCurrency(gain)}
-                    </p>
-                    <p className={`text-[10px] font-semibold ${isPos ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                      {isPos ? "+" : ""}{gainPct}%
-                    </p>
-                  </div>
-                </div>
-              </div>
+           let valueMonth = inv.initial_amount;
+           if (txsBefore30days) {
+             // Recalculate from initial to that point
+             const relevantTxs = (transactions[inv.id] || [])
+               .filter(tx => new Date(tx.transaction_date) <= new Date(txsBefore30days.transaction_date));
+             valueMonth = inv.initial_amount;
+             for (const tx of relevantTxs) {
+               if (tx.type === 'buy') valueMonth += tx.total_amount || 0;
+               else if (tx.type === 'sell') valueMonth -= tx.total_amount || 0;
+               else if (tx.type === 'dividend') valueMonth += tx.total_amount || 0;
+               else if (tx.type === 'adjustment') valueMonth = tx.total_amount || 0;
+             }
+           }
 
-              {/* Actions */}
-              <div className="flex items-center justify-between border-t border-[#F2F4F7] pt-3">
-                <button onClick={() => setShowAddTx(inv.id)}
-                  className="text-xs font-bold text-[#F97316] hover:text-[#e05e00]">
-                  + Tambah Transaksi
-                </button>
-                <Link to={`${createPageUrl("InvestmentDetail")}?id=${inv.id}`}
-                  className="text-xs font-semibold text-[#8FA4C8] hover:text-[#1A1A1A]">
-                  Lihat Detail →
-                </Link>
-              </div>
+           const fluktuasi = inv.current_value - valueMonth;
+           const fluktuasiPct = valueMonth > 0 ? ((fluktuasi / valueMonth) * 100).toFixed(2) : 0;
+           const flukPositive = fluktuasi >= 0;
+
+           return (
+             <div key={inv.id} className="bg-white rounded-2xl p-5 shadow-sm">
+               <div className="flex items-start justify-between mb-3">
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center text-xl">
+                     {inv.icon || type.emoji}
+                   </div>
+                   <div>
+                     <p className="font-semibold text-[#1A1A1A]">{inv.name}</p>
+                     <p className="text-xs text-[#8FA4C8]">
+                       {typeLabel} · {portfolioWeight}%
+                       {walletAccount && <span className="ml-1">· {walletAccount.icon || "💼"} {walletAccount.name}</span>}
+                     </p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-1" onClick={(e) => e.preventDefault()}>
+                   <button onClick={() => { setEditingInv(inv); setShowAdd(true); }} className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors p-2">
+                     <Pencil className="w-4 h-4" />
+                   </button>
+                   <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors p-2">
+                     <Trash2 className="w-4 h-4" />
+                   </button>
+                 </div>
+               </div>
+
+               {/* Metrics grid */}
+               <div className="grid grid-cols-2 gap-3 mb-4">
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Modal Awal" : "Modal Awal"}</p>
+                   <p className="text-sm font-bold text-[#1A1A1A] mt-1">{formatCurrency(inv.initial_amount)}</p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Value Now" : "Nilai Sekarang"}</p>
+                   <p className="text-sm font-bold text-[#1A1A1A] mt-1">{formatCurrency(inv.current_value)}</p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Return (Rp)" : "Return (Rp)"}</p>
+                   <p className={`text-sm font-bold mt-1 ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                     {isPositive ? "+" : ""}{formatCurrency(gain)}
+                   </p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "Return (%)" : "Return (%)"}</p>
+                   <p className={`text-sm font-bold mt-1 ${isPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                     {isPositive ? "+" : ""}{gainPct}%
+                   </p>
+                 </div>
+                 <div className="p-3 bg-[#F8FAFC] rounded-lg col-span-2">
+                   <p className="text-[10px] text-[#8FA4C8] font-semibold uppercase">{lang === "en" ? "30-Day Change" : "Perubahan 30 Hari"}</p>
+                   <div className="flex items-center gap-1 mt-1">
+                     {flukPositive ? (
+                       <ArrowUp className="w-4 h-4 text-[#00C9A7]" />
+                     ) : (
+                       <ArrowDown className="w-4 h-4 text-[#FF6B6B]" />
+                     )}
+                     <p className={`text-sm font-bold ${flukPositive ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
+                       {flukPositive ? "+" : ""}{formatCurrency(fluktuasi)} ({flukPositive ? "+" : ""}{fluktuasiPct}%)
+                     </p>
+                   </div>
+                 </div>
+               </div>
+
+               {/* Transaction history & add button */}
+               <div className="border-t border-[#F2F4F7] pt-3">
+                 <button
+                   onClick={() => setShowAddTx(inv.id)}
+                   className="text-xs font-semibold text-[#FF6A00] hover:text-[#e05e00]"
+                 >
+                   + {lang === "en" ? "Add Transaction" : "Tambah Transaksi"}
+                 </button>
+               </div>
+
+               {/* Detail link */}
+               <Link
+                 to={`${createPageUrl("InvestmentDetail")}?id=${inv.id}`}
+                 className="text-xs font-semibold text-[#8FA4C8] hover:text-[#1A1A1A] block mt-2"
+               >
+                 {lang === "en" ? "View Details →" : "Lihat Detail →"}
+               </Link>
+
+               {inv.notes && <p className="text-xs text-[#8FA4C8] mt-2 italic">{inv.notes}</p>}
+             </div>
+           );
+         })
+        )}
+
+        {watchlist.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-bold text-[#1A1A1A] text-base">{t('investments_watchlist_title')}</h2>
+              <button onClick={() => setShowWatchlist(!showWatchlist)} className="text-xs text-[#FF6A00] font-medium">
+                {showWatchlist ? t('investments_watchlist_hide') : t('investments_watchlist_show')}
+              </button>
             </div>
-          );
-        })}
+            {showWatchlist && (
+              <div className="space-y-2">
+                {watchlist.map((item) => (
+                  <div key={item.id} className="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-[#1A1A1A]">{item.name}</p>
+                      <p className="text-xs text-[#8FA4C8]">{item.symbol || item.type}</p>
+                    </div>
+                    {item.current_price && (
+                      <div className="text-right">
+                        <p className="font-bold text-[#1A1A1A]">{formatCurrency(item.current_price)}</p>
+                        {item.target_price && (
+                          <p className="text-xs text-[#8FA4C8]">{t('investments_target')}: {formatCurrency(item.target_price)}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        <InvestmentNanaPanel investments={investments} />
+
+        <RiskProfileRecommendation investments={investments} />
+
+        {/* Education resources — minimized at the bottom */}
+        <EducationResources />
       </div>
 
-      {/* Modals */}
       {showAdd && (
         <AddInvestmentModal
           investment={editingInv}
-          onClose={() => { setShowAdd(false); setEditingInv(null); }}
+          onClose={() => {
+            setShowAdd(false);
+            setEditingInv(null);
+          }}
           onSave={handleSave}
         />
       )}
 
       {showAddTx && (
-        <AddTransactionModal
+        <AddInvestmentTransactionModal
           investment={investments.find(i => i.id === showAddTx)}
           onClose={() => setShowAddTx(null)}
           onSave={handleAddTransaction}
