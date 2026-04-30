@@ -108,13 +108,6 @@ export default function AddInvestmentModal({ onClose, onSave }) {
               </div>
             ) : (
               <div className="flex flex-col gap-1">
-                <button
-                  type="button"
-                  onClick={() => setForm(f => ({ ...f, account_id: "" }))}
-                  className={`flex items-center gap-2 py-1.5 text-sm text-left transition-colors ${form.account_id === "" ? "text-[#FF6A00] font-semibold" : "text-[#8FA4C8]"}`}
-                >
-                  {lang === "en" ? "None (optional)" : "Tanpa dompet (opsional)"}
-                </button>
                 {accounts.map(acc => (
                   <button
                     key={acc.id}
