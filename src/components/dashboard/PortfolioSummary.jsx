@@ -19,12 +19,20 @@ const INVESTMENT_TYPES = {
 export default function PortfolioSummary({ user, periodSubtitle }) {
   const { formatCurrency, t } = useAppSettings();
   const [investments, setInvestments] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user?.email) {
-      base44.entities.Investment.filter({ created_by: user.email }, "-created_date", 50)
-        .then(data => { setInvestments(data); setLoading(false); })
+      Promise.all([
+        base44.entities.Investment.filter({ created_by: user.email }, "-created_date", 50),
+        base44.entities.InvestmentTransaction.filter({ created_by: user.email }).catch(() => []),
+      ])
+        .then(([invs, txs]) => { 
+          setInvestments(invs || []); 
+          setTransactions(txs || []);
+          setLoading(false); 
+        })
         .catch(() => setLoading(false));
     }
   }, [user?.email]);
@@ -60,33 +68,33 @@ export default function PortfolioSummary({ user, periodSubtitle }) {
     );
   }
 
-  const totalInvested = investments.reduce((s, i) => s + (i.initial_amount || 0), 0);
-  const totalValue = investments.reduce((s, i) => s + (i.current_value || 0), 0);
-  const totalGain = totalValue - totalInvested;
-
-  // ROI: hanya hitung dari investasi yang sudah ada current_value > 0
-  const investmentsWithPrice = investments.filter(i => (i.current_value || 0) > 0);
-  const investedWithPrice = investmentsWithPrice.reduce((s, i) => s + (i.initial_amount || 0), 0);
-  const valueWithPrice = investmentsWithPrice.reduce((s, i) => s + (i.current_value || 0), 0);
-  const gainWithPrice = valueWithPrice - investedWithPrice;
-  const gainPercent = investedWithPrice > 0 ? ((gainWithPrice / investedWithPrice) * 100).toFixed(2) : 0;
+  // Calculate from InvestmentTransaction (true data source)
+  const totalBeli = transactions.filter(tx => tx.type === "buy").reduce((s, tx) => s + (tx.total_amount || 0), 0);
+  const totalJual = transactions.filter(tx => tx.type === "sell").reduce((s, tx) => s + (tx.total_amount || 0), 0);
+  const saldoAktif = totalBeli - totalJual;
+  const totalGain = totalJual - totalBeli;
+  const investedWithPrice = totalBeli || 1;
+  const gainPercent = totalBeli > 0 ? ((totalGain / totalBeli) * 100).toFixed(2) : 0;
   const isPositive = totalGain >= 0;
 
-  // Pie chart — include semua investasi, gunakan initial_amount sebagai fallback jika current_value = 0
+  // Pie chart by investment type from active saldo
   const byType = {};
   investments.forEach(inv => {
     const invType = inv.type || "lainnya";
     if (!byType[invType]) byType[invType] = 0;
-    byType[invType] += (inv.current_value > 0 ? inv.current_value : inv.initial_amount) || 0;
+    const invTxs = transactions.filter(tx => tx.investment_id === inv.id);
+    const invBeli = invTxs.filter(tx => tx.type === "buy").reduce((s, tx) => s + (tx.total_amount || 0), 0);
+    const invJual = invTxs.filter(tx => tx.type === "sell").reduce((s, tx) => s + (tx.total_amount || 0), 0);
+    byType[invType] += invBeli - invJual;
   });
   const pieData = Object.entries(byType).map(([key, value]) => ({
     name: INVESTMENT_TYPES[key]?.label || key,
     value,
     color: INVESTMENT_TYPES[key]?.color || "#95A5A6",
     emoji: INVESTMENT_TYPES[key]?.emoji || "💼",
-  }));
+  })).filter(p => p.value > 0);
 
-  const totalPieValue = pieData.reduce((s, d) => s + d.value, 0);
+  const totalPieValue = saldoAktif;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -102,11 +110,11 @@ export default function PortfolioSummary({ user, periodSubtitle }) {
 
       <div className="px-4 pb-4">
         {/* Summary row */}
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase tracking-widest">{t('total_value')}</p>
-            <p className="text-[#1A1A1A] font-bold text-xl">{formatCurrency(totalValue)}</p>
-          </div>
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-[#8FA4C8] text-[10px] font-semibold uppercase tracking-widest">{t('total_value')}</p>
+              <p className="text-[#1A1A1A] font-bold text-xl">{formatCurrency(saldoAktif)}</p>
+            </div>
           <div className={`flex flex-col items-end px-3 py-1.5 rounded-xl ${isPositive ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
             <div className="flex items-center gap-1">
               {isPositive ? <TrendingUp className="w-3.5 h-3.5 text-[#00C9A7]" /> : <TrendingDown className="w-3.5 h-3.5 text-[#FF6B6B]" />}
@@ -139,25 +147,18 @@ export default function PortfolioSummary({ user, periodSubtitle }) {
           </div>
 
           <div className="flex-1 space-y-1.5">
-            {investments.map((inv, i) => {
-              const hasPrice = (inv.current_value || 0) > 0;
-              const typeConfig = INVESTMENT_TYPES[inv.type || "lainnya"] || { emoji: "💼", color: "#95A5A6" };
-              return (
-                <div key={inv.id || i} className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: typeConfig.color }} />
-                    <span className="text-[11px] text-[#4A5568] truncate">{typeConfig.emoji} {inv.name}</span>
-                    {!hasPrice && (
-                      <span className="text-[9px] text-[#8FA4C8] flex-shrink-0 ml-0.5">· Belum update harga</span>
-                    )}
-                  </div>
-                  <span className="text-[11px] font-semibold text-[#1A1A1A] flex-shrink-0 ml-1">
-                    {totalPieValue > 0 ? (((hasPrice ? inv.current_value : inv.initial_amount) / totalPieValue) * 100).toFixed(1) : 0}%
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+             {pieData.map((pie, i) => (
+               <div key={i} className="flex items-center justify-between">
+                 <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                   <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: pie.color }} />
+                   <span className="text-[11px] text-[#4A5568] truncate">{pie.emoji} {pie.name}</span>
+                 </div>
+                 <span className="text-[11px] font-semibold text-[#1A1A1A] flex-shrink-0 ml-1">
+                   {totalPieValue > 0 ? ((pie.value / totalPieValue) * 100).toFixed(1) : 0}%
+                 </span>
+               </div>
+             ))}
+           </div>
         </div>
       </div>
     </div>

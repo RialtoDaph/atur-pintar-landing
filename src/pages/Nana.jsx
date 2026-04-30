@@ -211,23 +211,24 @@ export default function Nana() {
     if (!text.trim() || sending || isLimitReached) return;
 
     let conv = activeConv;
-    if (!conv) {
-      conv = await base44.agents.createConversation({
-        agent_name: "nana",
-        metadata: { name: `Obrolan ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short" })}` },
-      });
-      setActiveConv(conv);
-      setConversations(prev => [conv, ...prev]);
-    }
-
     setSending(true);
-    setInput("");
+    try {
+      if (!conv) {
+        conv = await base44.agents.createConversation({
+          agent_name: "nana",
+          metadata: { name: `Obrolan ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short" })}` },
+        });
+        setActiveConv(conv);
+        setConversations(prev => [conv, ...prev]);
+      }
 
-    const msgType = detectMessageType(text);
-    // Save user message to NanaConversation
-    saveToNanaConversation("user", text, msgType);
+      setInput("");
 
-    await base44.agents.addMessage(conv, { role: "user", content: text });
+      const msgType = detectMessageType(text);
+      // Save user message to NanaConversation
+      saveToNanaConversation("user", text, msgType);
+
+      await base44.agents.addMessage(conv, { role: "user", content: text });
 
     // Gamification: streak + tanya_nana mission
     if (user?.email) {
@@ -251,9 +252,12 @@ export default function Nana() {
         addTodayXP(10);
       }
     }
-
+    } catch (error) {
+    console.error("Error sending message:", error);
+    } finally {
     setSending(false);
-  }
+    }
+    }
 
   function handleKey(e) {
     if (e.key === "Enter" && !e.shiftKey) {
