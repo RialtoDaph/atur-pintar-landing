@@ -138,9 +138,13 @@ export default function AdminDefaultAccounts() {
 
             {/* Preview */}
             <div className="flex items-center gap-3 bg-[#F8FAFC] rounded-xl px-3 py-2.5 mb-4">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 overflow-hidden"
                 style={{ backgroundColor: form.color + "25" }}>
-                {form.icon}
+                {form.logo_url ? (
+                  <img src={form.logo_url} alt="logo" className="w-full h-full object-contain" onError={(e) => e.target.style.display = 'none'} />
+                ) : (
+                  form.icon
+                )}
               </div>
               <div>
                 <p className="text-sm font-bold text-[#1A1A1A]">{form.name || <span className="text-[#CBD5E0]">nama rekening</span>}</p>
@@ -266,9 +270,13 @@ export default function AdminDefaultAccounts() {
               <div key={item.id}
                 className={`bg-white rounded-2xl border transition-all shadow-sm ${!item.is_active ? "opacity-50 border-[#F2F4F7]" : "border-[#F2F4F7]"}`}>
                 <div className="flex items-center gap-3 px-4 py-3.5">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0 overflow-hidden"
                     style={{ backgroundColor: (item.color || "#F97316") + "20" }}>
-                    {item.icon || "🏦"}
+                    {item.logo_url ? (
+                      <img src={item.logo_url} alt="logo" className="w-full h-full object-contain" onError={(e) => e.target.style.display = 'none'} />
+                    ) : (
+                      item.icon || "🏦"
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
