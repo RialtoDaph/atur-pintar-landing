@@ -52,6 +52,11 @@
     "midtrans_snap_token": {
       "type": "string",
       "description": "Snap Token dari Midtrans"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Deskripsi pembayaran subscription (opsional)"
     }
   },
   "required": [

@@ -33,6 +33,11 @@
       ],
       "default": "chat",
       "description": "Tipe pesan"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Deskripsi percakapan Nana (opsional)"
     }
   },
   "required": [

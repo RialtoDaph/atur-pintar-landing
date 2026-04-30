@@ -72,6 +72,11 @@
       "type": "boolean",
       "default": false,
       "description": "Soft delete flag"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Deskripsi transaksi tambahan (opsional)"
     }
   },
   "required": [
