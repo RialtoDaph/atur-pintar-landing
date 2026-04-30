@@ -10,6 +10,7 @@ import EducationResources from "@/components/investments/EducationResources";
 import InvestmentNanaPanel from "@/components/investments/InvestmentNanaPanel";
 import RiskProfileRecommendation from "@/components/investments/RiskProfileRecommendation";
 import PortfolioSummaryChart from "@/components/investments/PortfolioSummaryChart";
+import { syncAccountBalance } from "@/components/utils/accountSync";
 
 export default function InvestmentsPage() {
   const { formatCurrency, t, settings } = useAppSettings();
@@ -75,6 +76,14 @@ export default function InvestmentsPage() {
       total_amount: amount,
       transaction_date: date || new Date().toISOString().split("T")[0],
     });
+
+    // Sinkron saldo account: beli = keluar (expense), jual = masuk (income)
+    const inv = investments.find(i => i.id === invId);
+    if (inv?.account_id) {
+      const txType = type === "buy" ? "expense" : "income";
+      await syncAccountBalance(inv.account_id, amount, txType, 1).catch(() => {});
+    }
+
     setTxModal(null);
     loadData();
   }
