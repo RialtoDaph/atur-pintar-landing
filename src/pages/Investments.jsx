@@ -160,15 +160,24 @@ export default function InvestmentsPage() {
                 {/* Top row */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#4F7CFF]/10 flex items-center justify-center text-xl flex-shrink-0">
-                      {inv.icon || type.emoji}
+                    {/* Logo: wallet account logo or fallback emoji */}
+                    <div className="w-11 h-11 rounded-2xl bg-[#F2F4F7] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {walletAccount?.logo_url ? (
+                        <img src={walletAccount.logo_url} alt={walletAccount.name} className="w-full h-full object-contain" />
+                      ) : (
+                        <span className="text-2xl">{walletAccount?.icon || type.emoji}</span>
+                      )}
                     </div>
                     <div>
-                      <p className="font-semibold text-[#1A1A1A]">{inv.name}</p>
-                      <p className="text-xs text-[#8FA4C8]">
-                        {typeLabel}
-                        {walletAccount && <span className="ml-1">· {walletAccount.icon || "💼"} {walletAccount.name}</span>}
+                      {/* Title: platform/wallet name or investment name */}
+                      <p className="font-bold text-[#1A1A1A] leading-tight">
+                        {walletAccount ? walletAccount.name : inv.name}
                       </p>
+                      {walletAccount && (
+                        <p className="text-xs text-[#4A5568] font-medium">{inv.name}</p>
+                      )}
+                      {/* Sub: tipe investasi as plain text */}
+                      <p className="text-xs text-[#8FA4C8] mt-0.5">{typeLabel}</p>
                     </div>
                   </div>
                   <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors p-1">
