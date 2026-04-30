@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Copy, Mail, MessageCircle, Download } from "lucide-react";
+import { Copy, Mail, MessageCircle, Download, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 const INTEREST_BADGES = {
@@ -16,6 +16,9 @@ export default function AdminWaitingListSection() {
   const [filterInvited, setFilterInvited] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
   const [inviting, setInviting] = useState({});
+  const [deleting, setDeleting] = useState({});
+  const [confirmDelete, setConfirmDelete] = useState(null);
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false);
 
   useEffect(() => {
     loadWaitingList();
@@ -80,6 +83,42 @@ export default function AdminWaitingListSection() {
     }
   }
 
+  async function handleDeleteRecord(id) {
+    setConfirmDelete(null);
+    setDeleting(prev => ({ ...prev, [id]: true }));
+    try {
+      await base44.entities.WaitingList.delete(id);
+      setList(prev => prev.filter(w => w.id !== id));
+    } finally {
+      setDeleting(prev => ({ ...prev, [id]: false }));
+    }
+  }
+
+  async function handleDeleteTestData() {
+    setConfirmDeleteAll(false);
+    setLoading(true);
+    try {
+      const testRecords = list.filter(w => {
+        const name = (w.nama || "").toLowerCase();
+        const email = (w.email || "").toLowerCase();
+        return (
+          name.includes("test") ||
+          name.includes("rialto") ||
+          email.includes("test@") ||
+          email.includes("altodaphino")
+        );
+      });
+
+      for (const record of testRecords) {
+        await base44.entities.WaitingList.delete(record.id);
+      }
+
+      setList(prev => prev.filter(w => !testRecords.some(t => t.id === w.id)));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text);
   }
@@ -121,15 +160,24 @@ export default function AdminWaitingListSection() {
 
   return (
     <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-[#E2E8F0]">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-2">
         <h2 className="text-lg font-bold text-[#1A1A1A]">Waiting List</h2>
-        <button
-          onClick={exportCSV}
-          className="flex items-center gap-2 px-3 py-2 bg-[#FF6A00] text-white text-sm font-medium rounded-lg hover:bg-[#e05e00] transition-colors"
-        >
-          <Download className="w-4 h-4" />
-          <span className="hidden sm:inline">Export CSV</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setConfirmDeleteAll(true)}
+            className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Hapus Test</span>
+          </button>
+          <button
+            onClick={exportCSV}
+            className="flex items-center gap-2 px-3 py-2 bg-[#FF6A00] text-white text-sm font-medium rounded-lg hover:bg-[#e05e00] transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            <span className="hidden sm:inline">Export CSV</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -277,6 +325,14 @@ export default function AdminWaitingListSection() {
                     >
                       {inviting[w.id] ? "..." : "Invite"}
                     </button>
+                    <button
+                      onClick={() => setConfirmDelete(w.id)}
+                      disabled={deleting[w.id]}
+                      className="p-1 hover:bg-red-100 rounded transition-colors text-red-600"
+                      title="Delete"
+                    >
+                      {deleting[w.id] ? <div className="w-3.5 h-3.5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                    </button>
                   </td>
                 </tr>
               ))
@@ -284,6 +340,62 @@ export default function AdminWaitingListSection() {
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+            <div className="px-6 py-4 border-b border-[#E2E8F0]">
+              <h3 className="font-bold text-[#1A1A1A]">Yakin hapus data ini?</h3>
+            </div>
+            <div className="px-6 py-4">
+              <p className="text-sm text-[#4A5568]">Data yang dihapus tidak dapat dipulihkan.</p>
+            </div>
+            <div className="px-6 py-4 border-t border-[#E2E8F0] flex gap-2">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 px-4 py-2 bg-[#F2F4F7] text-[#1A1A1A] font-medium rounded-lg hover:bg-[#E2E8F0] transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => handleDeleteRecord(confirmDelete)}
+                className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Test Data Confirmation Dialog */}
+      {confirmDeleteAll && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+            <div className="px-6 py-4 border-b border-[#E2E8F0]">
+              <h3 className="font-bold text-[#1A1A1A]">Yakin hapus semua data test?</h3>
+            </div>
+            <div className="px-6 py-4">
+              <p className="text-sm text-[#4A5568]">Akan menghapus semua record dengan nama/email mengandung "test", "rialto", atau "altodaphino".</p>
+            </div>
+            <div className="px-6 py-4 border-t border-[#E2E8F0] flex gap-2">
+              <button
+                onClick={() => setConfirmDeleteAll(false)}
+                className="flex-1 px-4 py-2 bg-[#F2F4F7] text-[#1A1A1A] font-medium rounded-lg hover:bg-[#E2E8F0] transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDeleteTestData}
+                className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Hapus Semua
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
