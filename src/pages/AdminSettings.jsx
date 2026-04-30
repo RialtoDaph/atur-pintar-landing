@@ -26,8 +26,8 @@ export default function AdminSettings() {
   const [settings, setSettings] = useState({
     app_name: "Atur Pintar",
     maintenance_mode: false,
-    premium_price_monthly: 39000,
-    premium_price_yearly: 299000,
+    premium_price_monthly: 49000,
+    premium_price_yearly: 399900,
     feature_split_bill: true,
     feature_shared_wallet: true,
     feature_investment: true,
@@ -241,16 +241,16 @@ export default function AdminSettings() {
               <div>
                 <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Harga Premium Bulanan (Rp)</label>
                 <input type="number" value={settings.premium_price_monthly}
-                  onChange={e => setSettings({ ...settings, premium_price_monthly: parseInt(e.target.value) || 39000 })}
+                  onChange={e => setSettings({ ...settings, premium_price_monthly: parseInt(e.target.value) || 49000 })}
                   className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
-                <p className="text-xs text-[#8FA4C8] mt-1">Default: Rp 39.000</p>
+                <p className="text-xs text-[#8FA4C8] mt-1">Default: Rp 49.000</p>
               </div>
               <div>
                 <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Harga Premium Tahunan (Rp)</label>
                 <input type="number" value={settings.premium_price_yearly}
-                  onChange={e => setSettings({ ...settings, premium_price_yearly: parseInt(e.target.value) || 299000 })}
+                  onChange={e => setSettings({ ...settings, premium_price_yearly: parseInt(e.target.value) || 399900 })}
                   className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
-                <p className="text-xs text-[#8FA4C8] mt-1">Default: Rp 299.000</p>
+                <p className="text-xs text-[#8FA4C8] mt-1">Default: Rp 399.900</p>
               </div>
             </div>
 
