@@ -330,15 +330,38 @@ function FaqSection() {
 
 }
 
+// ─── Validation helpers ───────────────────────────────────────────────────────
+const SPAM_NAME_PATTERNS = ["http", "https", ".com", ".net", ".org", ".id", "www.", "evil", "hack", "click", "klik"];
+function isValidName(name) {
+  const lower = name.toLowerCase();
+  return !SPAM_NAME_PATTERNS.some(p => lower.includes(p));
+}
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+}
+
 // ─── Waiting List Form ────────────────────────────────────────────────────────
 function WaitingListSection({ fomoCounter, incrementCounter }) {
   const [form, setForm] = useState({ name: "", email: "", whatsapp: "", job: "", city: "", biggest_money_problem: "", current_finance_tracking_method: "", early_access_interest: "" });
+  const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [queueNumber, setQueueNumber] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Honeypot: silently reject if filled
+    if (honeypot) return;
+
+    // Client-side validation
+    const newErrors = {};
+    if (!isValidName(form.name)) newErrors.name = "Nama tidak valid, mohon isi nama asli kamu";
+    if (!isValidEmail(form.email)) newErrors.email = "Format email tidak valid";
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    setErrors({});
+
     setLoading(true);
     try {
       const res = await base44.functions.invoke("submitWaitingList", {
@@ -350,6 +373,7 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
         biggest_money_problem: form.biggest_money_problem || undefined,
         current_finance_tracking_method: form.current_finance_tracking_method,
         early_access_interest: form.early_access_interest,
+        honeypot,
       });
       if (res.data?.error) throw new Error(res.data.error);
       const qNum = fomoCounter + 1;
@@ -361,7 +385,12 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
       // Mini confetti
       if (window.confetti) window.confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 }, colors: ["#FF6A00", "#FFB347", "#ffffff"] });
     } catch (err) {
-      alert("Gagal mendaftar, coba lagi. " + (err.message || ""));
+      const msg = err.message || "";
+      if (msg.includes("rate") || msg.includes("banyak") || msg.includes("limit")) {
+        setErrors({ general: "Terlalu banyak percobaan, coba lagi nanti" });
+      } else {
+        setErrors({ general: "Gagal mendaftar, coba lagi." });
+      }
     } finally {
       setLoading(false);
     }
@@ -374,10 +403,13 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
           <div className="w-16 h-16 rounded-full bg-[#FF6A00]/20 flex items-center justify-center mx-auto mb-5">
             <CheckCircle className="w-8 h-8 text-[#FF6A00]" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2">Selamat, {form.name}! 🎉</h2>
-          <p className="text-[#FF6A00] font-bold text-lg mb-2">Kamu #{queueNumber} dalam antrian.</p>
-          <p className="text-white/50 text-sm leading-relaxed">
-            Kami sudah kirim email konfirmasi ke <span className="text-white font-semibold">{form.email}</span>. Pantau terus ya!
+          <h2 className="text-2xl font-black text-white mb-2">Yeay! 🎉</h2>
+          <p className="text-[#FF6A00] font-bold text-lg mb-3">Kamu #{queueNumber} dalam antrian.</p>
+          <p className="text-white/60 text-sm leading-relaxed">
+            Yeay! Kamu sudah masuk daftar tunggu Atur Pintar. Kami akan hubungi kamu segera!
+          </p>
+          <p className="text-white/40 text-xs mt-3">
+            Konfirmasi dikirim ke <span className="text-white font-semibold">{form.email}</span>
           </p>
         </div>
       </section>);
@@ -413,13 +445,26 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
 
         <Reveal delay={120}>
           <form onSubmit={handleSubmit} className="card-d rounded-2xl p-6 space-y-4">
+            {/* Honeypot - hidden from real users */}
+            <div style={{ position: "absolute", left: "-9999px", top: "-9999px", opacity: 0, pointerEvents: "none" }} aria-hidden="true">
+              <input tabIndex={-1} autoComplete="off" value={honeypot} onChange={e => setHoneypot(e.target.value)} />
+            </div>
+
+            {errors.general && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-xs font-medium">
+                {errors.general}
+              </div>
+            )}
+
             <div>
               <label className="text-white/60 text-xs mb-1.5 block">Nama lengkap *</label>
-              <input required value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Nama kamu" className="bg-[hsl(var(--foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border border-white/10 placeholder-white/25 outline-none focus:border-[#FF6A00]/50" />
+              <input required value={form.name} onChange={(e) => { setForm((f) => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: undefined })); }} placeholder="Nama kamu" className={`bg-[hsl(var(--foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border placeholder-white/25 outline-none focus:border-[#FF6A00]/50 ${errors.name ? "border-red-500/60" : "border-white/10"}`} />
+              {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
             </div>
             <div>
               <label className="text-white/60 text-xs mb-1.5 block">Email aktif *</label>
-              <input required type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="email@kamu.com" className="bg-[hsl(var(--foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border border-white/10 placeholder-white/25 outline-none focus:border-[#FF6A00]/50" />
+              <input required type="email" value={form.email} onChange={(e) => { setForm((f) => ({ ...f, email: e.target.value })); setErrors(er => ({ ...er, email: undefined })); }} placeholder="email@kamu.com" className={`bg-[hsl(var(--foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border placeholder-white/25 outline-none focus:border-[#FF6A00]/50 ${errors.email ? "border-red-500/60" : "border-white/10"}`} />
+              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
             </div>
             <div>
               <label className="text-white/60 text-xs mb-1.5 block">Nomor WhatsApp (opsional)</label>
