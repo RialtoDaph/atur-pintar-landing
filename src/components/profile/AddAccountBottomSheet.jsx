@@ -171,7 +171,7 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
   const [selectedPreset, setSelectedPreset] = useState(null);
 
   useEffect(() => {
-    const queryType = accountType === "investment" ? "investasi" : accountType;
+    const queryType = (accountType === "investment" || accountType === "investasi") ? "investasi" : accountType;
     base44.entities.DefaultAccount.filter({ type: queryType, is_active: true }, "sort_order")
       .then(res => setDefaultAccounts(res || []))
       .finally(() => setLoading(false));

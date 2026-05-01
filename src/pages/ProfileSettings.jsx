@@ -370,10 +370,10 @@ export default function ProfileSettings() {
               {[
                 { key: "bank", label: "BANK", icon: "🏦" },
                 { key: "ewallet", label: "E-WALLET", icon: "📱" },
-                { key: "investment", label: "INVESTASI", icon: "📈" },
+                { key: "investasi", label: "INVESTASI", icon: "📈" },
                 { key: "cash", label: "CASH", icon: "💵" },
               ].map(group => {
-                const groupAccounts = accounts.filter(a => a.type === group.key);
+                const groupAccounts = accounts.filter(a => (a.type || "").toLowerCase() === group.key);
                 return (
                   <div key={group.key}>
                     <p className="text-[9px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-1.5">{group.label}</p>
@@ -393,7 +393,7 @@ export default function ProfileSettings() {
                         </button>
                       ))}
                       <button
-                        onClick={() => { setBottomSheetType(group.key); setShowAddBottomSheet(true); }}
+                        onClick={() => { setBottomSheetType(group.key === "investasi" ? "investasi" : group.key); setShowAddBottomSheet(true); }}
                         className="flex-shrink-0 border border-dashed border-[#E2E8F0] rounded-xl px-3 py-2 flex items-center gap-1.5 hover:border-[#F97316] hover:bg-[#FFF7ED] transition-all">
                         <Plus className="w-3.5 h-3.5 text-[#8FA4C8]" />
                         <p className="text-[10px] font-medium text-[#8FA4C8] whitespace-nowrap">Tambah</p>
