@@ -34,10 +34,6 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
       return;
     }
     const balance = parseNum(balanceDisplay);
-    if (balance === 0 && balanceDisplay.trim() === "") {
-      toast.error("Saldo Awal tidak boleh kosong");
-      return;
-    }
     setSaving(true);
     try {
       const created = await base44.entities.Account.create({
