@@ -65,7 +65,7 @@
         }
       ]
     },
-    "delete": {
+    "read": {
       "$or": [
         {
           "created_by": "{{user.email}}"
@@ -77,10 +77,10 @@
         }
       ]
     },
-    "read": {
+    "update": {
       "$or": [
         {
-          "data.paid_by_email": "{{user.email}}"
+          "created_by": "{{user.email}}"
         },
         {
           "user_condition": {
@@ -89,7 +89,7 @@
         }
       ]
     },
-    "update": {
+    "delete": {
       "$or": [
         {
           "created_by": "{{user.email}}"
