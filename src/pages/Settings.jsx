@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Moon, Sun, Check, MessageSquare, ShieldCheck, MapPin, Download } from "lucide-react";
+import { Check, MessageSquare, ShieldCheck, MapPin, Download } from "lucide-react";
 import ExportLaporanModal from "@/components/analytics/ExportLaporanModal";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
@@ -28,7 +28,7 @@ const CURRENCY_MAP = {
 
 export default function Settings() {
   const [user, setUser] = useState(null);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
+
   const { settings, updateSettings, t } = useAppSettings();
   const [currency, setCurrency] = useState("IDR");
   const [language, setLanguage] = useState("id");
@@ -47,14 +47,6 @@ export default function Settings() {
       setLanguage(settings.language || "id");
     }
   }, [settings]);
-
-  function toggleDark() {
-    const next = !darkMode;
-    setDarkMode(next);
-    localStorage.setItem("darkMode", String(next));
-    if (next) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-  }
 
   async function selectCurrency(code) {
     setCurrency(code);
@@ -83,30 +75,6 @@ export default function Settings() {
       </div>
 
       <div className="max-w-2xl mx-auto px-5 mt-6 space-y-4">
-
-        {/* Tampilan */}
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
-          <div className="px-5 pt-4 pb-2">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_appearance')}</p>
-          </div>
-          <button
-            onClick={toggleDark}
-            aria-pressed={darkMode}
-            aria-label={darkMode ? "Nonaktifkan mode gelap" : "Aktifkan mode gelap"}
-            className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-all duration-150 border-t border-[#F2F4F7]"
-          >
-            <div className="flex items-center gap-3">
-              {darkMode ? <Moon className="w-5 h-5 text-[#FF6A00]" /> : <Sun className="w-5 h-5 text-[#FF6A00]" />}
-              <div className="text-left">
-                <p className="font-medium text-[#1A1A1A] text-sm">{t('settings_dark_mode')}</p>
-                <p className="text-xs text-[#8FA4C8]">{darkMode ? t('settings_active') : t('settings_inactive')}</p>
-              </div>
-            </div>
-            <div className={`w-11 h-6 rounded-full transition-colors relative ${darkMode ? "bg-[#FF6A00]" : "bg-[#E2E8F0]"}`}>
-              <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${darkMode ? "left-5" : "left-0.5"}`} />
-            </div>
-          </button>
-        </div>
 
         {/* Bahasa & Mata Uang */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
