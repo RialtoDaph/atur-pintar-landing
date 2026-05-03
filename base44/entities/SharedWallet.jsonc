@@ -57,27 +57,13 @@
     }
   },
   "rls": {
-    "create": {
-      "created_by": "{{user.email}}"
-    },
     "read": {
       "$or": [
         {
           "data.owner_email": "{{user.email}}"
         },
         {
-          "data.members": {
-            "$in": [
-              "{{user.email}}"
-            ]
-          }
-        },
-        {
-          "data.pending_invites": {
-            "$in": [
-              "{{user.email}}"
-            ]
-          }
+          "data.members": "{{user.email}}"
         },
         {
           "user_condition": {
@@ -86,6 +72,7 @@
         }
       ]
     },
+    "create": {},
     "update": {
       "$or": [
         {

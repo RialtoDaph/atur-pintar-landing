@@ -57,17 +57,13 @@
     "end_date"
   ],
   "rls": {
+    "read": {},
     "create": {
       "user_condition": {
         "role": "admin"
       }
     },
-    "read": {},
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
+    "update": {},
     "delete": {
       "user_condition": {
         "role": "admin"
