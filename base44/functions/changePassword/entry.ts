@@ -51,6 +51,18 @@ Deno.serve(async (req) => {
       return Response.json({ error: err.message || 'Gagal mengganti password' }, { status: 400 });
     }
 
+    // Audit log: password change is a sensitive action
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
+    base44.asServiceRole.entities.SystemLog.create({
+      log_type: 'sensitive_access',
+      user_email: user.email,
+      user_id: user.id,
+      action: 'password_changed',
+      ip_address: ip,
+      severity: 'warning',
+      details: `User ${user.email} changed their password`,
+    }).catch(() => {});
+
     return Response.json({ success: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

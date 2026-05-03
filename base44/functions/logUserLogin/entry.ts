@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
@@ -9,6 +9,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
+
     // Check last login (throttle to 30 min)
     const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
     const lastLogin = await base44.asServiceRole.entities.SystemLog.filter(
@@ -16,12 +18,14 @@ Deno.serve(async (req) => {
       '-created_date',
       1
     );
-    
+
     if (!lastLogin.length || new Date(lastLogin[0].created_date) < new Date(thirtyMinutesAgo)) {
       await base44.asServiceRole.entities.SystemLog.create({
         log_type: 'login',
         action: 'user_login',
         user_email: user.email,
+        user_id: user.id,
+        ip_address: ip,
         severity: 'info',
         details: 'Login successful'
       });

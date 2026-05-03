@@ -32,13 +32,16 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Log cleanup
+    // Log cleanup (destructive admin action → warning)
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
     await base44.asServiceRole.entities.SystemLog.create({
-      log_type: "activity",
+      log_type: "sensitive_access",
       user_email: user.email,
-      action: "data_cleanup_completed",
-      severity: "info",
-      details: `Deleted sample data from larasadelia586@gmail.com and imeldaiis61@gmail.com. Total deleted: ${totalDeleted} records.`
+      user_id: user.id,
+      action: "admin_sample_data_cleanup",
+      ip_address: ip,
+      severity: "warning",
+      details: `Admin ${user.email} deleted sample data from ${SAMPLE_EMAILS.join(', ')}. Total deleted: ${totalDeleted} records.`
     });
 
     return Response.json({ success: true, deleted: totalDeleted, entities: ENTITIES_TO_CLEAN.length });

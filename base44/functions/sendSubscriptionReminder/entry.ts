@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 import { Resend } from 'npm:resend@4.0.0';
 
 const resend = new Resend(Deno.env.get('Resend_api_'));
@@ -92,7 +92,8 @@ Deno.serve(async (req) => {
 
     for (const user of users) {
       if (!user.subscription_end_date || !user.subscription_plan || user.subscription_plan === 'free') continue;
-      if (user.subscription_status !== 'approved') continue;
+      if (user.subscription_status !== 'active') continue;
+      if (user.role === 'admin') continue;
 
       const endDate = new Date(user.subscription_end_date);
       endDate.setHours(0, 0, 0, 0);

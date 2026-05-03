@@ -7,11 +7,11 @@ Deno.serve(async (req) => {
 
     const { order_id, transaction_status, fraud_status, gross_amount, signature_key, status_code } = notification;
 
-    // Verifikasi signature dari Midtrans
+    // Verifikasi signature dari Midtrans (constant-time compare)
     const serverKey = Deno.env.get("MIDTRANS_SERVER_KEY");
     const expectedSignature = await sha512(`${order_id}${status_code}${gross_amount}${serverKey}`);
 
-    if (signature_key !== expectedSignature) {
+    if (!signature_key || !timingSafeEqual(signature_key, expectedSignature)) {
       console.error("Invalid signature for order:", order_id);
       return Response.json({ error: 'Invalid signature' }, { status: 403 });
     }
@@ -68,12 +68,12 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Buat/update Subscription entity untuk Atur Pintar Premium
+      // Buat/update Subscription entity — gunakan amount aktual dari payment (bukan hardcoded)
       const existingSubs = await base44.asServiceRole.entities.Subscription.filter({ name: 'Atur Pintar Premium', created_by: payment.user_email }).catch(() => []);
       const subData = {
         name: 'Atur Pintar Premium',
         icon: '⭐',
-        amount: payment.plan === 'premium_monthly' ? 39000 : 299000,
+        amount: payment.amount,
         billing_cycle: payment.plan === 'premium_monthly' ? 'monthly' : 'yearly',
         next_due_date: endDate.toISOString().split('T')[0],
         status: 'active',
@@ -83,6 +83,17 @@ Deno.serve(async (req) => {
       } else {
         await base44.asServiceRole.entities.Subscription.create({ ...subData, created_by: payment.user_email }).catch(() => {});
       }
+
+      // Audit log: payment success
+      base44.asServiceRole.entities.SystemLog.create({
+        log_type: 'activity',
+        user_email: payment.user_email,
+        action: 'subscription_payment_approved',
+        entity_type: 'SubscriptionPayment',
+        entity_id: payment.id,
+        severity: 'info',
+        details: `Payment approved via Midtrans: ${payment.plan}, amount=${payment.amount}, order_id=${order_id}`,
+      }).catch(() => {});
 
       // Kirim email notifikasi
       await base44.asServiceRole.integrations.Core.SendEmail({
@@ -104,4 +115,11 @@ Deno.serve(async (req) => {
 async function sha512(str) {
   const buf = await crypto.subtle.digest('SHA-512', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function timingSafeEqual(a, b) {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return result === 0;
 }

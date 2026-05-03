@@ -15,14 +15,14 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
-    // Read price from AppConfig (admin-controlled)
+    // Read price from AppConfig (admin-controlled) — defaults match AppConfig entity defaults
     let monthlyPrice = 49000;
-    let yearlyPrice = 490000;
+    let yearlyPrice = 399900;
     try {
       const configs = await base44.asServiceRole.entities.AppConfig.list();
       if (configs && configs.length > 0) {
         monthlyPrice = configs[0].premium_price_monthly || 49000;
-        yearlyPrice = configs[0].premium_price_yearly || 490000;
+        yearlyPrice = configs[0].premium_price_yearly || 399900;
       }
     } catch (e) {
       console.warn('Could not read AppConfig, using defaults');

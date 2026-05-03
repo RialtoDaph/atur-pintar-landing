@@ -70,8 +70,16 @@ Deno.serve(async (req) => {
 </div>
     `.trim();
 
+    // Read admin email from AppConfig (fallback to env, then default)
+    let adminEmail = 'aturpintar21@gmail.com';
+    try {
+      const configs = await base44.asServiceRole.entities.AppConfig.list();
+      if (configs?.[0]?.admin_alert_email) adminEmail = configs[0].admin_alert_email;
+      else if (Deno.env.get('ADMIN_ALERT_EMAIL')) adminEmail = Deno.env.get('ADMIN_ALERT_EMAIL');
+    } catch (_) {}
+
     await base44.asServiceRole.integrations.Core.SendEmail({
-      to: 'aturpintar21@gmail.com',
+      to: adminEmail,
       subject,
       body: body_html,
     });
