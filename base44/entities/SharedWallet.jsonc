@@ -57,6 +57,9 @@
     }
   },
   "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
     "read": {
       "$or": [
         {
@@ -66,13 +69,15 @@
           "data.members": "{{user.email}}"
         },
         {
+          "data.pending_invites": "{{user.email}}"
+        },
+        {
           "user_condition": {
             "role": "admin"
           }
         }
       ]
     },
-    "create": {},
     "update": {
       "$or": [
         {
