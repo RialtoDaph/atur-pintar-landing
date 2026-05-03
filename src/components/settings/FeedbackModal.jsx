@@ -15,19 +15,13 @@ export default function FeedbackModal({ user, onClose }) {
     if (!message.trim()) return;
     setSending(true);
     try {
-      await Promise.all([
-        base44.integrations.Core.SendEmail({
-          to: user?.email || "feedback@atur.in",
-          subject: `Feedback Atur.in${rating ? ` — Rating: ${rating}/5` : ""}`,
-          body: `Feedback dari: ${user?.full_name || "Pengguna"} (${user?.email || "-"})\n\n${rating ? `Rating: ${"⭐".repeat(rating)} (${rating}/5)\n\n` : ""}Pesan:\n${message}`,
-        }),
-        base44.functions.invoke("sendFeedbackToNotion", {
-          rating: rating || null,
-          message,
-          userName: user?.full_name || "Anonymous",
-          userEmail: user?.email || null,
-        })
-      ]);
+      // Backend function forwards to admin_alert_email from AppConfig
+      await base44.functions.invoke("sendFeedbackToNotion", {
+        rating: rating || null,
+        message,
+        userName: user?.full_name || "Anonymous",
+        userEmail: user?.email || null,
+      });
       toast.success("Feedback terkirim! Terima kasih 🙏");
       onClose();
     } catch {

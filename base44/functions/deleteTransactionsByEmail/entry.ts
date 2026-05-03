@@ -70,6 +70,21 @@ Deno.serve(async (req) => {
       results.streakReset = true;
     }
 
+    // Audit log: destructive admin action
+    try {
+      const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
+      await base44.asServiceRole.entities.SystemLog.create({
+        log_type: 'sensitive_access',
+        user_email: user.email,
+        user_id: user.id,
+        action: 'delete_user_financial_data',
+        target_email: email,
+        ip_address: ipAddress,
+        severity: 'warning',
+        details: `Deleted financial data for ${email}: ${JSON.stringify(results)}`,
+      });
+    } catch (_) {}
+
     return Response.json({
       message: `Deleted all financial data for ${email}`,
       email,
