@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
@@ -88,30 +88,6 @@ Deno.serve(async (req) => {
         }
       } catch (e) {}
     }
-
-    // Fix OVO account balance
-    try {
-      await base44.asServiceRole.entities.Account.update('69d68ec8fed56014e1f5ba78', { balance: 0 });
-    } catch (e) {}
-
-    // Approve hd722875 payment
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      await base44.asServiceRole.entities.SubscriptionPayment.update('69ccbb1d40b8ac188f504e23', {
-        status: 'approved',
-        approved_at: today
-      });
-
-      const userRes = await base44.asServiceRole.entities.User.filter({ email: 'hd722875@gmail.com' });
-      if (userRes.length > 0) {
-        await base44.asServiceRole.entities.User.update(userRes[0].id, {
-          subscription_plan: 'premium_monthly',
-          subscription_status: 'active',
-          subscription_start_date: today,
-          subscription_end_date: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        });
-      }
-    } catch (e) {}
 
     // Log cleanup action
     try {

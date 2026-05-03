@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
@@ -11,6 +11,19 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { action, email } = body;
+    const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
+
+    const auditLog = (act, details, severity = 'info') =>
+      base44.asServiceRole.entities.SystemLog.create({
+        log_type: 'sensitive_access',
+        user_email: user.email,
+        user_id: user.id,
+        action: act,
+        target_email: email || null,
+        ip_address: ipAddress,
+        severity,
+        details,
+      }).catch(() => {});
 
     if (action === 'resetUser') {
       const profiles = await base44.asServiceRole.entities.GamificationProfile.filter({ created_by: email });
@@ -22,6 +35,7 @@ Deno.serve(async (req) => {
           })
         )
       );
+      await auditLog('admin_streak_reset_user', `Reset streak for ${email}`, 'warning');
       return Response.json({ success: true, message: `Streak reset untuk ${email}` });
     }
 
@@ -35,6 +49,7 @@ Deno.serve(async (req) => {
           })
         )
       );
+      await auditLog('admin_streak_reset_all', `Reset all streaks (${allProfiles.length} profiles)`, 'warning');
       return Response.json({ success: true, message: `Reset semua ${allProfiles.length} streak` });
     }
 
@@ -48,6 +63,7 @@ Deno.serve(async (req) => {
       const toDelete = sorted.slice(1);
 
       await Promise.all(toDelete.map(p => base44.asServiceRole.entities.GamificationProfile.delete(p.id)));
+      await auditLog('admin_gamification_dedup', `Deleted ${toDelete.length} duplicate profiles for ${email}`, 'warning');
       return Response.json({ success: true, message: `Hapus ${toDelete.length} duplikat untuk ${email}` });
     }
 
