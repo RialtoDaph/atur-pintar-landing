@@ -10,9 +10,9 @@ export default function Achievements() {
   useEffect(() => {
     base44.auth.me().then(async u => {
       const records = await base44.entities.Achievement.filter({ created_by: u.email }).catch(() => []);
-      const unlockedKeys = (records || []).map(r => r.achievement_key);
+      const unlockedKeys = (records || []).filter(r => r.is_unlocked).map(r => r.achievement_key);
       setUnlocked(unlockedKeys);
-      const bonus = (records || []).reduce((s, r) => s + (r.xp_reward || 0), 0);
+      const bonus = (records || []).filter(r => r.is_unlocked).reduce((s, r) => s + (r.xp_reward || 0), 0);
       setTotalXP(bonus);
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -42,9 +42,9 @@ export default function Achievements() {
         </div>
 
         {/* Group by category */}
-        {["streak", "transaction", "goal", "level"].map(cat => {
+        {["streak", "transaction", "goal", "level", "special"].map(cat => {
           const catDefs = ACHIEVEMENTS_DEF.filter(a => a.category === cat);
-          const catLabels = { streak: "🔥 Streak", transaction: "📝 Transaksi", goal: "🎯 Goals", level: "⚡ Level" };
+          const catLabels = { streak: "🔥 Streak", transaction: "📝 Transaksi", goal: "🎯 Goals", level: "⚡ Level", special: "⭐ Spesial" };
           return (
             <div key={cat}>
               <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-2 px-1">{catLabels[cat]}</p>

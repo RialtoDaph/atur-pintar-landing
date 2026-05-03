@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { format, subDays } from "date-fns";
+import { toast } from "sonner";
 
 export const LEVELS = [
   { level: 1, name: "Newbie Ngatur",     min: 0,     max: 499,   unlocks: null },
@@ -14,20 +15,32 @@ export const LEVELS = [
 
 export const ACHIEVEMENTS_DEF = [
   // Streak
-  { key: "streak_3",           title: "🔥 3 Hari Berturut!",    icon: "🔥", xp: 30,  category: "streak",      hint: "Streak 3 hari berturut-turut" },
-  { key: "streak_7",           title: "🔥 Seminggu Penuh!",     icon: "🔥", xp: 70,  category: "streak",      hint: "Streak 7 hari berturut-turut" },
-  { key: "streak_30",          title: "💎 30 Hari Konsisten!",  icon: "💎", xp: 300, category: "streak",      hint: "Streak 30 hari berturut-turut" },
+  { key: "streak_3",           title: "🔥 3 Hari Berturut!",      icon: "🔥", xp: 30,  category: "streak",      hint: "Streak 3 hari berturut-turut" },
+  { key: "streak_7",           title: "🔥 Seminggu Penuh!",       icon: "🔥", xp: 70,  category: "streak",      hint: "Streak 7 hari berturut-turut" },
+  { key: "streak_14",          title: "🔥 2 Minggu Konsisten!",   icon: "🔥", xp: 140, category: "streak",      hint: "Streak 14 hari berturut-turut" },
+  { key: "streak_30",          title: "💎 30 Hari Konsisten!",    icon: "💎", xp: 300, category: "streak",      hint: "Streak 30 hari berturut-turut" },
   // Transaksi
-  { key: "first_transaction",  title: "📝 Pencatat Pertama",    icon: "📝", xp: 20,  category: "transaction", hint: "Catat transaksi pertama" },
-  { key: "transaction_10",     title: "📊 10 Transaksi!",       icon: "📊", xp: 50,  category: "transaction", hint: "Total 10 transaksi" },
-  { key: "transaction_50",     title: "🗂️ 50 Transaksi!",      icon: "🗂️", xp: 150, category: "transaction", hint: "Total 50 transaksi" },
+  { key: "first_transaction",  title: "📝 Pencatat Pertama",      icon: "📝", xp: 20,  category: "transaction", hint: "Catat transaksi pertama" },
+  { key: "transaction_10",     title: "📊 10 Transaksi!",         icon: "📊", xp: 50,  category: "transaction", hint: "Total 10 transaksi" },
+  { key: "transaction_50",     title: "🗂️ 50 Transaksi!",        icon: "🗂️", xp: 150, category: "transaction", hint: "Total 50 transaksi" },
+  { key: "transaction_100",    title: "💯 100 Transaksi!",        icon: "💯", xp: 300, category: "transaction", hint: "Total 100 transaksi" },
   // Goal
-  { key: "first_goal",         title: "🎯 Punya Tujuan!",       icon: "🎯", xp: 30,  category: "goal",        hint: "Buat 1 savings goal" },
-  { key: "goal_completed",     title: "🏆 Goal Tercapai!",      icon: "🏆", xp: 200, category: "goal",        hint: "Selesaikan 1 savings goal" },
+  { key: "first_goal",         title: "🎯 Punya Tujuan!",         icon: "🎯", xp: 30,  category: "goal",        hint: "Buat 1 savings goal" },
+  { key: "goal_50pct",         title: "📈 Setengah Jalan!",       icon: "📈", xp: 80,  category: "goal",        hint: "Goal 50% tercapai" },
+  { key: "goal_completed",     title: "🏆 Goal Tercapai!",        icon: "🏆", xp: 200, category: "goal",        hint: "Selesaikan 1 savings goal" },
   // Level
-  { key: "level_3",            title: "🎮 Budgeter Muda",       icon: "🎮", xp: 50,  category: "level",       hint: "Capai Level 3" },
-  { key: "level_5",            title: "🧠 Financial Aware",     icon: "🧠", xp: 100, category: "level",       hint: "Capai Level 5" },
-  { key: "level_7",            title: "🏆 Atur Pintar Pro!",    icon: "🏆", xp: 500, category: "level",       hint: "Capai Level 7" },
+  { key: "level_2",            title: "🌱 Si Pencatat",           icon: "🌱", xp: 20,  category: "level",       hint: "Capai Level 2" },
+  { key: "level_3",            title: "🎮 Budgeter Muda",         icon: "🎮", xp: 50,  category: "level",       hint: "Capai Level 3" },
+  { key: "level_4",            title: "🤝 Social Saver",          icon: "🤝", xp: 60,  category: "level",       hint: "Capai Level 4" },
+  { key: "level_5",            title: "🧠 Financial Aware",       icon: "🧠", xp: 100, category: "level",       hint: "Capai Level 5" },
+  { key: "level_6",            title: "💡 Investor Pemula",       icon: "💡", xp: 200, category: "level",       hint: "Capai Level 6" },
+  { key: "level_7",            title: "🏆 Atur Pintar Pro!",      icon: "🏆", xp: 500, category: "level",       hint: "Capai Level 7" },
+  // Special
+  { key: "first_budget",       title: "💰 Budgeter Pertama!",     icon: "💰", xp: 25,  category: "special",     hint: "Buat budget pertama" },
+  { key: "budget_stay",        title: "✅ Hemat Sebulan!",        icon: "✅", xp: 100, category: "special",     hint: "Tetap dalam budget sebulan penuh" },
+  { key: "first_nana_chat",    title: "🤖 Sapa Nana!",            icon: "🤖", xp: 15,  category: "special",     hint: "Chat pertama dengan Nana" },
+  { key: "persona_revealed",   title: "🔮 Persona Terungkap!",   icon: "🔮", xp: 30,  category: "special",     hint: "Persona keuangan terungkap" },
+  { key: "mood_7_days",        title: "😊 7 Hari Mood Check!",   icon: "😊", xp: 70,  category: "special",     hint: "7 hari mood check-in berturut" },
 ];
 
 export function getLevelFromXP(xp) {
@@ -130,20 +143,32 @@ export function useGamification(user) {
     const def = ACHIEVEMENTS_DEF.find(a => a.key === key);
     if (!def) return null;
 
+    // Dedup: check if Achievement record already exists for this key
+    const existing = await base44.entities.Achievement.filter({ achievement_key: key }).catch(() => []);
+    if ((existing || []).some(a => a.is_unlocked)) return null; // already unlocked
+
     const newAchievements = [...(p.achievements || []), key];
     await base44.entities.GamificationProfile.update(p.id, { achievements: newAchievements });
 
-    // Save to Achievement entity
-    await base44.entities.Achievement.create({
-      achievement_key: key,
-      title: def.title,
-      description: def.hint,
-      icon: def.icon,
-      category: def.category,
-      xp_reward: def.xp,
-      is_unlocked: true,
-      unlocked_at: new Date().toISOString(),
-    }).catch(() => {});
+    // Update existing locked record or create new
+    const lockedRecord = (existing || []).find(a => !a.is_unlocked);
+    if (lockedRecord) {
+      await base44.entities.Achievement.update(lockedRecord.id, {
+        is_unlocked: true,
+        unlocked_at: new Date().toISOString(),
+      }).catch(() => {});
+    } else {
+      await base44.entities.Achievement.create({
+        achievement_key: key,
+        title: def.title,
+        description: def.hint,
+        icon: def.icon,
+        category: def.category,
+        xp_reward: def.xp,
+        is_unlocked: true,
+        unlocked_at: new Date().toISOString(),
+      }).catch(() => {});
+    }
 
     setAchievementPopup(def);
     return def;
@@ -203,11 +228,22 @@ export function useGamification(user) {
         }).catch(() => {});
       }
 
-      // Achievement popup (show first unlocked)
+      // Achievement popup + toast (show first unlocked, toast for all)
       if (data.unlockedAchievements?.length > 0) {
         const key = data.unlockedAchievements[0];
         const def = ACHIEVEMENTS_DEF.find(a => a.key === key);
         if (def) setAchievementPopup(def);
+
+        // Toast for each unlocked achievement
+        for (const aKey of data.unlockedAchievements) {
+          const aDef = ACHIEVEMENTS_DEF.find(a => a.key === aKey);
+          if (aDef) {
+            toast.success(`${aDef.icon} Achievement Unlocked: ${aDef.title}`, {
+              description: `+${aDef.xp} XP — ${aDef.hint}`,
+              duration: 5000,
+            });
+          }
+        }
       }
 
       return {

@@ -42,6 +42,7 @@ const ACHIEVEMENTS_DEF = [
   { key: "level_7",            xp: 500, category: "level",       title: "🏆 Atur Pintar Pro!",  icon: "🏆", hint: "Capai Level 7" },
   { key: "first_budget",       xp: 25,  category: "special",     title: "💰 Budgeter Pertama!", icon: "💰", hint: "Buat budget pertama" },
   { key: "first_nana_chat",    xp: 15,  category: "special",     title: "🤖 Sapa Nana!",        icon: "🤖", hint: "Chat pertama dengan Nana" },
+  { key: "budget_stay",        xp: 100, category: "special",     title: "✅ Hemat Sebulan!",    icon: "✅", hint: "Tetap dalam budget sebulan penuh" },
   { key: "persona_revealed",   xp: 30,  category: "special",     title: "🔮 Persona Terungkap!",icon: "🔮", hint: "Persona keuangan terungkap" },
   { key: "mood_7_days",        xp: 70,  category: "special",     title: "😊 7 Hari Mood Check!", icon: "😊", hint: "7 hari mood check-in berturut" },
 ];
@@ -205,10 +206,30 @@ Deno.serve(async (req) => {
       await tryUnlock("goal_completed", (goals || []).some(g => g.status === "completed"));
     }
 
-    // Budget achievement
+    // Budget achievements
     if (trigger === "budget_created" || trigger === "daily_check") {
       const budgets = await base44.entities.Budget.filter({ created_by: userEmail }).catch(() => []);
       await tryUnlock("first_budget", (budgets || []).length >= 1);
+
+      // budget_stay: all budgets for last month were not exceeded
+      if (trigger === "daily_check") {
+        const lastMonth = (() => {
+          const d = new Date();
+          d.setMonth(d.getMonth() - 1);
+          return d.toISOString().slice(0, 7);
+        })();
+        const lastMonthBudgets = (budgets || []).filter(b => b.month === lastMonth);
+        if (lastMonthBudgets.length > 0) {
+          const allTx = await base44.entities.Transaction.filter({ created_by: userEmail }, "-date", 500).catch(() => []);
+          const lastMonthTx = (allTx || []).filter(tx => (tx.date || "").startsWith(lastMonth));
+          const allUnder = lastMonthBudgets.every(b => {
+            const spent = lastMonthTx.filter(tx => tx.category === b.category && tx.type === "expense")
+              .reduce((s, tx) => s + (tx.amount || 0), 0);
+            return spent <= (b.amount || 0);
+          });
+          await tryUnlock("budget_stay", allUnder);
+        }
+      }
     }
 
     // Nana achievement
