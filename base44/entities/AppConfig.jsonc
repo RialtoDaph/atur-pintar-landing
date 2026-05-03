@@ -56,6 +56,10 @@
       "description": "Yearly premium price in IDR",
       "type": "number"
     },
+    "admin_alert_email": {
+      "type": "string",
+      "description": "Email admin untuk menerima notifikasi otomatis saat ada akses data sensitif"
+    },
     "description": {
       "type": "string",
       "maxLength": 1000,

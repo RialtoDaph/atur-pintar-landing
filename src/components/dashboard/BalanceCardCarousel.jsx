@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 
@@ -7,11 +7,21 @@ function compactRupiah(value) {
   return Math.abs(value).toLocaleString('id-ID');
 }
 
+const HIDDEN = "••••••";
+
 export default function BalanceCardCarousel({ income, expense, savings, accounts, loading }) {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [hidden, setHidden] = useState(() => localStorage.getItem("balance_hidden") === "1");
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
+
+  function toggleHidden(e) {
+    e.stopPropagation();
+    const next = !hidden;
+    setHidden(next);
+    localStorage.setItem("balance_hidden", next ? "1" : "0");
+  }
 
   function handleTouchStart(e) {
     touchStartX.current = e.touches[0].clientX;
@@ -48,15 +58,14 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
           <p className="text-white/50 text-[10px] font-semibold uppercase tracking-widest mb-1">Bulan Ini · {monthName}</p>
           <div className="flex items-end justify-between mb-4">
             <div>
-              
               <p className={`text-3xl font-black tracking-tight ${selisih >= 0 ? "text-white" : "text-red-400"}`}>
-                Rp {compactRupiah(selisih)}
+                {hidden ? <span className="tracking-[0.2em]">{HIDDEN}</span> : `Rp ${compactRupiah(selisih)}`}
               </p>
             </div>
             {income > 0 &&
         <div className="text-right">
                 <p className="text-white/50 text-[10px] mb-0.5">Saving rate</p>
-                <p className={`text-lg font-bold ${savingRate >= 0 ? "text-[#99ff80]" : "text-red-400"}`}>{savingRate}%</p>
+                <p className={`text-lg font-bold ${savingRate >= 0 ? "text-[#99ff80]" : "text-red-400"}`}>{hidden ? "—" : `${savingRate}%`}</p>
               </div>
         }
           </div>
@@ -67,7 +76,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
               </div>
               <div>
                 <p className="text-white/50 text-[9px] uppercase tracking-wider">Masuk</p>
-                <p className="text-white text-xs font-bold">Rp {compactRupiah(income)}</p>
+                <p className="text-white text-xs font-bold">{hidden ? HIDDEN : `Rp ${compactRupiah(income)}`}</p>
               </div>
             </div>
             <div className="flex-1 flex items-center gap-2 bg-white/8 rounded-xl px-3 py-2">
@@ -76,7 +85,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
               </div>
               <div>
                 <p className="text-white/50 text-[9px] uppercase tracking-wider">Keluar</p>
-                <p className="text-white text-xs font-bold">Rp {compactRupiah(expense)}</p>
+                <p className="text-white text-xs font-bold">{hidden ? HIDDEN : `Rp ${compactRupiah(expense)}`}</p>
               </div>
             </div>
           </div>
@@ -92,7 +101,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
             <div>
               <p className="text-white/60 text-xs mb-0.5">Total Saldo</p>
               <p className={`text-3xl font-black tracking-tight ${totalBalance >= 0 ? "text-white" : "text-red-400"}`}>
-                Rp {compactRupiah(totalBalance)}
+                {hidden ? <span className="tracking-[0.2em]">{HIDDEN}</span> : `Rp ${compactRupiah(totalBalance)}`}
               </p>
             </div>
             <div className="text-right">
@@ -110,7 +119,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
           }
                 <div>
                   <p className="text-white/60 text-[9px]">{a.name}</p>
-                  <p className="text-white text-[10px] font-bold">Rp {compactRupiah(a.balance || 0)}</p>
+                  <p className="text-white text-[10px] font-bold">{hidden ? HIDDEN : `Rp ${compactRupiah(a.balance || 0)}`}</p>
                 </div>
               </div>
         )}
@@ -131,6 +140,15 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
 
   return (
     <div data-tour="balance-card" className="relative">
+      {/* Eye toggle button */}
+      <button
+        onClick={toggleHidden}
+        className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white/60 hover:bg-white/20 hover:text-white transition-all tap-highlight-fix"
+        title={hidden ? "Tampilkan saldo" : "Sembunyikan saldo"}
+      >
+        {hidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+      </button>
+
       {/* Card */}
       <div
         className="rounded-2xl p-4 relative overflow-hidden cursor-grab active:cursor-grabbing select-none"

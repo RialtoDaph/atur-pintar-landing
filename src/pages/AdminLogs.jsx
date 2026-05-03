@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { ScrollText, RefreshCw, Search, LogIn, Activity, AlertCircle, Filter, ShieldAlert } from "lucide-react";
+import { ScrollText, RefreshCw, Search, LogIn, Activity, AlertCircle, Filter, ShieldAlert, Calendar, X } from "lucide-react";
 
 const LOG_TYPE_CONFIG = {
   login: { label: "Login", icon: LogIn, color: "blue" },
@@ -23,6 +23,9 @@ export default function AdminLogs() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [filterSeverity, setFilterSeverity] = useState("all");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
+  const [filterUser, setFilterUser] = useState("");
   const [page, setPage] = useState(1);
   const PER_PAGE = 30;
   const [clearing, setClearing] = useState(false);
@@ -80,8 +83,14 @@ export default function AdminLogs() {
       l.details?.toLowerCase().includes(search.toLowerCase());
     const matchType = filterType === "all" || l.log_type === filterType;
     const matchSev = filterSeverity === "all" || l.severity === filterSeverity;
-    return matchSearch && matchType && matchSev;
+    const matchUser = !filterUser || l.user_email?.toLowerCase().includes(filterUser.toLowerCase()) || l.target_email?.toLowerCase().includes(filterUser.toLowerCase());
+    const logDate = l.created_date ? l.created_date.split("T")[0] : "";
+    const matchDateFrom = !filterDateFrom || logDate >= filterDateFrom;
+    const matchDateTo = !filterDateTo || logDate <= filterDateTo;
+    return matchSearch && matchType && matchSev && matchUser && matchDateFrom && matchDateTo;
   });
+
+  const hasActiveFilters = filterUser || filterDateFrom || filterDateTo;
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -158,12 +167,13 @@ export default function AdminLogs() {
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <div className="bg-white rounded-2xl p-4 shadow-sm mb-4 space-y-3">
+          {/* Row 1: Search + Type + Severity */}
           <div className="flex gap-3 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-[#8FA4C8]" />
+            <Filter className="w-4 h-4 text-[#8FA4C8] flex-shrink-0" />
             <div className="relative flex-1 min-w-[180px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" />
-              <input type="text" placeholder="Cari user, action, detail..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
+              <input type="text" placeholder="Cari action, detail..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
             </div>
             <select value={filterType} onChange={e => { setFilterType(e.target.value); setPage(1); }}
@@ -182,6 +192,36 @@ export default function AdminLogs() {
               <option value="error">Error</option>
             </select>
           </div>
+          {/* Row 2: User filter + Date range */}
+          <div className="flex gap-3 flex-wrap items-center">
+            <Calendar className="w-4 h-4 text-[#8FA4C8] flex-shrink-0" />
+            <div className="relative min-w-[180px] flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" />
+              <input type="text" placeholder="Filter email pengguna..." value={filterUser} onChange={e => { setFilterUser(e.target.value); setPage(1); }}
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="date" value={filterDateFrom} onChange={e => { setFilterDateFrom(e.target.value); setPage(1); }}
+                className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+              <span className="text-[#8FA4C8] text-sm">–</span>
+              <input type="date" value={filterDateTo} onChange={e => { setFilterDateTo(e.target.value); setPage(1); }}
+                className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+            </div>
+            {hasActiveFilters && (
+              <button onClick={() => { setFilterUser(""); setFilterDateFrom(""); setFilterDateTo(""); setPage(1); }}
+                className="flex items-center gap-1 px-3 py-2 rounded-xl border border-red-200 text-red-500 text-sm hover:bg-red-50 transition-colors">
+                <X className="w-3.5 h-3.5" /> Reset
+              </button>
+            )}
+          </div>
+          {hasActiveFilters && (
+            <p className="text-xs text-[#8FA4C8]">
+              Menampilkan {filtered.length} dari {logs.length} log
+              {filterUser && <span> · User: <span className="text-[#FF6A00] font-medium">{filterUser}</span></span>}
+              {filterDateFrom && <span> · Dari: <span className="text-[#FF6A00] font-medium">{filterDateFrom}</span></span>}
+              {filterDateTo && <span> · Sampai: <span className="text-[#FF6A00] font-medium">{filterDateTo}</span></span>}
+            </p>
+          )}
         </div>
 
         {/* Table */}

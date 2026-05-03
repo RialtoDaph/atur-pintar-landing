@@ -34,6 +34,7 @@ export default function AdminSettings() {
     feature_nana_ai: true,
     feature_gamification: true,
     settings_unlocked: false,
+    admin_alert_email: "",
   });
   const [deletingSimData, setDeletingSimData] = useState(false);
 
@@ -68,6 +69,7 @@ export default function AdminSettings() {
           feature_nana_ai: config.feature_nana_ai !== false,
           feature_gamification: config.feature_gamification !== false,
           settings_unlocked: config.settings_unlocked === true,
+          admin_alert_email: config.admin_alert_email || "",
         });
       }
     } catch (e) {
@@ -93,6 +95,7 @@ export default function AdminSettings() {
         feature_nana_ai: Boolean(settings.feature_nana_ai),
         feature_gamification: Boolean(settings.feature_gamification),
         settings_unlocked: Boolean(settings.settings_unlocked),
+        admin_alert_email: settings.admin_alert_email || "",
       };
 
       if (appConfig) {
@@ -215,6 +218,14 @@ export default function AdminSettings() {
               <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Nama Aplikasi</label>
               <input type="text" value={settings.app_name} onChange={e => setSettings({ ...settings, app_name: e.target.value })}
                 className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Email Notifikasi Keamanan</label>
+              <input type="email" value={settings.admin_alert_email} onChange={e => setSettings({ ...settings, admin_alert_email: e.target.value })}
+                placeholder="email@domain.com"
+                className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+              <p className="text-xs text-[#8FA4C8] mt-1">Email ini akan menerima notifikasi otomatis setiap kali ada akses ke data sensitif pengguna.</p>
             </div>
 
             <div className="flex items-start gap-3 p-3 bg-red-50 border border-red-200 rounded-xl">
