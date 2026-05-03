@@ -100,7 +100,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
               <Wallet className="w-5 h-5 text-white/40 ml-auto" />
             </div>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             {accounts.slice(0, 3).map((a) =>
         <div key={a.id} className="flex items-center gap-1.5 bg-white/8 rounded-lg px-2.5 py-1.5">
                 {a.logo_url ?
