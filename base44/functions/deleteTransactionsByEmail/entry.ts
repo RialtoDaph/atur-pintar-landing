@@ -83,7 +83,9 @@ Deno.serve(async (req) => {
         severity: 'warning',
         details: `Deleted financial data for ${email}: ${JSON.stringify(results)}`,
       });
-    } catch (_) {}
+    } catch (e) {
+      console.error('deleteTransactionsByEmail audit log failed:', e);
+    }
 
     return Response.json({
       message: `Deleted all financial data for ${email}`,
