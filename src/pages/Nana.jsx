@@ -8,6 +8,7 @@ import { awardXP } from "@/hooks/useGamification";
 import { updateStreak, completeMission } from "@/hooks/useGamificationActions";
 import MoodPicker from "@/components/nana/MoodPicker";
 import NanaQuickActions from "@/components/nana/NanaQuickActions";
+import NanaErrorBoundary from "@/components/nana/NanaErrorBoundary";
 import { format } from "date-fns";
 
 const FREE_MSG_LIMIT = 30;
@@ -15,7 +16,7 @@ const NANA_AVATAR = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/
 
 const MOOD_EMOJIS = { stress: "😤", mager: "😴", happy: "🥳", panik: "😰", normal: "😊" };
 
-export default function Nana() {
+function NanaInner() {
   const { t } = useAppSettings();
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
@@ -28,6 +29,7 @@ export default function Nana() {
   const [moodLoading, setMoodLoading] = useState(false);
   const [todayXP, setTodayXP] = useState(0);
   const bottomRef = useRef(null);
+  const lastSendAt = useRef(0);
   const today = format(new Date(), "yyyy-MM-dd");
 
   useEffect(() => {
@@ -217,6 +219,10 @@ export default function Nana() {
   async function sendMessage(textOverride) {
     const text = typeof textOverride === "string" ? textOverride : input;
     if (!text.trim() || sending || isLimitReached) return;
+    // Rate limit: min 3 detik antar pesan (anti-spam, hemat AI credits)
+    const nowMs = Date.now();
+    if (nowMs - lastSendAt.current < 3000) return;
+    lastSendAt.current = nowMs;
 
     let conv = activeConv;
     setSending(true);
@@ -442,5 +448,13 @@ export default function Nana() {
         </>
       )}
     </div>
+  );
+}
+
+export default function Nana() {
+  return (
+    <NanaErrorBoundary>
+      <NanaInner />
+    </NanaErrorBoundary>
   );
 }

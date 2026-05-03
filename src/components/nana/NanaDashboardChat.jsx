@@ -4,10 +4,11 @@ import { Send, Plus, AlertTriangle, TrendingDown, Target, Sparkles } from "lucid
 import ReactMarkdown from "react-markdown";
 import { useFinancialContext } from "./useFinancialContext";
 import InteractivePrompt from "./InteractivePrompt";
+import NanaErrorBoundary from "./NanaErrorBoundary";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
-export default function NanaDashboardChat() {
+function NanaDashboardChatInner() {
   const [activeConv, setActiveConv] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -16,6 +17,7 @@ export default function NanaDashboardChat() {
   const [preferences, setPreferences] = useState(null);
   const [user, setUser] = useState(null);
   const bottomRef = useRef(null);
+  const lastSendAt = useRef(0);
   const { context, formatContextForMessage } = useFinancialContext(true);
 
   const FREE_NANA_LIMIT = 30;
@@ -67,6 +69,10 @@ export default function NanaDashboardChat() {
 
   async function sendMessage() {
     if (!input.trim() || sending || nanaLimitReached) return;
+    // Rate limit: min 3 detik antar pesan (anti-spam)
+    const nowMs = Date.now();
+    if (nowMs - lastSendAt.current < 3000) return;
+    lastSendAt.current = nowMs;
     let conv = activeConv;
     if (!conv) {
       conv = await base44.agents.createConversation({
@@ -294,5 +300,13 @@ export default function NanaDashboardChat() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function NanaDashboardChat() {
+  return (
+    <NanaErrorBoundary>
+      <NanaDashboardChatInner />
+    </NanaErrorBoundary>
   );
 }

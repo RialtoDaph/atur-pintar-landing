@@ -22,7 +22,8 @@ export function useFinancialContext(enabled = true) {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       })();
 
-      const [transactions, goals, budgets, debts, investments, reminders, riskProfile, preferences] =
+      const today = now.toISOString().slice(0, 10);
+      const [transactions, goals, budgets, debts, investments, reminders, riskProfile, preferences, todayMood] =
         await Promise.all([
           base44.entities.Transaction.list("-date", 500),
           base44.entities.SavingsGoal.list(),
@@ -32,6 +33,7 @@ export function useFinancialContext(enabled = true) {
           base44.entities.Reminder.list(),
           base44.entities.UserRiskProfile.filter({ created_by: user.email }),
           base44.entities.NanaPreferences.filter({ created_by: user.email }),
+          base44.entities.MoodCheckIn.filter({ created_by: user.email, check_in_date: today }).catch(() => []),
         ]);
 
       // Build last 3 months keys
@@ -190,6 +192,7 @@ export function useFinancialContext(enabled = true) {
         user: { name: user.full_name },
         preferences: preferences?.[0] || null,
         riskProfile: riskProfile?.[0] || null,
+        todayMood: todayMood?.[0] || null,
         thisMonth: {
           income: thisIncome,
           expense: thisExpense,
@@ -261,10 +264,19 @@ export function useFinancialContext(enabled = true) {
     if (!snapshot) return "";
     const fmt = (n) => `Rp ${Math.round(n || 0).toLocaleString("id-ID")}`;
 
+    const moodGuide = {
+      stress: "User lagi STRESS — jawab dengan empati, hindari lecture/kritik. Validasi perasaan dulu, baru kasih saran ringan.",
+      panik: "User lagi PANIK — tenangkan dulu, kasih langkah konkret 1-2-3 yang gampang dieksekusi. Jangan overload info.",
+      mager: "User lagi MAGER — kasih saran simpel & quick wins. Hindari jawaban panjang.",
+      happy: "User lagi HAPPY 🎉 — boleh main bareng moodnya, kasih celebration kalau ada progress.",
+      normal: "User mood normal — gaya jawab seperti biasa.",
+    };
+
     const lines = [
       `\n\n---\n[FINANCIAL_CONTEXT - ${snapshot.date}]`,
       `Pengguna: ${snapshot.user.name}`,
-      snapshot.preferences ? `Preferensi: Nada=${snapshot.preferences.tone}, Saran=${(snapshot.preferences.preferred_advice_types || []).join("/")}` : "",
+      snapshot.todayMood ? `MOOD HARI INI: ${snapshot.todayMood.mood_emoji || ""} ${snapshot.todayMood.mood_label || snapshot.todayMood.mood} — ${moodGuide[snapshot.todayMood.mood] || ""}` : "",
+      snapshot.preferences ? `Preferensi: Nada=${snapshot.preferences.tone === "formal" ? "FORMAL (profesional, tanpa emoji)" : "SANTAI (casual, boleh emoji)"}, Frekuensi=${snapshot.preferences.frequency_preference || "weekly"}, Fokus saran=${(snapshot.preferences.preferred_advice_types || []).join(", ") || "umum"}` : "",
       snapshot.riskProfile ? `Profil Risiko: ${snapshot.riskProfile.risk_tolerance}, Pengalaman=${snapshot.riskProfile.investment_experience}, Tujuan=${snapshot.riskProfile.financial_goal}` : "",
       `\nKEUANGAN BULAN INI:`,
       `- Pemasukan: ${fmt(snapshot.thisMonth.income)}`,
