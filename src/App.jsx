@@ -120,6 +120,7 @@ const AuthenticatedApp = () => {
       <Route path="/Alerts" element={<Navigate to="/Dashboard" replace />} />
       <Route path="/Accounts" element={<LayoutWrapper currentPageName="Accounts"><Accounts /></LayoutWrapper>} />
       <Route path="/SharedFinance" element={<LayoutWrapper currentPageName="SharedFinance"><SharedFinance /></LayoutWrapper>} />
+      <Route path="/Menu" element={<Navigate to="/Accounts" replace />} />
       <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminProtect><AdminDashboard /></AdminProtect></LayoutWrapper>} />
       <Route path="/AdminUsers" element={<LayoutWrapper currentPageName="AdminUsers"><AdminProtect><AdminUsers /></AdminProtect></LayoutWrapper>} />
       <Route path="/AdminLogs" element={<LayoutWrapper currentPageName="AdminLogs"><AdminProtect><AdminLogs /></AdminProtect></LayoutWrapper>} />

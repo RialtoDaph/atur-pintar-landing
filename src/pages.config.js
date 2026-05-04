@@ -63,7 +63,6 @@ import Goals from './pages/Goals';
 import InvestmentDetail from './pages/InvestmentDetail';
 import Investments from './pages/Investments';
 import LandingPage from './pages/LandingPage';
-import Menu from './pages/Menu';
 import Nana from './pages/Nana.jsx';
 import Reminders from './pages/Reminders';
 import Settings from './pages/Settings';
@@ -89,7 +88,6 @@ export const PAGES = {
     "InvestmentDetail": InvestmentDetail,
     "Investments": Investments,
     "LandingPage": LandingPage,
-    "Menu": Menu,
     "Nana": Nana,
     "Reminders": Reminders,
     "Settings": Settings,

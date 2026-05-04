@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { Wallet, Plus, Pencil, Trash2, Star, X, Check, AlertTriangle, RefreshCw, Search } from "lucide-react";
+import { Wallet, Plus, Pencil, Trash2, Star, X, Check, AlertTriangle, RefreshCw, Search, Users, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import AccountLogo from "@/components/ui/AccountLogo";
 import AddAccountBottomSheet from "@/components/profile/AddAccountBottomSheet";
@@ -423,6 +425,21 @@ export default function Accounts() {
             </div>
           </>
         )}
+
+        {/* Shared Finance Link */}
+        <Link
+          to={createPageUrl("SharedFinance")}
+          className="bg-white rounded-2xl shadow-sm p-4 flex items-center gap-3 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-all duration-150 border border-[#F0F2F5]"
+        >
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0 shadow-sm" style={{ backgroundColor: "#9C27B020", boxShadow: "0 2px 8px #9C27B025" }}>
+            👨‍👩‍👧
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[#1A1A1A]">Keuangan Bersama</p>
+            <p className="text-xs text-[#8FA4C8] mt-0.5">Kelola dompet bersama pasangan atau keluarga</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-[#CBD5E0] flex-shrink-0" />
+        </Link>
 
         {/* Info Card */}
         <div className="bg-white rounded-2xl shadow-sm p-4 border border-[#F97316]/20">

@@ -33,8 +33,7 @@ function LayoutInner({ children, currentPageName }) {
     Dashboard: "Dashboard",
     Nana: "Nana",
     Analytics: "Analytics",
-    Transactions: "Transactions",
-    Menu: "Menu"
+    Transactions: "Transactions"
   });
 
   useEffect(() => {
@@ -132,7 +131,7 @@ function LayoutInner({ children, currentPageName }) {
   { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" }];
 
 
-  const mobileMorePages = ["Goals", "Debts", "Notifications", "Accounts", "SharedFinance", "Tips", "Settings", "Menu", "Budget"];
+  const mobileMorePages = ["Goals", "Debts", "Notifications", "Accounts", "SharedFinance", "Tips", "Settings", "Budget"];
 
   const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
@@ -148,7 +147,7 @@ function LayoutInner({ children, currentPageName }) {
   }, []);
 
   // Detect if we're on a nested page (detail view)
-  const mainPages = ["Dashboard", "Transactions", "Goals", "Budget", "Debts", "Investments", "Analytics", "Tips", "Reminders", "Alerts", "Settings", "Menu"];
+  const mainPages = ["Dashboard", "Transactions", "Goals", "Budget", "Debts", "Investments", "Analytics", "Tips", "Reminders", "Alerts", "Settings", "Accounts", "SharedFinance"];
   const isNestedPage = !mainPages.includes(currentPageName);
 
   // Handle browser back button (hardware back on Android, swipe-back on iOS)
@@ -165,12 +164,9 @@ function LayoutInner({ children, currentPageName }) {
   // Update tab history when navigating to a main page
   useEffect(() => {
     const mobileMainNavNames = ["Dashboard", "Nana", "Analytics", "Transactions"];
-    const mobileMorePagesNames = ["Goals", "Debts", "Reminders", "Alerts", "Tips", "Settings", "Menu", "Investments", "Budget", "Accounts", "SharedFinance", "Notifications"];
 
     if (mobileMainNavNames.includes(currentPageName)) {
       tabHistory.current[currentPageName] = currentPageName;
-    } else if (mobileMorePagesNames.includes(currentPageName)) {
-      tabHistory.current["Menu"] = currentPageName;
     }
   }, [currentPageName]);
 
