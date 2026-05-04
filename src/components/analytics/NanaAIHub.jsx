@@ -47,35 +47,49 @@ export default function NanaAIHub({
     setLoading(true);
     setNarrative(null);
 
-    const trendText = trendData.map(d =>
-      `- ${d.name}: Pemasukan Rp ${Math.round(d.Income || 0).toLocaleString("id-ID")}, Pengeluaran Rp ${Math.round(d.Expenses || 0).toLocaleString("id-ID")}`
+    const categoryText = pieData.slice(0, 5).map(d =>
+      `- ${d.name}: Rp ${Math.round(d.value).toLocaleString("id-ID")} (${((d.value / totalExpenses) * 100).toFixed(0)}%)`
     ).join("\n");
 
-    const categoryText = pieData.slice(0, 6).map(d =>
-      `- ${d.emoji || ""} ${d.name}: Rp ${Math.round(d.value).toLocaleString("id-ID")} (${((d.value / totalExpenses) * 100).toFixed(0)}%)`
-    ).join("\n");
+    // Perbandingan periode sebelumnya
+    let comparisonText = "";
+    if (hasPrevData) {
+      const incomeDiff = prevIncome ? (((totalIncome - prevIncome) / prevIncome) * 100).toFixed(0) : null;
+      const expenseDiff = prevExpenses ? (((totalExpenses - prevExpenses) / prevExpenses) * 100).toFixed(0) : null;
+      const savingsDiff = prevSavingsRate != null ? (parseFloat(savingsRate) - prevSavingsRate).toFixed(0) : null;
+      comparisonText = `\nVS PERIODE SEBELUMNYA:
+- Pemasukan: ${incomeDiff > 0 ? "+" : ""}${incomeDiff}%
+- Pengeluaran: ${expenseDiff > 0 ? "+" : ""}${expenseDiff}%
+- Tingkat tabungan: ${savingsDiff > 0 ? "+" : ""}${savingsDiff} poin`;
+    }
 
-    const prompt = `Kamu adalah Nana, asisten keuangan pribadi yang ramah dan cerdas. Analisis data keuangan berikut dan buat rangkuman performa keuangan dalam narasi teks yang mudah dipahami, personal, dan motivatif.
+    // Konteks budget bulan ini
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const totalBudget = budgets.filter(b => b.month === currentMonth).reduce((s, b) => s + (b.amount || 0), 0);
+    let budgetText = "";
+    if (totalBudget > 0) {
+      const usage = ((totalExpenses / totalBudget) * 100).toFixed(0);
+      budgetText = `\nBUDGET: Rp ${Math.round(totalBudget).toLocaleString("id-ID")} (terpakai ${usage}%)`;
+    }
+
+    const prompt = `Kamu adalah Nana, asisten keuangan yang hangat dan to-the-point. Buat rangkuman SINGKAT dan mudah dibaca.
 
 PERIODE: ${periodLabel}
+Pemasukan: Rp ${Math.round(totalIncome).toLocaleString("id-ID")}
+Pengeluaran: Rp ${Math.round(totalExpenses).toLocaleString("id-ID")}
+Tingkat tabungan: ${savingsRate}%${budgetText}${comparisonText}
 
-TREN BULANAN:
-${trendText}
-
-BREAKDOWN PENGELUARAN TERBESAR:
+TOP KATEGORI PENGELUARAN:
 ${categoryText}
 
-TOTAL PEMASUKAN: Rp ${Math.round(totalIncome).toLocaleString("id-ID")}
-TOTAL PENGELUARAN: Rp ${Math.round(totalExpenses).toLocaleString("id-ID")}
-TINGKAT TABUNGAN: ${savingsRate}%
+Format output (markdown):
+1. **1 kalimat** ringkasan performa (gunakan "kamu", sebut 1 angka kunci)
+2. **✅ Yang oke:** 1 kalimat singkat
+3. **⚠️ Perhatian:** 1 kalimat singkat
+4. **💡 Saran:** 1 langkah konkret minggu ini
 
-Tulis narasi dalam format:
-1. Satu paragraf ringkasan performa keseluruhan (2-3 kalimat, personal, gunakan kata "kamu")
-2. **Hal terbaik bulan ini** — apa yang berhasil
-3. **Yang perlu diperhatikan** — area yang butuh perbaikan  
-4. **Satu saran praktis** — langkah konkret yang bisa dilakukan minggu ini
-
-Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angka spesifik dari data.`;
+Aturan: maks 80 kata total. Bahasa santai, tidak menggurui. Sebut angka/kategori spesifik.`;
 
     try {
       const res = await base44.integrations.Core.InvokeLLM({ prompt });
