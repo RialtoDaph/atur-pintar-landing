@@ -381,13 +381,29 @@ function LayoutInner({ children, currentPageName }) {
       <button
         onClick={() => setShowAddTransaction(true)}
         data-tour="add-transaction-btn"
-        className="fixed left-1/2 -translate-x-1/2 z-[70] bg-[#FF6B35] flex items-center justify-center rounded-full active:scale-95 transition-all duration-150 tap-highlight-fix sm:hidden"
+        className="group fixed left-1/2 -translate-x-1/2 z-[70] flex items-center justify-center rounded-full active:scale-90 transition-all duration-200 tap-highlight-fix sm:hidden"
         style={{
-          width: 56, height: 56,
+          width: 60, height: 60,
           bottom: 'calc(36px + env(safe-area-inset-bottom, 0px))',
-          boxShadow: '0 4px 16px rgba(255,107,53,0.5)'
         }}>
-          <Plus className="w-6 h-6 text-white" />
+          {/* Outer pulsing glow ring */}
+          <span className="absolute inset-0 rounded-full bg-[#FF6B35] opacity-40 animate-ping" style={{ animationDuration: '2.5s' }} />
+          {/* Gradient ring border */}
+          <span className="absolute inset-0 rounded-full" style={{
+            background: 'conic-gradient(from 0deg, #FF6B35, #FFB347, #FF6B35, #F97316, #FF6B35)',
+            padding: 2,
+            WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
+          }} />
+          {/* Main button with gradient */}
+          <span className="relative w-full h-full rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-105 group-active:rotate-90"
+            style={{
+              background: 'linear-gradient(135deg, #FF8A50 0%, #FF6B35 50%, #F97316 100%)',
+              boxShadow: '0 6px 20px rgba(255,107,53,0.6), inset 0 -2px 6px rgba(0,0,0,0.15), inset 0 2px 6px rgba(255,255,255,0.25)'
+            }}>
+            <Plus className="w-7 h-7 text-white drop-shadow-md" strokeWidth={3} />
+          </span>
         </button>
       }
 
