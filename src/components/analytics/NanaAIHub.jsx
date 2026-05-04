@@ -147,33 +147,6 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
             </div>
           </div>
 
-          {/* Metrics strip — selalu visible kecuali di tab Forecast */}
-          {tab !== "forecast" && (
-            <div className="grid grid-cols-4 gap-1.5 px-5 sm:px-6 mb-3">
-              <div className="bg-[#F2F4F7] rounded-lg p-2 text-center">
-                <p className="text-[9px] text-[#8FA4C8] mb-0.5">Pemasukan</p>
-                <p className="text-xs font-bold text-[#00C9A7]">{formatShortNumber(totalIncome)}</p>
-                {hasPrevData && <DeltaTag current={totalIncome} prev={prevIncome} higherIsBetter={true} />}
-              </div>
-              <div className="bg-[#F2F4F7] rounded-lg p-2 text-center">
-                <p className="text-[9px] text-[#8FA4C8] mb-0.5">Pengeluaran</p>
-                <p className="text-xs font-bold text-[#FF6B6B]">{formatShortNumber(totalExpenses)}</p>
-                {hasPrevData && <DeltaTag current={totalExpenses} prev={prevExpenses} higherIsBetter={false} />}
-              </div>
-              <div className={`rounded-lg p-2 text-center ${netFlow >= 0 ? "bg-[#00C9A7]/10" : "bg-[#FF6B6B]/10"}`}>
-                <p className="text-[9px] text-[#8FA4C8] mb-0.5">Net</p>
-                <p className={`text-xs font-bold ${netFlow >= 0 ? "text-[#00C9A7]" : "text-[#FF6B6B]"}`}>
-                  {netFlow >= 0 ? "+" : ""}{formatShortNumber(netFlow)}
-                </p>
-              </div>
-              <div className="bg-[#4F7CFF]/10 rounded-lg p-2 text-center">
-                <p className="text-[9px] text-[#8FA4C8] mb-0.5">Tabungan</p>
-                <p className="text-xs font-bold text-[#4F7CFF]">{savingsRate}%</p>
-                {hasPrevData && prevSavingsRate != null && <DeltaTag current={parseFloat(savingsRate)} prev={prevSavingsRate} higherIsBetter={true} />}
-              </div>
-            </div>
-          )}
-
           {/* Tab content */}
           <div className="px-5 sm:px-6 pb-5 sm:pb-6">
             {tab === "narasi" && (
