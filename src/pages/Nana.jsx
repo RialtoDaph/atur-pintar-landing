@@ -9,6 +9,7 @@ import MoodPicker from "@/components/nana/MoodPicker";
 import NanaQuickActions from "@/components/nana/NanaQuickActions";
 import NanaErrorBoundary from "@/components/nana/NanaErrorBoundary";
 import NanaHistoryPanel from "@/components/nana/NanaHistoryPanel";
+import NanaPreferencesModal from "@/components/nana/NanaPreferencesModal";
 import InteractivePrompt from "@/components/nana/InteractivePrompt";
 import { parseNanaMessage } from "@/components/nana/parseNanaMessage";
 import { format } from "date-fns";
@@ -31,6 +32,7 @@ function NanaInner() {
   const [moodLoading, setMoodLoading] = useState(false);
   const [todayXP, setTodayXP] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const bottomRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -523,9 +525,9 @@ function NanaInner() {
                   <div className="flex items-center justify-between px-2 pb-2">
                     <div className="flex items-center gap-0.5">
                       <button
-                        onClick={() => navigate("/Settings")}
+                        onClick={() => setShowPreferences(true)}
                         className="w-9 h-9 rounded-full flex items-center justify-center text-[#8FA4C8] hover:text-[#1A1A1A] dark:hover:text-white hover:bg-[#F2F4F7] dark:hover:bg-[#2D2D2D] transition-colors tap-highlight-fix"
-                        title="Pengaturan"
+                        title="Preferensi Nana"
                       >
                         <Settings className="w-4 h-4" />
                       </button>
@@ -583,6 +585,10 @@ function NanaInner() {
           onSelect={handleSelectConversation}
           onClose={() => setShowHistory(false)}
         />
+      )}
+
+      {showPreferences && (
+        <NanaPreferencesModal onClose={() => setShowPreferences(false)} />
       )}
     </div>
   );

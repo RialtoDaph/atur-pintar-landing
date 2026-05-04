@@ -12,7 +12,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import NanaPreferencesSettings from "@/components/settings/NanaPreferencesSettings";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
 import { toast } from "sonner";
 
@@ -132,29 +131,6 @@ function calcCompletion(user) {
 }
 
 // ─── Sub-screens ─────────────────────────────────────────────────────────────
-function NanaScreen({ onBack }) {
-  return (
-    <div className="min-h-screen bg-[#F2F4F7] pb-10">
-      <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
-        <div className="max-w-2xl mx-auto flex items-center gap-3">
-          <button onClick={onBack} className="p-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
-            <ChevronRight className="w-4 h-4 rotate-180" />
-          </button>
-          <div>
-            <p className="text-[#8FA4C8] text-xs">Pengaturan</p>
-            <h1 className="text-white text-lg font-bold">Preferensi Nana AI</h1>
-          </div>
-        </div>
-      </div>
-      <div className="max-w-2xl mx-auto px-5 mt-5">
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <NanaPreferencesSettings />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function RiskScreen({ onBack }) {
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
@@ -182,7 +158,7 @@ function RiskScreen({ onBack }) {
 export default function ProfileSettings() {
   const [user, setUser] = useState(null);
   const { t } = useAppSettings();
-  const [screen, setScreen] = useState("main"); // main | nana | risk
+  const [screen, setScreen] = useState("main"); // main | risk
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
@@ -278,7 +254,6 @@ export default function ProfileSettings() {
     setPresetOpen(null);
   }
 
-  if (screen === "nana") return <NanaScreen onBack={() => setScreen("main")} />;
   if (screen === "risk") return <RiskScreen onBack={() => setScreen("main")} />;
 
   const completion = calcCompletion(user);
@@ -434,18 +409,6 @@ export default function ProfileSettings() {
             </div>
             <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
           </Link>
-
-          <button onClick={() => setScreen("nana")}
-            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-b border-[#F2F4F7]">
-            <div className="w-8 h-8 rounded-xl bg-[#F3E5F5] flex items-center justify-center flex-shrink-0 text-lg">
-              🤖
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-[#1A1A1A]">Preferensi Nana AI</p>
-              <p className="text-xs text-[#8FA4C8]">Sesuaikan cara Nana berbicara</p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
-          </button>
 
           <button onClick={() => setScreen("risk")}
             className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-b border-[#F2F4F7]">
