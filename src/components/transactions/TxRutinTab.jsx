@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 
 const INTERVAL_LABELS = {
   daily: "Harian",
@@ -27,8 +29,11 @@ function DebtCard({ debt, idx }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: idx * 0.06 }}
-      className="bg-white rounded-2xl p-4 shadow-sm"
     >
+      <Link
+        to="/Debts"
+        className="block bg-white rounded-2xl p-4 shadow-sm active:scale-[0.98] transition-transform tap-highlight-fix"
+      >
       <div className="flex items-start gap-3">
         <div className="w-10 h-10 rounded-full bg-[#FFF3E0] flex items-center justify-center text-xl flex-shrink-0">
           {debt.icon || "💳"}
@@ -37,10 +42,11 @@ function DebtCard({ debt, idx }) {
           <p className="text-sm font-bold text-[#1A1A1A]">{debt.name}</p>
           {dueDateLabel && <p className="text-[11px] text-[#8FA4C8] mt-0.5">Jatuh tempo: {dueDateLabel}</p>}
         </div>
-        <div className="text-right flex-shrink-0">
+        <div className="text-right flex-shrink-0 flex items-center gap-1">
           <p className="text-sm font-bold text-[#F97316]">
             Rp{(debt.monthly_payment || 0).toLocaleString("id-ID")}<span className="text-[10px] font-normal text-[#8FA4C8]">/bln</span>
           </p>
+          <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
         </div>
       </div>
 
@@ -58,6 +64,7 @@ function DebtCard({ debt, idx }) {
           </div>
         </div>
       )}
+      </Link>
     </motion.div>
   );
 }
@@ -114,12 +121,18 @@ export default function TxRutinTab({ debts, recurringTxs, categories }) {
 
       {/* Section B: Cicilan & Utang */}
       <div>
-        <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-wider px-1 mb-2">Cicilan & Utang</p>
+        <div className="flex items-center justify-between px-1 mb-2">
+          <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-wider">Cicilan & Utang</p>
+          <Link to="/Debts" className="text-[11px] font-semibold text-[#F97316] flex items-center gap-0.5 tap-highlight-fix">
+            Lihat Semua <ChevronRight className="w-3 h-3" />
+          </Link>
+        </div>
         {debts.length === 0 ? (
-          <div className="bg-white rounded-2xl p-5 text-center shadow-sm">
+          <Link to="/Debts" className="block bg-white rounded-2xl p-5 text-center shadow-sm active:scale-[0.98] transition-transform tap-highlight-fix">
             <p className="text-2xl mb-2">✅</p>
             <p className="text-sm text-[#8FA4C8]">Tidak ada cicilan aktif</p>
-          </div>
+            <p className="text-[11px] text-[#F97316] font-semibold mt-1">+ Tambah Hutang</p>
+          </Link>
         ) : (
           <div className="space-y-2">
             {debts.map((debt, idx) => <DebtCard key={debt.id} debt={debt} idx={idx} />)}
