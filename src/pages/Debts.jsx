@@ -130,6 +130,9 @@ export default function DebtsPage() {
   }
 
   async function handleDelete(id) {
+    // Unlink any linked transactions before deleting (avoid orphan debt_id refs)
+    const linked = await base44.entities.Transaction.filter({ debt_id: id });
+    await Promise.all((linked || []).map(tx => base44.entities.Transaction.update(tx.id, { debt_id: null })));
     await base44.entities.Debt.delete(id);
     setDeleteConfirm(null);
     loadData();

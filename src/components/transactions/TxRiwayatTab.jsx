@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import TxDetailSheet from "./TxDetailSheet";
 import EditTransactionModal from "./EditTransactionModal";
+import { syncAccountBalance } from "@/components/utils/accountSync";
 
 const SUB_TABS = [
   { key: "all", label: "Semua" },
@@ -149,11 +150,29 @@ export default function TxRiwayatTab({ transactions, categories, accounts, forma
 
   async function handleDelete(tx) {
     await base44.entities.Transaction.update(tx.id, { is_deleted: true });
+    // Reverse account balance impact (only for non-recurring templates)
+    if (tx.account_id && !tx.is_recurring) {
+      await syncAccountBalance(tx.account_id, tx.amount, tx.type, -1);
+    }
     onRefresh();
   }
 
   async function handleSaveEdit(id, data) {
+    // Find the original transaction to compute balance delta
+    const oldTx = transactions.find(t => t.id === id);
     await base44.entities.Transaction.update(id, data);
+    // Reverse old impact, apply new impact (skip recurring templates)
+    if (oldTx && !oldTx.is_recurring) {
+      if (oldTx.account_id) {
+        await syncAccountBalance(oldTx.account_id, oldTx.amount, oldTx.type, -1);
+      }
+      const newAccountId = data.account_id || oldTx.account_id;
+      const newAmount = data.amount ?? oldTx.amount;
+      const newType = data.type || oldTx.type;
+      if (newAccountId) {
+        await syncAccountBalance(newAccountId, newAmount, newType, 1);
+      }
+    }
     setEditingTx(null);
     onRefresh();
   }
