@@ -79,33 +79,10 @@ Deno.serve(async (req) => {
     const newXP = (profile.total_points || 0) + xpReward;
     const newLevel = getLevelFromXP(newXP);
 
-    // Streak update — single correct logic
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yestStr = yesterday.toISOString().slice(0, 10);
-    const last = profile.last_activity_date;
-
-    let newStreak = profile.daily_streak || 0;
-    if (last === today) {
-      // Already counted today — only update XP, don't touch streak
-      await base44.asServiceRole.entities.GamificationProfile.update(profile.id, {
-        total_points: newXP,
-        level: newLevel.level,
-      });
-      return Response.json({ success: true, mission_key: missionKey, xp_awarded: xpReward });
-    } else if (last === yestStr) {
-      newStreak = (profile.daily_streak || 0) + 1;
-    } else {
-      // Null or more than 1 day ago — reset to 1
-      newStreak = 1;
-    }
-
+    // Only award XP — streak/last_activity_date is owned by processGamification to avoid double-counting
     await base44.asServiceRole.entities.GamificationProfile.update(profile.id, {
       total_points: newXP,
       level: newLevel.level,
-      daily_streak: newStreak,
-      longest_streak: Math.max(profile.longest_streak || 0, newStreak),
-      last_activity_date: today,
     });
 
     return Response.json({ success: true, mission_key: missionKey, xp_awarded: xpReward });

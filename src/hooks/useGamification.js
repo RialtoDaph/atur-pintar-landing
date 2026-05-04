@@ -50,69 +50,6 @@ export function getLevelFromXP(xp) {
   return LEVELS[0];
 }
 
-// Shared helper: award XP and handle streak/level-up via backend
-// Returns { updatedProfile, didLevelUp, newLevelData }
-export async function awardXP(userEmail, xpAmount, options = {}) {
-  // Delegate to processGamification backend for correct streak/achievement logic
-  const trigger = options.trigger || (options.checkTransactions ? "transaction_created" : "daily_check");
-  try {
-    const res = await base44.functions.invoke("processGamification", { trigger, metadata: options });
-    const data = res?.data || {};
-    // Return a shape compatible with callers
-    const existing = await base44.entities.GamificationProfile.filter({ created_by: userEmail });
-    const p = existing?.[0] || {};
-    const newLevel = getLevelFromXP(p.total_points || 0);
-    const oldLevel = getLevelFromXP((p.total_points || 0) - (data.xpAdded || xpAmount));
-    return {
-      updatedProfile: p,
-      didLevelUp: data.leveledUp || false,
-      newLevelData: newLevel,
-      oldLevelData: oldLevel,
-      newStreak: data.streak || p.daily_streak || 0,
-      bonusXP: 0,
-    };
-  } catch (e) {
-    // Fallback: update profile directly if backend fails
-    const existing = await base44.entities.GamificationProfile.filter({ created_by: userEmail });
-    let p;
-    if (!existing || existing.length === 0) {
-      p = await base44.entities.GamificationProfile.create({
-        daily_streak: 0, longest_streak: 0, total_points: 0, level: 1,
-        achievements: [], last_activity_date: null,
-      });
-    } else {
-      const sorted = [...existing].sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
-      p = sorted[0];
-    }
-    const today = format(new Date(), "yyyy-MM-dd");
-    const yesterday = format(subDays(new Date(), 1), "yyyy-MM-dd");
-    const last = p.last_activity_date;
-    let newStreak = p.daily_streak || 0;
-    if (last === today) { /* same day */ }
-    else if (last === yesterday) { newStreak += 1; }
-    else { newStreak = 1; }
-    const newXP = (p.total_points || 0) + xpAmount;
-    const oldLevel = getLevelFromXP(p.total_points || 0);
-    const newLevel = getLevelFromXP(newXP);
-    const updates = {
-      total_points: newXP,
-      level: newLevel.level,
-      daily_streak: newStreak,
-      longest_streak: Math.max(p.longest_streak || 0, newStreak),
-      last_activity_date: today,
-    };
-    await base44.entities.GamificationProfile.update(p.id, updates);
-    return {
-      updatedProfile: { ...p, ...updates, id: p.id },
-      didLevelUp: newLevel.level > oldLevel.level,
-      newLevelData: newLevel,
-      oldLevelData: oldLevel,
-      newStreak,
-      bonusXP: 0,
-    };
-  }
-}
-
 export function useGamification(user) {
   const [streakPopup, setStreakPopup]           = useState(null);
   const [achievementPopup, setAchievementPopup] = useState(null);

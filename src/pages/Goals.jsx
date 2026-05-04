@@ -11,7 +11,6 @@ import GoalCard from "@/components/goals/GoalCard";
 import GoalsNanaPanel from "@/components/goals/GoalsNanaPanel";
 import { toast } from "sonner";
 import PullToRefresh from "@/components/utils/PullToRefresh";
-import { updateChallengesAfterTransaction } from "@/lib/updateChallengesAfterTransaction";
 
 const FREE_GOALS_LIMIT = 2;
 
@@ -107,8 +106,8 @@ export default function Goals() {
            status: newAmount >= goal.target_amount ? "completed" : "active",
          }),
        ]);
-       // Update challenge progress
-       if (user?.email) await updateChallengesAfterTransaction(user.email);
+       // Trigger gamification (streaks/achievements/challenges) via dashboard listener
+       window.dispatchEvent(new CustomEvent("transaction-added"));
      } catch (error) {
       setGoals(previousGoals);
       setTransactions(prev => prev.filter(t => t.id !== optimisticTx.id));
@@ -125,8 +124,8 @@ export default function Goals() {
           type: "savings", amount, account_id: accountId,
           goal_id: goal.id, date, note: note || `Tabungan ${goal.name}`,
         });
-        // Update challenge progress
-        if (user?.email) await updateChallengesAfterTransaction(user.email);
+        // Trigger gamification via dashboard listener (processGamification handles challenges + achievements)
+        window.dispatchEvent(new CustomEvent("transaction-added"));
         return tx;
       })(),
       base44.entities.SavingsGoal.update(goal.id, { current_amount: newAmount, status: newStatus }),

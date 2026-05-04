@@ -6,14 +6,15 @@
 import { base44 } from "@/api/base44Client";
 import { format, subDays } from "date-fns";
 
+// Synced with processGamification backend & useGamification hook
 const LEVEL_THRESHOLDS = [
   { level: 1, min: 0 },
-  { level: 2, min: 200 },
-  { level: 3, min: 500 },
-  { level: 4, min: 1000 },
-  { level: 5, min: 2000 },
-  { level: 6, min: 3500 },
-  { level: 7, min: 5000 },
+  { level: 2, min: 500 },
+  { level: 3, min: 1500 },
+  { level: 4, min: 3000 },
+  { level: 5, min: 6000 },
+  { level: 6, min: 10000 },
+  { level: 7, min: 20000 },
 ];
 
 function getLevelFromXP(xp) {

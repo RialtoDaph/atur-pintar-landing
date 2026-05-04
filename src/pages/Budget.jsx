@@ -9,8 +9,7 @@ import BudgetNanaPanel from "@/components/budget/BudgetNanaPanel";
 import BudgetAlertChecker from "@/components/budget/BudgetAlertChecker";
 import BudgetChartSection from "@/components/budget/BudgetChartSection";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import { awardXP } from "@/hooks/useGamification";
-import { updateStreak, completeMission } from "@/hooks/useGamificationActions";
+import { completeMission } from "@/hooks/useGamificationActions";
 import { useToast } from "@/components/ui/use-toast";
 
 const DEFAULT_CATEGORIES = [
@@ -116,9 +115,8 @@ export default function BudgetPage() {
       setGoals(g);
       setGlobalCategories(globalCats || []);
 
-      // Gamification: streak + cek_budget mission (only current month view)
+      // Mark "cek_budget" daily mission as complete (current month view only)
       if (monthOffset === 0 && user?.email) {
-        updateStreak(user.email).catch(() => {});
         completeMission(user.email, "cek_budget").catch(() => {});
       }
 
@@ -208,8 +206,8 @@ export default function BudgetPage() {
         await base44.entities.Budget.update(existing.id, { amount: data.amount });
       } else {
         await base44.entities.Budget.create({ ...data, month: currentMonth });
-        // +20 XP for new budget
-        if (user?.email) awardXP(user.email, 20).catch(() => {});
+        // Trigger gamification (handles XP, streak, achievements via backend)
+        if (user?.email) base44.functions.invoke("processGamification", { trigger: "budget_created" }).catch(() => {});
       }
     }
     setShowAdd(false);

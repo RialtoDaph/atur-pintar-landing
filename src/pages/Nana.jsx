@@ -4,8 +4,7 @@ import { Send, Plus, Crown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
-import { awardXP } from "@/hooks/useGamification";
-import { updateStreak, completeMission } from "@/hooks/useGamificationActions";
+import { completeMission } from "@/hooks/useGamificationActions";
 import MoodPicker from "@/components/nana/MoodPicker";
 import NanaQuickActions from "@/components/nana/NanaQuickActions";
 import NanaErrorBoundary from "@/components/nana/NanaErrorBoundary";
@@ -35,11 +34,11 @@ function NanaInner() {
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
-      // +5 XP for opening Nana, max 1x per day
+      // Daily check via backend (handles streak/achievement on Nana page open, max 1x per day)
       const lastNanaOpen = localStorage.getItem("nana_xp_date");
       if (lastNanaOpen !== today) {
         localStorage.setItem("nana_xp_date", today);
-        awardXP(u.email, 5).catch(() => {});
+        base44.functions.invoke("processGamification", { trigger: "daily_check" }).catch(() => {});
       }
       // Load today XP from localStorage
       const xpKey = `nana_total_xp_${today}`;
@@ -132,8 +131,8 @@ function NanaInner() {
       });
       setTodayMood(saved);
 
-      // +5 XP for mood check-in
-      awardXP(user.email, 5).catch(() => {});
+      // +5 XP for mood check-in (backend handles streak/achievement)
+      base44.functions.invoke("processGamification", { trigger: "mood_checkin" }).catch(() => {});
       addTodayXP(5);
 
       // Create conversation if needed and send mood trigger
@@ -244,9 +243,8 @@ function NanaInner() {
 
       await base44.agents.addMessage(conv, { role: "user", content: text });
 
-    // Gamification: streak + tanya_nana mission
+    // Gamification: tanya_nana mission (streak handled by processGamification trigger below)
     if (user?.email) {
-      updateStreak(user.email).catch(() => {});
       completeMission(user.email, "tanya_nana").catch(() => {});
     }
 
@@ -256,14 +254,14 @@ function NanaInner() {
       setUser(u => ({ ...u, nana_message_count: newCount, nana_message_month: currentMonth }));
     }
 
-    // +10 XP for sending message, max 3x per day
+    // XP for sending message via backend (max 3x per day; backend awards 2 XP per nana_message_sent)
     if (user?.email) {
       const key = `nana_msg_xp_${today}`;
       const count = parseInt(localStorage.getItem(key) || "0", 10);
       if (count < 3) {
         localStorage.setItem(key, String(count + 1));
-        awardXP(user.email, 10).catch(() => {});
-        addTodayXP(10);
+        base44.functions.invoke("processGamification", { trigger: "nana_message_sent" }).catch(() => {});
+        addTodayXP(2);
       }
     }
     } catch (error) {

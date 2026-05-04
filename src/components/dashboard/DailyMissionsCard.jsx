@@ -98,21 +98,10 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
     const prevLevelInfo = getLevelInfo(profile.total_points || 0);
     const newLevelInfo = getLevelInfo(newXP);
 
-    // Streak logic
-    const lastDate = profile.last_activity_date;
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yestStr = yesterday.toISOString().split("T")[0];
-
-    let newStreak = profile.daily_streak || 0;
-    if (lastDate === yestStr) newStreak += 1;
-    else if (lastDate !== today) newStreak = 1;
-
+    // Only award XP — streak is owned by processGamification (called when transactions/goals are created)
     await base44.entities.GamificationProfile.update(profile.id, {
       total_points: newXP,
       level: newLevelInfo.current.level,
-      daily_streak: newStreak,
-      last_activity_date: today,
     });
 
     if (onProfileUpdate) {
@@ -120,8 +109,6 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
         ...profile,
         total_points: newXP,
         level: newLevelInfo.current.level,
-        daily_streak: newStreak,
-        last_activity_date: today,
       });
     }
 
