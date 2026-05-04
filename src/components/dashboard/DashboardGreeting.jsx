@@ -56,7 +56,7 @@ export default function DashboardGreeting({ user, gamificationProfile }) {
           className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-base hover:bg-white/20 transition-all tap-highlight-fix"
           title={isDark ? "Mode Terang" : "Mode Gelap"}
         >
-          {isDark ? "☀️" : "🌙"}
+          {isDark ? "🌙" : "☀️"}
         </button>
       </div>
     </div>
