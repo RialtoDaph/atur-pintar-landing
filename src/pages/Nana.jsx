@@ -79,8 +79,11 @@ function NanaInner() {
   async function handleSelectConversation(conv) {
     setShowHistory(false);
     if (conv.id === activeConv?.id) return;
+    // 🔒 SECURITY: only allow opening conversations owned by current user
+    if (user?.email && conv.created_by && conv.created_by !== user.email) return;
     try {
       const full = await base44.agents.getConversation(conv.id);
+      if (user?.email && full?.created_by && full.created_by !== user.email) return;
       setActiveConv(full);
       setMessages(full.messages || []);
     } catch {}
@@ -100,8 +103,11 @@ function NanaInner() {
       setTodayXP(parseInt(localStorage.getItem(xpKey) || "0", 10));
       // Check mood
       checkTodayMood(u.email);
-    }).catch(() => {});
-    loadConversations();
+      // Load conversations only AFTER user is loaded so we can filter by created_by
+      loadConversations(u.email);
+    }).catch(() => {
+      setLoading(false);
+    });
   }, []);
 
   // Always auto-scroll to the latest message when the chat opens, when messages
@@ -232,15 +238,21 @@ function NanaInner() {
     }
   }
 
-  async function loadConversations() {
+  async function loadConversations(userEmail) {
     setLoading(true);
     try {
-      const convs = await base44.agents.listConversations({ agent_name: "nana" });
-      setConversations(convs || []);
-      if (convs && convs.length > 0) {
+      const all = await base44.agents.listConversations({ agent_name: "nana" });
+      // 🔒 SECURITY: filter to ONLY this user's conversations.
+      // listConversations may return convs from other users; we must guard client-side.
+      const convs = (all || []).filter(c => c.created_by === userEmail);
+      setConversations(convs);
+      if (convs.length > 0) {
         const conv = await base44.agents.getConversation(convs[0].id);
-        setActiveConv(conv);
-        setMessages(conv.messages || []);
+        // Double-check ownership before showing messages
+        if (conv?.created_by === userEmail) {
+          setActiveConv(conv);
+          setMessages(conv.messages || []);
+        }
       }
     } catch {}
     setLoading(false);

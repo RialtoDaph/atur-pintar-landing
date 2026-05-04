@@ -27,21 +27,25 @@ function NanaDashboardChatInner() {
   const nanaLimitReached = !isPremium && chatCount >= FREE_NANA_LIMIT;
 
   useEffect(() => {
-    base44.auth.me().then((u) => {
+    setLoading(true);
+    base44.auth.me().then(async (u) => {
       setUser(u);
       base44.entities.NanaPreferences.filter({ created_by: u.email }).then((prefs) => {
         if (prefs?.length > 0) setPreferences(prefs[0]);
       }).catch(() => {});
-    }).catch(() => {});
 
-    // Load latest conversation
-    setLoading(true);
-    base44.agents.listConversations({ agent_name: "nana" }).then(async (convs) => {
-      if (convs && convs.length > 0) {
-        const conv = await base44.agents.getConversation(convs[0].id);
-        setActiveConv(conv);
-        setMessages(conv.messages || []);
-      }
+      // Load latest conversation — filter by created_by to prevent cross-user leak
+      try {
+        const all = await base44.agents.listConversations({ agent_name: "nana" });
+        const convs = (all || []).filter((c) => c.created_by === u.email);
+        if (convs.length > 0) {
+          const conv = await base44.agents.getConversation(convs[0].id);
+          if (conv?.created_by === u.email) {
+            setActiveConv(conv);
+            setMessages(conv.messages || []);
+          }
+        }
+      } catch {}
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
