@@ -17,6 +17,7 @@ import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChar
 import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
 import MonthEndForecastCard from "@/components/analytics/MonthEndForecastCard";
 import SpendingHeatmapCard from "@/components/analytics/SpendingHeatmapCard";
+import SpendingPatternCard from "@/components/analytics/SpendingPatternCard";
 import { Flame } from "lucide-react";
 
 const DEFAULT_ANALYTICS_CARDS = [
@@ -444,6 +445,19 @@ export default function Analytics() {
               <DailySpendingCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} periodSubtitle={periodSubtitle} />
             </PremiumBlurCard>
           )
+        )}
+
+        {/* Pola Hari & Jam */}
+        {isPremium ? (
+          <SpendingPatternCard
+            transactions={transactions}
+            filterPeriod={filterPeriod}
+            customDateRange={customDateRange}
+          />
+        ) : (
+          <PremiumBlurCard title="📊 Pola Hari & Jam">
+            <SpendingPatternCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} />
+          </PremiumBlurCard>
         )}
 
         {/* Category Breakdown (Expense + Income tabs) */}
