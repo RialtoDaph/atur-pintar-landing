@@ -383,12 +383,18 @@ function LayoutInner({ children, currentPageName }) {
         data-tour="add-transaction-btn"
         className="fixed left-1/2 -translate-x-1/2 z-[70] flex items-center justify-center rounded-full active:scale-95 transition-all duration-150 tap-highlight-fix sm:hidden"
         style={{
-          width: 56, height: 56,
-          bottom: 'calc(36px + env(safe-area-inset-bottom, 0px))',
-          background: 'linear-gradient(145deg, #FF8A50 0%, #F97316 100%)',
-          boxShadow: '0 6px 18px rgba(255,107,53,0.45), inset 0 1px 2px rgba(255,255,255,0.3)'
+          width: 64, height: 64,
+          bottom: 'calc(32px + env(safe-area-inset-bottom, 0px))',
+          background: '#0A0A0A',
+          padding: 4,
+          boxShadow: '0 6px 18px rgba(0,0,0,0.35)'
         }}>
-          <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
+          <span className="w-full h-full rounded-full flex items-center justify-center" style={{
+            background: 'linear-gradient(145deg, #FF8A50 0%, #F97316 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3)'
+          }}>
+            <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
+          </span>
         </button>
       }
 
