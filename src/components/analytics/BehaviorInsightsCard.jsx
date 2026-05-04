@@ -135,42 +135,47 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
   const renderMerchantTab = () => {
     if (data.topMerchants.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <span className="text-3xl mb-2">🏪</span>
-          <p className="text-xs text-[#8FA4C8]">Belum ada merchant terdeteksi.</p>
-          <p className="text-[10px] text-[#8FA4C8] mt-1">Tambahkan catatan/nama tempat saat catat transaksi.</p>
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <span className="text-4xl mb-3">🏪</span>
+          <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Belum ada merchant</p>
+          <p className="text-xs text-[#8FA4C8] max-w-[240px]">Tambahkan catatan atau nama tempat saat mencatat transaksi.</p>
         </div>
       );
     }
     const max = data.topMerchants[0].total;
     return (
-      <div className="space-y-2.5">
-        {data.topMerchants.map((m, idx) => {
-          const pct = (m.total / max) * 100;
-          const pctOfTotal = data.totalExpense > 0 ? (m.total / data.totalExpense) * 100 : 0;
-          return (
-            <div key={idx} className="space-y-1">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${idx === 0 ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
-                    {idx + 1}
-                  </span>
-                  <p className="text-sm font-semibold text-[#1A1A1A] truncate">{m.name}</p>
+      <div>
+        <p className="text-[10px] font-semibold text-[#8FA4C8] uppercase tracking-widest mb-3">
+          Top 5 Tempat Belanja
+        </p>
+        <div className="space-y-3.5">
+          {data.topMerchants.map((m, idx) => {
+            const pct = (m.total / max) * 100;
+            const pctOfTotal = data.totalExpense > 0 ? (m.total / data.totalExpense) * 100 : 0;
+            return (
+              <div key={idx} className="space-y-1.5">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 ${idx === 0 ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
+                      {idx + 1}
+                    </span>
+                    <p className="text-sm font-semibold text-[#1A1A1A] truncate">{m.name}</p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-bold text-[#1A1A1A] leading-tight">{formatShortNumber(m.total)}</p>
+                    <p className="text-[10px] text-[#8FA4C8] mt-0.5">{m.count}x · {pctOfTotal.toFixed(0)}%</p>
+                  </div>
                 </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-xs font-bold text-[#1A1A1A]">{formatShortNumber(m.total)}</p>
-                  <p className="text-[9px] text-[#8FA4C8]">{m.count}x · {pctOfTotal.toFixed(0)}%</p>
+                <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden ml-8">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${pct}%`, background: idx === 0 ? "#FF6A00" : "#FFC785" }}
+                  />
                 </div>
               </div>
-              <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{ width: `${pct}%`, background: idx === 0 ? "#FF6A00" : "#FFC785" }}
-                />
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -178,54 +183,59 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
   const renderLifestyleTab = () => {
     if (data.totalLifestyle === 0) {
       return (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <span className="text-3xl mb-2">⚖️</span>
-          <p className="text-xs text-[#8FA4C8]">Belum ada data untuk dianalisis.</p>
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <span className="text-4xl mb-3">⚖️</span>
+          <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Belum ada data</p>
+          <p className="text-xs text-[#8FA4C8]">Catat transaksimu untuk melihat distribusi.</p>
         </div>
       );
     }
     return (
       <div>
+        <p className="text-[10px] font-semibold text-[#8FA4C8] uppercase tracking-widest mb-3">
+          Distribusi 50/30/20
+        </p>
+
         {/* Stacked bar */}
-        <div className="h-3 rounded-full overflow-hidden flex bg-[#F2F4F7] mb-3">
+        <div className="h-2.5 rounded-full overflow-hidden flex bg-[#F2F4F7] mb-4">
           <div style={{ width: `${data.needsPct}%`, background: "#4F7CFF" }} />
           <div style={{ width: `${data.wantsPct}%`, background: "#FF6B6B" }} />
           <div style={{ width: `${data.savingsPct}%`, background: "#00C9A7" }} />
         </div>
 
         {/* Breakdown */}
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <div className="text-center p-2 rounded-xl bg-[#4F7CFF]/10">
-            <p className="text-[9px] text-[#8FA4C8] mb-0.5">🏠 Needs</p>
-            <p className="text-base font-bold text-[#4F7CFF]">{data.needsPct.toFixed(0)}%</p>
-            <p className="text-[9px] text-[#8FA4C8] mt-0.5">target 50%</p>
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="text-center p-3 rounded-xl bg-[#4F7CFF]/8">
+            <p className="text-[10px] font-medium text-[#8FA4C8] mb-1">🏠 Needs</p>
+            <p className="text-lg font-bold text-[#4F7CFF] leading-none">{data.needsPct.toFixed(0)}%</p>
+            <p className="text-[9px] text-[#8FA4C8] mt-1.5">target 50%</p>
           </div>
-          <div className="text-center p-2 rounded-xl bg-[#FF6B6B]/10">
-            <p className="text-[9px] text-[#8FA4C8] mb-0.5">🎉 Wants</p>
-            <p className="text-base font-bold text-[#FF6B6B]">{data.wantsPct.toFixed(0)}%</p>
-            <p className="text-[9px] text-[#8FA4C8] mt-0.5">target 30%</p>
+          <div className="text-center p-3 rounded-xl bg-[#FF6B6B]/8">
+            <p className="text-[10px] font-medium text-[#8FA4C8] mb-1">🎉 Wants</p>
+            <p className="text-lg font-bold text-[#FF6B6B] leading-none">{data.wantsPct.toFixed(0)}%</p>
+            <p className="text-[9px] text-[#8FA4C8] mt-1.5">target 30%</p>
           </div>
-          <div className="text-center p-2 rounded-xl bg-[#00C9A7]/10">
-            <p className="text-[9px] text-[#8FA4C8] mb-0.5">💰 Savings</p>
-            <p className="text-base font-bold text-[#00C9A7]">{data.savingsPct.toFixed(0)}%</p>
-            <p className="text-[9px] text-[#8FA4C8] mt-0.5">target 20%</p>
+          <div className="text-center p-3 rounded-xl bg-[#00C9A7]/8">
+            <p className="text-[10px] font-medium text-[#8FA4C8] mb-1">💰 Savings</p>
+            <p className="text-lg font-bold text-[#00C9A7] leading-none">{data.savingsPct.toFixed(0)}%</p>
+            <p className="text-[9px] text-[#8FA4C8] mt-1.5">target 20%</p>
           </div>
         </div>
 
         {/* Verdict */}
         {data.verdict && (
-          <div className={`p-3 rounded-xl ${
+          <div className={`p-3.5 rounded-xl ${
             data.verdict.type === "good" ? "bg-[#00C9A7]/10" :
             data.verdict.type === "warning" ? "bg-[#FFF5F5]" : "bg-[#F2F4F7]"
           }`}>
-            <p className="text-xs font-semibold text-[#1A1A1A]">
+            <p className="text-xs font-semibold text-[#1A1A1A] leading-relaxed">
               {data.verdict.emoji} {data.verdict.text}
             </p>
           </div>
         )}
 
-        <p className="text-[10px] text-[#8FA4C8] mt-2 leading-relaxed">
-          <strong>50/30/20 Rule:</strong> 50% kebutuhan, 30% keinginan, 20% tabungan.
+        <p className="text-[10px] text-[#8FA4C8] mt-3 leading-relaxed">
+          <span className="font-semibold text-[#1A1A1A]">50/30/20 Rule</span> — 50% kebutuhan, 30% keinginan, 20% tabungan.
         </p>
       </div>
     );
@@ -241,28 +251,32 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
 
     return (
       <>
+        <p className="text-[10px] font-semibold text-[#8FA4C8] uppercase tracking-widest mb-3">
+          Hari Tanpa Pengeluaran
+        </p>
+
         {/* Big number */}
-        <div className="text-center py-4 bg-gradient-to-br from-[#00C9A7]/10 to-[#4F7CFF]/10 rounded-2xl mb-3">
-          <p className="text-5xl font-bold text-[#00C9A7] mb-1">{data.noSpendDays}</p>
-          <p className="text-xs text-[#8FA4C8]">hari tanpa pengeluaran</p>
-          <p className="text-[10px] text-[#8FA4C8] mt-1">dari {data.totalDaysInPeriod} hari · {data.noSpendPct.toFixed(0)}%</p>
+        <div className="text-center py-6 bg-gradient-to-br from-[#00C9A7]/10 to-[#4F7CFF]/10 rounded-2xl mb-3">
+          <p className="text-5xl font-bold text-[#00C9A7] leading-none mb-2 tracking-tight">{data.noSpendDays}</p>
+          <p className="text-xs font-semibold text-[#1A1A1A]">hari hemat</p>
+          <p className="text-[10px] text-[#8FA4C8] mt-1.5">dari {data.totalDaysInPeriod} hari · {data.noSpendPct.toFixed(0)}%</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-2 mb-3">
-          <div className="p-2.5 rounded-xl bg-[#F2F4F7] text-center">
-            <p className="text-[10px] text-[#8FA4C8] mb-0.5">🔥 Streak Terlama</p>
-            <p className="text-sm font-bold text-[#1A1A1A]">{data.longestStreak} hari</p>
+          <div className="p-3 rounded-xl bg-[#F2F4F7]">
+            <p className="text-[10px] font-medium text-[#8FA4C8] mb-1">🔥 Streak Terlama</p>
+            <p className="text-base font-bold text-[#1A1A1A] leading-none">{data.longestStreak} <span className="text-xs font-medium text-[#8FA4C8]">hari</span></p>
           </div>
-          <div className="p-2.5 rounded-xl bg-[#F2F4F7] text-center">
-            <p className="text-[10px] text-[#8FA4C8] mb-0.5">💸 Hari Belanja</p>
-            <p className="text-sm font-bold text-[#1A1A1A]">{data.spendingDays} hari</p>
+          <div className="p-3 rounded-xl bg-[#F2F4F7]">
+            <p className="text-[10px] font-medium text-[#8FA4C8] mb-1">💸 Hari Belanja</p>
+            <p className="text-base font-bold text-[#1A1A1A] leading-none">{data.spendingDays} <span className="text-xs font-medium text-[#8FA4C8]">hari</span></p>
           </div>
         </div>
 
         {/* Verdict */}
-        <div className="p-3 rounded-xl bg-[#FFF5F5]">
-          <p className="text-xs font-semibold text-[#1A1A1A]">{verdict.emoji} {verdict.text}</p>
+        <div className="p-3.5 rounded-xl bg-[#FFF5F5]">
+          <p className="text-xs font-semibold text-[#1A1A1A] leading-relaxed">{verdict.emoji} {verdict.text}</p>
         </div>
       </>
     );

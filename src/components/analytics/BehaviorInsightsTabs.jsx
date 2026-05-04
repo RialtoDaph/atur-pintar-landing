@@ -19,40 +19,53 @@ export default function BehaviorInsightsTabs({ transactions, filterPeriod, custo
     { id: "heatmap", label: "Heatmap", icon: Flame },
   ];
 
+  const activeTab = tabs.find((t) => t.id === tab);
+
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-2 p-5 sm:p-6 pb-3">
-        <span className="text-xl">🧠</span>
-        <div>
-          <h3 className="text-[#1A1A1A] font-bold text-base sm:text-lg leading-tight">Kebiasaanmu</h3>
-          <p className="text-[10px] sm:text-xs text-[#8FA4C8] mt-0.5">Pahami pola finansialmu</p>
+      <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#F2F4F7] flex items-center justify-center text-xl flex-shrink-0">
+            🧠
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[#0A0A0A] font-bold text-base sm:text-lg leading-tight tracking-tight">
+              Kebiasaanmu
+            </h3>
+            <p className="text-xs text-[#8FA4C8] mt-0.5 truncate">
+              {activeTab ? `Lihat ${activeTab.label.toLowerCase()}` : "Pahami pola finansialmu"}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Scrollable Tabs (mobile-first) */}
-      <div className="px-5 sm:px-6 pb-3">
-        <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1" style={{ scrollbarWidth: "none" }}>
+      {/* Underline Tabs */}
+      <div className="border-b border-[#F2F4F7]">
+        <div className="flex gap-1 overflow-x-auto px-3 sm:px-4" style={{ scrollbarWidth: "none" }}>
           {tabs.map(({ id, label, icon: Icon }) => {
             const active = tab === id;
             return (
               <button
                 key={id}
                 onClick={() => setTab(id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 tap-highlight-fix ${
-                  active ? "bg-[#FF6A00] text-white shadow-sm" : "bg-[#F2F4F7] text-[#8FA4C8]"
+                className={`relative flex items-center gap-1.5 px-3 py-3 text-xs font-semibold whitespace-nowrap flex-shrink-0 tap-highlight-fix transition-colors ${
+                  active ? "text-[#FF6A00]" : "text-[#8FA4C8] hover:text-[#1A1A1A]"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 {label}
+                {active && (
+                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-[#FF6A00] rounded-full" />
+                )}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Tab Content — render via prop-based embedded mode (no fragile selector hacks) */}
-      <div className="px-5 sm:px-6 pb-5 sm:pb-6">
+      {/* Tab Content */}
+      <div className="px-5 sm:px-6 py-5 sm:py-6">
         {(tab === "merchant" || tab === "lifestyle" || tab === "nospend") && (
           <BehaviorInsightsCard
             key={tab}
