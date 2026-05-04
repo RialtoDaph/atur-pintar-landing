@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Send, Plus, Crown, Settings, History, Mic, MicOff } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
 import { completeMission } from "@/hooks/useGamificationActions";
@@ -440,7 +441,12 @@ function NanaInner() {
                 const showSeparator = i === 0 || (prevDate && msgDate !== prevDate);
 
                 return (
-                  <div key={msg.id || `msg-${i}`}>
+                  <motion.div
+                    key={msg.id || `msg-${i}`}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                  >
                     {showSeparator && (
                       <div className="flex items-center gap-2 my-3">
                         <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-[#2D2D2D]" />
@@ -484,12 +490,20 @@ function NanaInner() {
                         )}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })
             )}
+            <AnimatePresence>
             {sending && (
-              <div className="flex justify-start gap-2">
+              <motion.div
+                key="typing-indicator"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 4 }}
+                transition={{ duration: 0.2 }}
+                className="flex justify-start gap-2"
+              >
                 <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
                   <img src={NANA_AVATAR} alt="Nana" className="w-full h-full object-cover" />
                 </div>
@@ -498,8 +512,9 @@ function NanaInner() {
                     <div key={i} className="w-1.5 h-1.5 bg-[#8FA4C8] rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
 
           {/* Input area */}
