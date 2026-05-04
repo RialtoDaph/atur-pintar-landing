@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Send, Plus, Crown } from "lucide-react";
+import { Send, Plus, Crown, Settings, History, Mic, MicOff } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { completeMission } from "@/hooks/useGamificationActions";
 import MoodPicker from "@/components/nana/MoodPicker";
 import NanaQuickActions from "@/components/nana/NanaQuickActions";
 import NanaErrorBoundary from "@/components/nana/NanaErrorBoundary";
+import NanaHistoryPanel from "@/components/nana/NanaHistoryPanel";
 import InteractivePrompt from "@/components/nana/InteractivePrompt";
 import { parseNanaMessage } from "@/components/nana/parseNanaMessage";
 import { format } from "date-fns";
@@ -29,11 +30,51 @@ function NanaInner() {
   const [todayMood, setTodayMood] = useState(null); // null = loading, false = no mood, object = has mood
   const [moodLoading, setMoodLoading] = useState(false);
   const [todayXP, setTodayXP] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const bottomRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const didInitialScroll = useRef(false);
   const lastSendAt = useRef(0);
+  const recognitionRef = useRef(null);
+  const navigate = useNavigate();
   const today = format(new Date(), "yyyy-MM-dd");
+
+  // Voice input via Web Speech API
+  function toggleVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      alert("Browser kamu belum mendukung voice input.");
+      return;
+    }
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = "id-ID";
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.onstart = () => setIsListening(true);
+    rec.onend = () => setIsListening(false);
+    rec.onerror = () => setIsListening(false);
+    rec.onresult = (e) => {
+      const transcript = Array.from(e.results).map((r) => r[0].transcript).join("");
+      setInput(transcript);
+    };
+    recognitionRef.current = rec;
+    rec.start();
+  }
+
+  async function handleSelectConversation(conv) {
+    setShowHistory(false);
+    if (conv.id === activeConv?.id) return;
+    try {
+      const full = await base44.agents.getConversation(conv.id);
+      setActiveConv(full);
+      setMessages(full.messages || []);
+    } catch {}
+  }
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -470,27 +511,78 @@ function NanaInner() {
                   <p className="text-[10px] text-[#8FA4C8] text-center mb-2">{msgCount}/{FREE_MSG_LIMIT} pesan bulan ini</p>
                 )}
                 <NanaQuickActions onSelect={sendMessage} disabled={sending} />
-                <div className="flex items-end gap-2 mt-2 bg-white dark:bg-[#1A1E25] rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] px-4 py-2.5 shadow-sm">
+                <div className="bg-white dark:bg-[#1A1E25] rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] shadow-sm overflow-hidden">
                   <textarea
-                    className="flex-1 text-sm text-[#1A1A1A] dark:text-white resize-none outline-none bg-transparent placeholder:text-[#C0C9D8] dark:placeholder:text-[#8FA4C8] max-h-24 leading-relaxed"
-                    rows={1}
+                    className="w-full text-sm text-[#1A1A1A] dark:text-white resize-none outline-none bg-transparent placeholder:text-[#C0C9D8] dark:placeholder:text-[#8FA4C8] px-4 pt-3 pb-2 leading-relaxed min-h-[52px] max-h-32"
+                    rows={2}
                     placeholder={t('nana_input_placeholder')}
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={handleKey}
                   />
-                  <button
-                    onClick={() => sendMessage()}
-                    disabled={!input.trim() || sending}
-                    className="w-8 h-8 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
-                  >
-                    <Send className="w-3.5 h-3.5 text-white" />
-                  </button>
+                  <div className="flex items-center justify-between px-2 pb-2">
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() => navigate("/Settings")}
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-[#8FA4C8] hover:text-[#1A1A1A] dark:hover:text-white hover:bg-[#F2F4F7] dark:hover:bg-[#2D2D2D] transition-colors tap-highlight-fix"
+                        title="Pengaturan"
+                      >
+                        <Settings className="w-4 h-4" />
+                      </button>
+                      <div className="w-px h-5 bg-[#E2E8F0] dark:bg-[#2D2D2D] mx-1" />
+                      <button
+                        onClick={newConversation}
+                        disabled={sending}
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-[#8FA4C8] hover:text-[#1A1A1A] dark:hover:text-white hover:bg-[#F2F4F7] dark:hover:bg-[#2D2D2D] transition-colors disabled:opacity-40 tap-highlight-fix"
+                        title="Obrolan baru"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setShowHistory(true)}
+                        className="h-9 px-2.5 rounded-full flex items-center gap-1.5 text-[#8FA4C8] hover:text-[#1A1A1A] dark:hover:text-white hover:bg-[#F2F4F7] dark:hover:bg-[#2D2D2D] transition-colors tap-highlight-fix"
+                        title="Riwayat"
+                      >
+                        <History className="w-4 h-4" />
+                        <span className="text-xs font-medium hidden xs:inline">Riwayat</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={toggleVoice}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors tap-highlight-fix ${
+                          isListening
+                            ? "bg-red-500 text-white animate-pulse"
+                            : "text-[#8FA4C8] hover:text-[#1A1A1A] dark:hover:text-white hover:bg-[#F2F4F7] dark:hover:bg-[#2D2D2D]"
+                        }`}
+                        title={isListening ? "Stop" : "Voice input"}
+                      >
+                        {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => sendMessage()}
+                        disabled={!input.trim() || sending}
+                        className="w-9 h-9 rounded-full bg-[#FF6A00] flex items-center justify-center disabled:opacity-40 hover:bg-[#e05e00] transition-colors tap-highlight-fix"
+                        title="Kirim"
+                      >
+                        <Send className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </>
             )}
           </div>
         </>
+      )}
+
+      {showHistory && (
+        <NanaHistoryPanel
+          conversations={conversations}
+          activeId={activeConv?.id}
+          onSelect={handleSelectConversation}
+          onClose={() => setShowHistory(false)}
+        />
       )}
     </div>
   );
