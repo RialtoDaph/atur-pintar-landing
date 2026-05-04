@@ -258,19 +258,31 @@ function NarasiTab({ narrative, loading, onGenerate }) {
 // ===== Sub-tab: Tren =====
 function TrendTab({ trendData, formatCurrency, formatShortNumber }) {
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <LineChart data={trendData} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
-        <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => formatShortNumber(v)} />
-        <Tooltip
-          formatter={(v) => [formatCurrency(v), undefined]}
-          contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
-        />
-        <Line type="monotone" dataKey="Income" stroke="#00C9A7" strokeWidth={2.5} dot={{ r: 4, fill: "#00C9A7" }} name="Pemasukan" />
-        <Line type="monotone" dataKey="Expenses" stroke="#FF6B6B" strokeWidth={2.5} dot={{ r: 4, fill: "#FF6B6B" }} name="Pengeluaran" />
-      </LineChart>
-    </ResponsiveContainer>
+    <>
+      <div className="flex items-center justify-center gap-4 mb-2">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#00C9A7]" />
+          <span className="text-[10px] font-semibold text-[#8FA4C8]">Pemasukan</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
+          <span className="text-[10px] font-semibold text-[#8FA4C8]">Pengeluaran</span>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={220}>
+        <LineChart data={trendData} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
+          <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => formatShortNumber(v)} />
+          <Tooltip
+            formatter={(v) => [formatCurrency(v), undefined]}
+            contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
+          />
+          <Line type="monotone" dataKey="Income" stroke="#00C9A7" strokeWidth={2.5} dot={{ r: 4, fill: "#00C9A7" }} name="Pemasukan" />
+          <Line type="monotone" dataKey="Expenses" stroke="#FF6B6B" strokeWidth={2.5} dot={{ r: 4, fill: "#FF6B6B" }} name="Pengeluaran" />
+        </LineChart>
+      </ResponsiveContainer>
+    </>
   );
 }
 
@@ -364,18 +376,30 @@ function BudgetTab({ budgets, transactions, formatCurrency, formatShortNumber })
   }
 
   return (
-    <ResponsiveContainer width="100%" height={220}>
-      <LineChart data={data} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
-        <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => formatShortNumber(v)} />
-        <Tooltip
-          formatter={(v) => [formatCurrency(v), undefined]}
-          contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
-        />
-        <Line type="monotone" dataKey="Budget" stroke="#4F7CFF" strokeWidth={2.5} dot={{ r: 4, fill: "#4F7CFF" }} name="Budget" />
-        <Line type="monotone" dataKey="Aktual" stroke="#FF6B6B" strokeWidth={2.5} dot={{ r: 4, fill: "#FF6B6B" }} name="Aktual" />
-      </LineChart>
-    </ResponsiveContainer>
+    <>
+      <div className="flex items-center justify-center gap-4 mb-2">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#4F7CFF]" />
+          <span className="text-[10px] font-semibold text-[#8FA4C8]">Budget</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B6B]" />
+          <span className="text-[10px] font-semibold text-[#8FA4C8]">Aktual</span>
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={220}>
+        <LineChart data={data} margin={{ top: 5, right: 5, left: -10, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
+          <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#8FA4C8" }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fontSize: 10, fill: "#8FA4C8" }} axisLine={false} tickLine={false} tickFormatter={v => formatShortNumber(v)} />
+          <Tooltip
+            formatter={(v) => [formatCurrency(v), undefined]}
+            contentStyle={{ borderRadius: 12, border: "none", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", fontSize: 12 }}
+          />
+          <Line type="monotone" dataKey="Budget" stroke="#4F7CFF" strokeWidth={2.5} dot={{ r: 4, fill: "#4F7CFF" }} name="Budget" />
+          <Line type="monotone" dataKey="Aktual" stroke="#FF6B6B" strokeWidth={2.5} dot={{ r: 4, fill: "#FF6B6B" }} name="Aktual" />
+        </LineChart>
+      </ResponsiveContainer>
+    </>
   );
 }
