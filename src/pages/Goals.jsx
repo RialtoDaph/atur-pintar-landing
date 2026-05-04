@@ -76,41 +76,42 @@ export default function Goals() {
   }
 
   async function handleTransaction(amount, type, note) {
-    // deposit → "savings" (outflow from wallet, counted in balance)
-    // withdrawal → "income" (money returns to wallet, increases balance)
-    const txType = type === "deposit" ? "savings" : "income";
+    // deposit → "savings" (move money from wallet to goal, decreases wallet balance)
+    // withdrawal → reverse savings (no Transaction record; only update goal current_amount)
     const numAmount = Number(amount);
     if (!numAmount || numAmount <= 0) return;
-    const tx = {
+    const isDeposit = type === "deposit";
+    const tx = isDeposit ? {
       goal_id: goalId,
       amount: numAmount,
-      type: txType,
+      type: "savings",
       note,
       date: new Date().toISOString().split("T")[0],
-    };
+    } : null;
     const newAmount =
       type === "deposit"
         ? (goal.current_amount || 0) + numAmount
         : Math.max((goal.current_amount || 0) - numAmount, 0);
 
     const previousGoals = goals;
-    const optimisticTx = { ...tx, id: `temp_${Date.now()}`, created_date: new Date().toISOString() };
+    const optimisticTx = tx ? { ...tx, id: `temp_${Date.now()}`, created_date: new Date().toISOString() } : null;
     setGoals(prev => prev.map(g => g.id === goalId ? { ...g, current_amount: newAmount, status: newAmount >= g.target_amount ? "completed" : "active" } : g));
-    setTransactions(prev => [optimisticTx, ...prev]);
+    if (optimisticTx) setTransactions(prev => [optimisticTx, ...prev]);
     setShowTxModal(null);
     try {
-       await Promise.all([
-         base44.entities.Transaction.create(tx),
+       const ops = [
          base44.entities.SavingsGoal.update(goalId, {
            current_amount: newAmount,
            status: newAmount >= goal.target_amount ? "completed" : "active",
          }),
-       ]);
+       ];
+       if (tx) ops.push(base44.entities.Transaction.create(tx));
+       await Promise.all(ops);
        // Trigger gamification (streaks/achievements/challenges) via dashboard listener
-       window.dispatchEvent(new CustomEvent("transaction-added"));
+       if (tx) window.dispatchEvent(new CustomEvent("transaction-added"));
      } catch (error) {
       setGoals(previousGoals);
-      setTransactions(prev => prev.filter(t => t.id !== optimisticTx.id));
+      if (optimisticTx) setTransactions(prev => prev.filter(t => t.id !== optimisticTx.id));
       loadData();
     }
   }

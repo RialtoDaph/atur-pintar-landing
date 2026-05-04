@@ -1,7 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { X, Camera, Upload, Loader2, Sparkles, Check, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { syncAccountBalance } from "@/components/utils/accountSync";
 
 export default function ReceiptScanModal({ onClose, onSuccess }) {
   const [step, setStep] = useState("upload"); // upload | reviewing | done
@@ -9,9 +10,23 @@ export default function ReceiptScanModal({ onClose, onSuccess }) {
   const [extracted, setExtracted] = useState(null);
   const [scanId, setScanId] = useState(null);
   const [globalCategories, setGlobalCategories] = useState([]);
+  const [accounts, setAccounts] = useState([]);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
+
+  useEffect(() => {
+    base44.auth.me().then(u => {
+      if (u?.email) {
+        base44.entities.Account.filter({ created_by: u.email }, "name").then(accs => {
+          setAccounts(accs || []);
+          // Pre-select default account
+          const def = (accs || []).find(a => a.is_default) || (accs || [])[0];
+          if (def) setExtracted(prev => prev ? { ...prev, account_id: def.id } : prev);
+        }).catch(() => {});
+      }
+    }).catch(() => {});
+  }, []);
 
   async function loadCategories() {
     if (globalCategories.length > 0) return globalCategories;
@@ -65,6 +80,7 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
       });
 
       setScanId(scan.id);
+      const defAcc = accounts.find(a => a.is_default) || accounts[0];
       setExtracted({
         image_url: file_url,
         merchant_name: data.merchant_name || "",
@@ -72,6 +88,7 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
         scan_date: data.scan_date || new Date().toLocaleDateString("en-CA"),
         category: matchedCat?.id || "",
         note: data.merchant_name || "",
+        account_id: defAcc?.id || "",
       });
       setStep("reviewing");
     } catch (err) {
@@ -82,20 +99,26 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
 
   async function handleConfirm() {
     if (!extracted) return;
+    if (!extracted.account_id) {
+      toast.error("Pilih rekening terlebih dahulu");
+      return;
+    }
     setSaving(true);
     try {
-      const user = await base44.auth.me();
+      const amount = Math.round(extracted.total_amount);
       // Create transaction
       const tx = await base44.entities.Transaction.create({
-        amount: Math.round(extracted.total_amount),
+        amount,
         type: "expense",
         date: extracted.scan_date,
         category: extracted.category || "other",
         note: extracted.note || extracted.merchant_name,
-        account_id: extracted.account_id || undefined,
+        account_id: extracted.account_id,
         is_recurring: false,
         is_recurring_child: false,
       });
+      // Sync account balance (single source of truth)
+      await syncAccountBalance(extracted.account_id, amount, "expense", 1).catch(() => {});
       // Update ReceiptScan
       if (scanId) {
         await base44.entities.ReceiptScan.update(scanId, {
@@ -103,6 +126,8 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
           transaction_id: tx.id,
         });
       }
+      // Trigger gamification
+      window.dispatchEvent(new CustomEvent("transaction-added"));
       toast.success("Transaksi dari struk berhasil disimpan!");
       onSuccess?.();
       onClose();
@@ -213,6 +238,19 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
                     <option value="">-- pilih kategori --</option>
                     {globalCategories.filter(c => c.type === "expense" || c.type === "both").map(c => (
                       <option key={c.id} value={c.id}>{c.emoji} {c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <p className="text-[11px] text-[#8FA4C8] mb-1">Rekening *</p>
+                  <select
+                    value={extracted.account_id || ""}
+                    onChange={e => setExtracted(x => ({ ...x, account_id: e.target.value }))}
+                    className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-sm text-[#1A1A1A] bg-[#F8FAFC] focus:outline-none"
+                  >
+                    <option value="">-- pilih rekening --</option>
+                    {accounts.map(a => (
+                      <option key={a.id} value={a.id}>{a.icon || "💳"} {a.name}</option>
                     ))}
                   </select>
                 </div>
