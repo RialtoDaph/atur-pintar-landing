@@ -6,23 +6,40 @@ export default function SpendingBar({ transactions, categories }) {
     const total = expenses.reduce((s, t) => s + (t.amount || 0), 0);
     if (total === 0) return null;
 
-    const byCategory = {};
+    // Helper: resolve any category key/id ke parent category
+    const findCat = (key) =>
+      categories.find(c => c.id === key || c.name?.toLowerCase() === key?.toLowerCase());
+
+    const resolveParent = (key) => {
+      const cat = findCat(key);
+      if (!cat) return { key, cat: null };
+      // Kalau subcategory, naik ke parent berdasar nama
+      if (cat.is_subcategory && cat.parent_category) {
+        const parent = categories.find(c => c.name?.toLowerCase() === cat.parent_category.toLowerCase() && !c.is_subcategory);
+        if (parent) return { key: parent.id || parent.name, cat: parent };
+      }
+      return { key: cat.id || cat.name || key, cat };
+    };
+
+    // Agregasi total per PARENT category saja
+    const byParent = {};
     expenses.forEach(t => {
-      const key = t.category || "other";
-      byCategory[key] = (byCategory[key] || 0) + (t.amount || 0);
+      const rawKey = t.category || "other";
+      const { key, cat } = resolveParent(rawKey);
+      if (!byParent[key]) {
+        byParent[key] = { amount: 0, cat, label: cat?.name || rawKey };
+      }
+      byParent[key].amount += t.amount || 0;
     });
 
-    const items = Object.entries(byCategory)
-      .map(([key, amount]) => {
-        const cat = categories.find(c => c.id === key || c.name?.toLowerCase() === key?.toLowerCase());
-        return {
-          key,
-          amount,
-          pct: Math.round((amount / total) * 100),
-          color: cat?.color || "#95A5A6",
-          label: cat?.name || key,
-        };
-      })
+    const items = Object.entries(byParent)
+      .map(([key, v]) => ({
+        key,
+        amount: v.amount,
+        pct: Math.round((v.amount / total) * 100),
+        color: v.cat?.color || "#95A5A6",
+        label: v.label,
+      }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 6);
 
