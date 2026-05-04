@@ -9,7 +9,6 @@ import { base44 } from "@/api/base44Client";
 
 import ReminderNotificationPopup from "@/components/reminders/ReminderNotificationPopup";
 import { syncAccountBalance } from "@/components/utils/accountSync";
-import { updateChallengesAfterTransaction } from "@/lib/updateChallengesAfterTransaction";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
 import { AnimatePresence, motion } from "framer-motion";
@@ -416,10 +415,11 @@ function LayoutInner({ children, currentPageName }) {
         onClose={() => setShowAddTransaction(false)}
         onSave={async (data) => {
           await base44.entities.Transaction.create(data);
-          if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
-          // Update challenge progress after transaction
-          if (user?.email) await updateChallengesAfterTransaction(user.email);
-          // Trigger gamification (streak/achievement/level-up popups will be handled by Dashboard listener)
+          // Recurring templates don't affect balance — only generated child transactions do
+          if (data.account_id && !data.is_recurring) {
+            await syncAccountBalance(data.account_id, data.amount, data.type, 1);
+          }
+          // Trigger gamification — backend processGamification handles streaks, achievements, AND challenge progress
           window.dispatchEvent(new CustomEvent("transaction-added"));
           setShowAddTransaction(false);
           // Small delay to let account balance update propagate, then refresh dashboard

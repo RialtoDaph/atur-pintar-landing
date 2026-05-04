@@ -270,7 +270,9 @@ export default function Dashboard() {
             onClose={() => setShowAddTransaction(false)}
             onSave={async (data) => {
               await base44.entities.Transaction.create(data);
-              if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
+              if (data.account_id && !data.is_recurring) {
+                await syncAccountBalance(data.account_id, data.amount, data.type, 1);
+              }
               setShowAddTransaction(false);
               setLastTxAddedAt(Date.now());
               gamification.onNewTransaction();

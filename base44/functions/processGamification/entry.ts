@@ -363,16 +363,15 @@ Deno.serve(async (req) => {
     const thisMonthScore = (existingScores || []).find(s => s.month === month);
 
     if (!thisMonthScore || trigger === "daily_check") {
-      // Fetch data for scoring
-      const [allTx, budgets, gamProfiles, goals, nanaConvos] = await Promise.all([
+      // Fetch data for scoring (use profile from earlier — already deduplicated and updated)
+      const [allTx, budgets, goals, nanaConvos] = await Promise.all([
         base44.entities.Transaction.filter({ created_by: userEmail }, "-date", 200).catch(() => []),
         base44.entities.Budget.filter({ created_by: userEmail }).catch(() => []),
-        base44.entities.GamificationProfile.filter({ created_by: userEmail }).catch(() => []),
         base44.entities.SavingsGoal.filter({ created_by: userEmail }).catch(() => []),
         base44.entities.NanaConversation.filter({ created_by: userEmail }, "-created_date", 50).catch(() => []),
       ]);
 
-      const gp = (gamProfiles || [])[0] || {};
+      const gp = { daily_streak: newStreak };
       const monthTx = (allTx || []).filter(tx => (tx.date || tx.created_date || "").startsWith(month));
 
       // consistency_score: up to 250 — based on how many days this month had a transaction
@@ -435,6 +434,7 @@ Deno.serve(async (req) => {
       success: true,
       results,
       streak: newStreak,
+      streakChanged,
       xpAdded: xpToAdd,
       totalXP: newXP,
       level: finalLevel,

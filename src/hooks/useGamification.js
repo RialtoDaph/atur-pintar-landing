@@ -138,42 +138,6 @@ export function useGamification(user) {
     return sorted[0];
   }
 
-  async function unlockAchievement(p, key) {
-    if ((p.achievements || []).includes(key)) return null;
-    const def = ACHIEVEMENTS_DEF.find(a => a.key === key);
-    if (!def) return null;
-
-    // Dedup: check if Achievement record already exists for this key
-    const existing = await base44.entities.Achievement.filter({ achievement_key: key }).catch(() => []);
-    if ((existing || []).some(a => a.is_unlocked)) return null; // already unlocked
-
-    const newAchievements = [...(p.achievements || []), key];
-    await base44.entities.GamificationProfile.update(p.id, { achievements: newAchievements });
-
-    // Update existing locked record or create new
-    const lockedRecord = (existing || []).find(a => !a.is_unlocked);
-    if (lockedRecord) {
-      await base44.entities.Achievement.update(lockedRecord.id, {
-        is_unlocked: true,
-        unlocked_at: new Date().toISOString(),
-      }).catch(() => {});
-    } else {
-      await base44.entities.Achievement.create({
-        achievement_key: key,
-        title: def.title,
-        description: def.hint,
-        icon: def.icon,
-        category: def.category,
-        xp_reward: def.xp,
-        is_unlocked: true,
-        unlocked_at: new Date().toISOString(),
-      }).catch(() => {});
-    }
-
-    setAchievementPopup(def);
-    return def;
-  }
-
   const checkStreakOnLoad = useCallback(async () => {
     if (!user?.email) return;
     try {
@@ -211,9 +175,9 @@ export function useGamification(user) {
         setTimeout(() => setXpFloatMsg(null), 2000);
       }
 
-      // Streak popup
+      // Streak popup — only show when streak actually changed today (avoid showing on every action of the same day)
       const newStreak = data.streak || 0;
-      if (newStreak > 1) {
+      if (data.streakChanged && newStreak > 1) {
         setStreakPopup({ message: `🔥 Streak ${newStreak} hari!`, streak: newStreak });
       }
 

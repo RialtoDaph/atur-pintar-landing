@@ -164,14 +164,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         recurring_interval: isRecurring ? interval : undefined,
         is_recurring_child: false,
       };
-      // Update balance only if not recurring template
-      if (!isRecurring) {
-        const acc = accounts.find(a => a.id === accountId);
-        if (acc) {
-          const newBal = tab === "expense" ? (acc.balance || 0) - amount : (acc.balance || 0) + amount;
-          await base44.entities.Account.update(accountId, { balance: newBal });
-        }
-      }
+      // Balance is updated by parent's onSave handler (via syncAccountBalance) — do not double-update here
       await onSave(txData);
 
       // Gamification: streak + mission
