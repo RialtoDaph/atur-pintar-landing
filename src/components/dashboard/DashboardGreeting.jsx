@@ -26,10 +26,10 @@ export default function DashboardGreeting({ user, gamificationProfile }) {
     || "Kamu";
 
   let greeting;
-  if (hour >= 6 && hour < 11) greeting = `Pagi, ${name}! ☀️`;
-  else if (hour >= 11 && hour < 15) greeting = `Halo, ${name}! 👋`;
-  else if (hour >= 15 && hour < 19) greeting = `Sore, ${name}! 🌤️`;
-  else greeting = `Malam, ${name}! 🌙`;
+  if (hour >= 6 && hour < 11) greeting = `Pagi, ${name}!`;
+  else if (hour >= 11 && hour < 15) greeting = `Halo, ${name}!`;
+  else if (hour >= 15 && hour < 19) greeting = `Sore, ${name}!`;
+  else greeting = `Malam, ${name}!`;
 
   const streak = gamificationProfile?.daily_streak ?? 0;
 
