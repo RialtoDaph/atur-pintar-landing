@@ -30,6 +30,8 @@ function NanaInner() {
   const [moodLoading, setMoodLoading] = useState(false);
   const [todayXP, setTodayXP] = useState(0);
   const bottomRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const didInitialScroll = useRef(false);
   const lastSendAt = useRef(0);
   const today = format(new Date(), "yyyy-MM-dd");
 
@@ -52,7 +54,17 @@ function NanaInner() {
   }, []);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    // Initial load: jump instantly to bottom (no smooth) and only scroll the
+    // chat container itself — using scrollIntoView would scroll the parent/page
+    // which causes the "auto-scrolling from top" effect on page enter.
+    if (!didInitialScroll.current) {
+      container.scrollTop = container.scrollHeight;
+      didInitialScroll.current = true;
+      return;
+    }
+    container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
   const savedNanaMsgIds = useRef(new Set());
@@ -349,7 +361,7 @@ function NanaInner() {
       ) : (
         <>
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
             {loading ? (
               <div className="flex justify-center pt-10">
                 <div className="w-6 h-6 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
