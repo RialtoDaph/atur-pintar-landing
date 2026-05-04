@@ -1,25 +1,36 @@
 import { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Lightbulb, Plus, RefreshCw } from "lucide-react";
+import { Sparkles, Plus, RefreshCw, TrendingDown, PiggyBank, Wallet, Receipt, Target, BarChart3, CreditCard, Coins } from "lucide-react";
 
 const FALLBACK = [
-  "Analisa pengeluaran aku bulan ini",
-  "Boleh jajan berapa hari ini?",
-  "Progress tabungan aku gimana?",
+  { label: "Analisa pengeluaran", question: "Tolong analisa pengeluaran aku bulan ini secara detail. Kategori mana yang paling boros dan apa saranmu?", icon: "spending" },
+  { label: "Boleh jajan?", question: "Hari ini aku boleh jajan berapa biar tetap aman sampai akhir bulan?", icon: "wallet" },
+  { label: "Progress tabungan", question: "Gimana progress semua tujuan tabunganku? Yang mana yang paling perlu didorong?", icon: "goal" },
 ];
+
+const ICON_MAP = {
+  spending: TrendingDown,
+  wallet: Wallet,
+  goal: Target,
+  budget: BarChart3,
+  bill: Receipt,
+  debt: CreditCard,
+  saving: PiggyBank,
+  invest: Coins,
+};
 
 /**
  * Dynamic quick action suggestions, personalized by Nana AI based on
- * the user's current financial snapshot. Shows 3 pills at a time;
- * pressing + generates 3 fresh suggestions.
+ * the user's current financial snapshot. Shows 3 cards at a time;
+ * pressing + generates 3 fresh suggestions. Clicking a card sends
+ * the FULL question to the chat (not just the short label).
  */
 export default function NanaQuickActions({ onSelect, disabled, contextSnapshot }) {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [seenSet, setSeenSet] = useState(new Set());
+  const [seenLabels, setSeenLabels] = useState(new Set());
 
   useEffect(() => {
-    // Fetch initial suggestions once context is available
     if (contextSnapshot && suggestions.length === 0) {
       generate(true);
     }
@@ -31,20 +42,26 @@ export default function NanaQuickActions({ onSelect, disabled, contextSnapshot }
     setLoading(true);
     try {
       const ctx = contextSnapshot ? buildShortContext(contextSnapshot) : "";
-      const avoidList = Array.from(seenSet).slice(-12).join(" | ");
+      const avoidList = Array.from(seenLabels).slice(-12).join(" | ");
 
-      const prompt = `Kamu adalah Nana AI, asisten keuangan untuk pengguna ini. Berdasarkan kondisi keuangan user di bawah, buatkan 3 pertanyaan SARAN (bukan jawaban) yang relevan, natural, dan paling berguna untuk mereka tanyakan ke kamu sekarang.
+      const prompt = `Kamu adalah Nana AI, asisten keuangan. Buatkan 3 saran percakapan yang relevan untuk user ini sekarang.
 
-Aturan:
-- Tulis dari sudut pandang USER bertanya ke Nana (gunakan "aku" / "ku")
-- Singkat (maks 7 kata), bahasa Indonesia santai
-- Spesifik ke data user (sebut kategori/goal/utang/tagihan kalau relevan)
-- Variatif: campur topik (budget, tabungan, utang, tagihan, kebiasaan, investasi)
-- JANGAN ulang pertanyaan ini: ${avoidList || "(belum ada)"}
+Setiap saran punya 2 bagian:
+1. "label" — judul super pendek 2-4 kata (yang muncul di tombol). HARUS singkat & rapi, contoh: "Analisa makan", "Cek budget transport", "Strategi lunas KPR".
+2. "question" — pertanyaan lengkap natural dari sudut pandang USER ke Nana, 1-2 kalimat, spesifik ke data user (sebut angka/nama kategori/goal jika relevan).
+3. "icon" — pilih satu: spending, wallet, goal, budget, bill, debt, saving, invest.
+
+Aturan label:
+- Maks 4 kata, tidak boleh panjang
+- Tidak pakai tanda tanya
+- Konsisten panjangnya (jangan ada yang 2 kata lalu yang lain 6 kata)
+
+Variatif topik (campur: budget, tabungan, utang, tagihan, kebiasaan, investasi).
+JANGAN ulang label ini: ${avoidList || "(belum ada)"}
 
 ${ctx}
 
-Output JSON saja, tanpa penjelasan.`;
+Output JSON saja.`;
 
       const res = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -53,19 +70,35 @@ Output JSON saja, tanpa penjelasan.`;
           properties: {
             suggestions: {
               type: "array",
-              items: { type: "string" },
+              items: {
+                type: "object",
+                properties: {
+                  label: { type: "string" },
+                  question: { type: "string" },
+                  icon: { type: "string", enum: ["spending", "wallet", "goal", "budget", "bill", "debt", "saving", "invest"] },
+                },
+                required: ["label", "question"],
+              },
             },
           },
           required: ["suggestions"],
         },
       });
 
-      const items = (res?.suggestions || []).filter(Boolean).slice(0, 3);
+      const items = (res?.suggestions || [])
+        .filter((s) => s?.label && s?.question)
+        .slice(0, 3)
+        .map((s) => ({
+          label: trimLabel(s.label),
+          question: s.question,
+          icon: s.icon || "spending",
+        }));
+
       if (items.length === 0) {
-        setSuggestions(isInitial ? FALLBACK : suggestions);
+        if (isInitial) setSuggestions(FALLBACK);
       } else {
         setSuggestions(items);
-        setSeenSet((prev) => new Set([...prev, ...items]));
+        setSeenLabels((prev) => new Set([...prev, ...items.map((i) => i.label)]));
       }
     } catch {
       if (isInitial) setSuggestions(FALLBACK);
@@ -78,40 +111,52 @@ Output JSON saja, tanpa penjelasan.`;
 
   return (
     <div className="mb-2">
-      <div className="flex items-center gap-1.5 mb-1.5">
-        <Lightbulb className="w-3.5 h-3.5 text-[#8FA4C8]" />
-        <span className="text-xs font-medium text-[#8FA4C8]">Saran dari Nana</span>
-      </div>
-
-      <div className="flex flex-wrap gap-1.5">
-        {display.map((s, i) => (
-          <button
-            key={`${s}-${i}`}
-            onClick={() => !disabled && onSelect(s)}
-            disabled={disabled || loading}
-            className="text-[12px] text-[#1A1A1A] dark:text-white bg-white dark:bg-[#1A1E25] border border-[#E2E8F0] dark:border-[#2D2D2D] rounded-full px-3 py-1.5 hover:border-[#FF6A00] hover:bg-[#FF6A00]/5 dark:hover:bg-[#FF6A00]/10 transition-all disabled:opacity-40 tap-highlight-fix"
-          >
-            {s}
-          </button>
-        ))}
+      <div className="flex items-center justify-between mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-[#FF6A00]" />
+          <span className="text-xs font-semibold text-[#8FA4C8]">Saran dari Nana</span>
+        </div>
         <button
           onClick={() => !disabled && generate(false)}
           disabled={disabled || loading}
           title="Saran baru"
-          className="w-7 h-7 flex items-center justify-center rounded-full bg-[#FF6A00]/10 border border-[#FF6A00]/30 text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white transition-all disabled:opacity-40 tap-highlight-fix"
+          className="w-6 h-6 flex items-center justify-center rounded-full bg-[#FF6A00]/10 text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white transition-all disabled:opacity-40 tap-highlight-fix"
         >
-          {loading ? (
-            <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <Plus className="w-3.5 h-3.5" />
-          )}
+          {loading ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
         </button>
+      </div>
+
+      <div className="grid grid-cols-3 gap-1.5">
+        {display.map((s, i) => {
+          const Icon = ICON_MAP[s.icon] || TrendingDown;
+          return (
+            <button
+              key={`${s.label}-${i}`}
+              onClick={() => !disabled && onSelect(s.question)}
+              disabled={disabled || loading}
+              title={s.question}
+              className="flex items-center gap-1.5 px-2.5 py-2 bg-white dark:bg-[#1A1E25] border border-[#E2E8F0] dark:border-[#2D2D2D] rounded-xl hover:border-[#FF6A00] hover:bg-[#FF6A00]/5 dark:hover:bg-[#FF6A00]/10 transition-all disabled:opacity-40 tap-highlight-fix text-left min-w-0"
+            >
+              <Icon className="w-3.5 h-3.5 text-[#FF6A00] flex-shrink-0" />
+              <span className="text-[11px] font-medium text-[#1A1A1A] dark:text-white truncate">
+                {s.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-// Build a short, focused context for suggestion generation only (smaller than full chat context)
+// Keep labels short and clean (max 4 words, no trailing punctuation)
+function trimLabel(label) {
+  const cleaned = String(label).replace(/[?!.]+$/g, "").trim();
+  const words = cleaned.split(/\s+/);
+  return words.slice(0, 4).join(" ");
+}
+
+// Build a short, focused context for suggestion generation only
 function buildShortContext(s) {
   if (!s) return "";
   const fmt = (n) => `Rp ${Math.round(n || 0).toLocaleString("id-ID")}`;
