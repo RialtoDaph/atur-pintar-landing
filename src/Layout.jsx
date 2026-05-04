@@ -372,7 +372,7 @@ function LayoutInner({ children, currentPageName }) {
         className="fixed left-1/2 -translate-x-1/2 z-[80] flex items-center justify-center rounded-full active:scale-95 transition-all duration-200 tap-highlight-fix sm:hidden"
         style={{
           width: 56, height: 56,
-          bottom: 'calc(78px + env(safe-area-inset-bottom, 0px))',
+          bottom: 'calc(32px + env(safe-area-inset-bottom, 0px))',
           background: '#0A0A0A',
           padding: 4,
           boxShadow: '0 6px 18px rgba(0,0,0,0.35)'
