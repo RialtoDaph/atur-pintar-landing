@@ -10,11 +10,19 @@ Deno.serve(async (req) => {
 
     const results = [];
 
+    // Recurring TEMPLATES (is_recurring=true AND not a child) must NOT affect balance —
+    // only their generated child transactions do. This mirrors the frontend rule in
+    // accountSync.js / recalculateAccountBalance to keep both layers consistent.
+    const isTemplate = (tx) => tx && tx.is_recurring === true && !tx.is_recurring_child;
+    const skipAccountSync = isTemplate(transaction) || isTemplate(oldTransaction);
+
     // ── 1. Account balance sync ──────────────────────────────────────────────
     const oldAccountId = oldTransaction?.account_id;
     const newAccountId = transaction?.account_id;
 
-    if (action === "update" && oldAccountId && newAccountId && oldAccountId !== newAccountId) {
+    if (skipAccountSync) {
+      results.push("account_sync_skipped_template");
+    } else if (action === "update" && oldAccountId && newAccountId && oldAccountId !== newAccountId) {
       // Account changed on edit: revert from old account, apply to new account
       const [oldAccs, newAccs] = await Promise.all([
         base44.entities.Account.filter({ id: oldAccountId }),
@@ -192,7 +200,13 @@ function getDelta(type, amount) {
 
 async function createAlertIfNotExists(base44, userEmail, alertData) {
   try {
-    const existing = await base44.entities.Alert.filter({ title: alertData.title, status: "unread" });
+    // Filter by created_by too — without it, an alert raised for user A would block
+    // the same-titled alert for user B (filter runs in service-role context here).
+    const existing = await base44.entities.Alert.filter({
+      title: alertData.title,
+      status: "unread",
+      created_by: userEmail,
+    });
     if (existing && existing.length > 0) return;
     await base44.entities.Alert.create({ ...alertData, created_by: userEmail });
   } catch (e) {
