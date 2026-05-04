@@ -152,6 +152,8 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
           {data.topMerchants.map((m, idx) => {
             const pct = (m.total / max) * 100;
             const pctOfTotal = data.totalExpense > 0 ? (m.total / data.totalExpense) * 100 : 0;
+            // Warna berdasarkan share dari total expense: <10% hijau, 10-20% kuning, >20% merah
+            const barColor = pctOfTotal > 20 ? "#FF6B6B" : pctOfTotal >= 10 ? "#F5A623" : "#00C9A7";
             return (
               <div key={idx} className="space-y-1.5">
                 <div className="flex items-center justify-between gap-3">
@@ -169,7 +171,7 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
                 <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden ml-8">
                   <div
                     className="h-full rounded-full transition-all"
-                    style={{ width: `${pct}%`, background: idx === 0 ? "#FF6A00" : "#FFC785" }}
+                    style={{ width: `${pct}%`, background: barColor }}
                   />
                 </div>
               </div>
