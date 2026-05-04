@@ -311,14 +311,24 @@ export default function Reminders() {
             const { create_recurring_tx, ...reminderData } = data;
             if (editing) {
               await base44.entities.Reminder.update(editing.id, reminderData);
-              // Sync amount change to linked recurring transaction
+              // Sync amount/title/due_day change to linked recurring transaction
               if (reminderData.amount && user?.email) {
                 const linkedTx = await findLinkedRecurringTx(editing.title, user.email);
                 if (linkedTx) {
-                  await base44.entities.Transaction.update(linkedTx.id, {
+                  const updates = {
                     amount: reminderData.amount,
                     note: reminderData.title,
-                  });
+                  };
+                  // If due_day changed, also update transaction date to next due
+                  if (reminderData.due_day && reminderData.due_day !== editing.due_day) {
+                    const now = new Date();
+                    const maxDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                    const clamped = Math.min(reminderData.due_day, maxDay);
+                    const nextDue = new Date(now.getFullYear(), now.getMonth(), clamped);
+                    if (nextDue < now) nextDue.setMonth(nextDue.getMonth() + 1);
+                    updates.date = nextDue.toISOString().split("T")[0];
+                  }
+                  await base44.entities.Transaction.update(linkedTx.id, updates);
                 }
               }
             } else {
@@ -326,12 +336,21 @@ export default function Reminders() {
               // Create linked recurring expense transaction if requested
               if (create_recurring_tx && reminderData.amount) {
                 const now = new Date();
-                const dueDate = new Date(now.getFullYear(), now.getMonth(), reminderData.due_day);
+                const maxDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                const clamped = Math.min(reminderData.due_day, maxDay);
+                const dueDate = new Date(now.getFullYear(), now.getMonth(), clamped);
                 if (dueDate < now) dueDate.setMonth(dueDate.getMonth() + 1);
+                // Resolve category: prefer "Tagihan & Utilitas" for tagihan type, fallback "Lainnya"
+                let categoryId = "";
+                try {
+                  const targetName = reminderData.type === "tagihan" ? "Tagihan & Utilitas" : "Lainnya";
+                  const cats = await base44.entities.GlobalCategory.filter({ name: targetName, is_active: true });
+                  if (cats && cats.length) categoryId = cats[0].id;
+                } catch {}
                 await base44.entities.Transaction.create({
                   amount: reminderData.amount,
                   type: "expense",
-                  category: "bills",
+                  category: categoryId || undefined,
                   note: reminderData.title,
                   date: dueDate.toISOString().split("T")[0],
                   is_recurring: true,
