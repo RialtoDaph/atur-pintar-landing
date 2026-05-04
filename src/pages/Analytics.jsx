@@ -105,7 +105,7 @@ export default function Analytics() {
 
   const { data: rawTransactions = [], isLoading: txLoading } = useQuery({
     queryKey: ["transactions_analytics", user?.email],
-    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
+    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 2000),
     enabled,
     staleTime: 0,
   });
@@ -141,6 +141,13 @@ export default function Analytics() {
   const { data: customCategories = [] } = useQuery({
     queryKey: ["custom_categories"],
     queryFn: () => base44.entities.CustomCategory.list("-created_date"),
+    enabled,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const { data: globalCategories = [] } = useQuery({
+    queryKey: ["global_categories_analytics"],
+    queryFn: () => base44.entities.GlobalCategory.filter({ is_active: true }),
     enabled,
     staleTime: 10 * 60 * 1000,
   });
@@ -183,8 +190,12 @@ export default function Analytics() {
     customCategories.forEach(cat => {
       config[`custom_${cat.id}`] = { label: cat.name, emoji: cat.emoji, color: cat.color };
     });
+    // GlobalCategory entries — looked up by their record id (current source of truth)
+    globalCategories.forEach(cat => {
+      config[cat.id] = { label: cat.name, emoji: cat.emoji || "📦", color: cat.color || "#8FA4C8" };
+    });
     return config;
-  }, [customCategories, t]);
+  }, [customCategories, globalCategories, t]);
 
   const handleFilterChange = (filter) => {
     if (filter.type === "period") {
