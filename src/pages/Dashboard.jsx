@@ -113,14 +113,18 @@ export default function Dashboard() {
     staleTime: 2 * 60 * 1000,
   });
 
-  const { data: transactions = [], isLoading: txLoading } = useQuery({
+  const { data: rawTransactions = [], isLoading: txLoading } = useQuery({
     queryKey: ["transactions_dashboard", user?.email],
-    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email, is_deleted: false }, "-date", 200),
+    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email, is_deleted: false }, "-date", 500),
     enabled,
     staleTime: 0,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
+
+  // Exclude recurring TEMPLATES (parent) from displayed/aggregated transactions —
+  // only generated child transactions should affect totals & UI lists.
+  const transactions = rawTransactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
 
   const { data: budgets = [], isLoading: budgetsLoading } = useQuery({
     queryKey: ["budgets", user?.email],
