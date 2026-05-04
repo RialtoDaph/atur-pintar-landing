@@ -144,9 +144,8 @@ export default function InvestmentsPage() {
             </div>
             <button
               onClick={() => setShowAdd(true)}
-              className="h-10 px-4 rounded-full bg-[#FF6A00] flex items-center gap-1.5 shadow-lg hover:bg-[#e05e00] transition-colors"
+              className="h-10 px-4 rounded-full bg-[#FF6A00] flex items-center shadow-lg hover:bg-[#e05e00] transition-colors"
             >
-              <Plus className="w-4 h-4 text-white" />
               <span className="text-white text-sm font-semibold">Invest</span>
             </button>
           </div>
