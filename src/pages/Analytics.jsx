@@ -5,8 +5,6 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import { LayoutList } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { Suspense, lazy } from "react";
-const PortfolioSummary = lazy(() => import("@/components/dashboard/PortfolioSummary"));
 import AnalyticsCardManager from "@/components/analytics/AnalyticsCardManager";
 import PremiumBlurCard from "@/components/subscription/PremiumBlurCard";
 import NetWorthCard from "@/components/analytics/NetWorthCard";
@@ -24,7 +22,6 @@ const DEFAULT_ANALYTICS_CARDS = [
   { id: "net_worth", visible: true },
   { id: "daily_spending", visible: true },
   { id: "spending_chart", visible: true },
-  { id: "portfolio_summary", visible: true },
 ];
 
 const DEFAULT_CATEGORIES_FLAT = [
@@ -437,19 +434,6 @@ export default function Analytics() {
           ) : (
             <PremiumBlurCard title="📈 Pengeluaran Harian">
               <DailySpendingCard transactions={transactions} filterPeriod={filterPeriod} customDateRange={customDateRange} periodSubtitle={periodSubtitle} />
-            </PremiumBlurCard>
-          )
-        )}
-
-        {/* Portfolio Summary */}
-        {isCardVisible("portfolio_summary") && (
-          isPremium ? (
-            <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-              <PortfolioSummary user={user} periodSubtitle={periodSubtitle} />
-            </Suspense>
-          ) : (
-            <PremiumBlurCard title="💼 Ringkasan Portofolio Investasi">
-              <div className="bg-white rounded-2xl h-32 shadow-sm" />
             </PremiumBlurCard>
           )
         )}
