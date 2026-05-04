@@ -55,11 +55,12 @@ export default function AdminLogs() {
     try {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const oldLogs = logs.filter(l => new Date(l.created_date) < thirtyDaysAgo);
-      for (const log of oldLogs) {
-        await base44.entities.SystemLog.delete(log.id);
-      }
-      
+      // Fetch ALL logs (not just the recent 100 in state) to make sure we actually purge old ones
+      const allLogs = await base44.entities.SystemLog.list("-created_date", 5000).catch(() => logs);
+      const oldLogs = allLogs.filter(l => new Date(l.created_date) < thirtyDaysAgo);
+      // Parallel delete is much faster for large batches
+      await Promise.all(oldLogs.map(log => base44.entities.SystemLog.delete(log.id).catch(() => {})));
+
       // Log the cleanup action itself
       await base44.entities.SystemLog.create({
         log_type: "activity",
@@ -68,7 +69,7 @@ export default function AdminLogs() {
         severity: "warning",
         details: `Deleted ${oldLogs.length} logs older than 30 days`
       });
-      
+
       await loadLogs();
     } catch (e) {
       console.error(e);
@@ -293,7 +294,14 @@ export default function AdminLogs() {
               <div className="flex gap-1">
                 <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
                   className="px-3 py-1.5 rounded-lg border border-[#E2E8F0] text-sm hover:bg-[#F8FAFC] disabled:opacity-40">Prev</button>
-                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(n => (
+                {(() => {
+                  // Show a 5-page window centered around the current page so all pages are reachable
+                  const windowSize = 5;
+                  let start = Math.max(1, page - Math.floor(windowSize / 2));
+                  const end = Math.min(totalPages, start + windowSize - 1);
+                  start = Math.max(1, end - windowSize + 1);
+                  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+                })().map(n => (
                   <button key={n} onClick={() => setPage(n)}
                     className={`px-3 py-1.5 rounded-lg border text-sm ${page === n ? "bg-[#FF6A00] text-white border-[#FF6A00]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
                     {n}

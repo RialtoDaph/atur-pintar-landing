@@ -65,24 +65,31 @@ export default function AdminUsers() {
   }
 
   async function approvePayment(paymentId, userEmail, plan, amount) {
+    // Guard against missing/invalid plan or email — prevents inconsistent state
+    if (!userEmail || !plan || !["premium_monthly", "premium_yearly"].includes(plan)) {
+      setErrorMsg("Plan/email tidak valid. Tidak dapat menyetujui pembayaran.");
+      return;
+    }
     try {
       const today = new Date().toISOString().split("T")[0];
       const daysToAdd = plan === "premium_yearly" ? 365 : 30;
       const endDate = new Date(new Date().getTime() + daysToAdd * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
-      // Update payment
-      await base44.entities.SubscriptionPayment.update(paymentId, { status: "approved", approved_at: today });
-
-      // Upgrade user subscription
+      // Upgrade user FIRST so payment marked approved only if user actually upgraded
       const userList = await base44.entities.User.filter({ email: userEmail });
-      if (userList.length > 0) {
-        await base44.entities.User.update(userList[0].id, {
-          subscription_plan: plan,
-          subscription_status: "active",
-          subscription_start_date: today,
-          subscription_end_date: endDate
-        });
+      if (userList.length === 0) {
+        setErrorMsg(`User ${userEmail} tidak ditemukan. Pembayaran tidak disetujui.`);
+        return;
       }
+      await base44.entities.User.update(userList[0].id, {
+        subscription_plan: plan,
+        subscription_status: "active",
+        subscription_start_date: today,
+        subscription_end_date: endDate
+      });
+
+      // Now mark payment as approved
+      await base44.entities.SubscriptionPayment.update(paymentId, { status: "approved", approved_at: today });
 
       // Send notification to user
       await base44.entities.AdminNotification.create({
@@ -116,19 +123,21 @@ export default function AdminUsers() {
     try {
       const paymentsList = await base44.entities.SubscriptionPayment.filter({ id: paymentId });
       const payment = paymentsList.length > 0 ? paymentsList[0] : null;
-      const userEmail = payment?.user_email || payment?.created_by || "user@example.com";
+      const userEmail = payment?.user_email || payment?.created_by;
 
       await base44.entities.SubscriptionPayment.update(paymentId, { status: "rejected" });
 
-      // Send rejection notification
-      await base44.entities.AdminNotification.create({
-        title: "❌ Pembayaran Ditolak",
-        message: "Pembayaran upgrade kamu telah ditolak. Silakan periksa riwayat atau hubungi support.",
-        target_type: "specific",
-        target_email: userEmail,
-        is_read: false,
-        read_by: []
-      });
+      // Send rejection notification only if we have a real email — never fall back to a fake one
+      if (userEmail) {
+        await base44.entities.AdminNotification.create({
+          title: "❌ Pembayaran Ditolak",
+          message: "Pembayaran upgrade kamu telah ditolak. Silakan periksa riwayat atau hubungi support.",
+          target_type: "specific",
+          target_email: userEmail,
+          is_read: false,
+          read_by: []
+        });
+      }
 
       // Log action
       await base44.entities.SystemLog.create({
@@ -148,8 +157,9 @@ export default function AdminUsers() {
   }
 
   const filteredUsers = users.filter(u => {
-    if (filter === "premium") return u.subscription_plan && u.subscription_plan !== "free";
-    if (filter === "free") return !u.subscription_plan || u.subscription_plan === "free";
+    // Premium = paid plan AND active status (matches the premiumUsers stat below)
+    if (filter === "premium") return u.subscription_plan && u.subscription_plan !== "free" && u.subscription_status === "active";
+    if (filter === "free") return !u.subscription_plan || u.subscription_plan === "free" || u.subscription_status !== "active";
     if (filter === "inactive") {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

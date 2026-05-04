@@ -85,6 +85,16 @@ export default function AdminCategories() {
       is_default: false,
     };
     if (editId) {
+      // If editing a parent and the name changed, cascade-update children's parent_category link
+      const editing = categories.find(c => c.id === editId);
+      if (editing && !editing.is_subcategory && editing.name !== payload.name) {
+        const orphanedChildren = categories.filter(c => c.is_subcategory && c.parent_category === editing.name);
+        await Promise.all(
+          orphanedChildren.map(child =>
+            base44.entities.GlobalCategory.update(child.id, { parent_category: payload.name }).catch(() => {})
+          )
+        );
+      }
       await base44.entities.GlobalCategory.update(editId, payload);
       toast.success("Kategori diperbarui ✓");
     } else {
@@ -98,13 +108,11 @@ export default function AdminCategories() {
   }
 
   async function handleDelete(id) {
-    // Also delete children if deleting a parent
+    // Also delete children if deleting a parent — parallel for speed
     const cat = categories.find(c => c.id === id);
     if (cat && !cat.is_subcategory) {
       const children = categories.filter(c => c.is_subcategory && c.parent_category === cat.name);
-      for (const child of children) {
-        await base44.entities.GlobalCategory.delete(child.id);
-      }
+      await Promise.all(children.map(child => base44.entities.GlobalCategory.delete(child.id).catch(() => {})));
     }
     await base44.entities.GlobalCategory.delete(id);
     setCategories(prev => {

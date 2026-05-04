@@ -31,9 +31,11 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       // Fetch all data in parallel
+      // Note: Transaction.list() runs under user RLS so it only returns the admin's own transactions —
+      // we use it as a best-effort sample for "active users" since cross-user transaction counts require a backend function.
       const [allUsers, allTransactions, pendingPayments, approvedPayments, allAlerts] = await Promise.all([
         base44.entities.User.list(),
-        base44.entities.Transaction.list(),
+        base44.entities.Transaction.list("-created_date", 1000).catch(() => []),
         base44.entities.SubscriptionPayment.filter({ status: "pending" }),
         base44.entities.SubscriptionPayment.filter({ status: "approved" }),
         base44.entities.Alert.list()
@@ -52,12 +54,12 @@ export default function AdminDashboard() {
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       const oldPendingCount = pendingPayments.filter(p => new Date(p.created_date) < threeDaysAgo).length;
 
-      // April revenue (approved payments in April 2026) - REAL: 88000 (49k + 39k)
-      const aprilPayments = approvedPayments.filter(p => {
+      // Current month revenue (approved payments in this month) — dynamic so it doesn't get stuck on a hardcoded date
+      const currentMonthPayments = approvedPayments.filter(p => {
         const date = p.approved_at || p.created_date;
-        return date?.startsWith("2026-04");
+        return date?.startsWith(thisMonth);
       });
-      const monthlyRevenue = aprilPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+      const monthlyRevenue = currentMonthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
       // Active users (transactions in last 30 days)
       const thirtyDaysAgo = new Date();

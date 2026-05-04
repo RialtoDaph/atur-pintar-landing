@@ -32,48 +32,48 @@ export default function AdminSubscriptions() {
 
   async function handleApprove(payment) {
     setProcessingId(payment.id);
-    const endDate = new Date();
-    if (payment.plan === "premium_yearly") endDate.setFullYear(endDate.getFullYear() + 1);
-    else endDate.setMonth(endDate.getMonth() + 1);
+    try {
+      const endDate = new Date();
+      if (payment.plan === "premium_yearly") endDate.setFullYear(endDate.getFullYear() + 1);
+      else endDate.setMonth(endDate.getMonth() + 1);
 
-    await base44.entities.SubscriptionPayment.update(payment.id, {
-      status: "approved",
-      approved_at: new Date().toISOString().split("T")[0],
-    });
+      // Upgrade the user FIRST so the payment is only marked approved if the upgrade actually applied
+      const targetUser = users.find(u => u.email === payment.user_email);
+      if (targetUser) {
+        await base44.entities.User.update(targetUser.id, {
+          subscription_plan: payment.plan,
+          subscription_status: "active",
+          subscription_end_date: endDate.toISOString().split("T")[0],
+        });
+      }
 
-    // Update the user's subscription via admin
-    const targetUser = users.find(u => u.email === payment.user_email);
-    if (targetUser) {
-      await base44.entities.User.update(targetUser.id, {
-        subscription_plan: payment.plan,
-        subscription_status: "active",
-        subscription_end_date: endDate.toISOString().split("T")[0],
+      await base44.entities.SubscriptionPayment.update(payment.id, {
+        status: "approved",
+        approved_at: new Date().toISOString().split("T")[0],
       });
+    } finally {
+      setProcessingId(null);
+      loadData();
     }
-
-    setProcessingId(null);
-    loadData();
   }
 
   async function handleReject(payment) {
     setProcessingId(payment.id);
+    // Rejecting a single pending payment must NOT cancel an existing active subscription —
+    // only mark this payment as rejected. Subscription expiry is handled separately.
     await base44.entities.SubscriptionPayment.update(payment.id, {
       status: "rejected",
     });
-    const targetUser = users.find(u => u.email === payment.user_email);
-    if (targetUser) {
-      await base44.entities.User.update(targetUser.id, {
-        subscription_status: "free",
-        subscription_plan: "free",
-      });
-    }
     setProcessingId(null);
     loadData();
   }
 
   const pending = payments.filter(p => p.status === "pending");
   const approved = payments.filter(p => p.status === "approved");
-  const premiumUsers = users.filter(u => u.subscription_plan === "premium_monthly" || u.subscription_plan === "premium_yearly");
+  const premiumUsers = users.filter(u =>
+    (u.subscription_plan === "premium_monthly" || u.subscription_plan === "premium_yearly") &&
+    u.subscription_status === "active"
+  );
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }) : "-";
 

@@ -243,16 +243,17 @@ function NanaInner() {
 
       await base44.agents.addMessage(conv, { role: "user", content: text });
 
-    // Gamification: tanya_nana mission (streak handled by processGamification trigger below)
-    if (user?.email) {
-      completeMission(user.email, "tanya_nana").catch(() => {});
-    }
+      // Only count quota AFTER addMessage succeeded — failures shouldn't burn user's quota
+      // Gamification: tanya_nana mission (streak handled by processGamification trigger below)
+      if (user?.email) {
+        completeMission(user.email, "tanya_nana").catch(() => {});
+      }
 
-    if (!isPremium) {
-      const newCount = msgCount + 1;
-      await base44.auth.updateMe({ nana_message_count: newCount, nana_message_month: currentMonth });
-      setUser(u => ({ ...u, nana_message_count: newCount, nana_message_month: currentMonth }));
-    }
+      if (!isPremium) {
+        const newCount = msgCount + 1;
+        await base44.auth.updateMe({ nana_message_count: newCount, nana_message_month: currentMonth });
+        setUser(u => ({ ...u, nana_message_count: newCount, nana_message_month: currentMonth }));
+      }
 
     // XP for sending message via backend (max 3x per day; backend awards 2 XP per nana_message_sent)
     if (user?.email) {

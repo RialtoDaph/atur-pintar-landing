@@ -244,9 +244,11 @@ export default function ProfileSettings() {
   async function syncBalance(acc) {
     setSyncing(acc.id);
     const txs = await base44.entities.Transaction.filter({ account_id: acc.id });
-    const income = txs.filter(t => !t.is_deleted && t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
-    const expense = txs.filter(t => !t.is_deleted && t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
-    const savings = txs.filter(t => !t.is_deleted && t.type === 'savings').reduce((s, t) => s + (t.amount || 0), 0);
+    // Exclude soft-deleted AND recurring templates (only generated children affect balance)
+    const real = txs.filter(t => !t.is_deleted && !(t.is_recurring === true && !t.is_recurring_child));
+    const income = real.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+    const expense = real.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
+    const savings = real.filter(t => t.type === 'savings').reduce((s, t) => s + (t.amount || 0), 0);
     const newBalance = income - expense - savings;
     await base44.entities.Account.update(acc.id, { balance: newBalance });
     setAccounts(prev => prev.map(a => a.id === acc.id ? { ...a, balance: newBalance } : a));
@@ -255,7 +257,9 @@ export default function ProfileSettings() {
   }
 
   async function setDefault(acc) {
-    await Promise.all(accounts.map(a => base44.entities.Account.update(a.id, { is_default: a.id === acc.id })));
+    // Only update accounts whose is_default flag actually changes — saves writes
+    const toUpdate = accounts.filter(a => (a.id === acc.id) !== !!a.is_default);
+    await Promise.all(toUpdate.map(a => base44.entities.Account.update(a.id, { is_default: a.id === acc.id })));
     setAccounts(prev => prev.map(a => ({ ...a, is_default: a.id === acc.id })));
   }
 

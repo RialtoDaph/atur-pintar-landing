@@ -477,9 +477,13 @@ export default function SharedFinance() {
     const target = all.find(w => w.invite_code === joinCode.trim().toUpperCase());
     if (!target) { setJoinError("Kode undangan tidak valid"); setJoining(false); return; }
     if ((target.members || []).includes(user.email)) { setJoinError("Anda sudah tergabung"); setJoining(false); return; }
+    // Re-fetch the latest wallet state right before merging to reduce race-condition overwrites
+    const fresh = await base44.entities.SharedWallet.filter({ id: target.id }).then(r => r?.[0]).catch(() => target);
+    const baseMembers = fresh?.members || target.members || [];
+    const basePending = fresh?.pending_invites || target.pending_invites || [];
     const updated = await base44.entities.SharedWallet.update(target.id, {
-      members: [...(target.members || []), user.email],
-      pending_invites: (target.pending_invites || []).filter(e => e !== user.email),
+      members: [...new Set([...baseMembers, user.email])],
+      pending_invites: basePending.filter(e => e !== user.email),
     });
     setWallets(prev => prev.some(w => w.id === target.id) ? prev.map(w => w.id === target.id ? updated : w) : [...prev, updated]);
     setWalletTxsMap(prev => ({ ...prev, [target.id]: [] }));
@@ -530,6 +534,8 @@ export default function SharedFinance() {
   async function handleKickMember(wallet, email) {
     const updated = await base44.entities.SharedWallet.update(wallet.id, {
       members: (wallet.members || []).filter(e => e !== email),
+      // Also clear from pending_invites so kicked user can't re-accept a stale invite
+      pending_invites: (wallet.pending_invites || []).filter(e => e !== email),
     });
     setWallets(prev => prev.map(w => w.id === wallet.id ? updated : w));
     toast.success(`${email} berhasil dikeluarkan`);
