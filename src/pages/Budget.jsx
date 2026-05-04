@@ -106,8 +106,10 @@ export default function BudgetPage() {
         return true;
       });
 
-      const monthTx = txAll.filter(tx => tx.date >= monthStart && tx.date <= monthEnd && tx.type === "expense" && !tx.is_deleted);
-      const prev3Tx = txAll.filter(tx => tx.date >= threeMonthsAgo && tx.date < monthStart);
+      // Exclude soft-deleted records and recurring TEMPLATES (only generated children count toward spending)
+      const isRealTx = (tx) => !tx.is_deleted && !(tx.is_recurring === true && !tx.is_recurring_child);
+      const monthTx = txAll.filter(tx => isRealTx(tx) && tx.date >= monthStart && tx.date <= monthEnd && tx.type === "expense");
+      const prev3Tx = txAll.filter(tx => isRealTx(tx) && tx.type === "expense" && tx.date >= threeMonthsAgo && tx.date < monthStart);
 
       setBudgets(b);
       setTransactions(monthTx);

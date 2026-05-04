@@ -96,14 +96,16 @@ export default function Goals() {
 
     const previousGoals = goals;
     const optimisticTx = tx ? { ...tx, id: `temp_${Date.now()}`, created_date: new Date().toISOString() } : null;
-    setGoals(prev => prev.map(g => g.id === goalId ? { ...g, current_amount: newAmount, status: newAmount >= g.target_amount ? "completed" : "active" } : g));
+    // Guard: only mark as completed when target_amount > 0 (avoid 0 >= 0 false positive on uninitialized targets)
+    const isCompleted = (goal.target_amount || 0) > 0 && newAmount >= goal.target_amount;
+    setGoals(prev => prev.map(g => g.id === goalId ? { ...g, current_amount: newAmount, status: isCompleted ? "completed" : "active" } : g));
     if (optimisticTx) setTransactions(prev => [optimisticTx, ...prev]);
     setShowTxModal(null);
     try {
        const ops = [
          base44.entities.SavingsGoal.update(goalId, {
            current_amount: newAmount,
-           status: newAmount >= goal.target_amount ? "completed" : "active",
+           status: isCompleted ? "completed" : "active",
          }),
        ];
        if (tx) ops.push(base44.entities.Transaction.create(tx));
@@ -119,7 +121,9 @@ export default function Goals() {
 
   async function handleAddSavings(goal, { amount, accountId, date, note }) {
     const newAmount = (goal.current_amount || 0) + amount;
-    const newStatus = newAmount >= goal.target_amount ? "completed" : goal.status;
+    // Only auto-complete when target is set (>0); otherwise preserve existing status
+    const isCompleted = (goal.target_amount || 0) > 0 && newAmount >= goal.target_amount;
+    const newStatus = isCompleted ? "completed" : goal.status;
     await Promise.all([
       (async () => {
         const tx = await base44.entities.Transaction.create({

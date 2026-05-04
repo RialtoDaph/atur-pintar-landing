@@ -171,7 +171,8 @@ export default function Analytics() {
     }
   }, [settingsList, user?.settings_id]);
 
-  const transactions = rawTransactions.filter(t => !(t.is_recurring === true && !t.is_recurring_child));
+  // Exclude soft-deleted records and recurring TEMPLATES (only generated children represent real activity)
+  const transactions = rawTransactions.filter(t => !t.is_deleted && !(t.is_recurring === true && !t.is_recurring_child));
   const loading = txLoading || goalsLoading || budgetsLoading;
 
   const localizedMonths = useMemo(() => {
