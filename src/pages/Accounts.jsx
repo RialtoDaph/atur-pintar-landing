@@ -60,10 +60,12 @@ function AccountModal({ account, onClose, onSave }) {
     setSaving(true);
     const balance = form.balance || 0;
     if (account?.id) {
-      const updated = await base44.entities.Account.update(account.id, form);
-      // Jika saldo berubah, catat sebagai penyesuaian saldo
+      // Jika saldo diubah manual, jangan set balance + adjustment tx (akan double-count saat sync).
+      // Approach: hanya update meta fields; biarkan adjustment tx yang menggerakkan balance via syncBalance.
       const oldBalance = account.balance || 0;
       const diff = balance - oldBalance;
+      const { balance: _omitBalance, _balanceDisplay, ...metaForm } = form;
+      const updated = await base44.entities.Account.update(account.id, diff !== 0 ? metaForm : form);
       if (diff !== 0) {
         await base44.entities.Transaction.create({
           account_id: account.id,
@@ -73,8 +75,10 @@ function AccountModal({ account, onClose, onSave }) {
           note: `Penyesuaian saldo ${form.name}`,
           date: new Date().toISOString().split("T")[0],
         });
+        // Apply incremental balance update once (single source of truth)
+        await base44.entities.Account.update(account.id, { balance });
       }
-      onSave(updated);
+      onSave({ ...updated, balance: diff !== 0 ? balance : updated.balance });
     } else {
       const created = await base44.entities.Account.create(form);
       // Catat saldo awal sebagai transaksi income jika > 0
