@@ -375,38 +375,43 @@ function LayoutInner({ children, currentPageName }) {
         </button>
       </div>}
 
-      {/* FAB - Add Transaction */}
-      {!anyModalOpen && !isNestedPage &&
+      {/* Mobile FAB - center-bottom, toggles Plus↔X (X when modal open) */}
+      {!isNestedPage &&
       <button
-        onClick={() => setShowAddTransaction(true)}
-        data-tour="add-transaction-btn" className="bg-[#FF6B35] py-4 rounded-full fixed z-[55] flex items-center justify-center shadow-lg active:scale-95 transition-all duration-150 tap-highlight-fix sm:hidden"
-
+        onClick={() => setShowAddTransaction(v => !v)}
+        data-tour="add-transaction-btn"
+        className="fixed left-1/2 -translate-x-1/2 z-[80] flex items-center justify-center rounded-full active:scale-95 transition-all duration-200 tap-highlight-fix sm:hidden"
         style={{
-          width: 44, height: 44,
-          bottom: 'calc(76px + env(safe-area-inset-bottom, 0px))',
-          right: 16,
-          boxShadow: '0 2px 12px rgba(255,107,53,0.4)'
+          width: 56, height: 56,
+          bottom: 'calc(32px + env(safe-area-inset-bottom, 0px))',
+          background: '#0A0A0A',
+          padding: 4,
+          boxShadow: '0 6px 18px rgba(0,0,0,0.35)'
         }}>
-        
-          <Plus className="w-5 h-5 text-white" />
+          <span className="w-full h-full rounded-full flex items-center justify-center transition-transform duration-300" style={{
+            background: showAddTransaction ? 'linear-gradient(145deg, #4A4A4A 0%, #1A1A1A 100%)' : 'linear-gradient(145deg, #FF8A50 0%, #F97316 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3)',
+            transform: showAddTransaction ? 'rotate(135deg)' : 'rotate(0deg)'
+          }}>
+            <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
+          </span>
         </button>
       }
 
-      {/* FAB for desktop */}
-      {!anyModalOpen &&
+      {/* Desktop FAB - bottom right */}
       <button
-        onClick={() => setShowAddTransaction(true)}
-        className="fixed z-[55] bg-[#FF6B35] items-center justify-center rounded-full shadow-lg active:scale-95 transition-all duration-150 tap-highlight-fix hidden sm:flex"
+        onClick={() => setShowAddTransaction(v => !v)}
+        className="fixed z-[80] bg-[#FF6B35] items-center justify-center rounded-full shadow-lg active:scale-95 transition-all duration-200 tap-highlight-fix hidden sm:flex"
         style={{
-          width: 48, height: 48,
+          width: 56, height: 56,
           bottom: 24,
           right: 24,
-          boxShadow: '0 2px 12px rgba(255,107,53,0.4)'
+          background: showAddTransaction ? '#1A1A1A' : '#FF6B35',
+          transform: showAddTransaction ? 'rotate(135deg)' : 'rotate(0deg)',
+          boxShadow: '0 4px 16px rgba(255,107,53,0.4)'
         }}>
-        
-          <Plus className="w-5 h-5 text-white" />
+          <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
         </button>
-      }
 
       {showAddTransaction &&
       <AddTransactionModal
