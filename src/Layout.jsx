@@ -45,6 +45,18 @@ function LayoutInner({ children, currentPageName }) {
       // Log login
       base44.functions.invoke('logUserLogin', {}).catch(() => {});
 
+      // Subscription expiry check (skip for admin) — runs once per session
+      if (u?.role !== 'admin' && u?.subscription_status === "active" && !sessionStorage.getItem("sub_expiry_checked")) {
+        sessionStorage.setItem("sub_expiry_checked", "1");
+        const endDate = u?.subscription_end_date || u?.subscription_expiry;
+        if (endDate) {
+          const today = new Date().toISOString().split("T")[0];
+          if (endDate < today) {
+            base44.auth.updateMe({ subscription_status: "expired", subscription_plan: "free" }).catch(() => {});
+          }
+        }
+      }
+
       // Fetch unread alerts only (badge count) — dedupe by title+category to avoid hiding distinct alerts
       base44.entities.Alert.filter({ created_by: u.email, status: "unread" }).then((alerts) => {
         const seen = new Set();
@@ -130,8 +142,6 @@ function LayoutInner({ children, currentPageName }) {
   { name: "Analytics", label: t('nav_analytics'), icon: BarChart2, page: "Analytics" },
   { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" }];
 
-
-  const mobileMorePages = ["Goals", "Debts", "Notifications", "Accounts", "SharedFinance", "Tips", "Settings", "Budget"];
 
   const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 

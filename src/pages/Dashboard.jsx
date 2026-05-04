@@ -31,17 +31,10 @@ const LazyFallback = () => (
   <div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
 );
 
-function getWidgets() {
-  const saved = localStorage.getItem("widgets");
-  if (saved) return JSON.parse(saved);
-  return { smartAlerts: true, cashflowForecast: true, subscriptionDetector: true, spendingChart: true, recentTransactions: true, savingsGoals: true };
-}
-
 export default function Dashboard() {
   const { t } = useAppSettings();
   const queryClient = useQueryClient();
   const [showAddTransaction, setShowAddTransaction] = useState(false);
-  const [widgets, setWidgets] = useState(getWidgets());
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showNanaIntro, setShowNanaIntro] = useState(false);
   const [user, setUser] = useState(null);
@@ -57,16 +50,7 @@ export default function Dashboard() {
       if (!u?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
         setShowOnboarding(true);
       }
-      // Check subscription expiry on load — skip for admin
-      if (u?.role !== 'admin' && u?.subscription_status === "active") {
-        const endDate = u?.subscription_end_date || u?.subscription_expiry;
-        if (endDate) {
-          const today = new Date().toISOString().split("T")[0];
-          if (endDate < today) {
-            base44.auth.updateMe({ subscription_status: "expired", subscription_plan: "free" }).catch(() => {});
-          }
-        }
-      }
+      // Subscription expiry check is now handled in Layout (runs once per session for all pages)
       // Run deduplication once per session
       if (u?.onboarding_completed && !sessionStorage.getItem("dedup_done")) {
         sessionStorage.setItem("dedup_done", "1");
@@ -81,12 +65,6 @@ export default function Dashboard() {
       gamification.checkStreakOnLoad();
     }
   }, [user?.email]);
-
-  useEffect(() => {
-    const onStorage = () => setWidgets(getWidgets());
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
 
   useEffect(() => {
     const onRefresh = () => loadData();
@@ -179,7 +157,6 @@ export default function Dashboard() {
     staleTime: 10 * 60 * 1000,
   });
 
-  const accountsTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
   const loading = goalsLoading || txLoading || budgetsLoading;
 
   async function loadData() {
@@ -202,7 +179,8 @@ export default function Dashboard() {
   });
 
   const monthIncome = thisMonthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const monthExpense = thisMonthTx.filter(t => t.type === "expense" || t.type === "savings").reduce((s, t) => s + t.amount, 0);
+  // Pengeluaran hanya menghitung type=expense, savings tidak dihitung sebagai pengeluaran (dipisah sebagai "tabungan")
+  const monthExpense = thisMonthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
 
   return (
     <PullToRefresh onRefresh={loadData}>

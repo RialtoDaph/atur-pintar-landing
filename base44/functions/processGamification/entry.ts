@@ -264,19 +264,19 @@ Deno.serve(async (req) => {
       await tryUnlock("mood_7_days", consecutiveDays >= 7);
     }
 
-    // Compute new level
+    // Compute level using the FINAL XP (after streak/transaction/goal/budget achievements have added their XP)
     const oldLevel = getLevelFromXP(oldXP);
-    const newLevel = getLevelFromXP(newXP);
+    const levelAfterAchievements = getLevelFromXP(newXP);
 
-    // Level achievements
-    await tryUnlock("level_2", newLevel >= 2);
-    await tryUnlock("level_3", newLevel >= 3);
-    await tryUnlock("level_4", newLevel >= 4);
-    await tryUnlock("level_5", newLevel >= 5);
-    await tryUnlock("level_6", newLevel >= 6);
-    await tryUnlock("level_7", newLevel >= 7);
+    // Level achievements (based on level reached after all preceding achievement XP)
+    await tryUnlock("level_2", levelAfterAchievements >= 2);
+    await tryUnlock("level_3", levelAfterAchievements >= 3);
+    await tryUnlock("level_4", levelAfterAchievements >= 4);
+    await tryUnlock("level_5", levelAfterAchievements >= 5);
+    await tryUnlock("level_6", levelAfterAchievements >= 6);
+    await tryUnlock("level_7", levelAfterAchievements >= 7);
 
-    // Recalc level after achievement XP
+    // Recalc level after level-achievement XP (e.g. level_2 +20 XP could push into level_3)
     const finalLevel = getLevelFromXP(newXP);
 
     // ── 6. Save updated profile (including synced achievements array) ─────────
@@ -344,10 +344,12 @@ Deno.serve(async (req) => {
             last_progress_date: today,
           }).catch(() => {});
 
-          // Award XP on completion
+          // Award XP on completion — accumulate into newXP so multiple challenges in one run all count
           if (newStatus === "completed" && ch.xp_reward) {
+            newXP += ch.xp_reward;
             await base44.entities.GamificationProfile.update(profile.id, {
-              total_points: newXP + ch.xp_reward,
+              total_points: newXP,
+              level: getLevelFromXP(newXP),
             }).catch(() => {});
           }
           results.push(`challenge_${ch.challenge_key}_progressed`);
