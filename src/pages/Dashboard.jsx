@@ -18,6 +18,9 @@ import { useGamification } from "@/hooks/useGamification";
 import DashboardGreeting from "@/components/dashboard/DashboardGreeting";
 import DailyMissionsCard from "@/components/dashboard/DailyMissionsCard";
 import BossBattleCard from "@/components/gamification/BossBattleCard";
+import StreakCelebrationPopup from "@/components/dashboard/StreakCelebrationPopup";
+import AchievementPopup from "@/components/dashboard/AchievementPopup";
+import LevelUpModal from "@/components/gamification/LevelUpModal";
 
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
@@ -87,8 +90,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     const onRefresh = () => loadData();
+    const onTxAdded = () => {
+      if (user?.email) gamification.onNewTransaction();
+    };
     window.addEventListener("refresh-dashboard", onRefresh);
-    return () => window.removeEventListener("refresh-dashboard", onRefresh);
+    window.addEventListener("transaction-added", onTxAdded);
+    return () => {
+      window.removeEventListener("refresh-dashboard", onRefresh);
+      window.removeEventListener("transaction-added", onTxAdded);
+    };
   }, [user?.email]);
 
   useEffect(() => {
@@ -300,6 +310,30 @@ export default function Dashboard() {
 
         {showNanaIntro && (
           <NanaIntroModal onClose={() => setShowNanaIntro(false)} />
+        )}
+
+        {/* Gamification popups */}
+        <StreakCelebrationPopup
+          show={!!gamification.streakPopup}
+          message={gamification.streakPopup?.message || ""}
+          streak={gamification.streakPopup?.streak || 0}
+          onClose={() => gamification.setStreakPopup(null)}
+        />
+        {gamification.achievementPopup && (
+          <AchievementPopup
+            achievement={{
+              emoji: gamification.achievementPopup.icon,
+              name: gamification.achievementPopup.title,
+              desc: gamification.achievementPopup.hint,
+            }}
+            onClose={() => gamification.setAchievementPopup(null)}
+          />
+        )}
+        {gamification.levelUpPopup && (
+          <LevelUpModal
+            levelData={gamification.levelUpPopup.level}
+            onClose={() => gamification.setLevelUpPopup(null)}
+          />
         )}
       </div>
     </PullToRefresh>

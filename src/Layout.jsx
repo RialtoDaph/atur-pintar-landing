@@ -409,6 +409,8 @@ function LayoutInner({ children, currentPageName }) {
           if (data.account_id) await syncAccountBalance(data.account_id, data.amount, data.type, 1);
           // Update challenge progress after transaction
           if (user?.email) await updateChallengesAfterTransaction(user.email);
+          // Trigger gamification (streak/achievement/level-up popups will be handled by Dashboard listener)
+          window.dispatchEvent(new CustomEvent("transaction-added"));
           setShowAddTransaction(false);
           // Small delay to let account balance update propagate, then refresh dashboard
           setTimeout(() => window.dispatchEvent(new Event("refresh-dashboard")), 400);
