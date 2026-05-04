@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TrendingUp, TrendingDown, Wallet, Eye, EyeOff, Users } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Eye, EyeOff, Users, LineChart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 import { base44 } from "@/api/base44Client";
@@ -16,10 +16,12 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
   const [storageKey, setStorageKey] = useState(null);
   const [hidden, setHidden] = useState(false);
   const [sharedWallets, setSharedWallets] = useState([]);
+  const [investments, setInvestments] = useState([]);
+  const [investmentTxs, setInvestmentTxs] = useState([]);
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
 
-  // Scope hidden state per user + load shared wallets
+  // Scope hidden state per user + load shared wallets + investments
   useEffect(() => {
     base44.auth.me().then((u) => {
       if (!u?.email) return;
@@ -33,6 +35,9 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
         );
         setSharedWallets(mine);
       }).catch(() => {});
+      // Load investments + transactions
+      base44.entities.Investment.filter({ created_by: u.email }).then(setInvestments).catch(() => {});
+      base44.entities.InvestmentTransaction.filter({ created_by: u.email }).then(setInvestmentTxs).catch(() => {});
     }).catch(() => {});
   }, []);
 
@@ -66,6 +71,13 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
   const totalShared = sharedWallets.reduce((s, w) => s + (w.balance || 0), 0);
   const selisih = income - expense;
   const savingRate = income > 0 ? Math.round(selisih / income * 100) : 0;
+
+  // Investment metrics — sama seperti page Investments
+  const invTotalBeli = investmentTxs.filter(tx => tx.type === "buy").reduce((s, tx) => s + (tx.total_amount || 0), 0);
+  const invTotalJual = investmentTxs.filter(tx => tx.type === "sell").reduce((s, tx) => s + (tx.total_amount || 0), 0);
+  const invSaldoAktif = invTotalBeli - invTotalJual;
+  const invRealisasi = invTotalJual - invTotalBeli;
+  const isProfit = invRealisasi >= 0;
 
   if (loading) {
     return <div className="rounded-2xl animate-pulse h-36 bg-white/10" />;
@@ -155,6 +167,56 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
               </button>
         }
           </div>
+        </div>
+
+  },
+  {
+    key: "investments",
+    content:
+    <div>
+          <p className="text-white/50 text-[10px] font-semibold uppercase tracking-widest mb-1">Investasi</p>
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <p className="text-white/60 text-xs mb-0.5">Saldo Aktif</p>
+              <p className={`text-3xl font-black tracking-tight ${invSaldoAktif >= 0 ? "text-white" : "text-red-400"}`}>
+                {hidden ? <span className="tracking-[0.2em]">{HIDDEN}</span> : `Rp ${compactRupiah(invSaldoAktif)}`}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-white/50 text-[10px] mb-0.5">{investments.length} aset</p>
+              <LineChart className="w-5 h-5 text-white/40 ml-auto" />
+            </div>
+          </div>
+          {investments.length === 0 ? (
+            <button
+              onClick={(e) => { e.stopPropagation(); navigate("/Investments"); }}
+              className="w-full flex items-center justify-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
+              + Mulai Investasi
+            </button>
+          ) : (
+            <div className="flex gap-3">
+              <div className="flex-1 flex items-center gap-2 bg-white/8 rounded-xl px-3 py-2">
+                <div className="w-7 h-7 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <TrendingUp className="w-3.5 h-3.5 text-[#80b3ff]" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-white/50 text-[9px] uppercase tracking-wider">Total Beli</p>
+                  <p className="text-white text-xs font-bold truncate">{hidden ? HIDDEN : `Rp ${compactRupiah(invTotalBeli)}`}</p>
+                </div>
+              </div>
+              <div className="flex-1 flex items-center gap-2 bg-white/8 rounded-xl px-3 py-2">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center ${invTotalJual > 0 ? (isProfit ? "bg-green-500/20" : "bg-red-500/20") : "bg-white/10"}`}>
+                  {isProfit ? <TrendingUp className="w-3.5 h-3.5 text-[#99ff80]" /> : <TrendingDown className="w-3.5 h-3.5 text-[#ff8080]" />}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-white/50 text-[9px] uppercase tracking-wider">Realisasi</p>
+                  <p className={`text-xs font-bold truncate ${invTotalJual > 0 ? (isProfit ? "text-[#99ff80]" : "text-[#ff8080]") : "text-white/60"}`}>
+                    {hidden ? HIDDEN : (invTotalJual > 0 ? `${isProfit ? "+" : ""}Rp ${compactRupiah(invRealisasi)}` : "—")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
   },
