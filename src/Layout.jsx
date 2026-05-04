@@ -363,13 +363,13 @@ function LayoutInner({ children, currentPageName }) {
           <button
             onClick={() => setShowAddTransaction(true)}
             data-tour="add-transaction-btn"
-            className="bg-[#FF6B35] rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all duration-150 tap-highlight-fix"
+            className="bg-[#FF6B35] rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all duration-150 tap-highlight-fix ring-4 ring-[#0A0A0A]"
             style={{
-              width: 56, height: 56,
-              marginTop: -24,
+              width: 48, height: 48,
+              marginTop: -32,
               boxShadow: '0 4px 16px rgba(255,107,53,0.5)'
             }}>
-            <Plus className="w-6 h-6 text-white" />
+            <Plus className="w-5 h-5 text-white" />
           </button>
         </div>
 
