@@ -14,7 +14,7 @@ import DailySpendingCard from "@/components/analytics/DailySpendingCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
 import FinancialScoreCard from "@/components/analytics/FinancialScoreCard";
 import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChart";
-import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
+import BudgetActualTrendChart from "@/components/analytics/BudgetActualTrendChart";
 import { Flame } from "lucide-react";
 
 const DEFAULT_ANALYTICS_CARDS = [
@@ -439,17 +439,17 @@ export default function Analytics() {
           )
         )}
 
-        {/* Budget vs Aktual */}
+        {/* Tren Budget vs Aktual */}
         {isPremium ? (
-          <BudgetActualWidget
+          <BudgetActualTrendChart
             budgets={budgets}
             transactions={transactions}
-            allCategoriesConfig={allCategoriesConfig}
             periodSubtitle={periodSubtitle}
+            monthRange={monthRange}
           />
         ) : (
-          <PremiumBlurCard title="💸 Budget vs Aktual">
-            <BudgetActualWidget budgets={budgets} transactions={transactions} allCategoriesConfig={allCategoriesConfig} periodSubtitle={periodSubtitle} />
+          <PremiumBlurCard title="💸 Tren Budget vs Aktual">
+            <BudgetActualTrendChart budgets={budgets} transactions={transactions} periodSubtitle={periodSubtitle} monthRange={monthRange} />
           </PremiumBlurCard>
         )}
 
