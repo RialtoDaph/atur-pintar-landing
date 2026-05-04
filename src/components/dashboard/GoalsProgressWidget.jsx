@@ -63,15 +63,17 @@ export default function GoalsProgressWidget({ goals = [], loading = false }) {
                   <div className="flex items-center gap-2">
                     <span className="text-base flex-shrink-0">{g.icon || "🎯"}</span>
                     <p className="text-xs font-semibold text-[#1A1A1A] truncate flex-1">{g.name}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-1 bg-white rounded-full overflow-hidden flex-1">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{ width: `${Math.min(g.percent, 100)}%`, backgroundColor: barColor }}
+                      />
+                    </div>
                     <p className="text-[10px] font-bold flex-shrink-0" style={{ color: barColor }}>
                       {Math.round(g.percent)}%
                     </p>
-                  </div>
-                  <div className="h-1 bg-white rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${Math.min(g.percent, 100)}%`, backgroundColor: barColor }}
-                    />
                   </div>
                 </Link>
               );
