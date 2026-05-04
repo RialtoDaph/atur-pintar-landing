@@ -132,6 +132,8 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
 
   const completed = missions.filter(m => m.is_completed).length;
   const allDone = missions.length > 0 && completed === missions.length;
+  // Active = not yet completed (we remove on complete via optimistic update; this is a safety net)
+  const activeMissions = missions.filter(m => !m.is_completed);
   const totalXP = DEFAULT_MISSIONS.reduce((s, m) => s + m.xp_reward, 0);
 
   // Level progress
@@ -147,24 +149,16 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
 
   return (
     <>
-      {/* Daily Missions */}
-      <div className="bg-white rounded-2xl shadow-sm p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-[#1A1A1A]">Mission Hari Ini 🎯</h3>
-          <span className="text-xs text-[#8FA4C8] font-semibold">{completed}/{missions.length} selesai</span>
-        </div>
+      {/* Daily Missions — hidden when all done so it doesn't clutter the dashboard */}
+      {activeMissions.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-[#1A1A1A]">Mission Hari Ini 🎯</h3>
+            <span className="text-xs text-[#8FA4C8] font-semibold">{completed}/{missions.length} selesai</span>
+          </div>
 
-        {missions.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-[#F0FDF4] rounded-xl p-3 text-center"
-          >
-            <p className="text-sm font-bold text-[#16A34A]">Semua mission selesai! 🎉 +{totalXP} XP</p>
-          </motion.div>
-        ) : (
           <div className="space-y-2">
-            {missions.map(m => (
+            {activeMissions.map(m => (
               <button
                 key={m.id}
                 onClick={() => handleComplete(m)}
@@ -180,8 +174,8 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
               </button>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Level Progress Bar */}
       <div className="bg-white rounded-2xl shadow-sm p-4">

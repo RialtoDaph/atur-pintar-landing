@@ -218,8 +218,15 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Budget Widget — overlaps header/body boundary */}
+        {/* Daily Missions + Level — overlaps header/body boundary */}
         <div className="max-w-2xl md:max-w-4xl mx-auto px-4 -mt-8 relative z-10 space-y-3">
+          {user?.onboarding_completed && (
+            <DailyMissionsCard
+              user={user}
+              gamificationProfile={activeGamProfile}
+              onProfileUpdate={setGamProfile}
+            />
+          )}
           <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
             <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
           </Suspense>
@@ -265,15 +272,6 @@ export default function Dashboard() {
                     .reduce((s, t) => s + (t.amount || 0), 0)}
                 />
               </div>
-            )}
-
-            {/* Daily Missions */}
-            {user?.onboarding_completed && (
-              <DailyMissionsCard
-                user={user}
-                gamificationProfile={activeGamProfile}
-                onProfileUpdate={setGamProfile}
-              />
             )}
 
             {/* Boss Battle */}
