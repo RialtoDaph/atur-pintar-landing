@@ -61,11 +61,13 @@ function NanaInner() {
 
     if (!didInitialScroll.current) {
       // First render of messages — restore saved scroll position for this conv,
-      // or stay at top (do nothing) instead of force-jumping to bottom.
+      // or default to bottom (latest message) if no saved position exists.
       const key = activeConv?.id ? `nana_scroll_${activeConv.id}` : null;
       const saved = key ? sessionStorage.getItem(key) : null;
       if (saved !== null) {
         container.scrollTop = parseInt(saved, 10) || 0;
+      } else {
+        container.scrollTop = container.scrollHeight;
       }
       didInitialScroll.current = true;
       return;
