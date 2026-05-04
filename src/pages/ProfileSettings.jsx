@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import {
   LogOut, Trash2, Crown, Pencil, Lock, ChevronRight,
-  Plus, Star, RefreshCw, X, Check, AlertTriangle
+  Plus, Star, RefreshCw, X, Check, AlertTriangle, Settings as SettingsIcon
 } from "lucide-react";
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import EditProfileForm from "@/components/profile/EditProfileForm";
@@ -285,9 +285,18 @@ export default function ProfileSettings() {
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
       {/* Header */}
       <div className="bg-[#0A0A0A] px-5 pt-10 pb-8">
-        <div className="max-w-2xl mx-auto">
-          <p className="text-[#8FA4C8] text-sm font-medium">{t('settings_preferences')}</p>
-          <h1 className="text-white text-2xl font-bold mt-0.5">Profil Saya</h1>
+        <div className="max-w-2xl mx-auto flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[#8FA4C8] text-sm font-medium">{t('settings_preferences')}</p>
+            <h1 className="text-white text-2xl font-bold mt-0.5">Profil Saya</h1>
+          </div>
+          <Link
+            to={createPageUrl("Settings")}
+            aria-label="Pengaturan"
+            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors flex-shrink-0"
+          >
+            <SettingsIcon className="w-5 h-5" />
+          </Link>
         </div>
       </div>
 
@@ -435,7 +444,7 @@ export default function ProfileSettings() {
           </button>
 
           <button onClick={() => setScreen("risk")}
-            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors">
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors border-b border-[#F2F4F7]">
             <div className="w-8 h-8 rounded-xl bg-[#E8F5E9] flex items-center justify-center flex-shrink-0 text-lg">
               📊
             </div>
@@ -445,6 +454,18 @@ export default function ProfileSettings() {
             </div>
             <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
           </button>
+
+          <Link to={createPageUrl("Tips")}
+            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#F8FAFC] transition-colors">
+            <div className="w-8 h-8 rounded-xl bg-[#FFF3E0] flex items-center justify-center flex-shrink-0 text-lg">
+              💡
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-medium text-[#1A1A1A]">Tips & Bantuan</p>
+              <p className="text-xs text-[#8FA4C8]">Panduan penggunaan & FAQ</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
+          </Link>
         </div>
 
         {/* ── Security ─────────────────────────────────────── */}

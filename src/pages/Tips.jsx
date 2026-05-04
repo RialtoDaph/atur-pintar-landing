@@ -9,7 +9,7 @@ const TIPS = [
     items: [
       {
         q: "Bagaimana cara mencatat transaksi pertama?",
-        a: "Tap tombol + oranye di pojok kanan atas halaman Dashboard. Pilih 'Pengeluaran' atau 'Pemasukan', isi jumlah, pilih kategori (contoh: Makanan, Transport), lalu tap Simpan.",
+        a: "Tap tombol + oranye di tengah bawah layar (atau pojok kanan bawah di desktop). Pilih 'Pengeluaran' atau 'Pemasukan', isi jumlah, pilih kategori (contoh: Makanan, Transport), lalu tap Simpan.",
       },
       {
         q: "Apa itu transaksi berulang (recurring)?",
@@ -77,19 +77,6 @@ const TIPS = [
     ],
   },
   {
-    category: "📱 Langganan",
-    items: [
-      {
-        q: "Cara mencatat langganan (Netflix, Spotify, dll)?",
-        a: "Di Dashboard, scroll ke kartu 'Langganan' lalu tap + untuk menambah. Isi nama layanan, nominal tagihan, siklus (bulanan/triwulanan/tahunan), dan tanggal jatuh tempo berikutnya.",
-      },
-      {
-        q: "Bagaimana cara tandai langganan sudah dibayar?",
-        a: "Di kartu Langganan Dashboard, tap ikon centang (✓) di samping nama langganan. Tanggal jatuh tempo otomatis maju ke bulan/siklus berikutnya dan transaksi pengeluaran tercatat.",
-      },
-    ],
-  },
-  {
     category: "📈 Investasi",
     items: [
       {
@@ -145,15 +132,11 @@ const TIPS = [
     ],
   },
   {
-    category: "🔔 Pengingat & Alert",
+    category: "🔔 Alert & Notifikasi",
     items: [
       {
-        q: "Cara membuat pengingat tagihan?",
-        a: "Pergi ke menu 'Pengingat' → tap + → isi nama tagihan (contoh: Listrik PLN), tanggal jatuh tempo tiap bulan, jenis pengingat, dan nominal. Pengingat akan muncul otomatis di Dashboard saat mendekati tanggal jatuh tempo.",
-      },
-      {
         q: "Apa itu Smart Alert?",
-        a: "Smart Alert adalah peringatan otomatis berdasarkan pola keuanganmu — seperti pengeluaran kategori yang melonjak, anggaran yang hampir habis, tujuan yang mendekati deadline, atau peluang tabungan. Bisa dilihat di ikon lonceng atas.",
+        a: "Smart Alert adalah peringatan otomatis berdasarkan pola keuanganmu — seperti pengeluaran kategori yang melonjak, anggaran yang hampir habis, atau tujuan yang mendekati deadline. Bisa dilihat di ikon lonceng atas.",
       },
     ],
   },
@@ -161,16 +144,12 @@ const TIPS = [
     category: "⚙️ Pengaturan",
     items: [
       {
-        q: "Cara mengaktifkan mode gelap?",
-        a: "Buka Pengaturan → tap toggle 'Mode Gelap' di bagian Tampilan. Perubahan langsung berlaku di seluruh aplikasi.",
-      },
-      {
-        q: "Cara menyembunyikan widget di Dashboard?",
-        a: "Buka Pengaturan → scroll ke 'Widget Dashboard' → matikan toggle untuk widget yang tidak ingin ditampilkan. Perubahan langsung terlihat di Dashboard.",
+        q: "Di mana saya bisa mengakses Pengaturan?",
+        a: "Buka halaman Profil, lalu tap ikon roda gigi di pojok kanan atas header. Di sana kamu bisa atur bahasa, mata uang, ekspor data, integrasi, dan tour panduan.",
       },
       {
         q: "Cara mengubah mata uang atau bahasa?",
-        a: "Buka Pengaturan → bagian 'Bahasa & Mata Uang'. Tersedia Bahasa Indonesia/English/German dan mata uang IDR/USD/EUR. Fitur ini memerlukan akses admin.",
+        a: "Buka Profil → ikon roda gigi → bagian 'Bahasa & Mata Uang'. Tersedia Bahasa Indonesia/English/German dan mata uang IDR/USD/EUR. Fitur ini memerlukan akses admin.",
       },
       {
         q: "Apakah data saya aman?",

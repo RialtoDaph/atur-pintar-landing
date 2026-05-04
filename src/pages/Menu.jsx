@@ -1,6 +1,6 @@
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
-import { Lightbulb, ChevronRight, Users } from "lucide-react";
+import { ChevronRight, Users } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function Menu() {
@@ -10,12 +10,6 @@ export default function Menu() {
       title: t('menu_finance'),
       items: [
         { label: "Keuangan Bersama", desc: "Kelola keuangan bersama pasangan atau keluarga", icon: Users, emoji: "👨‍👩‍👧", page: "SharedFinance", color: "#9C27B0" },
-      ],
-    },
-    {
-      title: t('menu_notifications'),
-      items: [
-        { label: t('nav_tips'), desc: "Saran dan tips mengelola keuangan", icon: Lightbulb, emoji: "💡", page: "Tips", color: "#F5A623" },
       ],
     },
   ];
