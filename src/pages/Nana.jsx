@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Send, Plus, Crown, Settings, History, Mic, MicOff } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAppSettings } from "@/components/utils/useAppSettings";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { completeMission } from "@/hooks/useGamificationActions";
 import MoodPicker from "@/components/nana/MoodPicker";
 import NanaQuickActions from "@/components/nana/NanaQuickActions";
@@ -35,12 +35,10 @@ function NanaInner() {
   const [showHistory, setShowHistory] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const bottomRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const didInitialScroll = useRef(false);
   const lastSendAt = useRef(0);
   const recognitionRef = useRef(null);
-  const navigate = useNavigate();
   const today = format(new Date(), "yyyy-MM-dd");
   const { context: financialContext } = useFinancialContext(true);
 
@@ -69,6 +67,13 @@ function NanaInner() {
     recognitionRef.current = rec;
     rec.start();
   }
+
+  // Cleanup voice recognition on unmount
+  useEffect(() => {
+    return () => {
+      try { recognitionRef.current?.stop(); } catch {}
+    };
+  }, []);
 
   async function handleSelectConversation(conv) {
     setShowHistory(false);
@@ -495,7 +500,6 @@ function NanaInner() {
                 </div>
               </div>
             )}
-            <div ref={bottomRef} />
           </div>
 
           {/* Input area */}

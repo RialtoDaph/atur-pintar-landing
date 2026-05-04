@@ -98,7 +98,11 @@ Output JSON saja.`;
         if (isInitial) setSuggestions(FALLBACK);
       } else {
         setSuggestions(items);
-        setSeenLabels((prev) => new Set([...prev, ...items.map((i) => i.label)]));
+        // Cap memory: keep only last 24 labels to avoid unbounded growth
+        setSeenLabels((prev) => {
+          const next = [...prev, ...items.map((i) => i.label)];
+          return new Set(next.slice(-24));
+        });
       }
     } catch {
       if (isInitial) setSuggestions(FALLBACK);
