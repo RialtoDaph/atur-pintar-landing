@@ -27,6 +27,10 @@ const DEFAULT_CATEGORIES = {
 
 export default function EditTransactionModal({ transaction, goals = [], onClose, onSave }) {
   const { t, settings } = useAppSettings();
+  // "savings" transactions cannot be edited via this modal (only via Goals page).
+  // Without preserving the original type here, save would silently downgrade savings → expense
+  // and break SavingsGoal.current_amount sync (old=savings, new=expense mismatch).
+  const isSavings = transaction.type === "savings";
   const [tab, setTab] = useState(transaction.type === "income" ? "income" : "expense");
   const [form, setForm] = useState({
     amount: String(transaction.amount || ""),
@@ -54,6 +58,12 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
           const seen = new Set();
           for (const a of (accs || [])) { if (!seen.has(a.name)) { seen.add(a.name); deduped.push(a); } }
           setAccounts(deduped);
+          // Legacy transactions without account_id would otherwise be uneditable
+          // (Save button stays disabled). Auto-pick the user's default/first account.
+          if (!transaction.account_id && deduped.length > 0) {
+            const fallback = deduped.find(a => a.is_default) || deduped[0];
+            setForm(f => ({ ...f, account_id: fallback.id }));
+          }
         });
       }
     });
@@ -84,7 +94,8 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
     setSaving(true);
     await onSave(transaction.id, {
       ...form,
-      type: tab,
+      // Preserve original type if it's "savings" — this modal only toggles expense/income.
+      type: isSavings ? "savings" : tab,
       amount: parseRupiah(form.amount),
       goal_id: form.goal_id || undefined,
       account_id: form.account_id,
