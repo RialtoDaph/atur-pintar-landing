@@ -25,6 +25,7 @@ const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertW
 const CashflowForecast = lazy(() => import("@/components/dashboard/CashflowForecast"));
 const GoalsProgressWidget = lazy(() => import("@/components/dashboard/GoalsProgressWidget"));
 const InvestmentSummaryWidget = lazy(() => import("@/components/dashboard/InvestmentSummaryWidget"));
+const LevelProgressCard = lazy(() => import("@/components/dashboard/LevelProgressCard"));
 
 const LazyFallback = () => (
   <div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
@@ -218,11 +219,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Budget Widget — overlaps header/body boundary */}
+        {/* Top Widgets — overlaps header/body boundary */}
         <div className="max-w-2xl md:max-w-4xl mx-auto px-4 -mt-8 relative z-10 space-y-3">
-          <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
-          </Suspense>
+          {user?.onboarding_completed && (
+            <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+              <LevelProgressCard gamificationProfile={activeGamProfile} />
+            </Suspense>
+          )}
           <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
             <GoalsProgressWidget goals={goals} loading={goalsLoading} />
           </Suspense>
@@ -266,6 +269,13 @@ export default function Dashboard() {
                 />
               </div>
             )}
+
+            {/* Budget Widget */}
+            <div className="md:col-span-2">
+              <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+                <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+              </Suspense>
+            </div>
 
             {/* Daily Missions */}
             {user?.onboarding_completed && (

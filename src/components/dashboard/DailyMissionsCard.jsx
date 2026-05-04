@@ -183,30 +183,6 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
         )}
       </div>
 
-      {/* Level Progress Bar */}
-      <div className="bg-white rounded-2xl shadow-sm p-4">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-bold text-[#1A1A1A]">⚡ Level {lvl.level} — {lvl.name}</p>
-          <span className="text-xs font-bold text-[#FF6B35]">{xp.toLocaleString("id-ID")} XP</span>
-        </div>
-        <div className="h-2.5 bg-[#F2F4F7] rounded-full overflow-hidden mb-1.5">
-          <motion.div
-            className="h-full rounded-full"
-            style={{ background: "linear-gradient(90deg, #FF6B35, #FFD700)" }}
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          />
-        </div>
-        {nextLvl ? (
-          <p className="text-xs text-[#8FA4C8]">
-            {(nextLvl.min - xp).toLocaleString("id-ID")} XP lagi untuk Level {nextLvl.level} — {nextLvl.name}
-          </p>
-        ) : (
-          <p className="text-xs text-[#FF6B35] font-semibold">Level Maksimal tercapai! 🏆</p>
-        )}
-      </div>
-
       {/* Level Up Modal */}
       <AnimatePresence>
         {showLevelUp && (
