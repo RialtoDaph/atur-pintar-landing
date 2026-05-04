@@ -42,10 +42,19 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
       if (!raw) return;
       const key = raw.toLowerCase();
       if (!merchantMap[key]) {
-        merchantMap[key] = { name: raw, total: 0, count: 0 };
+        merchantMap[key] = { name: raw, total: 0, count: 0, categoryTotals: {} };
       }
       merchantMap[key].total += t.amount || 0;
       merchantMap[key].count += 1;
+      const cat = t.category || "other";
+      merchantMap[key].categoryTotals[cat] = (merchantMap[key].categoryTotals[cat] || 0) + (t.amount || 0);
+    });
+    // Resolve emoji per merchant berdasar kategori dengan total terbesar
+    Object.values(merchantMap).forEach((m) => {
+      const topCat = Object.entries(m.categoryTotals).sort((a, b) => b[1] - a[1])[0]?.[0];
+      const cfg = topCat ? allCategoriesConfig[topCat] : null;
+      m.emoji = cfg?.emoji || "🏪";
+      m.topCategory = topCat;
     });
     const topMerchants = Object.values(merchantMap)
       .sort((a, b) => b.total - a.total)
@@ -158,9 +167,14 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
               <div key={idx} className="space-y-1.5">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 ${idx === 0 ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
-                      {idx + 1}
-                    </span>
+                    <div className="relative flex-shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-[#F2F4F7] flex items-center justify-center text-base">
+                        {m.emoji}
+                      </div>
+                      <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${idx === 0 ? "bg-[#FF6A00] text-white" : "bg-white text-[#8FA4C8] border border-[#E2E8F0]"}`}>
+                        {idx + 1}
+                      </span>
+                    </div>
                     <p className="text-sm font-semibold text-[#1A1A1A] truncate">{m.name}</p>
                   </div>
                   <div className="text-right flex-shrink-0">
@@ -168,7 +182,7 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
                     <p className="text-[10px] text-[#8FA4C8] mt-0.5">{m.count}x · {pctOfTotal.toFixed(0)}%</p>
                   </div>
                 </div>
-                <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden ml-8">
+                <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden ml-11">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{ width: `${pct}%`, background: barColor }}
