@@ -341,7 +341,7 @@ function LayoutInner({ children, currentPageName }) {
       </div>
 
       {/* Mobile bottom nav — hidden on sm+ (tablet/desktop uses sidebar) */}
-      {!anyModalOpen && <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-[60] border-t border-white/10" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.5)', paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}>
+      <div className="fixed bottom-0 left-0 right-0 sm:hidden bg-[#0A0A0A] flex z-[60] border-t border-white/10" style={{ boxShadow: '0 -4px 24px rgba(0,0,0,0.5)', paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}>
         {mobileMainNav.map((item) => {
           const active = currentPageName === item.page;
           return (
@@ -373,7 +373,7 @@ function LayoutInner({ children, currentPageName }) {
           <Grid3x3 className="w-5 h-5" />
           {t('nav_more')}
         </button>
-      </div>}
+      </div>
 
       {/* Mobile FAB - center-bottom, toggles Plus↔X (X when modal open) */}
       {!isNestedPage &&
