@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { X, PiggyBank } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function AddSavingsModal({ goal, onClose, onSave }) {
+  useLockBodyScroll();
   const { formatCurrency } = useAppSettings();
   const [amount, setAmount] = useState("");
   const [accountId, setAccountId] = useState("");
@@ -42,8 +44,8 @@ export default function AddSavingsModal({ goal, onClose, onSave }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[#00C9A7]/10 flex items-center justify-center text-xl">

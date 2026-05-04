@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, Plus, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const PALETTE = ["#FF6A00","#4F7CFF","#00C9A7","#FF6B6B","#9B59B6","#E91E8C","#F5A623","#1ABC9C","#27AE60","#3498DB","#E67E22","#2C3E50"];
 const EMOJIS = ["📦","🏠","🍔","🚗","❤️","🎬","🛍️","📱","💼","💻","✈️","🎓","🐾","🧴","🎁","⚡","🍕","☕","🏋️","🎮"];
@@ -20,6 +21,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 export default function ManageCategoriesModal({ onClose, onUpdated }) {
+  useLockBodyScroll();
   const { t } = useAppSettings();
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({ name: "", emoji: "📦", color: "#FF6A00", type: "expense", parent_category_key: "" });
@@ -54,8 +56,8 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-[#1A1A1A]">{t('manage_categories')}</h2>
           <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] tap-highlight-fix">

@@ -3,8 +3,10 @@ import { base44 } from "@/api/base44Client";
 import { X, Camera, Upload, Loader2, Sparkles, Check, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { syncAccountBalance } from "@/components/utils/accountSync";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function ReceiptScanModal({ onClose, onSuccess }) {
+  useLockBodyScroll();
   const [step, setStep] = useState("upload"); // upload | reviewing | done
   const [scanning, setScanning] = useState(false);
   const [extracted, setExtracted] = useState(null);
@@ -146,8 +148,8 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-y-auto" style={{ maxHeight: "90dvh" }}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-y-auto overscroll-contain" style={{ maxHeight: "90dvh" }}>
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#F2F4F7]">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#F97316]" />

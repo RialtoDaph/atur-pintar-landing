@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function ConfirmMarkDoneModal({ title, amount, formatCurrency, onConfirm, onClose }) {
+  useLockBodyScroll();
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState([]);
@@ -27,7 +29,7 @@ export default function ConfirmMarkDoneModal({ title, amount, formatCurrency, on
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 px-4 pb-4 sm:pb-0" onClick={!done ? onClose : undefined}>
-      <div className="bg-white my-32 p-5 text-center rounded-2xl w-full max-w-sm shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div role="dialog" aria-modal="true" className="bg-white my-32 p-5 text-center rounded-2xl w-full max-w-sm shadow-xl max-h-[90vh] overflow-y-auto overscroll-contain" onClick={(e) => e.stopPropagation()}>
         {done ?
         <div className="flex flex-col items-center gap-3 py-3">
             <div className="w-16 h-16 rounded-full bg-[#00C9A7]/15 flex items-center justify-center animate-bounce">

@@ -8,8 +8,10 @@ import AlertsDrawerRemindersTab from "@/components/dashboard/AlertsDrawerReminde
 import AlertsDrawerAlertsTab from "@/components/dashboard/AlertsDrawerAlertsTab";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function AlertsDrawer({ onClose, user }) {
+  useLockBodyScroll();
   const [tab, setTab] = useState("alerts");
   const [transactions, setTransactions] = useState([]);
   const [goals, setGoals] = useState([]);
@@ -87,11 +89,13 @@ export default function AlertsDrawer({ onClose, user }) {
 
         {/* Drawer */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
           initial={{ x: "100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="relative w-full max-w-sm h-full bg-[#F2F4F7] overflow-y-auto flex flex-col shadow-2xl"
+          className="relative w-full max-w-sm h-full bg-[#F2F4F7] overflow-y-auto overscroll-contain flex flex-col shadow-2xl"
         >
           {/* Header */}
           <div className="px-5 pt-5 pb-3 bg-[#0A0A0A] sticky top-0 z-10">

@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { X, ChevronDown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function AddBudgetModal({ onClose, onSave, existingCategories, editBudget, existingBudgets = [], month }) {
+  useLockBodyScroll();
   const { t, formatCurrency } = useAppSettings();
 
   const [category, setCategory] = useState(editBudget?.category || "");
@@ -74,8 +76,8 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
   "";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white my-20 p-6 rounded-3xl w-full max-w-md shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white my-20 p-6 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-[#1A1A1A]">
             {isEditing ? t("budget_edit_title") : t("budget_add_title")}

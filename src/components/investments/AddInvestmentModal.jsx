@@ -4,8 +4,10 @@ import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { INVESTMENT_TYPES_LIST } from "./investmentConstants";
 import { useNavigate } from "react-router-dom";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function AddInvestmentModal({ onClose, onSave }) {
+  useLockBodyScroll();
   const { settings } = useAppSettings();
   const lang = settings.language === "en" ? "en" : "id";
   const navigate = useNavigate();
@@ -51,8 +53,8 @@ export default function AddInvestmentModal({ onClose, onSave }) {
   const labelCls = "text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-[#1A1A1A]">
             {lang === "en" ? "Add Investment" : "Tambah Investasi"}

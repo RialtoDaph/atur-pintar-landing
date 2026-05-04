@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 import SplitBillModal from "./SplitBillModal";
 import ReceiptCorrectionForm from "./ReceiptCorrectionForm";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 function formatDisplay(val) {
   if (!val && val !== 0) return "";
@@ -28,6 +29,7 @@ const INTERVALS = [
 ];
 
 export default function AddTransactionModal({ goals = [], onClose, onSave, initialValues = {} }) {
+  useLockBodyScroll();
   const [tab, setTab] = useState("expense");
   const [amountRaw, setAmountRaw] = useState(initialValues.amount ? String(initialValues.amount) : "");
   const [amountFocused, setAmountFocused] = useState(false);
@@ -275,7 +277,9 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
           top: '64px'
         }}>
         <div
-          className="bg-white rounded-3xl shadow-2xl overflow-y-auto pointer-events-auto animate-slide-up-sheet w-[calc(100%-24px)] sm:w-full sm:max-w-md md:max-w-lg"
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-3xl shadow-2xl overflow-y-auto overscroll-contain pointer-events-auto animate-slide-up-sheet w-[calc(100%-24px)] sm:w-full sm:max-w-md md:max-w-lg"
           style={{ maxHeight: "100%" }}
           onClick={e => e.stopPropagation()}>
 

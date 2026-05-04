@@ -2,8 +2,10 @@ import { useState } from "react";
 import { X, Star } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function FeedbackModal({ user, onClose }) {
+  useLockBodyScroll();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [message, setMessage] = useState("");
@@ -37,7 +39,7 @@ export default function FeedbackModal({ user, onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6"
+        className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain"
         role="dialog"
         aria-modal="true"
         aria-labelledby="feedback-title"

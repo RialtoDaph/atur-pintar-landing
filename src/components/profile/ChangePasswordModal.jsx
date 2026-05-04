@@ -2,8 +2,10 @@ import { useState } from "react";
 import { X, Eye, EyeOff, Lock, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function ChangePasswordModal({ onClose }) {
+  useLockBodyScroll();
   const [form, setForm] = useState({ newPassword: "", confirmPassword: "" });
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -31,8 +33,8 @@ export default function ChangePasswordModal({ onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <Lock className="w-5 h-5 text-[#FF6A00]" />

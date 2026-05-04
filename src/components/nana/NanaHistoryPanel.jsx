@@ -1,11 +1,15 @@
 import { X, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function NanaHistoryPanel({ conversations, activeId, onSelect, onClose }) {
+  useLockBodyScroll();
   return (
     <div className="fixed inset-0 z-[90] flex items-end sm:items-center sm:justify-center bg-black/50" onClick={onClose}>
       <div
-        className="w-full sm:max-w-md bg-white dark:bg-[#1A1E25] rounded-t-2xl sm:rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] shadow-xl max-h-[70vh] flex flex-col animate-slide-up-sheet"
+        role="dialog"
+        aria-modal="true"
+        className="w-full sm:max-w-md bg-white dark:bg-[#1A1E25] rounded-t-2xl sm:rounded-2xl border border-[#E2E8F0] dark:border-[#2D2D2D] shadow-xl max-h-[70vh] flex flex-col animate-slide-up-sheet overscroll-contain"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#E2E8F0] dark:border-[#2D2D2D] flex-shrink-0">
@@ -17,7 +21,7 @@ export default function NanaHistoryPanel({ conversations, activeId, onSelect, on
             <X className="w-4 h-4 text-[#1A1A1A] dark:text-white" />
           </button>
         </div>
-        <div className="overflow-y-auto p-2">
+        <div className="overflow-y-auto overscroll-contain p-2">
           {conversations.length === 0 ? (
             <p className="text-xs text-[#8FA4C8] text-center py-8">Belum ada riwayat obrolan</p>
           ) : (

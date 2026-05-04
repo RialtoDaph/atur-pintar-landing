@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 import DateInput from "@/components/utils/DateInput";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 function parseNum(val) { return parseInt(String(val).replace(/\D/g, ""), 10) || 0; }
 function fmtNum(val) {
@@ -32,6 +33,7 @@ const DEBT_TYPES = [
 
 
 export default function AddDebtModal({ onClose, onSave, debt }) {
+  useLockBodyScroll();
   const [form, setForm] = useState({
     name: debt?.name || "", type: debt?.type || "lainnya",
     total_amount: debt?.total_amount || 0, remaining_amount: debt?.remaining_amount || 0,
@@ -73,8 +75,8 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div className="bg-white my-6 p-6 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+        <div role="dialog" aria-modal="true" className="bg-white my-6 p-6 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-lg font-bold text-[#1A1A1A]">{isEdit ? "Edit Utang/Kredit" : "Tambah Utang/Kredit"}</h2>
             <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] tap-highlight-fix"><X className="w-5 h-5" /></button>

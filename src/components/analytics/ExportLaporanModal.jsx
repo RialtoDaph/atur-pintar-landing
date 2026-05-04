@@ -3,12 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { X, Download, FileText, Table, Loader2, Clock, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 function fmt(n) {
   return Math.abs(Math.round(n || 0)).toLocaleString("id-ID");
 }
 
 export default function ExportLaporanModal({ onClose, user }) {
+  useLockBodyScroll();
   const today = new Date().toLocaleDateString("en-CA");
   const firstOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toLocaleDateString("en-CA");
 
@@ -197,8 +199,8 @@ export default function ExportLaporanModal({ onClose, user }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-y-auto" style={{ maxHeight: "92dvh" }}>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-y-auto overscroll-contain" style={{ maxHeight: "92dvh" }}>
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#F2F4F7]">
           <div className="flex items-center gap-2">
             <Download className="w-4 h-4 text-[#F97316]" />

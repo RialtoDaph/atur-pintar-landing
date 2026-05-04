@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { formatRupiah } from "@/components/utils/formatRupiah";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const CATEGORY_CONFIG = {
   housing: { label: "Housing", emoji: "🏠" },
@@ -20,6 +21,7 @@ const CATEGORY_CONFIG = {
 };
 
 export default function GlobalSearch({ onClose }) {
+  useLockBodyScroll();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState({ transactions: [], goals: [], debts: [], investments: [] });
   const [loading, setLoading] = useState(false);
@@ -74,7 +76,9 @@ export default function GlobalSearch({ onClose }) {
   return (
     <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-start justify-center pt-16 px-4" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden overscroll-contain"
         onClick={e => e.stopPropagation()}
       >
         {/* Search input */}
@@ -97,7 +101,7 @@ export default function GlobalSearch({ onClose }) {
           </button>
         </div>
 
-        <div className="max-h-[60vh] overflow-y-auto">
+        <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
           {loading && (
             <div className="flex items-center justify-center py-10">
               <div className="w-6 h-6 rounded-full border-2 border-[#FF6A00] border-t-transparent animate-spin" />

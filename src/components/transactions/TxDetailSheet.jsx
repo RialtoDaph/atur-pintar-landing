@@ -1,7 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Pencil, Calendar, Wallet, Tag } from "lucide-react";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function TxDetailSheet({ tx, cat, accountName, formatCurrency, onClose, onEdit }) {
+  useLockBodyScroll();
   if (!tx) return null;
   const isIncome = tx.type === "income";
   const amountColor = isIncome ? "#4ADE80" : tx.type === "savings" ? "#60A5FA" : "#F87171";
@@ -24,7 +26,9 @@ export default function TxDetailSheet({ tx, cat, accountName, formatCurrency, on
 
         {/* Sheet */}
         <motion.div
-          className="relative w-full bg-[#1A1E25] rounded-t-2xl z-10 pb-8"
+          role="dialog"
+          aria-modal="true"
+          className="relative w-full bg-[#1A1E25] rounded-t-2xl z-10 pb-8 max-h-[90dvh] overflow-y-auto overscroll-contain"
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
           exit={{ y: "100%" }}

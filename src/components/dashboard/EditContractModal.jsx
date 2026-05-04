@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import DateInput from "@/components/utils/DateInput";
 import { parseRupiah } from "@/components/utils/parseRupiah";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const EXPENSE_CATS = [
   { key: "housing", emoji: "🏠", label: "Rumah" },
@@ -24,6 +25,7 @@ const ICONS = ["📱","🏠","🚗","🍔","💳","⚡","🎬","🛍️","💼",
 const INTERVALS = ["daily", "weekly", "monthly", "yearly"];
 
 export default function EditContractModal({ contract, onClose, onSave }) {
+  useLockBodyScroll();
   const { t, settings } = useAppSettings();
   const [data, setData] = useState(contract || { type: contract?.type || "expense" });
   const [saving, setSaving] = useState(false);
@@ -52,8 +54,8 @@ export default function EditContractModal({ contract, onClose, onSave }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center">
-      <div className="bg-white my-10 px-1 rounded-t-2xl sm:rounded-2xl w-full sm:w-96 max-h-[90vh] overflow-y-auto shadow-2xl">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white my-10 px-1 rounded-t-2xl sm:rounded-2xl w-full sm:w-96 max-h-[90vh] overflow-y-auto overscroll-contain shadow-2xl">
         <div className="sticky top-0 bg-white border-b border-[#F2F4F7] px-5 py-4 flex items-center justify-between rounded-t-2xl">
           <h2 className="font-bold text-[#1A1A1A]">Edit Kontrak</h2>
           <button onClick={onClose} className="p-1 hover:bg-[#F2F4F7] rounded-lg transition-colors">

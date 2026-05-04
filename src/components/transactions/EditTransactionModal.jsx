@@ -6,6 +6,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const DEFAULT_CATEGORIES = {
   expense: [
@@ -26,6 +27,7 @@ const DEFAULT_CATEGORIES = {
 };
 
 export default function EditTransactionModal({ transaction, goals = [], onClose, onSave }) {
+  useLockBodyScroll();
   const { t, settings } = useAppSettings();
   // "savings" transactions cannot be edited via this modal (only via Goals page).
   // Without preserving the original type here, save would silently downgrade savings → expense
@@ -153,8 +155,8 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+        <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
           <div className="flex items-center justify-between mb-4">
              <h2 className="text-lg font-bold text-[#1A1A1A]">{t('edit_transaction')}</h2>
              <div className="flex items-center gap-2">

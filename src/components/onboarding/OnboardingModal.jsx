@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, ArrowRight, PlusCircle, Target, BarChart2, CreditCard, Settings } from "lucide-react";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const STEPS = [
   {
@@ -39,13 +40,14 @@ const STEPS = [
 ];
 
 export default function OnboardingModal({ onClose }) {
+  useLockBodyScroll();
   const [step, setStep] = useState(0);
   const current = STEPS[step];
   const isLast = step === STEPS.length - 1;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto overscroll-contain">
         {/* Progress bar */}
         <div className="h-1 bg-[#F2F4F7]">
           <div

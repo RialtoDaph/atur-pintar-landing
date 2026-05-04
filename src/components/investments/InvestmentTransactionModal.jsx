@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, ShoppingCart, TrendingDown } from "lucide-react";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 function formatRupiah(n) {
   if (!n) return "";
@@ -11,6 +12,7 @@ function parseNum(str) {
 }
 
 export default function InvestmentTransactionModal({ investment, type, onClose, onSave }) {
+  useLockBodyScroll();
   const [amountDisplay, setAmountDisplay] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [saving, setSaving] = useState(false);
@@ -32,8 +34,8 @@ export default function InvestmentTransactionModal({ investment, type, onClose, 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl p-6">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">

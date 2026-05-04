@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { X, CreditCard } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }) {
+  useLockBodyScroll();
   const { formatCurrency } = useAppSettings();
   const [amount, setAmount] = useState(debt?.monthly_payment ? String(debt.monthly_payment) : "");
   const [note, setNote] = useState(`Cicilan ${debt?.name || ""}`);
@@ -28,8 +30,8 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center text-xl">

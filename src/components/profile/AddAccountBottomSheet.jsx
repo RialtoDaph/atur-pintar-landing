@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { X, Check, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import AccountLogo from "@/components/ui/AccountLogo";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 function parseNum(str) {
   return parseInt(String(str).replace(/[^0-9]/g, ""), 10) || 0;
@@ -10,6 +11,7 @@ function parseNum(str) {
 
 // ─── Form Bottom Sheet ───────────────────────────────────────────────────────
 function FormBottomSheet({ preset, accountType, onBack, onClose, onSave }) {
+  useLockBodyScroll();
   const [namaRekening, setNamaRekening] = useState(preset.name);
   const [saldoDisplay, setSaldoDisplay] = useState("");
   const [isDefault, setIsDefault] = useState(false);
@@ -44,7 +46,9 @@ function FormBottomSheet({ preset, accountType, onBack, onClose, onSave }) {
     <>
       <div className="fixed inset-0 bg-black/60 z-50" onClick={onClose} />
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl overscroll-contain"
         style={{ maxHeight: "90dvh", display: "flex", flexDirection: "column" }}
       >
         {/* Handle */}
@@ -166,6 +170,7 @@ function FormBottomSheet({ preset, accountType, onBack, onClose, onSave }) {
 
 // ─── Main: Preset List Bottom Sheet ──────────────────────────────────────────
 export default function AddAccountBottomSheet({ accountType, onClose, onSave }) {
+  useLockBodyScroll();
   const [defaultAccounts, setDefaultAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPreset, setSelectedPreset] = useState(null);
@@ -199,7 +204,9 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
 
       {/* Bottom Sheet */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl overscroll-contain"
         style={{ maxHeight: "80dvh", display: "flex", flexDirection: "column" }}
       >
         {/* Handle bar */}

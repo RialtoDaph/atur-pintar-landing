@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import { X, CheckCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import AccountAvatar from "@/components/ui/AccountAvatar";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 function formatIDR(n) {
   return "Rp" + Math.round(n || 0).toLocaleString("id-ID");
 }
 
-export default function AccountPickerModal({ isOpen, onClose, onConfirm, title, amount }) {
+function AccountPickerInner({ onClose, onConfirm, title, amount }) {
+  useLockBodyScroll();
   const [accounts, setAccounts] = useState([]);
   const [selected, setSelected] = useState(null);
   const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) return;
     base44.auth.me().then(u => {
       base44.entities.Account.filter({ created_by: u.email }, "name").then(list => {
         setAccounts(list || []);
@@ -21,9 +22,7 @@ export default function AccountPickerModal({ isOpen, onClose, onConfirm, title, 
         if (def) setSelected(def.id);
       });
     });
-  }, [isOpen]);
-
-  if (!isOpen) return null;
+  }, []);
 
   const selectedAcc = accounts.find(a => a.id === selected);
   const willBeNegative = selectedAcc && (selectedAcc.balance || 0) < (amount || 0);
@@ -38,8 +37,8 @@ export default function AccountPickerModal({ isOpen, onClose, onConfirm, title, 
   }
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm shadow-2xl p-5">
+    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm shadow-2xl p-5 max-h-[90vh] overflow-y-auto overscroll-contain">
         {confirming ? (
           <>
             <p className="text-sm font-bold text-[#1A1A1A] mb-2">⚠️ Saldo Tidak Cukup</p>
@@ -92,4 +91,9 @@ export default function AccountPickerModal({ isOpen, onClose, onConfirm, title, 
       </div>
     </div>
   );
+}
+
+export default function AccountPickerModal({ isOpen, onClose, onConfirm, title, amount }) {
+  if (!isOpen) return null;
+  return <AccountPickerInner onClose={onClose} onConfirm={onConfirm} title={title} amount={amount} />;
 }

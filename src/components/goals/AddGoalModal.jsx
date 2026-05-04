@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { parseRupiah } from "@/components/utils/parseRupiah";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const ICONS = ["💰", "🏠", "✈️", "🚗", "💍", "🎓", "🏖️", "💻", "🛍️", "🎯"];
 const COLORS = [
@@ -19,6 +20,7 @@ function numToDisplay(val) {
 }
 
 export default function AddGoalModal({ onClose, onSave, goal = null }) {
+  useLockBodyScroll();
   const { t, settings } = useAppSettings();
   const [form, setForm] = useState(() => {
     if (!goal) return { name: "", target_amount: "", current_amount: "", icon: "💰", color: "blue", deadline: "", description: "" };
@@ -89,7 +91,7 @@ export default function AddGoalModal({ onClose, onSave, goal = null }) {
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm p-4"
       onClick={(e) => {if (e.target === e.currentTarget) onClose();}}>
       
-      <div className="bg-white my-8 p-6 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto"
+      <div className="bg-white my-8 p-6 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain"
 
       role="dialog"
       aria-modal="true"

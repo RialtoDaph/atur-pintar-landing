@@ -3,8 +3,10 @@ import { X, Plus, Users, Equal, List, Mail } from "lucide-react";
 import { formatRupiah } from "@/components/utils/formatRupiah";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
+  useLockBodyScroll();
   const { t } = useAppSettings();
   const [participants, setParticipants] = useState([{ name: "Saya", email: "" }]);
   const [newName, setNewName] = useState("");
@@ -88,8 +90,8 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain">
         {/* Header */}
         <div className="sticky top-0 bg-white rounded-t-3xl px-6 pt-6 pb-4 border-b border-[#E2E8F0] z-10">
           <div className="flex items-center justify-between mb-1">
