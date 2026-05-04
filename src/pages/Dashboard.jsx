@@ -23,6 +23,8 @@ import BossBattleCard from "@/components/gamification/BossBattleCard";
 const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardInsights"));
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
 const CashflowForecast = lazy(() => import("@/components/dashboard/CashflowForecast"));
+const GoalsProgressWidget = lazy(() => import("@/components/dashboard/GoalsProgressWidget"));
+const InvestmentSummaryWidget = lazy(() => import("@/components/dashboard/InvestmentSummaryWidget"));
 
 const LazyFallback = () => (
   <div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
@@ -217,10 +219,18 @@ export default function Dashboard() {
         </div>
 
         {/* Budget Widget — overlaps header/body boundary */}
-        <div className="max-w-2xl md:max-w-4xl mx-auto px-4 -mt-8 relative z-10">
+        <div className="max-w-2xl md:max-w-4xl mx-auto px-4 -mt-8 relative z-10 space-y-3">
           <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
             <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
           </Suspense>
+          <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
+            <GoalsProgressWidget goals={goals} loading={goalsLoading} />
+          </Suspense>
+          {user?.onboarding_completed && (
+            <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
+              <InvestmentSummaryWidget user={user} />
+            </Suspense>
+          )}
         </div>
 
         {showSampleBanner && (
