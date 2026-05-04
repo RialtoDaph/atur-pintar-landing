@@ -14,7 +14,7 @@ import DailySpendingCard from "@/components/analytics/DailySpendingCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
 import FinancialScoreCard from "@/components/analytics/FinancialScoreCard";
 import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChart";
-import TrendChartCard from "@/components/analytics/TrendChartCard";
+import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
 import { Flame } from "lucide-react";
 
 const DEFAULT_ANALYTICS_CARDS = [
@@ -439,12 +439,17 @@ export default function Analytics() {
           )
         )}
 
-        {/* Tren Pemasukan & Pengeluaran */}
+        {/* Budget vs Aktual */}
         {isPremium ? (
-          <TrendChartCard trendData={trendData} periodSubtitle={periodSubtitle} />
+          <BudgetActualWidget
+            budgets={budgets}
+            transactions={transactions}
+            allCategoriesConfig={allCategoriesConfig}
+            periodSubtitle={periodSubtitle}
+          />
         ) : (
-          <PremiumBlurCard title="📈 Tren Pemasukan & Pengeluaran">
-            <TrendChartCard trendData={trendData} periodSubtitle={periodSubtitle} />
+          <PremiumBlurCard title="💸 Budget vs Aktual">
+            <BudgetActualWidget budgets={budgets} transactions={transactions} allCategoriesConfig={allCategoriesConfig} periodSubtitle={periodSubtitle} />
           </PremiumBlurCard>
         )}
 
