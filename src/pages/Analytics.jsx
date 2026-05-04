@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAppSettings } from "@/components/utils/useAppSettings";
@@ -12,6 +12,8 @@ import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChar
 import BehaviorHeroCard from "@/components/analytics/BehaviorHeroCard";
 import BehaviorInsightsTabs from "@/components/analytics/BehaviorInsightsTabs";
 import NanaAIHub from "@/components/analytics/NanaAIHub";
+
+const PortfolioSummary = lazy(() => import("@/components/dashboard/PortfolioSummary"));
 
 const DEFAULT_ANALYTICS_CARDS = [
   { id: "spending_chart", visible: true },
@@ -410,6 +412,11 @@ export default function Analytics() {
             </PremiumBlurCard>
           )
         )}
+
+        {/* 💼 Portofolio Investasi */}
+        <Suspense fallback={<div className="bg-white rounded-2xl h-36 animate-pulse shadow-sm" />}>
+          <PortfolioSummary user={user} periodSubtitle={periodSubtitle} />
+        </Suspense>
 
       </div>
 

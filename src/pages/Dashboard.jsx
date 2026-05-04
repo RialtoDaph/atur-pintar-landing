@@ -26,7 +26,6 @@ const DashboardInsights = lazy(() => import("@/components/dashboard/DashboardIns
 const BudgetAlertWidget = lazy(() => import("@/components/dashboard/BudgetAlertWidget"));
 const CashflowForecast = lazy(() => import("@/components/dashboard/CashflowForecast"));
 const GoalsProgressWidget = lazy(() => import("@/components/dashboard/GoalsProgressWidget"));
-const PortfolioSummary = lazy(() => import("@/components/dashboard/PortfolioSummary"));
 
 const LazyFallback = () => (
   <div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
@@ -223,9 +222,6 @@ export default function Dashboard() {
           </Suspense>
           <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
             <GoalsProgressWidget goals={goals} loading={goalsLoading} />
-          </Suspense>
-          <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
-            <PortfolioSummary user={user} />
           </Suspense>
         </div>
 
