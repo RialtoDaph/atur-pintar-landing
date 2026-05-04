@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { SlidersHorizontal, Search, X, ScanLine } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -59,11 +59,11 @@ export default function Transactions() {
     return `${sym}${formatted}`;
   }, [settings]);
 
-  const fetchingRef = useState(false);
+  const fetchingRef = useRef(false);
 
   async function fetchData(forceRefresh = false) {
-    if (fetchingRef[0]) return;
-    fetchingRef[1](true);
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
     setLoading(true);
     try {
       const user = await base44.auth.me();
@@ -99,7 +99,7 @@ export default function Transactions() {
       }));
     } finally {
       setLoading(false);
-      fetchingRef[1](false);
+      fetchingRef.current = false;
     }
   }
 

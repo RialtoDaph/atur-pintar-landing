@@ -57,10 +57,24 @@ export default function InvestmentsPage() {
   const portfolioTotalJual = transactions.filter(tx => tx.type === "sell").reduce((s, tx) => s + (tx.total_amount || 0), 0);
   const portfolioSaldoAktif = portfolioTotalBeli - portfolioTotalJual;
 
-  async function handleDelete(id) {
-    if (!window.confirm("Hapus investasi ini?")) return;
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+
+  async function confirmDelete(id) {
+    const inv = investments.find(i => i.id === id);
+    if (!inv) { setDeleteConfirm(null); return; }
+    // Reverse account balance for all linked investment transactions
+    const invTxs = transactions.filter(tx => tx.investment_id === id);
+    if (inv.account_id) {
+      for (const tx of invTxs) {
+        const txType = tx.type === "buy" ? "expense" : "income";
+        await syncAccountBalance(inv.account_id, tx.total_amount || 0, txType, -1).catch(() => {});
+      }
+    }
+    // Delete all linked investment transactions, then the investment itself
+    await Promise.all(invTxs.map(tx => base44.entities.InvestmentTransaction.delete(tx.id).catch(() => {})));
     await base44.entities.Investment.delete(id);
-    setInvestments(prev => prev.filter(inv => inv.id !== id));
+    setDeleteConfirm(null);
+    loadData();
   }
 
   async function handleSaveInvestment(data) {
@@ -188,7 +202,7 @@ export default function InvestmentsPage() {
                       </p>
                     </div>
                   </div>
-                  <button onClick={() => handleDelete(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors p-1">
+                  <button onClick={() => setDeleteConfirm(inv.id)} className="text-[#CBD5E0] hover:text-[#FF6B6B] transition-colors p-1">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -254,6 +268,23 @@ export default function InvestmentsPage() {
           onClose={() => setTxModal(null)}
           onSave={(amount, date) => handleSaveTransaction(txModal.inv.id, txModal.type, amount, date)}
         />
+      )}
+
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+            <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Hapus Investasi?</p>
+            <p className="text-xs text-[#8FA4C8] mb-4">Semua transaksi beli/jual terkait juga akan dihapus dan saldo akun akan disesuaikan.</p>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setDeleteConfirm(null)} className="px-4 py-2 rounded-lg text-sm font-semibold text-[#8FA4C8] hover:bg-[#F2F4F7] transition-colors">
+                Batal
+              </button>
+              <button onClick={() => confirmDelete(deleteConfirm)} className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#FF6B6B] hover:bg-[#FF5252] transition-colors">
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
