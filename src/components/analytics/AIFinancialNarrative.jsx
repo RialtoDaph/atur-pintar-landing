@@ -137,14 +137,6 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
                   >
                     💸 Budget
                   </button>
-                  <button
-                    onClick={() => setActiveChart("goals")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                      activeChart === "goals" ? "bg-white text-[#1A1A1A] shadow-sm" : "text-[#8FA4C8]"
-                    }`}
-                  >
-                    🎯 Goals
-                  </button>
                 </div>
               </div>
 
@@ -208,45 +200,6 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
                   );
                 })()}
 
-                {activeChart === "goals" && (
-                  <div>
-                    {goals.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center h-40 text-[#8FA4C8] text-sm">
-                        <span className="text-3xl mb-2">🎯</span>
-                        <p>Belum ada savings goal yang dibuat.</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3 py-2">
-                        {goals.map((goal) => {
-                          const pct = Math.min(100, Math.round(((goal.current_amount || 0) / (goal.target_amount || 1)) * 100));
-                          return (
-                            <div key={goal.id} className="space-y-1">
-                              <div className="flex items-center justify-between text-xs">
-                                <span className="font-semibold text-[#1A1A1A] flex items-center gap-1">
-                                  {goal.icon || "🎯"} {goal.name}
-                                </span>
-                                <span className="font-bold" style={{ color: pct >= 100 ? "#00C9A7" : "#FF6A00" }}>{pct}%</span>
-                              </div>
-                              <div className="w-full h-3 bg-[#F2F4F7] rounded-full overflow-hidden">
-                                <div
-                                  className="h-full rounded-full transition-all duration-500"
-                                  style={{
-                                    width: `${pct}%`,
-                                    background: pct >= 100 ? "#00C9A7" : `linear-gradient(90deg, #FF6A00, #FF9A3C)`
-                                  }}
-                                />
-                              </div>
-                              <div className="flex justify-between text-[10px] text-[#8FA4C8]">
-                                <span>{formatCurrency(goal.current_amount || 0)}</span>
-                                <span>{formatCurrency(goal.target_amount)}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
 
               {/* Metrics strip */}
