@@ -115,7 +115,9 @@ const AuthenticatedApp = () => {
       <Route path="/Subscription" element={<LayoutWrapper currentPageName="Subscription"><Subscription /></LayoutWrapper>} />
       <Route path="/AdminSubscriptions" element={<LayoutWrapper currentPageName="AdminSubscriptions"><AdminSubscriptions /></LayoutWrapper>} />
       <Route path="/ProfileSettings" element={<LayoutWrapper currentPageName="ProfileSettings"><ProfileSettings /></LayoutWrapper>} />
-      <Route path="/Notifications" element={<LayoutWrapper currentPageName="Notifications"><Notifications /></LayoutWrapper>} />
+      <Route path="/Notifications" element={<Navigate to="/Dashboard" replace />} />
+      <Route path="/Reminders" element={<Navigate to="/Dashboard" replace />} />
+      <Route path="/Alerts" element={<Navigate to="/Dashboard" replace />} />
       <Route path="/Accounts" element={<LayoutWrapper currentPageName="Accounts"><Accounts /></LayoutWrapper>} />
       <Route path="/SharedFinance" element={<LayoutWrapper currentPageName="SharedFinance"><SharedFinance /></LayoutWrapper>} />
       <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminProtect><AdminDashboard /></AdminProtect></LayoutWrapper>} />

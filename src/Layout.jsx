@@ -119,7 +119,6 @@ function LayoutInner({ children, currentPageName }) {
 
 
   const navSettingsItems = [
-  { name: "Notifications", label: "Notifikasi", icon: Bell, page: "Notifications" },
   { name: "Settings", label: t('nav_settings'), icon: Settings, page: "Settings" }];
 
 

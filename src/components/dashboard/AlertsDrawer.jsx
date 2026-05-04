@@ -1,98 +1,53 @@
 import { useState, useEffect } from "react";
-import { X, TrendingUp, AlertTriangle, CheckCircle, Zap, Info, Bell, Check, CheckCheck } from "lucide-react";
+import { X, Bell, Calendar, Sparkles } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import DashboardInsights from "@/components/dashboard/DashboardInsights";
 import SmartAlertsPanel from "@/components/dashboard/SmartAlertsPanel";
 import AnomalyDetector from "@/components/analytics/AnomalyDetector";
+import AlertsDrawerRemindersTab from "@/components/dashboard/AlertsDrawerRemindersTab";
+import AlertsDrawerAlertsTab from "@/components/dashboard/AlertsDrawerAlertsTab";
 import { AnimatePresence, motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-
-const ALERT_CONFIG = {
-  spending_spike:      { icon: TrendingUp,    color: "text-red-500",    bg: "bg-red-50",    label: "Spending Spike" },
-  bill_upcoming:       { icon: AlertTriangle, color: "text-orange-500", bg: "bg-orange-50", label: "Tagihan" },
-  goal_near:           { icon: CheckCircle,   color: "text-green-500", bg: "bg-green-50",  label: "Tujuan" },
-  savings_opportunity: { icon: Zap,           color: "text-blue-500",  bg: "bg-blue-50",  label: "Peluang" },
-  unusual_pattern:     { icon: Info,          color: "text-yellow-600",bg: "bg-yellow-50",label: "Pola Aneh" },
-  budget_exceeded:     { icon: AlertTriangle, color: "text-red-600",   bg: "bg-red-50",   label: "Budget" },
-};
-
-const TYPE_EMOJI = { tagihan: "🧾", cicilan: "🏦", tabungan: "🐷", langganan: "📱", lainnya: "📌" };
-
-function getDaysUntilDue(dueDay) {
-  const today = new Date();
-  const thisMonth = new Date(today.getFullYear(), today.getMonth(), dueDay);
-  if (thisMonth < today) {
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, dueDay);
-    return Math.ceil((nextMonth - today) / (1000 * 60 * 60 * 24));
-  }
-  return Math.ceil((thisMonth - today) / (1000 * 60 * 60 * 24));
-}
+import { useNavigate } from "react-router-dom";
 
 export default function AlertsDrawer({ onClose, user }) {
+  const [tab, setTab] = useState("alerts");
   const [transactions, setTransactions] = useState([]);
   const [goals, setGoals] = useState([]);
-  const [alertRecords, setAlertRecords] = useState([]);
+  const [alerts, setAlerts] = useState([]);
   const [adminNotifs, setAdminNotifs] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [rawAlerts, setRawAlerts] = useState([]);
   const navigate = useNavigate();
 
-  const now = new Date();
-  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
-  useEffect(() => {
+  async function loadData() {
     if (!user?.email) return;
-    Promise.all([
+    const [tx, gl, al, notifs, rems] = await Promise.all([
       base44.entities.Transaction.filter({ created_by: user.email }, "-date", 100),
       base44.entities.SavingsGoal.filter({ created_by: user.email }, "-created_date"),
       base44.entities.Alert.filter({ created_by: user.email }, "-created_date", 50),
       base44.entities.AdminNotification.list(),
-      base44.entities.Reminder.filter({ is_active: true, created_by: user.email }),
-    ]).then(([tx, gl, alerts, notifs, rems]) => {
-      setTransactions(tx);
-      setGoals(gl);
-      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const seenTitles = new Set();
-      // Show: unread OR created within 7 days, deduped by title, max 10
-      const dedupedAlerts = (alerts || []).filter(a => {
-        const isUnread = a.status === 'unread';
-        const isRecent = a.created_date && a.created_date > sevenDaysAgo;
-        if (!isUnread && !isRecent) return false;
-        if (seenTitles.has(a.title)) return false;
-        seenTitles.add(a.title);
-        return true;
-      }).slice(0, 10);
-      setRawAlerts(alerts || []);
-      setAlertRecords(dedupedAlerts);
-      const myNotifs = (notifs || []).filter(n =>
-        (n.target_type === 'all' || n.target_email === user.email) && !n.read_by?.includes(user.email)
-      );
-      setAdminNotifs(myNotifs);
-      const upcoming = (rems || []).filter(r => {
-        if (r.last_dismissed_month === currentMonth) return false;
-        return getDaysUntilDue(r.due_day) <= 7;
-      }).map(r => ({ ...r, daysLeft: getDaysUntilDue(r.due_day) })).sort((a, b) => a.daysLeft - b.daysLeft);
-      setReminders(upcoming);
-      setLoading(false);
-      // Mark unread alerts as read (don't await, fire and forget)
-      alerts.filter(a => a.status === 'unread').forEach(a => base44.entities.Alert.update(a.id, { status: "read" }).catch(() => {}));
-      myNotifs.forEach(n => {
-        base44.entities.AdminNotification.update(n.id, { read_by: [...(n.read_by || []), user.email] }).catch(() => {});
-      });
+      base44.entities.Reminder.filter({ created_by: user.email }, "-created_date"),
+    ]);
+    setTransactions(tx);
+    setGoals(gl);
+    setAlerts(al || []);
+    const myNotifs = (notifs || []).filter(n =>
+      (n.target_type === "all" || n.target_email === user.email) && !n.read_by?.includes(user.email)
+    );
+    setAdminNotifs(myNotifs);
+    setReminders((rems || []).filter(r => !r.type || r.type === "tagihan" || r.type === "lainnya"));
+    setLoading(false);
+
+    // Mark admin notifs as read
+    myNotifs.forEach(n => {
+      base44.entities.AdminNotification.update(n.id, { read_by: [...(n.read_by || []), user.email] }).catch(() => {});
     });
+  }
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.email]);
-
-  async function dismissReminder(r) {
-    await base44.entities.Reminder.update(r.id, { last_dismissed_month: currentMonth });
-    setReminders(prev => prev.filter(x => x.id !== r.id));
-  }
-
-  async function markAllRead() {
-    await Promise.all(rawAlerts.filter(a => a.status === 'unread').map(a => base44.entities.Alert.update(a.id, { status: 'read' }).catch(() => {})));
-    setAlertRecords(prev => prev.map(a => ({ ...a, status: 'read' })));
-  }
 
   function handleAlertClick(alert) {
     if (alert.action_url) {
@@ -100,6 +55,23 @@ export default function AlertsDrawer({ onClose, user }) {
       navigate(alert.action_url);
     }
   }
+
+  const unreadCount = alerts.filter(a => a.status === "unread" && a.status !== "dismissed").length + adminNotifs.length;
+  const upcomingCount = (() => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    return reminders.filter(r => {
+      if (!r.is_active || r.last_dismissed_month === currentMonth) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const maxDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+      const clampedDay = Math.min(r.due_day, maxDay);
+      let target = new Date(today.getFullYear(), today.getMonth(), clampedDay);
+      if (target <= today) target = new Date(today.getFullYear(), today.getMonth() + 1, clampedDay);
+      const days = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+      return days <= 7;
+    }).length;
+  })();
 
   return (
     <AnimatePresence>
@@ -122,133 +94,81 @@ export default function AlertsDrawer({ onClose, user }) {
           className="relative w-full max-w-sm h-full bg-[#F2F4F7] overflow-y-auto flex flex-col shadow-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 bg-[#0A0A0A] sticky top-0 z-10">
-            <div>
-              <p className="text-white font-bold text-sm">Insights & Alerts</p>
-              <p className="text-[#8FA4C8] text-xs mt-0.5">Ringkasan keuangan kamu</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {rawAlerts.some(a => a.status === 'unread') && (
-                <button onClick={markAllRead} className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-white/10 text-white/70 hover:bg-white/20 text-[10px] font-semibold transition-colors">
-                  <CheckCheck className="w-3 h-3" /> Baca Semua
-                </button>
-              )}
+          <div className="px-5 pt-5 pb-3 bg-[#0A0A0A] sticky top-0 z-10">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-[#8FA4C8] text-xs">Pusat Notifikasi</p>
+                <p className="text-white font-bold text-base mt-0.5">Pengingat & Notifikasi</p>
+              </div>
               <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors tap-highlight-fix">
                 <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex bg-white/10 rounded-xl p-1">
+              <button
+                onClick={() => setTab("alerts")}
+                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 relative ${
+                  tab === "alerts" ? "bg-[#FF6A00] text-white shadow-sm" : "text-[#8FA4C8]"
+                }`}
+              >
+                <Bell className="w-3.5 h-3.5" /> Notif
+                {unreadCount > 0 && tab !== "alerts" && (
+                  <span className="absolute top-0.5 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => setTab("reminders")}
+                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 relative ${
+                  tab === "reminders" ? "bg-[#FF6A00] text-white shadow-sm" : "text-[#8FA4C8]"
+                }`}
+              >
+                <Calendar className="w-3.5 h-3.5" /> Pengingat
+                {upcomingCount > 0 && tab !== "reminders" && (
+                  <span className="absolute top-0.5 right-1 w-4 h-4 bg-[#FF6A00] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {upcomingCount}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => setTab("insights")}
+                className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                  tab === "insights" ? "bg-[#FF6A00] text-white shadow-sm" : "text-[#8FA4C8]"
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5" /> Insights
               </button>
             </div>
           </div>
 
           {/* Content */}
-          <div className="flex-1 p-4 space-y-3">
+          <div className="flex-1 p-4">
             {loading ? (
               <div className="space-y-3">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />
-                ))}
+                {[1, 2, 3].map(i => <div key={i} className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />)}
               </div>
+            ) : tab === "alerts" ? (
+              <AlertsDrawerAlertsTab
+                adminNotifs={adminNotifs}
+                alerts={alerts}
+                onReload={loadData}
+                onAlertClick={handleAlertClick}
+              />
+            ) : tab === "reminders" ? (
+              <AlertsDrawerRemindersTab
+                user={user}
+                reminders={reminders}
+                onReload={loadData}
+              />
             ) : (
-              <>
-                {/* Admin Notifications */}
-                {adminNotifs.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest px-1">Dari Admin ({adminNotifs.length})</p>
-                    {adminNotifs.map(n => (
-                      <div key={n.id} className="bg-white rounded-2xl p-3 shadow-sm ring-2 ring-[#FF6A00]/20">
-                        <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
-                            <Bell className="w-4 h-4 text-[#FF6A00]" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-[#1A1A1A] text-sm">{n.title}</p>
-                            <p className="text-[#4A5568] text-xs mt-0.5 leading-relaxed">{n.message}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Upcoming Reminders */}
-                {reminders.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest px-1">Pengingat ({reminders.length})</p>
-                    {reminders.map(r => {
-                      const urgent = r.daysLeft <= 3;
-                      return (
-                        <div key={r.id} className={`bg-white rounded-2xl p-3 shadow-sm flex items-center gap-3 ${urgent ? "ring-2 ring-orange-200" : ""}`}>
-                          <span className="text-xl">{r.icon || TYPE_EMOJI[r.type] || "📌"}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-[#0A0A0A] truncate">{r.title}</p>
-                            <p className="text-xs text-[#8FA4C8]">
-                              {r.daysLeft === 0 ? "Hari ini" : r.daysLeft === 1 ? "Besok" : `${r.daysLeft} hari lagi`}
-                            </p>
-                          </div>
-                          <button onClick={() => dismissReminder(r)} className="w-7 h-7 rounded-full bg-green-50 flex items-center justify-center hover:bg-green-100 transition-colors flex-shrink-0">
-                            <Check className="w-3.5 h-3.5 text-green-500" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* Alert entity records — unread notifications */}
-                {alertRecords.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest px-1">Notifikasi Baru ({alertRecords.length})</p>
-                    {alertRecords.map(alert => {
-                      const cfg = ALERT_CONFIG[alert.type] || ALERT_CONFIG.unusual_pattern;
-                      const Icon = cfg.icon;
-                      return (
-                        <div key={alert.id}
-                          onClick={() => handleAlertClick(alert)}
-                          className={`bg-white rounded-2xl p-3 shadow-sm ring-2 ring-[#FF6A00]/20 ${alert.action_url ? 'cursor-pointer hover:bg-[#F8FAFC] active:scale-98 transition-colors' : ''}`}>
-                          <div className="flex items-start gap-3">
-                            <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.bg}`}>
-                              <Icon className={`w-4 h-4 ${cfg.color}`} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-[#1A1A1A] text-sm">{alert.title}</p>
-                              <p className="text-[#4A5568] text-xs mt-0.5 leading-relaxed">{alert.message}</p>
-                              {alert.severity && (
-                                <span className={`inline-block text-[10px] font-medium px-2 py-0.5 rounded-full mt-1.5 ${
-                                  alert.severity === "high" ? "bg-red-100 text-red-700" :
-                                  alert.severity === "medium" ? "bg-yellow-100 text-yellow-700" : "bg-blue-100 text-blue-700"
-                                }`}>
-                                  {alert.severity === "high" ? "Penting" : alert.severity === "medium" ? "Sedang" : "Info"}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <Link
-                      to={createPageUrl("Alerts")}
-                      onClick={onClose}
-                      className="block text-center text-xs font-semibold text-[#FF6A00] py-2 hover:underline"
-                    >
-                      Lihat semua riwayat alert →
-                    </Link>
-                  </div>
-                )}
-                {alertRecords.length === 0 && (
-                  <div className="bg-white rounded-2xl p-4 flex items-center gap-3 shadow-sm">
-                    <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[#1A1A1A] text-sm">Semua beres!</p>
-                      <p className="text-[#8FA4C8] text-xs">Tidak ada notifikasi baru</p>
-                    </div>
-                    <Link to={createPageUrl("Alerts")} onClick={onClose} className="ml-auto text-xs text-[#FF6A00] font-semibold hover:underline flex-shrink-0">Riwayat</Link>
-                  </div>
-                )}
+              <div className="space-y-3">
                 <SmartAlertsPanel user={user} />
                 <AnomalyDetector transactions={transactions} />
                 <DashboardInsights transactions={transactions} goals={goals} />
-              </>
+              </div>
             )}
           </div>
         </motion.div>
