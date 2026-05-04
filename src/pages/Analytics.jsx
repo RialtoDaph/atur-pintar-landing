@@ -12,7 +12,6 @@ import AIFinancialNarrative from "@/components/analytics/AIFinancialNarrative";
 import DateRangeFilter from "@/components/analytics/DateRangeFilter";
 import DailySpendingCard from "@/components/analytics/DailySpendingCard";
 import SpendingChart from "@/components/dashboard/SpendingChart";
-import HeroSummaryCard from "@/components/analytics/HeroSummaryCard";
 import FinancialScoreCard from "@/components/analytics/FinancialScoreCard";
 import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChart";
 import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
@@ -375,19 +374,6 @@ export default function Analytics() {
 
         {/* Financial Score Card — paling atas */}
         <FinancialScoreCard user={user} />
-
-        {/* Hero Summary Card — selalu tampil di paling atas */}
-        <HeroSummaryCard
-          goals={goals}
-          investments={investments}
-          debts={debts}
-          transactions={transactions}
-          user={user}
-          hasPrevData={hasPrevData}
-          prevIncome={prevIncome}
-          prevExpenses={prevExpenses}
-          prevSavingsRate={prevSavingsRate}
-        />
 
         {/* AI Financial Narrative */}
         <AIFinancialNarrative
