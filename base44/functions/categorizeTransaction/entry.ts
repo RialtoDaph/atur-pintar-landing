@@ -55,7 +55,9 @@ Deno.serve(async (req) => {
     }
   }
 
-  // 3. Use AI as fallback for unrecognized transactions
+  // 3. Use AI as fallback for unrecognized transactions.
+  // Wrap in try/catch so an LLM outage doesn't 500 the whole categorize call —
+  // frontend can still proceed with the "Lainnya" default.
   const prompt = `Kamu adalah asisten kategorisasi transaksi keuangan di Indonesia.
 Tentukan kategori yang paling tepat untuk transaksi berikut:
 - Catatan/Deskripsi: "${note}"
@@ -64,8 +66,11 @@ Tentukan kategori yang paling tepat untuk transaksi berikut:
 Pilih SATU dari kategori berikut dan balas HANYA nama kategorinya saja, tanpa penjelasan:
 Makan & Minum, Transportasi, Belanja, Tagihan & Utilitas, Langganan Digital, Kesehatan, Hiburan, Pendidikan, Belanja Bulanan, Asuransi & Keuangan, Gaji & Penghasilan, Lainnya`;
 
-  const aiResult = await base44.integrations.Core.InvokeLLM({ prompt });
-  const aiCategory = typeof aiResult === 'string' ? aiResult.trim() : String(aiResult).trim();
-
-  return Response.json({ category_name: aiCategory, source: 'ai', confidence: 0.65 });
+  try {
+    const aiResult = await base44.integrations.Core.InvokeLLM({ prompt });
+    const aiCategory = typeof aiResult === 'string' ? aiResult.trim() : String(aiResult).trim();
+    return Response.json({ category_name: aiCategory, source: 'ai', confidence: 0.65 });
+  } catch (e) {
+    return Response.json({ category_name: 'Lainnya', source: 'fallback', confidence: 0.3 });
+  }
 });

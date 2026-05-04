@@ -158,7 +158,8 @@ Deno.serve(async (req) => {
     `;
 
     const emailBody = emailLayout({
-      previewText: `${sc.icon} ${alertData.title} — ${alertData.message.slice(0, 80)}...`,
+      // Guard: message can be empty/undefined → avoid throw on .slice
+      previewText: `${sc.icon} ${alertData.title} — ${(alertData.message || '').slice(0, 80)}...`,
       content,
     });
 

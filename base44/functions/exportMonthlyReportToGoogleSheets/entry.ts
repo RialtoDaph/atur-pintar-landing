@@ -19,7 +19,11 @@ Deno.serve(async (req) => {
       base44.entities.SavingsGoal.filter({ created_by: user.email })
     ]);
 
-    const transactions = allTransactions.filter(t => t.date >= monthStart && t.date <= monthEnd);
+    // Exclude soft-deleted and recurring TEMPLATES from the report.
+    const transactions = (allTransactions || []).filter(t =>
+      t.date >= monthStart && t.date <= monthEnd &&
+      t.is_deleted !== true && !(t.is_recurring === true && !t.is_recurring_child)
+    );
 
     const defaultCategories = {
       housing: { label: 'Rumah', emoji: '🏠' },
@@ -77,7 +81,14 @@ Deno.serve(async (req) => {
       [''],
       ['TUJUAN TABUNGAN'],
       ['Nama', 'Target (Rp)', 'Terkumpul (Rp)', 'Progress (%)', 'Status'],
-      ...goals.map(g => [g.name, g.target_amount, g.current_amount || 0, (((g.current_amount || 0) / g.target_amount) * 100).toFixed(1), g.status])
+      ...goals.map(g => [
+        g.name,
+        g.target_amount,
+        g.current_amount || 0,
+        // Guard against division by zero when target_amount is 0.
+        g.target_amount > 0 ? (((g.current_amount || 0) / g.target_amount) * 100).toFixed(1) : '0.0',
+        g.status
+      ])
     ];
 
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlesheets');

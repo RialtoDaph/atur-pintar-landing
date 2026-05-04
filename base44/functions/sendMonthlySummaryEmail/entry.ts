@@ -88,14 +88,20 @@ Deno.serve(async (req) => {
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     const monthName = monthStart.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
 
-    const transactions = await base44.entities.Transaction.filter({
+    const allMonthTx = await base44.entities.Transaction.filter({
       created_by: user.email,
       date: { $gte: monthStart.toISOString().split('T')[0], $lte: monthEnd.toISOString().split('T')[0] }
     }, '-date', 500);
 
-    const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-    const expenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-    const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
+    // Exclude soft-deleted and recurring TEMPLATES (only generated children count toward totals).
+    // Without this, deleted/template rows inflated the email's income/expense numbers.
+    const transactions = (allMonthTx || []).filter(t =>
+      t.is_deleted !== true && !(t.is_recurring === true && !t.is_recurring_child)
+    );
+
+    const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+    const expenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
+    const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + (t.amount || 0), 0);
     const balance = income - expenses;
     const savingsRate = income > 0 ? ((income - expenses) / income * 100).toFixed(1) : '0.0';
 

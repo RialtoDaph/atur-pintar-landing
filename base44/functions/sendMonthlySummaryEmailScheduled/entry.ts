@@ -77,6 +77,12 @@ function emailLayout({ previewText, content }) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    // Admin-only — sends bulk emails to ALL users. Without this guard,
+    // any authenticated user could trigger a mass email send.
+    const caller = await base44.auth.me().catch(() => null);
+    if (caller && caller.role !== 'admin') {
+      return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
+    }
     const users = await base44.asServiceRole.entities.User.list();
 
     const now = new Date();
@@ -92,7 +98,7 @@ Deno.serve(async (req) => {
       if (!user.email || !user.onboarding_completed) continue;
 
       try {
-        const transactions = await base44.asServiceRole.entities.Transaction.filter({
+        const allMonthTx = await base44.asServiceRole.entities.Transaction.filter({
           created_by: user.email,
           date: {
             $gte: monthStart.toISOString().split('T')[0],
@@ -100,11 +106,16 @@ Deno.serve(async (req) => {
           }
         }, '-date', 500);
 
+        // Exclude soft-deleted and recurring TEMPLATES (only generated children count toward totals).
+        const transactions = (allMonthTx || []).filter(t =>
+          t.is_deleted !== true && !(t.is_recurring === true && !t.is_recurring_child)
+        );
+
         if (transactions.length === 0) continue;
 
-        const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-        const expenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-        const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
+        const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+        const expenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
+        const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + (t.amount || 0), 0);
         const balance = income - expenses;
         const savingsRate = income > 0 ? ((income - expenses) / income * 100).toFixed(1) : '0.0';
 

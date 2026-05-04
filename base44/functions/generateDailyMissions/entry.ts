@@ -24,19 +24,24 @@ Deno.serve(async (req) => {
       date: today,
     }).catch(() => []);
 
-    if (existingMissions && existingMissions.length >= 3) {
-      return Response.json({ message: 'Missions already generated for today', count: existingMissions.length });
-    }
+    // Only create missions whose mission_key is missing for today.
+    // Without this guard, partially-existing days got duplicate missions
+    // (e.g. 1 already there → bulkCreate 3 more → 4 total).
+    const existingKeys = new Set((existingMissions || []).map(m => m.mission_key));
+    const missionsToCreate = DAILY_MISSIONS
+      .filter(m => !existingKeys.has(m.mission_key))
+      .map(m => ({
+        date: today,
+        mission_key: m.mission_key,
+        title: m.title,
+        icon: m.icon,
+        xp_reward: m.xp_reward,
+        is_completed: false,
+      }));
 
-    // Create missions for today
-    const missionsToCreate = DAILY_MISSIONS.map(m => ({
-      date: today,
-      mission_key: m.mission_key,
-      title: m.title,
-      icon: m.icon,
-      xp_reward: m.xp_reward,
-      is_completed: false,
-    }));
+    if (missionsToCreate.length === 0) {
+      return Response.json({ message: 'All missions already generated for today', count: existingMissions.length });
+    }
 
     await base44.entities.DailyMission.bulkCreate(missionsToCreate);
 

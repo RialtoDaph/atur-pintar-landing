@@ -14,10 +14,15 @@ Deno.serve(async (req) => {
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-    const transactions = await base44.entities.Transaction.filter({
+    const allMonthTx = await base44.entities.Transaction.filter({
       created_by: user.email,
       date: { $gte: monthStart.toISOString().split('T')[0], $lte: monthEnd.toISOString().split('T')[0] }
     }, "-date", 500);
+
+    // Exclude soft-deleted and recurring TEMPLATES from export totals/rows.
+    const transactions = (allMonthTx || []).filter(t =>
+      t.is_deleted !== true && !(t.is_recurring === true && !t.is_recurring_child)
+    );
 
     // Get custom categories for labels
     const customCats = await base44.entities.CustomCategory.filter({ created_by: user.email });
@@ -81,7 +86,10 @@ Deno.serve(async (req) => {
         target: g.target_amount,
         current: g.current_amount || 0,
         status: g.status,
-        progress: ((g.current_amount || 0) / g.target_amount * 100).toFixed(1)
+        // Guard against division by zero when target_amount is 0.
+        progress: g.target_amount > 0
+          ? ((g.current_amount || 0) / g.target_amount * 100).toFixed(1)
+          : '0.0'
       }))
     };
 

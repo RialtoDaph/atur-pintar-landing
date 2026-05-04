@@ -49,9 +49,11 @@ Deno.serve(async (req) => {
       return Response.json({ message: 'Recap already exists', recap: existing[0] });
     }
 
-    // Fetch transactions for the week
+    // Fetch transactions for the week.
+    // Exclude soft-deleted AND recurring TEMPLATES (only generated children represent real spending).
     const allTxs = await base44.entities.Transaction.filter({ created_by: user.email }, '-date', 500);
-    const weekTxs = (allTxs || []).filter(t => !t.is_deleted && t.date >= weekStart && t.date <= weekEnd);
+    const isRealTx = (t) => !t.is_deleted && !(t.is_recurring === true && !t.is_recurring_child);
+    const weekTxs = (allTxs || []).filter(t => isRealTx(t) && t.date >= weekStart && t.date <= weekEnd);
 
     const totalIncome = weekTxs.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
     const totalExpense = weekTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
@@ -70,7 +72,7 @@ Deno.serve(async (req) => {
 
     // vs last week
     const prevRange = getPrevWeekRange(weekStart);
-    const prevTxs = (allTxs || []).filter(t => !t.is_deleted && t.date >= prevRange.start && t.date <= prevRange.end);
+    const prevTxs = (allTxs || []).filter(t => isRealTx(t) && t.date >= prevRange.start && t.date <= prevRange.end);
     const prevExpense = prevTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
     const vsLastWeekPct = prevExpense > 0 ? Math.round(((totalExpense - prevExpense) / prevExpense) * 100) : null;
 
