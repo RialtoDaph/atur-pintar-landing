@@ -50,6 +50,7 @@ export default function BudgetPage() {
   const [editingBudget, setEditingBudget] = useState(null);
   const [user, setUser] = useState(null);
   const [goals, setGoals] = useState([]);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const carryOverCheckedRef = useRef(false);
 
   useEffect(() => {
@@ -192,8 +193,13 @@ export default function BudgetPage() {
   );
 
   async function handleDelete(id) {
-    if (!window.confirm("Menghapus budget tidak akan menghapus transaksi terkait. Hanya tracking anggaran yang dihapus. Lanjutkan?")) return;
-    await base44.entities.Budget.delete(id);
+    setDeleteConfirmId(id);
+  }
+
+  async function confirmDelete() {
+    if (!deleteConfirmId) return;
+    await base44.entities.Budget.delete(deleteConfirmId);
+    setDeleteConfirmId(null);
     loadData();
   }
 
@@ -384,6 +390,19 @@ export default function BudgetPage() {
            onClose={closeModal}
            onSave={handleSave}
          />
+       )}
+
+       {deleteConfirmId && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+           <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full">
+             <p className="font-bold text-[#1A1A1A] mb-2">Hapus Budget ini?</p>
+             <p className="text-sm text-[#4A5568] mb-5">Transaksi yang sudah ada tidak ikut terhapus, hanya tracking budget kategori ini yang dihapus.</p>
+             <div className="flex gap-2">
+               <button onClick={() => setDeleteConfirmId(null)} className="flex-1 py-2.5 rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8] hover:bg-[#F2F4F7]">Batal</button>
+               <button onClick={confirmDelete} className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600">Hapus</button>
+             </div>
+           </div>
+         </div>
        )}
       </div>
       );

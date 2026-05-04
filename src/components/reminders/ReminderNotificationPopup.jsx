@@ -99,21 +99,22 @@ Total: ${upcomingList.length} pengingat aktif${urgentItems.length > 0 ? ", " + u
           setNanaMessage("Ada beberapa tagihan yang perlu kamu perhatikan nih! 🔔");
         }
 
-        // Push browser notifications for urgent ones (≤ 3 days)
-        const alreadyAsked = localStorage.getItem(PUSH_ASKED_KEY);
-        if (!alreadyAsked && "Notification" in window && Notification.permission === "default") {
-          localStorage.setItem(PUSH_ASKED_KEY, "true");
-          const granted = await requestPushPermission();
-          if (granted) {
+        // Push browser notifications for urgent ones (≤ 3 days) — guard for unsupported browsers (iOS in-app, etc.)
+        if ("Notification" in window) {
+          const alreadyAsked = localStorage.getItem(PUSH_ASKED_KEY);
+          if (!alreadyAsked && Notification.permission === "default") {
+            localStorage.setItem(PUSH_ASKED_KEY, "true");
+            const granted = await requestPushPermission();
+            if (granted) {
+              upcomingList.filter(r => r.daysLeft <= 3).forEach(r => {
+                sendBrowserNotification(r, r.daysLeft, formatCurrency);
+              });
+            }
+          } else if (Notification.permission === "granted") {
             upcomingList.filter(r => r.daysLeft <= 3).forEach(r => {
               sendBrowserNotification(r, r.daysLeft, formatCurrency);
             });
           }
-        } else if (Notification.permission === "granted") {
-          // Send push for urgent ones
-          upcomingList.filter(r => r.daysLeft <= 3).forEach(r => {
-            sendBrowserNotification(r, r.daysLeft, formatCurrency);
-          });
         }
       }
     } catch (e) {}
