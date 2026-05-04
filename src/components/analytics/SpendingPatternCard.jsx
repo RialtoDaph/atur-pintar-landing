@@ -6,7 +6,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 const DAY_LABELS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 const DAY_FULL = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
-export default function SpendingPatternCard({ transactions = [], filterPeriod = "6", customDateRange = null }) {
+export default function SpendingPatternCard({ transactions = [], filterPeriod = "6", customDateRange = null, embedded = false }) {
   const { formatCurrency, formatShortNumber } = useAppSettings();
   const [tab, setTab] = useState("day"); // "day" | "hour"
 
@@ -194,6 +194,35 @@ export default function SpendingPatternCard({ transactions = [], filterPeriod = 
       </>
     );
   };
+
+  // Embedded mode: keep day/hour sub-toggle (it's a different axis), but skip outer card + main header
+  if (embedded) {
+    return (
+      <>
+        <div className="flex bg-[#F2F4F7] rounded-xl p-1 w-fit mb-4">
+          <button
+            onClick={() => setTab("day")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              tab === "day" ? "bg-white text-[#1A1A1A] shadow-sm" : "text-[#8FA4C8]"
+            }`}
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            Hari
+          </button>
+          <button
+            onClick={() => setTab("hour")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              tab === "hour" ? "bg-white text-[#1A1A1A] shadow-sm" : "text-[#8FA4C8]"
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            Jam
+          </button>
+        </div>
+        {tab === "day" ? renderDayTab() : renderHourTab()}
+      </>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">

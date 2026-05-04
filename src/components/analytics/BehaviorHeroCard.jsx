@@ -1,26 +1,44 @@
 import { useMemo } from "react";
 import { Sparkles } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { formatLocalDate } from "@/utils/dateUtils";
 
 /**
  * BehaviorHeroCard — Auto-pick 1 insight perilaku terkuat dari data user.
+ * Mengikuti filter periode dari Analytics page (3M/6M/12M/custom).
  * Logika prioritas:
  *  1. No-spend streak (kalo > 2 hari)
  *  2. Hari paling boros (kalo ada pola jelas, > Rp 100k)
  *  3. Top merchant (kalo > 3x kunjungan)
- *  4. Top category 30 hari (fallback)
+ *  4. Top category (fallback)
  */
-export default function BehaviorHeroCard({ transactions = [], allCategoriesConfig = {} }) {
+export default function BehaviorHeroCard({ transactions = [], allCategoriesConfig = {}, filterPeriod = "6", customDateRange = null }) {
   const { formatShortNumber } = useAppSettings();
 
   const insight = useMemo(() => {
     const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()); // 30 hari ke belakang
+    let start, end;
+    if (customDateRange) {
+      start = customDateRange.start;
+      end = customDateRange.end;
+    } else {
+      const months = parseInt(filterPeriod) || 6;
+      start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+      end = now;
+    }
+    const periodDays = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1);
+    const periodLabel = customDateRange
+      ? `${periodDays} hari`
+      : (parseInt(filterPeriod) === 1 ? "bulan ini" : `${filterPeriod} bulan`);
+
     const expenses = transactions.filter(t => {
       if (t.type !== "expense") return false;
       const d = new Date(t.date);
-      return d >= start && d <= now;
+      return d >= start && d <= end;
     });
+
+    // Hitung totalAll di awal — fix fragile var scoping
+    const totalAll = expenses.reduce((s, t) => s + (t.amount || 0), 0);
 
     if (expenses.length === 0) {
       return {
@@ -31,13 +49,13 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
       };
     }
 
-    // ===== 1. No-Spend Streak (current) =====
+    // ===== 1. No-Spend Streak (current) — pakai local timezone =====
     const spendingDates = new Set(expenses.map(t => t.date));
     let currentStreak = 0;
     const cursor = new Date(now);
     cursor.setHours(0, 0, 0, 0);
     while (currentStreak < 30) {
-      const iso = cursor.toISOString().split("T")[0];
+      const iso = formatLocalDate(cursor);
       if (spendingDates.has(iso)) break;
       currentStreak++;
       cursor.setDate(cursor.getDate() - 1);
@@ -49,7 +67,7 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
         subtitle: "Streak no-spend kamu lagi panas. Pertahankan!",
         stats: [
           { label: "Streak", value: `${currentStreak} hari` },
-          { label: "30 hari ini", value: `${30 - spendingDates.size} hemat` },
+          { label: "Hari hemat", value: `${Math.max(0, periodDays - spendingDates.size)}` },
           { label: "Hari belanja", value: `${spendingDates.size}x` },
         ],
       };
@@ -64,7 +82,6 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
       dayCounts[dow] += 1;
     });
     const DAY_NAMES = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    const totalAll = dayTotals.reduce((s, v) => s + v, 0);
     const avgPerDay = totalAll / 7;
     let maxIdx = 0;
     dayTotals.forEach((v, i) => { if (v > dayTotals[maxIdx]) maxIdx = i; });
@@ -74,7 +91,7 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
       return {
         emoji: "📅",
         title: `Kamu paling boros di hari ${DAY_NAMES[maxIdx]}`,
-        subtitle: `${pct}% pengeluaran 30 hari ini ada di hari ini`,
+        subtitle: `${pct}% pengeluaran ${periodLabel} ada di hari ini`,
         stats: [
           { label: DAY_NAMES[maxIdx], value: formatShortNumber(maxVal) },
           { label: "Transaksi", value: `${dayCounts[maxIdx]}x` },
@@ -99,7 +116,7 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
       return {
         emoji: "🏪",
         title: `${m.name} jadi langganan`,
-        subtitle: `Kamu mampir ${m.count}x dalam 30 hari terakhir`,
+        subtitle: `Kamu mampir ${m.count}x dalam ${periodLabel} terakhir`,
         stats: [
           { label: "Kunjungan", value: `${m.count}x` },
           { label: "Total", value: formatShortNumber(m.total) },
@@ -121,11 +138,11 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
       return {
         emoji: cfg.emoji || "📦",
         title: `Pengeluaran terbesar: ${cfg.label}`,
-        subtitle: `${pct}% dari total belanja 30 hari ini`,
+        subtitle: `${pct}% dari total belanja ${periodLabel} ini`,
         stats: [
           { label: "Total", value: formatShortNumber(topCat[1]) },
           { label: "% total", value: `${pct}%` },
-          { label: "Periode", value: "30 hari" },
+          { label: "Periode", value: periodLabel },
         ],
       };
     }
@@ -136,7 +153,7 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
       subtitle: "Catat transaksi rutin biar Nana bisa kasih insight",
       stats: [],
     };
-  }, [transactions, allCategoriesConfig, formatShortNumber]);
+  }, [transactions, allCategoriesConfig, formatShortNumber, filterPeriod, customDateRange]);
 
   return (
     <div className="bg-gradient-to-br from-[#FF6A00] to-[#FF9A3C] rounded-2xl shadow-sm p-5 sm:p-6 text-white relative overflow-hidden">

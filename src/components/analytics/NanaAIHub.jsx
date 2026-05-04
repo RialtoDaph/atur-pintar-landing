@@ -181,9 +181,7 @@ Tone: hangat, supportif, tidak menghakimi. Maksimal 200 kata total. Gunakan angk
             )}
 
             {tab === "forecast" && (
-              <div className="[&>div]:!p-0 [&>div]:!shadow-none [&>div]:!bg-transparent [&>div>div:first-child]:hidden">
-                <MonthEndForecastCard transactions={transactions} budgets={budgets} />
-              </div>
+              <MonthEndForecastCard transactions={transactions} budgets={budgets} embedded />
             )}
 
             {tab === "harian" && (

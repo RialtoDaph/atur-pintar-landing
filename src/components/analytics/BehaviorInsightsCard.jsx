@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Trophy, Scale, Coffee, ChevronRight } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import { formatLocalDate } from "@/utils/dateUtils";
 
 // Klasifikasi 50/30/20
 // Needs (50%): housing, food, transport, health
@@ -9,7 +10,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 const NEEDS_KEYS = ["housing", "food", "transport", "health"];
 const WANTS_KEYS = ["entertainment", "shopping", "subscriptions", "other"];
 
-export default function BehaviorInsightsCard({ transactions = [], filterPeriod = "6", customDateRange = null, allCategoriesConfig = {}, initialTab = "merchant" }) {
+export default function BehaviorInsightsCard({ transactions = [], filterPeriod = "6", customDateRange = null, allCategoriesConfig = {}, initialTab = "merchant", embedded = false }) {
   const { formatCurrency, formatShortNumber } = useAppSettings();
   const [tab, setTab] = useState(initialTab); // merchant | lifestyle | nospend
 
@@ -113,7 +114,7 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
     const endDay = new Date(end);
     endDay.setHours(0, 0, 0, 0);
     while (cursor <= endDay) {
-      const iso = cursor.toISOString().split("T")[0];
+      const iso = formatLocalDate(cursor);
       if (!spendingDates.has(iso)) {
         currentStreak++;
         if (currentStreak > longestStreak) longestStreak = currentStreak;
@@ -266,6 +267,17 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
       </>
     );
   };
+
+  // Embedded mode: no outer card, no header, no internal tabs (parent handles tabs)
+  if (embedded) {
+    return (
+      <>
+        {tab === "merchant" && renderMerchantTab()}
+        {tab === "lifestyle" && renderLifestyleTab()}
+        {tab === "nospend" && renderNoSpendTab()}
+      </>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">

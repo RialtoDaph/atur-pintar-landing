@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { TrendingUp, TrendingDown, Target } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
-export default function MonthEndForecastCard({ transactions = [], budgets = [] }) {
+export default function MonthEndForecastCard({ transactions = [], budgets = [], embedded = false }) {
   const { formatCurrency } = useAppSettings();
 
   const data = useMemo(() => {
@@ -46,30 +46,38 @@ export default function MonthEndForecastCard({ transactions = [], budgets = [] }
     };
   }, [transactions, budgets]);
 
+  const Wrapper = embedded
+    ? ({ children }) => <>{children}</>
+    : ({ children }) => <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">{children}</div>;
+
   if (!data.hasData) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xl">🔮</span>
-          <h3 className="text-[#1A1A1A] font-bold text-base sm:text-lg">Proyeksi Akhir Bulan</h3>
-        </div>
+      <Wrapper>
+        {!embedded && (
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl">🔮</span>
+            <h3 className="text-[#1A1A1A] font-bold text-base sm:text-lg">Proyeksi Akhir Bulan</h3>
+          </div>
+        )}
         <p className="text-xs text-[#8FA4C8]">Belum ada transaksi bulan ini.</p>
-      </div>
+      </Wrapper>
     );
   }
 
   const statusColor = data.overBudget ? "#FF6B6B" : data.hasBudget ? "#00C9A7" : "#FF6A00";
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+    <Wrapper>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🔮</span>
-          <div>
-            <h3 className="text-[#1A1A1A] font-bold text-base sm:text-lg leading-tight">Proyeksi Akhir Bulan</h3>
-            <p className="text-[10px] sm:text-xs text-[#8FA4C8] mt-0.5">Berdasarkan rata-rata harian</p>
+        {!embedded ? (
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🔮</span>
+            <div>
+              <h3 className="text-[#1A1A1A] font-bold text-base sm:text-lg leading-tight">Proyeksi Akhir Bulan</h3>
+              <p className="text-[10px] sm:text-xs text-[#8FA4C8] mt-0.5">Berdasarkan rata-rata harian</p>
+            </div>
           </div>
-        </div>
+        ) : <div />}
         <div
           className="px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1"
           style={{ background: `${statusColor}15`, color: statusColor }}
@@ -146,6 +154,6 @@ export default function MonthEndForecastCard({ transactions = [], budgets = [] }
           </p>
         </div>
       )}
-    </div>
+    </Wrapper>
   );
 }

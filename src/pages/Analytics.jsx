@@ -55,8 +55,17 @@ function buildPeriodSubtitle(filterPeriod, customDateRange) {
 export default function Analytics() {
   const { t } = useAppSettings();
   const queryClient = useQueryClient();
-  const [filterPeriod, setFilterPeriod] = useState("6");
-  const [customDateRange, setCustomDateRange] = useState(null);
+  const [filterPeriod, setFilterPeriod] = useState(() => {
+    try { return sessionStorage.getItem("analytics_filter_period") || "6"; } catch { return "6"; }
+  });
+  const [customDateRange, setCustomDateRange] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("analytics_custom_range");
+      if (!saved) return null;
+      const p = JSON.parse(saved);
+      return { start: new Date(p.start), end: new Date(p.end) };
+    } catch { return null; }
+  });
   const [user, setUser] = useState(null);
   const [analyticsCards, setAnalyticsCards] = useState(DEFAULT_ANALYTICS_CARDS);
   const [appSettings, setAppSettings] = useState(null);
@@ -143,7 +152,11 @@ export default function Analytics() {
     }
   }, [settingsList, user?.settings_id]);
 
-  const transactions = rawTransactions.filter(t => !t.is_deleted && !(t.is_recurring === true && !t.is_recurring_child));
+  // PERF: memoize heavy filter
+  const transactions = useMemo(
+    () => rawTransactions.filter(t => !t.is_deleted && !(t.is_recurring === true && !t.is_recurring_child)),
+    [rawTransactions]
+  );
   const loading = txLoading || goalsLoading || budgetsLoading;
 
   const localizedMonths = useMemo(() => {
@@ -172,11 +185,23 @@ export default function Analytics() {
     if (filter.type === "period") {
       setFilterPeriod(filter.value);
       setCustomDateRange(null);
+      try {
+        sessionStorage.setItem("analytics_filter_period", filter.value);
+        sessionStorage.removeItem("analytics_custom_range");
+      } catch {}
     } else if (filter.type === "custom") {
-      setCustomDateRange({
-        start: new Date(filter.startDate),
-        end: new Date(filter.endDate),
-      });
+      // BUG FIX: end-of-day so transactions on the end date are included
+      const start = new Date(filter.startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(filter.endDate);
+      end.setHours(23, 59, 59, 999);
+      // BUG FIX: validate range — swap if reversed
+      const validStart = start <= end ? start : end;
+      const validEnd = start <= end ? end : start;
+      setCustomDateRange({ start: validStart, end: validEnd });
+      try {
+        sessionStorage.setItem("analytics_custom_range", JSON.stringify({ start: validStart, end: validEnd }));
+      } catch {}
     }
   };
 
@@ -204,86 +229,89 @@ export default function Analytics() {
     return `${months} bulan terakhir`;
   };
 
-  const now = new Date();
-  const getMonthRange = () => {
+  // PERF + BUG FIX: monthRange + all derived computations memoized
+  const monthRange = useMemo(() => {
     if (customDateRange) return customDateRange;
-    const months = parseInt(filterPeriod);
+    const now = new Date();
+    const months = parseInt(filterPeriod) || 6;
     return {
       start: new Date(now.getFullYear(), now.getMonth() - (months - 1), 1),
       end: now,
     };
-  };
-
-  const monthRange = getMonthRange();
-  const monthDiff =
-    (monthRange.end.getFullYear() - monthRange.start.getFullYear()) * 12 +
-    (monthRange.end.getMonth() - monthRange.start.getMonth());
-
-  const trendData = Array.from({ length: monthDiff + 1 }, (_, i) => {
-    const d = new Date(monthRange.start.getFullYear(), monthRange.start.getMonth() + i, 1);
-    const month = d.getMonth();
-    const year = d.getFullYear();
-    const monthTx = transactions.filter(t => {
-      const td = new Date(t.date);
-      return td.getMonth() === month && td.getFullYear() === year;
-    });
-    return {
-      name: localizedMonths[month],
-      Income: monthTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0),
-      Expenses: monthTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0),
-    };
-  });
-
-  const filteredExpenses = transactions.filter(t => {
-    if (t.type !== "expense") return false;
-    const d = new Date(t.date);
-    return d >= monthRange.start && d <= monthRange.end;
-  });
-
-  const categoryMap = {};
-  filteredExpenses.forEach(t => {
-    const cat = t.category || "other";
-    categoryMap[cat] = (categoryMap[cat] || 0) + t.amount;
-  });
-
-  const pieData = Object.entries(categoryMap)
-    .map(([key, value]) => ({
-      name: allCategoriesConfig[key]?.label || key,
-      value,
-      color: allCategoriesConfig[key]?.color || "#8FA4C8",
-      emoji: allCategoriesConfig[key]?.emoji || "📦",
-    }))
-    .sort((a, b) => b.value - a.value);
+  }, [filterPeriod, customDateRange]);
 
   const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
 
-  const totalIncome = trendData.reduce((sum, month) => sum + month.Income, 0);
-  const periodExpenses = trendData.reduce((sum, month) => sum + month.Expenses, 0);
-  const netCashflow = totalIncome - periodExpenses;
-  const savingsRate = totalIncome > 0 ? ((netCashflow / totalIncome) * 100).toFixed(1) : 0;
+  // PERF: trendData + summary in one memo. BUG FIX: clamp negative monthDiff.
+  const { trendData, totalIncome, periodExpenses, savingsRate, netCashflow } = useMemo(() => {
+    const rawDiff =
+      (monthRange.end.getFullYear() - monthRange.start.getFullYear()) * 12 +
+      (monthRange.end.getMonth() - monthRange.start.getMonth());
+    const monthDiff = Math.max(0, rawDiff);
+
+    const td = Array.from({ length: monthDiff + 1 }, (_, i) => {
+      const d = new Date(monthRange.start.getFullYear(), monthRange.start.getMonth() + i, 1);
+      const month = d.getMonth();
+      const year = d.getFullYear();
+      let inc = 0, exp = 0;
+      for (const t of transactions) {
+        const td2 = new Date(t.date);
+        if (td2.getMonth() !== month || td2.getFullYear() !== year) continue;
+        if (t.type === "income") inc += t.amount;
+        else if (t.type === "expense") exp += t.amount;
+      }
+      return { name: localizedMonths[month], Income: inc, Expenses: exp };
+    });
+
+    const ti = td.reduce((s, m) => s + m.Income, 0);
+    const te = td.reduce((s, m) => s + m.Expenses, 0);
+    const net = ti - te;
+    const sr = ti > 0 ? ((net / ti) * 100).toFixed(1) : 0;
+
+    return { trendData: td, totalIncome: ti, periodExpenses: te, savingsRate: sr, netCashflow: net };
+  }, [transactions, monthRange, localizedMonths]);
+
+  // PERF: filtered transactions for period (used by pie + delta)
+  const { filteredTxForPeriod, pieData } = useMemo(() => {
+    const filtered = transactions.filter(t => {
+      const d = new Date(t.date);
+      return d >= monthRange.start && d <= monthRange.end;
+    });
+    const catMap = {};
+    for (const t of filtered) {
+      if (t.type !== "expense") continue;
+      const cat = t.category || "other";
+      catMap[cat] = (catMap[cat] || 0) + t.amount;
+    }
+    const pie = Object.entries(catMap)
+      .map(([key, value]) => ({
+        name: allCategoriesConfig[key]?.label || key,
+        value,
+        color: allCategoriesConfig[key]?.color || "#8FA4C8",
+        emoji: allCategoriesConfig[key]?.emoji || "📦",
+      }))
+      .sort((a, b) => b.value - a.value);
+    return { filteredTxForPeriod: filtered, pieData: pie };
+  }, [transactions, monthRange, allCategoriesConfig]);
+
+  // PERF: previous period delta
+  const { prevIncome, prevExpenses, prevSavingsRate, hasPrevData } = useMemo(() => {
+    const periodDurationMs = monthRange.end - monthRange.start;
+    const prevPeriodEnd = new Date(monthRange.start.getTime() - 1);
+    const prevPeriodStart = new Date(prevPeriodEnd.getTime() - periodDurationMs);
+    const prevTx = transactions.filter(t => {
+      const d = new Date(t.date);
+      return d >= prevPeriodStart && d <= prevPeriodEnd;
+    });
+    const pi = prevTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
+    const pe = prevTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
+    const pNet = pi - pe;
+    const pSr = pi > 0 ? ((pNet / pi) * 100) : null;
+    return { prevIncome: pi, prevExpenses: pe, prevSavingsRate: pSr, hasPrevData: prevTx.length > 0 };
+  }, [transactions, monthRange]);
 
   const periodSubtitle = buildPeriodSubtitle(filterPeriod, customDateRange);
-
   const streak = gamification?.daily_streak || 0;
-
-  const filteredTxForPeriod = transactions.filter(t => {
-    const d = new Date(t.date);
-    return d >= monthRange.start && d <= monthRange.end;
-  });
-
-  // Delta: periode sebelumnya dengan durasi sama
-  const periodDurationMs = monthRange.end - monthRange.start;
-  const prevPeriodEnd = new Date(monthRange.start.getTime() - 1);
-  const prevPeriodStart = new Date(prevPeriodEnd.getTime() - periodDurationMs);
-  const prevPeriodTx = transactions.filter(t => {
-    const d = new Date(t.date);
-    return d >= prevPeriodStart && d <= prevPeriodEnd;
-  });
-  const prevIncome = prevPeriodTx.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
-  const prevExpenses = prevPeriodTx.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
-  const prevNetCashflow = prevIncome - prevExpenses;
-  const prevSavingsRate = prevIncome > 0 ? ((prevNetCashflow / prevIncome) * 100) : null;
-  const hasPrevData = prevPeriodTx.length > 0;
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
@@ -297,7 +325,7 @@ export default function Analytics() {
               <Link
                 to={createPageUrl("Gamifikasi")}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-all tap-highlight-fix ${
-                  streak > 0 ? "bg-[#FF6A00] text-white" : "bg-white/10 text-[#8FA4C8]"
+                  streak > 0 ? "bg-[#FF6A00] text-white" : "bg-white/20 text-white"
                 }`}
               >
                 <Flame className="w-3 h-3" />
@@ -322,10 +350,12 @@ export default function Analytics() {
           <DateRangeFilter onFilterChange={handleFilterChange} defaultPeriod="6" />
         </div>
 
-        {/* 🎯 Behavior Hero — auto-pick insight terkuat */}
+        {/* 🎯 Behavior Hero — auto-pick insight terkuat (ikut filter periode) */}
         <BehaviorHeroCard
           transactions={transactions}
           allCategoriesConfig={allCategoriesConfig}
+          filterPeriod={filterPeriod}
+          customDateRange={customDateRange}
         />
 
         {/* 🧠 Kebiasaanmu — 5 tabs (Merchant, 50/30/20, No-Spend, Pola, Heatmap) */}

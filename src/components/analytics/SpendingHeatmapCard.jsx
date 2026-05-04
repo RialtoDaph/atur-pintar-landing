@@ -5,7 +5,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 const DAY_LABELS = ["M", "S", "S", "R", "K", "J", "S"];
 const MONTHS_ID = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-export default function SpendingHeatmapCard({ transactions = [] }) {
+export default function SpendingHeatmapCard({ transactions = [], embedded = false }) {
   const { formatCurrency } = useAppSettings();
   const now = new Date();
   const [viewMonth, setViewMonth] = useState({ year: now.getFullYear(), month: now.getMonth() });
@@ -78,18 +78,24 @@ export default function SpendingHeatmapCard({ transactions = [] }) {
   for (let i = 0; i < firstDayOffset; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
 
+  const Wrapper = embedded
+    ? ({ children }) => <>{children}</>
+    : ({ children }) => <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">{children}</div>;
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🔥</span>
-          <div>
-            <h3 className="text-[#1A1A1A] font-bold text-base sm:text-lg leading-tight">Heatmap Pengeluaran</h3>
-            <p className="text-[10px] sm:text-xs text-[#8FA4C8] mt-0.5">Lihat hari boros vs hari hemat</p>
+    <Wrapper>
+      {/* Header — hidden in embedded mode */}
+      {!embedded && (
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🔥</span>
+            <div>
+              <h3 className="text-[#1A1A1A] font-bold text-base sm:text-lg leading-tight">Heatmap Pengeluaran</h3>
+              <p className="text-[10px] sm:text-xs text-[#8FA4C8] mt-0.5">Lihat hari boros vs hari hemat</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Month nav */}
       <div className="flex items-center justify-between mb-3">
@@ -181,6 +187,6 @@ export default function SpendingHeatmapCard({ transactions = [] }) {
           )}
         </div>
       )}
-    </div>
+    </Wrapper>
   );
 }

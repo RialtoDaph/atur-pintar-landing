@@ -51,47 +51,31 @@ export default function BehaviorInsightsTabs({ transactions, filterPeriod, custo
         </div>
       </div>
 
-      {/* Tab Content — render embedded versions (strip outer card via wrapper) */}
+      {/* Tab Content — render via prop-based embedded mode (no fragile selector hacks) */}
       <div className="px-5 sm:px-6 pb-5 sm:pb-6">
         {(tab === "merchant" || tab === "lifestyle" || tab === "nospend") && (
-          <EmbedWrap>
-            <BehaviorInsightsCard
-              key={tab}
-              transactions={transactions}
-              filterPeriod={filterPeriod}
-              customDateRange={customDateRange}
-              allCategoriesConfig={allCategoriesConfig}
-              initialTab={tab}
-            />
-          </EmbedWrap>
+          <BehaviorInsightsCard
+            key={tab}
+            transactions={transactions}
+            filterPeriod={filterPeriod}
+            customDateRange={customDateRange}
+            allCategoriesConfig={allCategoriesConfig}
+            initialTab={tab}
+            embedded
+          />
         )}
         {tab === "pattern" && (
-          <EmbedWrap>
-            <SpendingPatternCard
-              transactions={transactions}
-              filterPeriod={filterPeriod}
-              customDateRange={customDateRange}
-            />
-          </EmbedWrap>
+          <SpendingPatternCard
+            transactions={transactions}
+            filterPeriod={filterPeriod}
+            customDateRange={customDateRange}
+            embedded
+          />
         )}
         {tab === "heatmap" && (
-          <EmbedWrap>
-            <SpendingHeatmapCard transactions={transactions} />
-          </EmbedWrap>
+          <SpendingHeatmapCard transactions={transactions} embedded />
         )}
       </div>
-    </div>
-  );
-}
-
-/**
- * EmbedWrap — strip outer card (bg-white shadow padding) + hide internal header & internal tabs
- * agar bisa dirender sebagai content tab di parent card tanpa double-wrap.
- */
-function EmbedWrap({ children }) {
-  return (
-    <div className="[&>div]:!p-0 [&>div]:!shadow-none [&>div]:!bg-transparent [&>div>div:first-child]:hidden [&>div>.flex.bg-\\[\\#F2F4F7\\].rounded-xl]:hidden">
-      {children}
     </div>
   );
 }

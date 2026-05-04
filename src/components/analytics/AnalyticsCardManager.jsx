@@ -2,14 +2,9 @@ import { useState } from "react";
 import { X, GripVertical, Eye, EyeOff } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
+// Sync dengan card yang benar-benar dirender di pages/Analytics
 const ALL_CARDS = [
-  { id: "net_worth", label: "Kekayaan Bersih", emoji: "💎" },
-  { id: "anomaly_detector", label: "Deteksi Anomali", emoji: "⚠️" },
-  { id: "financial_calendar", label: "Kalender Keuangan", emoji: "📅" },
-  { id: "daily_spending", label: "Pengeluaran Harian", emoji: "📊" },
   { id: "spending_chart", label: "Pengeluaran per Kategori", emoji: "🥧" },
-  { id: "portfolio_summary", label: "Portofolio Investasi", emoji: "📈" },
-  { id: "savings_goals", label: "Tujuan Tabungan", emoji: "🎯" },
 ];
 
 export default function AnalyticsCardManager({ cards, onSave, onClose }) {

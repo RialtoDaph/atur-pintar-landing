@@ -13,6 +13,16 @@ export function getLocalToday() {
 }
 
 /**
+ * Format any Date object to YYYY-MM-DD in user's local timezone.
+ * Use this instead of `date.toISOString().split("T")[0]` to avoid UTC offset bugs.
+ */
+export function formatLocalDate(date) {
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (!d || isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("sv-SE", { timeZone: USER_TIMEZONE });
+}
+
+/**
  * Format date as DD MMM YYYY in user's locale
  */
 export function formatDate(date) {
