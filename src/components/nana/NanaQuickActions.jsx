@@ -1,9 +1,12 @@
 const QUICK_ACTIONS = [
-  { label: "📊 Analisa bulan ini", message: "Analisa pengeluaran dan pemasukan gue bulan ini" },
-  { label: "💡 Saran nabung", message: "Kasih saran nabung yang realistis buat kondisi keuangan gue sekarang" },
-  { label: "🎯 Review goal gue", message: "Review target tabungan dan goal finansial gue, udah on track belum?" },
-  { label: "😤 Lagi stress duit", message: "Gue lagi stress soal keuangan, butuh bantuan" },
-  { label: "🔥 Roast pengeluaran gue", message: "Roast pengeluaran gue bulan ini" },
+  { label: "💸 Boleh jajan berapa hari ini?", message: "Hari ini aku boleh jajan berapa biar tetap aman?" },
+  { label: "🎯 Progress tabungan aku", message: "Tunjukin progress semua goal tabungan aku" },
+  { label: "📊 Analisa bulan ini", message: "Analisa pengeluaran dan pemasukan aku bulan ini" },
+  { label: "💡 Saran nabung", message: "Kasih saran nabung yang realistis buat kondisi keuangan aku sekarang" },
+  { label: "📅 Tagihan minggu ini", message: "Ada tagihan atau cicilan apa aja yang jatuh tempo minggu ini?" },
+  { label: "🏆 Top kategori boros", message: "Kategori apa yang paling boros bulan ini?" },
+  { label: "😤 Lagi stress duit", message: "Aku lagi stress soal keuangan, butuh bantuan" },
+  { label: "🔥 Roast pengeluaran aku", message: "Roast pengeluaran aku bulan ini" },
 ];
 
 export default function NanaQuickActions({ onSelect, disabled }) {
