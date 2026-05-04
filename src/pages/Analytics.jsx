@@ -15,6 +15,8 @@ import SpendingChart from "@/components/dashboard/SpendingChart";
 import FinancialScoreCard from "@/components/analytics/FinancialScoreCard";
 import CategoryBreakdownChart from "@/components/analytics/CategoryBreakdownChart";
 import BudgetActualWidget from "@/components/analytics/BudgetActualWidget";
+import MonthEndForecastCard from "@/components/analytics/MonthEndForecastCard";
+import SpendingHeatmapCard from "@/components/analytics/SpendingHeatmapCard";
 import { Flame } from "lucide-react";
 
 const DEFAULT_ANALYTICS_CARDS = [
@@ -374,6 +376,24 @@ export default function Analytics() {
 
         {/* Financial Score Card — paling atas */}
         <FinancialScoreCard user={user} />
+
+        {/* Forecast Akhir Bulan */}
+        {isPremium ? (
+          <MonthEndForecastCard transactions={transactions} budgets={budgets} />
+        ) : (
+          <PremiumBlurCard title="🔮 Proyeksi Akhir Bulan">
+            <MonthEndForecastCard transactions={transactions} budgets={budgets} />
+          </PremiumBlurCard>
+        )}
+
+        {/* Heatmap Pengeluaran Harian */}
+        {isPremium ? (
+          <SpendingHeatmapCard transactions={transactions} />
+        ) : (
+          <PremiumBlurCard title="🔥 Heatmap Pengeluaran">
+            <SpendingHeatmapCard transactions={transactions} />
+          </PremiumBlurCard>
+        )}
 
         {/* AI Financial Narrative */}
         <AIFinancialNarrative
