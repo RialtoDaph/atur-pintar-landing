@@ -397,36 +397,40 @@ export default function Goals() {
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
       <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-20">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+        {/* Row 1: Title + primary action */}
+        <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-[#8FA4C8] text-sm font-medium">{t('goals_plan')}</p>
             <h1 className="text-white text-2xl font-bold mt-0.5">{t('goals_title')}</h1>
           </div>
           {goalsLimitReached ? (
-            <Link to="/Subscription" className="w-11 h-11 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all" title="Upgrade untuk goals lebih banyak">
-              <Crown className="w-5 h-5 text-white" />
+            <Link to="/Subscription" className="h-10 px-4 rounded-full bg-[#8FA4C8] flex items-center gap-1.5 shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all" title="Upgrade untuk goals lebih banyak">
+              <Crown className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-semibold">Upgrade</span>
             </Link>
           ) : (
             <button
               onClick={() => setShowAddGoal(true)}
               aria-label="Tambah tujuan baru"
-              className="h-11 px-4 rounded-full bg-[#F97316] flex items-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all tap-highlight-fix"
-              style={{boxShadow: '0 4px 16px rgba(249,115,22,0.4)'}}
+              className="h-10 px-4 rounded-full bg-[#F97316] flex items-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all tap-highlight-fix"
             >
               <span className="text-white text-sm font-semibold">Tambah</span>
             </button>
           )}
         </div>
 
-        <div className="bg-white/10 rounded-2xl p-5 border border-white/5">
-          <p className="text-white/60 text-sm mb-1">{t('goals_total_target')}</p>
-          <p className="text-white font-bold text-3xl mb-2">{formatCurrency(goals.reduce((s, g) => s + g.target_amount, 0))}</p>
-          <p className="text-white/40 text-xs">{goals.filter(g => g.status === "active").length} {t('goals_active')}</p>
+        {/* Row 2: Total target summary pill */}
+        <div className="flex items-center justify-between bg-white/5 rounded-full px-4 py-2 border border-white/10">
+          <span className="text-[#8FA4C8] text-xs font-medium">{t('goals_total_target')}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-white text-sm font-bold">{formatCurrency(goals.reduce((s, g) => s + g.target_amount, 0))}</span>
+            <span className="text-[#8FA4C8] text-xs">· {goals.filter(g => g.status === "active").length} {t('goals_active')}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
+    <div className="max-w-2xl mx-auto px-5 -mt-14 space-y-3">
       <GoalsNanaPanel goals={goals} />
 
       {goalsLimitReached && (
