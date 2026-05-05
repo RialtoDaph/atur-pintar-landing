@@ -2,76 +2,9 @@
   "name": "User",
   "type": "object",
   "properties": {
-    "role": {
+    "display_name": {
       "type": "string",
-      "enum": [
-        "admin",
-        "user"
-      ],
-      "default": "user"
-    },
-    "is_disabled": {
-      "type": "boolean",
-      "default": false,
-      "description": "Apakah akun dinonaktifkan oleh admin"
-    },
-    "subscription_plan": {
-      "type": "string",
-      "enum": [
-        "free",
-        "premium_monthly",
-        "premium_yearly"
-      ],
-      "default": "free",
-      "description": "Paket langganan pengguna"
-    },
-    "subscription_status": {
-      "type": "string",
-      "enum": [
-        "active",
-        "pending",
-        "expired",
-        "cancelled"
-      ],
-      "default": "active",
-      "description": "Status langganan"
-    },
-    "subscription_start_date": {
-      "type": "string",
-      "format": "date",
-      "description": "Tanggal mulai langganan"
-    },
-    "subscription_end_date": {
-      "type": "string",
-      "format": "date",
-      "description": "Tanggal berakhir langganan"
-    },
-    "photo_url": {
-      "type": "string",
-      "description": "URL foto profil pengguna"
-    },
-    "onboarding_completed": {
-      "type": "boolean",
-      "default": false,
-      "description": "Apakah onboarding sudah selesai"
-    },
-    "tour_completed": {
-      "type": "boolean",
-      "default": false,
-      "description": "Apakah tour panduan sudah selesai"
-    },
-    "monthly_income": {
-      "type": "number",
-      "description": "Pendapatan bulanan (dari onboarding)"
-    },
-    "primary_goal": {
-      "type": "string",
-      "description": "Tujuan keuangan utama"
-    },
-    "phone": {
-      "type": "string",
-      "description": "Nomor telepon / WhatsApp"
+      "description": "Nama tampilan yang bisa diubah user (terpisah dari full_name dari akun login)"
     }
-  },
-  "required": []
+  }
 }

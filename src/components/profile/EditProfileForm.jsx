@@ -26,7 +26,7 @@ function formatIDR(val) {
 
 export default function EditProfileForm({ user, onSaved, onCancel }) {
   const [form, setForm] = useState({
-    full_name: user?.full_name || "",
+    full_name: user?.display_name || user?.full_name || "",
     date_of_birth: user?.date_of_birth || "",
     city: user?.city || "",
     whatsapp: user?.whatsapp || "",
@@ -66,7 +66,9 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
     setSaving(true);
 
     const salaryNum = form.monthly_salary ? Number(String(form.monthly_salary).replace(/\D/g, '')) : undefined;
-    const payload = { full_name: cleanName };
+    // full_name is locked by Base44 (tied to login account), so we save the editable
+    // name into display_name. UI should prefer display_name over full_name when shown.
+    const payload = { display_name: cleanName };
     if (form.date_of_birth) payload.date_of_birth = form.date_of_birth;
     if (form.city?.trim()) payload.city = form.city.trim();
     if (form.whatsapp?.trim()) payload.whatsapp = form.whatsapp.trim();

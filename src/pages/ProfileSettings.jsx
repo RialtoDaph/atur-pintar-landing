@@ -306,10 +306,10 @@ export default function ProfileSettings() {
                 <div className="w-16 h-16 rounded-full overflow-hidden bg-[#FF6A00] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
                   {user.photo_url
                     ? <img src={user.photo_url} alt="Foto" className="w-full h-full object-cover" />
-                    : user.full_name?.[0]?.toUpperCase() || "U"}
+                    : (user.display_name || user.full_name)?.[0]?.toUpperCase() || "U"}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[#1A1A1A] text-lg">{user.full_name || t('settings_user_label')}</p>
+                  <p className="font-bold text-[#1A1A1A] text-lg">{user.display_name || user.full_name || t('settings_user_label')}</p>
                   <p className="text-sm text-[#8FA4C8] mt-0.5">{user.email}</p>
                   {user.job && <p className="text-xs text-[#8FA4C8] mt-0.5">💼 {user.job}{user.city ? ` · 📍 ${user.city}` : ""}</p>}
                   {user.motivation && <p className="text-xs text-[#FF6A00] mt-1.5 italic">✨ {user.motivation}</p>}

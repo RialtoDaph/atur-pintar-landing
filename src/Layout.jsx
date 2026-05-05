@@ -142,7 +142,8 @@ function LayoutInner({ children, currentPageName }) {
   { name: "Transactions", label: t('nav_transactions'), icon: ArrowLeftRight, page: "Transactions" }];
 
 
-  const initials = user?.full_name ? user.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
+  const displayName = user?.display_name || user?.full_name;
+  const initials = displayName ? displayName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase() : "U";
 
   // Detect open modals → hide mobile nav + Nana
   useEffect(() => {
@@ -288,7 +289,7 @@ function LayoutInner({ children, currentPageName }) {
             <div className="w-5 h-5 rounded-full bg-[#F97316] flex items-center justify-center text-white text-[9px] font-bold overflow-hidden">
               {user?.photo_url ? <img src={user.photo_url} alt="avatar" className="w-full h-full object-cover" /> : initials}
             </div>
-            <span className="truncate">{user?.full_name || t('profile')}</span>
+            <span className="truncate">{displayName || t('profile')}</span>
           </Link>
         </div>
       </div>
