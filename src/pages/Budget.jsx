@@ -236,55 +236,59 @@ export default function BudgetPage() {
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-8">
       {/* Header */}
-      <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-20">
+      <div className="bg-[#0A0A0A] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+          {/* Row 1: Title + primary action */}
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[#8FA4C8] text-sm font-medium">{monthLabel}</p>
+              <p className="text-[#8FA4C8] text-sm font-medium">Kategori</p>
               <h1 className="text-white text-2xl font-bold mt-0.5">{t("budget_subtitle")}</h1>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Month navigator */}
-              <button
-                onClick={() => setMonthOffset(o => o - 1)}
-                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all"
+            {budgetLimitReached ? (
+              <Link
+                to="/Subscription"
+                data-tour="add-budget-btn"
+                className="h-10 px-4 rounded-full bg-[#8FA4C8] flex items-center gap-1.5 shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all"
+                title="Upgrade untuk tambah lebih banyak budget"
               >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
+                <Crown className="w-4 h-4 text-white" />
+                <span className="text-white text-sm font-semibold">Upgrade</span>
+              </Link>
+            ) : (
               <button
-                onClick={() => setMonthOffset(o => Math.min(o + 1, 0))}
-                disabled={monthOffset === 0}
-                className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all disabled:opacity-30"
+                data-tour="add-budget-btn"
+                onClick={() => setShowAdd(true)}
+                className="h-10 px-4 rounded-full bg-[#F97316] flex items-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all"
               >
-                <ChevronRight className="w-4 h-4" />
+                <span className="text-white text-sm font-semibold">Tambah</span>
               </button>
-              {budgetLimitReached ? (
-                <Link
-                  to="/Subscription"
-                  data-tour="add-budget-btn"
-                  className="w-11 h-11 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all"
-                  title="Upgrade untuk tambah lebih banyak budget"
-                >
-                  <Crown className="w-5 h-5 text-white" />
-                </Link>
-              ) : (
-                <button
-                  data-tour="add-budget-btn"
-                  onClick={() => setShowAdd(true)}
-                  className="h-11 px-4 rounded-full bg-[#F97316] flex items-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all"
-                  style={{boxShadow: '0 4px 16px rgba(249,115,22,0.4)'}}
-                >
-                  <span className="text-white text-sm font-semibold">Tambah</span>
-                </button>
-              )}
-            </div>
+            )}
           </div>
 
+          {/* Row 2: Month navigator */}
+          <div className="flex items-center justify-between bg-white/5 rounded-full px-2 py-1.5 border border-white/10">
+            <button
+              onClick={() => setMonthOffset(o => o - 1)}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white hover:bg-white/10 active:scale-95 transition-all"
+              aria-label="Bulan sebelumnya"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-white text-sm font-semibold capitalize">{monthLabel}</span>
+            <button
+              onClick={() => setMonthOffset(o => Math.min(o + 1, 0))}
+              disabled={monthOffset === 0}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white hover:bg-white/10 active:scale-95 transition-all disabled:opacity-30"
+              aria-label="Bulan berikutnya"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Budget list */}
-      <div className="max-w-2xl mx-auto px-5 -mt-10 space-y-3">
+      <div className="max-w-2xl mx-auto px-5 mt-4 space-y-3">
         {/* Nana AI Savings Recommendation */}
         {budgetLimitReached && (
           <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3 border border-[#FF6A00]/20">
