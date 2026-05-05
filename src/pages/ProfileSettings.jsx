@@ -284,22 +284,24 @@ export default function ProfileSettings() {
         {/* ── Profile + Completion Card (merged, completion on top) ── */}
         {user && !editingProfile && (
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            {/* Simple completion bar on top */}
-            <div className="px-5 pt-4 pb-3">
-              <div className="flex items-center gap-2">
-                <p className="text-[11px] font-medium text-[#8FA4C8]">Kelengkapan Profil</p>
-                <div className="flex-1 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${completion}%`,
-                      background: completion === 100 ? "#22C55E" : completion >= 60 ? "#F97316" : "#FBBF24"
-                    }}
-                  />
+            {/* Simple completion bar on top — hidden when 100% complete */}
+            {completion < 100 && (
+              <div className="px-5 pt-4 pb-3">
+                <div className="flex items-center gap-2">
+                  <p className="text-[11px] font-medium text-[#8FA4C8]">Kelengkapan Profil</p>
+                  <div className="flex-1 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${completion}%`,
+                        background: completion >= 60 ? "#F97316" : "#FBBF24"
+                      }}
+                    />
+                  </div>
+                  <p className="text-[11px] font-bold text-[#FF6A00]">{completion}%</p>
                 </div>
-                <p className="text-[11px] font-bold text-[#FF6A00]">{completion}%</p>
               </div>
-            </div>
+            )}
 
             <div className="px-5 pb-5">
               <div className="flex items-center gap-4">
