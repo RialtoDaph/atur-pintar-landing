@@ -219,17 +219,17 @@ function LayoutInner({ children, currentPageName }) {
       `}</style>
 
       {/* Desktop sidebar — shows on sm+ (tablet and desktop) */}
-      <div className="hidden sm:flex fixed left-0 top-0 h-full w-60 bg-[#0A0A0A] flex-col px-5 py-8 z-40" style={{ boxShadow: '4px 0 24px rgba(0,0,0,0.5)' }}>
+      <div className="hidden sm:flex fixed left-0 top-0 h-full w-52 bg-[#0A0A0A] flex-col px-3 py-6 z-40" style={{ boxShadow: '4px 0 24px rgba(0,0,0,0.5)' }}>
         {/* Logo */}
-        <div className="mb-8 px-2 flex items-center gap-2">
-          <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-10 h10" />
+        <div className="mb-6 px-2 flex items-center gap-2">
+          <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-8 h-8" />
           <div>
-            <p className="text-xl font-bold text-white tracking-tight">Atur Pintar</p>
-            <p className="text-xs text-[#8FA4C8] mt-0.5">Financial Tracker</p>
+            <p className="text-base font-bold text-white tracking-tight leading-tight">Atur Pintar</p>
+            <p className="text-[10px] text-[#8FA4C8] leading-tight">Financial Tracker</p>
           </div>
         </div>
 
-        <nav className="flex flex-col gap-1 flex-1">
+        <nav className="flex flex-col gap-0.5 flex-1">
           {navItems.map((item) => {
             const active = currentPageName === item.page;
             return (
@@ -237,14 +237,14 @@ function LayoutInner({ children, currentPageName }) {
                 key={item.page}
                 to={createPageUrl(item.page)}
                 data-tour={item.tourId || undefined}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
                 active ?
                 "bg-[#F97316] text-white shadow-md" :
                 "text-[#888] hover:text-white hover:bg-white/10 active:bg-white/15"}`
                 }>
 
-                <item.icon className="w-4 h-4" />
-                {item.label}
+                <item.icon className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{item.label}</span>
               </Link>);
 
           })}
@@ -253,40 +253,40 @@ function LayoutInner({ children, currentPageName }) {
         {/* Search */}
         <button
           onClick={() => setShowSearch(true)}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full tap-highlight-fix">
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors w-full tap-highlight-fix">
 
-          <Search className="w-4 h-4" />
-          {t('search_placeholder')}
+          <Search className="w-4 h-4 flex-shrink-0" />
+          <span className="truncate">{t('search_placeholder')}</span>
         </button>
 
         {/* Settings group at bottom */}
-        <div className="border-t border-white/10 pt-2 mt-2 space-y-1">
+        <div className="border-t border-white/10 pt-1.5 mt-1.5 space-y-0.5">
           {navSettingsItems.map((item) => {
             const active = currentPageName === item.page;
             return (
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors ${
                 active ?
                 "bg-[#F97316] text-white shadow-sm" :
                 "text-[#888] hover:text-white hover:bg-white/10"}`
                 }>
 
-                <item.icon className="w-4 h-4" />
-                {item.label}
+                <item.icon className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{item.label}</span>
               </Link>);
 
           })}
         </div>
 
         {/* Profile */}
-        <div className="space-y-1 mt-2">
+        <div className="space-y-0.5 mt-1.5">
           <Link
             to={createPageUrl("ProfileSettings")}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors">
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-[#888] hover:text-white hover:bg-white/10 transition-colors">
 
-            <div className="w-5 h-5 rounded-full bg-[#F97316] flex items-center justify-center text-white text-[9px] font-bold overflow-hidden">
+            <div className="w-5 h-5 rounded-full bg-[#F97316] flex items-center justify-center text-white text-[9px] font-bold overflow-hidden flex-shrink-0">
               {user?.photo_url ? <img src={user.photo_url} alt="avatar" className="w-full h-full object-cover" /> : initials}
             </div>
             <span className="truncate">{displayName || t('profile')}</span>
@@ -330,15 +330,16 @@ function LayoutInner({ children, currentPageName }) {
       </div>
 
       {/* Main content */}
-      <div ref={mainContentRef} className="sm:ml-60 pt-14 sm:pt-6 overflow-y-auto"
-        style={{ paddingBottom: window.innerWidth >= 640 ? '24px' : (currentPageName === "Nana" ? '0px' : 'calc(80px + env(safe-area-inset-bottom, 0px))') }}>
+      <div ref={mainContentRef} className="sm:ml-52 pt-14 sm:pt-4 overflow-y-auto"
+        style={{ paddingBottom: window.innerWidth >= 640 ? '16px' : (currentPageName === "Nana" ? '0px' : 'calc(80px + env(safe-area-inset-bottom, 0px))') }}>
         <AnimatePresence mode="sync">
           <motion.div
             key={currentPageName}
             initial={{ opacity: 0, x: isNestedPage ? 50 : -50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: isNestedPage ? -50 : 50 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}>
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="sm:max-w-6xl sm:mx-auto">
             
             {children}
           </motion.div>
