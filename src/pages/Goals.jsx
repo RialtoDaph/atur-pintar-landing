@@ -5,7 +5,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import AddTransactionModal from "@/components/goals/AddTransactionModal";
-import AddGoalModal from "@/components/goals/AddGoalModal.jsx";
+import AddGoalModal from "@/components/goals/AddGoalModal";
 import AddSavingsModal from "@/components/goals/AddSavingsModal";
 import GoalCard from "@/components/goals/GoalCard";
 import GoalsNanaPanel from "@/components/goals/GoalsNanaPanel";
