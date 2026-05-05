@@ -238,52 +238,6 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
 
   },
   {
-    key: "shared",
-    content:
-    <div>
-          <p className="text-white/50 text-[10px] font-semibold uppercase tracking-widest mb-1">Keuangan Bersama</p>
-          <div className="flex items-end justify-between mb-4">
-            <div>
-              <p className="text-white/60 text-xs mb-0.5">Total Saldo Bersama</p>
-              <p className={`text-3xl font-black tracking-tight ${totalShared >= 0 ? "text-white" : "text-red-400"}`}>
-                {hidden ? <span className="tracking-[0.2em]">{HIDDEN}</span> : `Rp ${compactRupiah(totalShared)}`}
-              </p>
-            </div>
-            <button
-              onClick={(e) => { e.stopPropagation(); navigate("/SharedFinance"); }}
-              className="text-right tap-highlight-fix"
-              title="Buka Keuangan Bersama"
-            >
-              <p className="text-white/50 text-[10px] mb-0.5">{sharedWallets.length} dompet</p>
-              <Users className="w-5 h-5 text-white/40 ml-auto hover:text-white/70 transition-colors" />
-            </button>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-            {[...sharedWallets].sort((a, b) => (b.balance || 0) - (a.balance || 0)).map((w) =>
-        <div key={w.id} className="flex-shrink-0 flex items-center gap-1.5 bg-white/8 rounded-lg px-2.5 h-10 w-[128px]">
-                <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xs leading-none">{w.icon || "👨‍👩‍👧"}</span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-white/60 text-[9px] truncate leading-tight">{w.name}</p>
-                  <p className="text-white text-[10px] font-bold truncate leading-tight">{hidden ? HIDDEN : `Rp ${compactRupiah(w.balance || 0)}`}</p>
-                </div>
-              </div>
-        )}
-
-            {sharedWallets.length === 0 &&
-        <button
-          onClick={(e) => { e.stopPropagation(); navigate("/SharedFinance"); }}
-          className="flex-shrink-0 flex items-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
-          
-                + Buat Dompet Bersama
-              </button>
-        }
-          </div>
-        </div>
-
-  },
-  {
     key: "debts",
     content:
     <div>
@@ -332,6 +286,52 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
               </div>
             </div>
           )}
+        </div>
+
+  },
+  {
+    key: "shared",
+    content:
+    <div>
+          <p className="text-white/50 text-[10px] font-semibold uppercase tracking-widest mb-1">Keuangan Bersama</p>
+          <div className="flex items-end justify-between mb-4">
+            <div>
+              <p className="text-white/60 text-xs mb-0.5">Total Saldo Bersama</p>
+              <p className={`text-3xl font-black tracking-tight ${totalShared >= 0 ? "text-white" : "text-red-400"}`}>
+                {hidden ? <span className="tracking-[0.2em]">{HIDDEN}</span> : `Rp ${compactRupiah(totalShared)}`}
+              </p>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); navigate("/SharedFinance"); }}
+              className="text-right tap-highlight-fix"
+              title="Buka Keuangan Bersama"
+            >
+              <p className="text-white/50 text-[10px] mb-0.5">{sharedWallets.length} dompet</p>
+              <Users className="w-5 h-5 text-white/40 ml-auto hover:text-white/70 transition-colors" />
+            </button>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+            {[...sharedWallets].sort((a, b) => (b.balance || 0) - (a.balance || 0)).map((w) =>
+        <div key={w.id} className="flex-shrink-0 flex items-center gap-1.5 bg-white/8 rounded-lg px-2.5 h-10 w-[128px]">
+                <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs leading-none">{w.icon || "👨‍👩‍👧"}</span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-white/60 text-[9px] truncate leading-tight">{w.name}</p>
+                  <p className="text-white text-[10px] font-bold truncate leading-tight">{hidden ? HIDDEN : `Rp ${compactRupiah(w.balance || 0)}`}</p>
+                </div>
+              </div>
+        )}
+
+            {sharedWallets.length === 0 &&
+        <button
+          onClick={(e) => { e.stopPropagation(); navigate("/SharedFinance"); }}
+          className="flex-shrink-0 flex items-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
+          
+                + Buat Dompet Bersama
+              </button>
+        }
+          </div>
         </div>
 
   }];
