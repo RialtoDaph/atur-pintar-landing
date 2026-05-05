@@ -22,8 +22,11 @@ export default function DebtDetailModal({ debt, onClose }) {
   const totalPaidViaHistory = payments.reduce((s, t) => s + (t.amount || 0), 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain">
+    <div
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      style={{ paddingBottom: 'calc(96px + env(safe-area-inset-bottom, 0px))' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-md shadow-2xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto overscroll-contain">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#F2F4F7]">
           <div className="flex items-center gap-3">
