@@ -280,27 +280,6 @@ export default function BudgetPage() {
             </div>
           </div>
 
-          {/* Overview card */}
-          <div className="bg-white/10 rounded-2xl p-5 border border-white/5">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-white/70 text-sm">{t("budget_total")}</span>
-              <span className="text-white font-bold text-lg">{formatCurrency(totalBudget)}</span>
-            </div>
-            <div className="w-full bg-white/20 rounded-full h-3 mb-2">
-              <div
-                className="h-3 rounded-full transition-all"
-                style={{
-                  width: `${overallPercent}%`,
-                  backgroundColor:
-                    overallPercent > 90 ? "#FF6B6B" : overallPercent > 70 ? "#F5A623" : "#00C9A7",
-                }}
-              />
-            </div>
-            <div className="flex justify-between text-xs text-white/60">
-              <span>{t("budget_spent")}: {formatCurrency(totalSpent)}</span>
-              <span>{t("budget_remaining")}: {formatCurrency(Math.max(totalBudget - totalSpent, 0))}</span>
-            </div>
-          </div>
         </div>
       </div>
 
