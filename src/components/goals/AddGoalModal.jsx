@@ -67,8 +67,24 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[92vh] flex flex-col animate-slide-up-sheet">
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 z-[90] bg-black/40 sm:backdrop-blur-sm" onClick={onClose} />
+      {/* Floating popup — same pattern as AddTransactionModal */}
+      <div
+        className="fixed z-[100] pointer-events-none flex justify-center sm:inset-0 sm:items-center"
+        style={{
+          left: 0,
+          right: 0,
+          bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+          top: '64px'
+        }}>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-3xl shadow-2xl flex flex-col pointer-events-auto animate-slide-up-sheet w-[calc(100%-24px)] sm:w-full sm:max-w-md"
+          style={{ maxHeight: "100%" }}
+          onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#F2F4F7]">
           <div>
@@ -211,7 +227,8 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
             {saving ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Buat Tujuan"}
           </button>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
