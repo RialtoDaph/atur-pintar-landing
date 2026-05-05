@@ -189,7 +189,7 @@ export function useFinancialContext(enabled = true) {
 
       const snapshot = {
         date: now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
-        user: { name: user.full_name },
+        user: { name: user.display_name || user.full_name },
         preferences: preferences?.[0] || null,
         riskProfile: riskProfile?.[0] || null,
         todayMood: todayMood?.[0] || null,
