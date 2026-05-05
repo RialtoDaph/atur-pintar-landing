@@ -224,8 +224,8 @@ export default function Goals() {
 
     return (
       <PullToRefresh onRefresh={loadData}>
-      <div className="min-h-screen bg-[#F2F4F7] max-w-lg mx-auto px-4 py-8">
-        <Link to={createPageUrl("Dashboard")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-8 transition-colors tap-highlight-fix">
+      <div className="min-h-screen bg-[#F2F4F7] max-w-lg mx-auto px-4 py-6 pb-32">
+        <Link to={createPageUrl("Goals")} className="flex items-center gap-2 text-[#9B9B9B] hover:text-[#0A0A0A] text-sm mb-6 transition-colors tap-highlight-fix">
           <ArrowLeft className="w-4 h-4" /> {t('goals_back')}
         </Link>
 
@@ -272,33 +272,33 @@ export default function Goals() {
           )}
 
           {/* Actions */}
-           <div className="grid grid-cols-3 gap-2 mt-4">
-             {goal.status !== "completed" && (
-               <>
-                 <button
-                   onClick={() => setShowTxModal("deposit")}
-                   aria-label="Tambah uang ke tujuan"
-                   className="flex items-center justify-center gap-2 bg-[#1A1A1A] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#333] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] focus:ring-offset-2 tap-highlight-fix"
-                 >
-                   <Plus className="w-4 h-4" aria-hidden="true" /> {t('goals_add_money')}
-                 </button>
-                 <button
-                   onClick={() => setShowTxModal("withdrawal")}
-                   aria-label="Tarik uang dari tujuan"
-                   className="flex items-center justify-center gap-2 bg-[#F7F6F3] text-[#1A1A1A] py-3 rounded-xl text-xs font-semibold hover:bg-[#EFEFED] transition-colors border border-[#EFEFED] focus:outline-none focus:ring-2 focus:ring-[#EFEFED] focus:ring-offset-2 tap-highlight-fix"
-                 >
-                   <Minus className="w-4 h-4" aria-hidden="true" /> {t('goals_withdraw')}
-                 </button>
-               </>
-             )}
-             <button
-               onClick={() => setEditingGoal(goal)}
-               className="flex items-center justify-center gap-2 bg-[#F97316] text-white py-3 rounded-xl text-xs font-semibold hover:bg-[#EA580C] transition-colors tap-highlight-fix"
-             >
-               ✏️ {t('edit')}
-             </button>
-           </div>
+          <div className="space-y-2 mt-4">
+            {goal.status !== "completed" && (
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setShowTxModal("deposit")}
+                  aria-label="Tambah uang ke tujuan"
+                  className="flex items-center justify-center gap-2 bg-[#1A1A1A] text-white py-3 rounded-xl text-sm font-semibold hover:bg-[#333] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1A1A1A] focus:ring-offset-2 tap-highlight-fix"
+                >
+                  <Plus className="w-4 h-4" aria-hidden="true" /> {t('goals_add_money')}
+                </button>
+                <button
+                  onClick={() => setShowTxModal("withdrawal")}
+                  aria-label="Tarik uang dari tujuan"
+                  className="flex items-center justify-center gap-2 bg-[#F2F4F7] text-[#1A1A1A] py-3 rounded-xl text-sm font-semibold hover:bg-[#E2E8F0] transition-colors border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#E2E8F0] focus:ring-offset-2 tap-highlight-fix"
+                >
+                  <Minus className="w-4 h-4" aria-hidden="true" /> {t('goals_withdraw')}
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() => setEditingGoal(goal)}
+              className="w-full flex items-center justify-center gap-2 bg-[#F97316] text-white py-3 rounded-xl text-sm font-semibold hover:bg-[#EA580C] transition-colors tap-highlight-fix"
+            >
+              ✏️ {t('edit')} Tujuan
+            </button>
           </div>
+        </div>
 
         {/* Transactions */}
         <div className="mb-3 flex items-center justify-between">

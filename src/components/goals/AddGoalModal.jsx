@@ -91,6 +91,27 @@ export default function AddGoalModal({ onClose, onSave, goal = null }) {
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm p-4"
       onClick={(e) => {if (e.target === e.currentTarget) onClose();}}>
       
+      {/* Mobile FAB-style close button (matches Layout FAB X position) */}
+      <button
+        onClick={onClose}
+        aria-label="Tutup"
+        className="fixed left-1/2 -translate-x-1/2 z-[80] flex items-center justify-center rounded-full active:scale-95 transition-all duration-200 tap-highlight-fix sm:hidden"
+        style={{
+          width: 56, height: 56,
+          bottom: 'calc(32px + env(safe-area-inset-bottom, 0px))',
+          background: '#0A0A0A',
+          padding: 4,
+          boxShadow: '0 6px 18px rgba(0,0,0,0.35)'
+        }}>
+        <span className="w-full h-full rounded-full flex items-center justify-center" style={{
+          background: 'linear-gradient(145deg, #4A4A4A 0%, #1A1A1A 100%)',
+          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3)',
+          transform: 'rotate(135deg)'
+        }}>
+          <X className="w-6 h-6 text-white" strokeWidth={2.5} />
+        </span>
+      </button>
+
       <div className="bg-white my-8 p-6 rounded-3xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain"
 
       role="dialog"
