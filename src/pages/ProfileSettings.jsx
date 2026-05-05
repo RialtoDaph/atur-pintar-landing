@@ -314,7 +314,6 @@ export default function ProfileSettings() {
                   <p className="font-bold text-[#1A1A1A] text-lg">{user.display_name || user.full_name || t('settings_user_label')}</p>
                   <p className="text-sm text-[#8FA4C8] mt-0.5">{user.email}</p>
                   {user.job && <p className="text-xs text-[#8FA4C8] mt-0.5">💼 {user.job}{user.city ? ` · 📍 ${user.city}` : ""}</p>}
-                  {user.motivation && <p className="text-xs text-[#FF6A00] mt-1.5 italic">✨ {user.motivation}</p>}
                   {user.role && <p className="text-xs font-semibold text-[#FF6A00] mt-1 uppercase">{user.role}</p>}
                 </div>
                 <button onClick={() => setEditingProfile(true)}
