@@ -66,7 +66,18 @@ export default function Transactions() {
     fetchingRef.current = true;
     setLoading(true);
     try {
-      const user = await base44.auth.me();
+      // Retry once on rate limit to avoid blank page
+      const me = async () => {
+        try { return await base44.auth.me(); }
+        catch (err) {
+          if (String(err?.message || "").toLowerCase().includes("rate limit")) {
+            await new Promise(r => setTimeout(r, 1500));
+            return await base44.auth.me();
+          }
+          throw err;
+        }
+      };
+      const user = await me();
 
       // Use cached categories if available (they rarely change)
       let cats;
@@ -78,24 +89,22 @@ export default function Transactions() {
         sessionStorage.setItem("tx_categories", JSON.stringify(cats));
       }
 
-      // Load transactions first.
+      // Load transactions, accounts, debts & subscriptions in parallel to reduce sequential API load.
       // NOTE: We filter by created_by only and exclude soft-deleted client-side.
       // Filtering `is_deleted: false` server-side hides legacy transactions where
       // the field is undefined/null (pre-soft-delete records) → user sees history loss.
-      const txsRaw = await base44.entities.Transaction.filter({ created_by: user.email }, "-date");
+      const [txsRaw, accs, dts, subs] = await Promise.all([
+        base44.entities.Transaction.filter({ created_by: user.email }, "-date"),
+        base44.entities.Account.filter({ created_by: user.email }, "name"),
+        base44.entities.Debt.filter({ created_by: user.email }).catch(() => []),
+        base44.entities.Subscription.filter({ created_by: user.email }).catch(() => []),
+      ]);
+
       const txs = (txsRaw || []).filter(t => t.is_deleted !== true);
       setTransactions(txs);
       setCategories((cats || []).filter(c => c.is_active !== false));
-
-      // Then accounts
-      const accs = await base44.entities.Account.filter({ created_by: user.email }, "name");
       setAccounts(accs || []);
-
-      // Then debts & subscriptions (can fail silently)
-      const dts = await base44.entities.Debt.filter({ created_by: user.email }).catch(() => []);
       setDebts((dts || []).filter(d => d.status === "active"));
-
-      const subs = await base44.entities.Subscription.filter({ created_by: user.email }).catch(() => []);
       setSubscriptions((subs || []).filter(s => s.status !== "cancelled").sort((a, b) => {
         if (!a.next_due_date) return 1;
         if (!b.next_due_date) return -1;
