@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 import DateInput from "@/components/utils/DateInput";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
@@ -41,7 +40,6 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
     due_date: debt?.due_date || "", icon: debt?.icon || ""
   });
   const [saving, setSaving] = useState(false);
-  const [showTypeSelect, setShowTypeSelect] = useState(false);
   const isEdit = !!debt;
 
   async function handleSave() {
@@ -84,13 +82,24 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
 
           <div className="mb-4">
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Jenis</label>
-            <button
-              onClick={() => setShowTypeSelect(true)}
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] text-left transition-colors hover:border-[#CBD5E0] tap-highlight-fix flex items-center justify-between">
-              
-              <span>{DEBT_TYPES.find((t) => t.key === form.type)?.emoji} {DEBT_TYPES.find((t) => t.key === form.type)?.label}</span>
-              <span className="text-[#8FA4C8]">›</span>
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              {DEBT_TYPES.map(t => {
+                const selected = form.type === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => setForm(f => ({ ...f, type: t.key }))}
+                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left transition-all border tap-highlight-fix ${selected ? "border-[#FF6A00] bg-[#FFF5F0] text-[#FF6A00] font-semibold" : "border-[#E2E8F0] bg-white text-[#1A1A1A] hover:border-[#FF6A00]/50"}`}
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-[#F2F4F7] flex items-center justify-center flex-shrink-0">
+                      <span className="text-base">{t.emoji}</span>
+                    </div>
+                    <span className="flex-1 truncate text-xs">{t.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="space-y-3 mb-6">
@@ -124,15 +133,6 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
           </button>
         </div>
       </div>
-
-      <BottomSheetSelect
-        isOpen={showTypeSelect}
-        onClose={() => setShowTypeSelect(false)}
-        title="Jenis Utang"
-        options={DEBT_TYPES}
-        onSelect={(type) => setForm((f) => ({ ...f, type }))}
-        selectedValue={form.type} />
-      
     </>);
 
 }
