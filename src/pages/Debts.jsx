@@ -176,36 +176,39 @@ export default function DebtsPage() {
   return (
     <PullToRefresh onRefresh={loadData}>
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
-        <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-20">
+        <div className="bg-[#0A0A0A] px-5 pt-10 pb-20">
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+          {/* Row 1: Title + primary action */}
+          <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-[#8FA4C8] text-sm font-medium">{t('debts_management')}</p>
               <h1 className="text-white text-2xl font-bold mt-0.5">{t('debts_title')}</h1>
             </div>
             {debtLimitReached ? (
-              <Link to="/Subscription" className="w-11 h-11 rounded-full bg-[#8FA4C8] flex items-center justify-center shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all" title="Upgrade untuk tambah lebih banyak utang">
-                <Crown className="w-5 h-5 text-white" />
+              <Link to="/Subscription" className="h-10 px-4 rounded-full bg-[#8FA4C8] flex items-center gap-1.5 shadow-lg hover:bg-[#7a93b5] active:scale-95 transition-all" title="Upgrade untuk tambah lebih banyak utang">
+                <Crown className="w-4 h-4 text-white" />
+                <span className="text-white text-sm font-semibold">Upgrade</span>
               </Link>
             ) : (
               <button
                 onClick={() => setShowAdd(true)}
-                className="w-11 h-11 rounded-full bg-[#F97316] flex items-center justify-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all"
-                style={{boxShadow: '0 4px 16px rgba(249,115,22,0.4)'}}
+                className="h-10 px-4 rounded-full bg-[#F97316] flex items-center shadow-lg hover:bg-[#EA580C] active:scale-95 transition-all"
               >
-                <Plus className="w-5 h-5 text-white" />
+                <span className="text-white text-sm font-semibold">Tambah</span>
               </button>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="bg-white/10 rounded-2xl p-4 border border-white/5">
-              <p className="text-white/60 text-xs mb-1">{t('debts_total')}</p>
-              <p className="text-white font-bold text-lg">{formatCurrency(totalDebt)}</p>
+          {/* Row 2: Stats pill */}
+          <div className="flex items-center justify-between bg-white/5 rounded-full px-4 py-2 border border-white/10">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-[#8FA4C8] text-xs font-medium">{t('debts_total')}</span>
+              <span className="text-white text-sm font-bold truncate">{formatCurrency(totalDebt)}</span>
             </div>
-            <div className="bg-white/10 rounded-2xl p-4 border border-white/5">
-              <p className="text-white/60 text-xs mb-1">{t('debts_monthly')}</p>
-              <p className="text-white font-bold text-lg">{formatCurrency(totalMonthly)}</p>
+            <span className="text-[#8FA4C8] text-xs">·</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-[#8FA4C8] text-xs font-medium">{t('debts_monthly')}</span>
+              <span className="text-white text-sm font-bold truncate">{formatCurrency(totalMonthly)}</span>
             </div>
           </div>
         </div>
