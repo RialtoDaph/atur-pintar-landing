@@ -57,12 +57,16 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
   }
 
   async function handleSave() {
+    const cleanName = sanitizeName(form.full_name);
+    if (!cleanName) {
+      toast.error("Nama lengkap tidak boleh kosong.");
+      return;
+    }
+
     setSaving(true);
 
-    // Build payload — only include editable fields with actual values.
-    // Note: full_name is a built-in user field and CANNOT be changed via updateMe.
     const salaryNum = form.monthly_salary ? Number(String(form.monthly_salary).replace(/\D/g, '')) : undefined;
-    const payload = {};
+    const payload = { full_name: cleanName };
     if (form.date_of_birth) payload.date_of_birth = form.date_of_birth;
     if (form.city?.trim()) payload.city = form.city.trim();
     if (form.whatsapp?.trim()) payload.whatsapp = form.whatsapp.trim();
@@ -117,12 +121,11 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
         <div>
           <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-wide mb-1 block">Nama Lengkap</label>
           <input
-            className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#8FA4C8] bg-[#F2F4F7] cursor-not-allowed"
+            className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
             value={form.full_name}
-            readOnly
-            disabled
+            onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
+            placeholder="Nama lengkap kamu"
           />
-          <p className="text-[10px] text-[#8FA4C8] mt-1">Nama terhubung dengan akun login & tidak bisa diubah dari sini.</p>
         </div>
 
         <div>
