@@ -129,7 +129,7 @@ export default function AddInvestmentModal({ onClose, onSave }) {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {accounts.map(acc => {
                   const selected = form.account_id === acc.id;
                   return (
@@ -137,15 +137,15 @@ export default function AddInvestmentModal({ onClose, onSave }) {
                       key={acc.id}
                       type="button"
                       onClick={() => setForm(f => ({ ...f, account_id: acc.id }))}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-left transition-all border ${selected ? "border-[#FF6A00] bg-[#FFF5F0] text-[#FF6A00] font-semibold" : "border-[#E2E8F0] bg-white text-[#1A1A1A] hover:border-[#FF6A00]/50"}`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${selected ? "border-[#FF6A00] bg-[#FF6A00] text-white" : "border-[#E2E8F0] bg-white text-[#1A1A1A] hover:border-[#FF6A00]/50"}`}
                     >
-                      <div className="w-7 h-7 rounded-lg bg-[#F2F4F7] flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                         {acc.logo_url
                           ? <img src={acc.logo_url} alt={acc.name} className="w-full h-full object-contain" />
-                          : <span className="text-base">{acc.icon || "💼"}</span>
+                          : <span className="text-[10px]">{acc.icon || "💼"}</span>
                         }
-                      </div>
-                      <span className="flex-1 truncate text-xs">{acc.name}</span>
+                      </span>
+                      {acc.name}
                     </button>
                   );
                 })}
