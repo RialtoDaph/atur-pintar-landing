@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Sparkles, ChevronRight, Loader2 } from "lucide-react";
+import { Sparkles, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 
@@ -91,49 +91,35 @@ Format jawaban: singkat, padat, gunakan bullet points. Maksimal 200 kata.`;
     setLoading(false);
   }
 
-  if (!hasInsights && !recommendation) {
-    return (
-      <div className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
-        <div className="w-9 h-9 rounded-full bg-[#00C9A7]/10 flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 text-[#00C9A7]" />
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-[#1A1A1A]">
-            {lang === "id" ? "Pengeluaran Bulan Ini Normal 🎉" : "Spending On Track 🎉"}
-          </p>
-          <p className="text-xs text-[#8FA4C8]">
-            {lang === "id" ? "Tidak ada lonjakan vs rata-rata 3 bulan lalu" : "No spikes vs 3-month average"}
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const headerIconBg = hasInsights ? "bg-[#FF6A00]/10" : "bg-[#00C9A7]/10";
+  const headerIconColor = hasInsights ? "text-[#FF6A00]" : "text-[#00C9A7]";
+  const headerTitle = hasInsights
+    ? (lang === "id" ? "Rekomendasi Penghematan Nana AI" : "Nana AI Savings Tips")
+    : (lang === "id" ? "💡 Analisis Pengeluaran Nana AI" : "💡 Nana AI Spending Analysis");
+  const headerSub = hasInsights
+    ? (spikes.length > 0
+        ? (lang === "id" ? `${spikes.length} kategori melonjak vs bulan lalu` : `${spikes.length} categories spiked vs avg`)
+        : (lang === "id" ? `${overBudget.length} kategori melebihi anggaran` : `${overBudget.length} categories over budget`))
+    : (lang === "id" ? "Ketuk untuk analisis pola pengeluaranmu" : "Tap for spending pattern analysis");
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       {/* Header */}
       <button
         onClick={() => { if (!recommendation && !loading) getRecommendation(); else setExpanded(e => !e); }}
-        className="w-full flex items-center gap-3 p-4 hover:bg-[#F8FAFC] transition-colors"
+        className="w-full flex items-center gap-3 p-4 hover:bg-[#F8FAFC] transition-colors text-left"
       >
-        <div className="w-9 h-9 rounded-full bg-[#FF6A00]/10 flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 text-[#FF6A00]" />
+        <div className={`w-10 h-10 rounded-full ${headerIconBg} flex items-center justify-center flex-shrink-0`}>
+          <Sparkles className={`w-5 h-5 ${headerIconColor}`} />
         </div>
-        <div className="flex-1 text-left">
-          <p className="text-sm font-semibold text-[#1A1A1A]">
-            {lang === "id" ? "Rekomendasi Penghematan Nana AI" : "Nana AI Savings Tips"}
-          </p>
-          <p className="text-xs text-[#8FA4C8]">
-            {spikes.length > 0
-              ? (lang === "id" ? `${spikes.length} kategori melonjak vs bulan lalu` : `${spikes.length} categories spiked vs avg`)
-              : (lang === "id" ? `${overBudget.length} kategori melebihi anggaran` : `${overBudget.length} categories over budget`)}
-          </p>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-[#1A1A1A]">{headerTitle}</p>
+          <p className="text-xs text-[#8FA4C8]">{headerSub}</p>
         </div>
-        {loading ? (
-          <Loader2 className="w-4 h-4 text-[#FF6A00] animate-spin flex-shrink-0" />
-        ) : (
-          <ChevronRight className={`w-4 h-4 text-[#8FA4C8] flex-shrink-0 transition-transform ${expanded ? "rotate-90" : ""}`} />
-        )}
+        <div className="flex items-center gap-2">
+          {loading && <Loader2 className="w-4 h-4 text-[#FF6A00] animate-spin" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-[#8FA4C8]" /> : <ChevronDown className="w-4 h-4 text-[#8FA4C8]" />}
+        </div>
       </button>
 
       {/* Spike badges */}
@@ -152,13 +138,22 @@ Format jawaban: singkat, padat, gunakan bullet points. Maksimal 200 kata.`;
         <div className="px-4 pb-4 border-t border-[#F2F4F7] pt-3">
           {loading ? (
             <div className="flex items-center gap-2 text-sm text-[#8FA4C8]">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              {lang === "id" ? "Nana sedang menganalisis pola pengeluaranmu..." : "Nana is analyzing your spending pattern..."}
+              <Loader2 className="w-4 h-4 animate-spin text-[#FF6A00]" />
+              <span>{lang === "id" ? "Nana sedang menganalisis pola pengeluaranmu..." : "Nana is analyzing your spending pattern..."}</span>
             </div>
           ) : recommendation ? (
-            <ReactMarkdown className="prose prose-sm max-w-none text-[#1A1A1A] [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>li]:mb-1 [&>strong]:font-semibold text-xs">
-              {recommendation}
-            </ReactMarkdown>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                  <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png" alt="Nana" className="w-full h-full object-cover" />
+                </div>
+                <span className="text-xs font-semibold text-[#FF6A00]">Nana AI</span>
+                <button onClick={() => { setRecommendation(null); getRecommendation(); }} className="ml-auto text-[10px] text-[#8FA4C8] hover:text-[#FF6A00] transition-colors">↻ Refresh</button>
+              </div>
+              <ReactMarkdown className="prose prose-sm max-w-none text-[#1A1A1A] [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>li]:mb-1 [&>strong]:font-semibold text-sm leading-relaxed">
+                {recommendation}
+              </ReactMarkdown>
+            </div>
           ) : null}
         </div>
       )}

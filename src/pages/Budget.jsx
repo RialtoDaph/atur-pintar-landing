@@ -319,6 +319,15 @@ export default function BudgetPage() {
           />
         )}
 
+        {/* Nana AI Savings Recommendation — moved up for prominence */}
+        {!loading && Object.keys(spendingByCategory).length > 0 && (
+          <SavingsRecommendationWidget
+            spendingByCategory={spendingByCategory}
+            budgets={budgets}
+            transactions3M={transactions3M}
+          />
+        )}
+
         {/* Visual Budget Chart */}
         {!loading && budgets.length > 0 && (
           <BudgetChartSection
@@ -328,14 +337,6 @@ export default function BudgetPage() {
             formatCurrency={formatCurrency}
             onEdit={openEdit}
             onDelete={handleDelete}
-          />
-        )}
-
-        {!loading && Object.keys(spendingByCategory).length > 0 && (
-          <SavingsRecommendationWidget
-            spendingByCategory={spendingByCategory}
-            budgets={budgets}
-            transactions3M={transactions3M}
           />
         )}
         {loading ? (
