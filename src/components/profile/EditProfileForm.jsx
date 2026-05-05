@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Camera, Save, X } from "lucide-react";
+import { toast } from "sonner";
 
 // Strip leading/trailing commas, extra spaces, and normalize order if "word, word" pattern
 function sanitizeName(name) {
@@ -40,9 +41,14 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingPhoto(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setForm((f) => ({ ...f, photo_url: file_url }));
-    setUploadingPhoto(false);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setForm((f) => ({ ...f, photo_url: file_url }));
+    } catch (err) {
+      toast.error("Gagal mengunggah foto. Coba lagi.");
+    } finally {
+      setUploadingPhoto(false);
+    }
   }
 
   function handleSalaryChange(val) {
@@ -51,19 +57,35 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
   }
 
   async function handleSave() {
+    const cleanName = sanitizeName(form.full_name);
+    if (!cleanName) {
+      toast.error("Nama lengkap tidak boleh kosong.");
+      return;
+    }
+
     setSaving(true);
+
+    // Build payload — only include fields with actual values to avoid
+    // overwriting existing data with empty strings or invalid dates.
     const salaryNum = form.monthly_salary ? Number(String(form.monthly_salary).replace(/\D/g, '')) : undefined;
-    await base44.auth.updateMe({
-      full_name: sanitizeName(form.full_name),
-      date_of_birth: form.date_of_birth,
-      city: form.city,
-      whatsapp: form.whatsapp,
-      job: form.job,
-      monthly_salary: salaryNum,
-      photo_url: form.photo_url,
-    });
-    setSaving(false);
-    onSaved({ ...user, ...form, monthly_salary: salaryNum });
+    const payload = { full_name: cleanName };
+    if (form.date_of_birth) payload.date_of_birth = form.date_of_birth;
+    if (form.city?.trim()) payload.city = form.city.trim();
+    if (form.whatsapp?.trim()) payload.whatsapp = form.whatsapp.trim();
+    if (form.job?.trim()) payload.job = form.job.trim();
+    if (salaryNum !== undefined && !Number.isNaN(salaryNum)) payload.monthly_salary = salaryNum;
+    if (form.photo_url) payload.photo_url = form.photo_url;
+
+    try {
+      await base44.auth.updateMe(payload);
+      toast.success("Profil berhasil diperbarui ✓");
+      onSaved({ ...user, ...payload });
+    } catch (err) {
+      console.error("updateMe failed:", err);
+      toast.error(err?.message || "Gagal menyimpan profil. Coba lagi.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   const initials = form.full_name?.[0]?.toUpperCase() || "U";
