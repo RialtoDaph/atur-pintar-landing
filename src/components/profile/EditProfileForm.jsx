@@ -76,8 +76,10 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
 
     try {
       await base44.auth.updateMe(payload);
+      // Refetch fresh user from server to ensure UI shows persisted state
+      const freshUser = await base44.auth.me();
       toast.success("Profil berhasil diperbarui ✓");
-      onSaved({ ...user, ...payload });
+      onSaved(freshUser);
     } catch (err) {
       console.error("updateMe failed:", err);
       toast.error(err?.message || "Gagal menyimpan profil. Coba lagi.");
