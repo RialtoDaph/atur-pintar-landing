@@ -129,10 +129,10 @@ export default function AddInvestmentModal({ onClose, onSave }) {
                 </button>
               </div>
             ) : (
-              <div className={`flex flex-col gap-1.5 p-2 rounded-xl border-2 transition-colors ${form.account_id ? "border-[#E2E8F0] bg-[#F8FAFC]" : "border-[#FF6A00]/40 bg-[#FFF7F0]"}`}>
+              <div className={`flex flex-col gap-1 p-1.5 rounded-xl border-2 transition-colors ${form.account_id ? "border-[#E2E8F0] bg-[#F8FAFC]" : "border-[#FF6A00]/40 bg-[#FFF7F0]"}`}>
                 {!form.account_id && (
-                  <p className="text-xs text-[#8FA4C8] px-2 pt-1 pb-0.5">
-                    👇 {lang === "en" ? "Tap one wallet below" : "Ketuk salah satu dompet di bawah"}
+                  <p className="text-[11px] text-[#8FA4C8] px-2 pt-0.5">
+                    👇 {lang === "en" ? "Tap one wallet" : "Ketuk salah satu dompet"}
                   </p>
                 )}
                 {accounts.map(acc => {
@@ -142,18 +142,18 @@ export default function AddInvestmentModal({ onClose, onSave }) {
                       key={acc.id}
                       type="button"
                       onClick={() => setForm(f => ({ ...f, account_id: acc.id }))}
-                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-all border-2 ${selected ? "border-[#FF6A00] bg-white text-[#FF6A00] font-semibold shadow-sm" : "border-transparent bg-white hover:bg-[#F2F4F7] text-[#1A1A1A]"}`}
+                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-sm text-left transition-all border ${selected ? "border-[#FF6A00] bg-white text-[#FF6A00] font-semibold" : "border-transparent bg-white hover:bg-[#F2F4F7] text-[#1A1A1A]"}`}
                     >
-                      <div className="w-7 h-7 rounded-lg bg-[#F2F4F7] flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <div className="w-5 h-5 rounded-md bg-[#F2F4F7] flex items-center justify-center overflow-hidden flex-shrink-0">
                         {acc.logo_url
                           ? <img src={acc.logo_url} alt={acc.name} className="w-full h-full object-contain" />
-                          : <span className="text-sm">{acc.icon || "💼"}</span>
+                          : <span className="text-xs">{acc.icon || "💼"}</span>
                         }
                       </div>
-                      <span className="flex-1">{acc.name}</span>
+                      <span className="flex-1 truncate">{acc.name}</span>
                       {selected && (
-                        <span className="w-5 h-5 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0">
-                          <svg className="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                        <span className="w-4 h-4 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0">
+                          <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
                         </span>
                       )}
                     </button>
