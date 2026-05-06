@@ -197,14 +197,27 @@ export default function Dashboard() {
             {/* 1. Greeting */}
             <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
 
-            {/* 2. Balance Card Carousel */}
-            <BalanceCardCarousel
-              income={monthIncome}
-              expense={monthExpense}
-              savings={0}
-              accounts={accounts}
-              loading={loading}
-            />
+            {/* 2. Balance Card + Daily Missions side-by-side on desktop */}
+            <div className="lg:grid lg:grid-cols-12 lg:gap-4 lg:items-start">
+              <div className="lg:col-span-6">
+                <BalanceCardCarousel
+                  income={monthIncome}
+                  expense={monthExpense}
+                  savings={0}
+                  accounts={accounts}
+                  loading={loading}
+                />
+              </div>
+              <div className="hidden lg:block lg:col-span-6">
+                {user?.onboarding_completed && (
+                  <DailyMissionsCard
+                    user={user}
+                    gamificationProfile={activeGamProfile}
+                    onProfileUpdate={setGamProfile}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -246,14 +259,16 @@ export default function Dashboard() {
 
             {/* ── SIDE COLUMN (lg: 4/12) ─────────────────────────── */}
             <div className="space-y-3 lg:col-span-4 lg:space-y-4">
-              {/* Daily Missions — moved to side column for compact layout */}
-              {user?.onboarding_completed && (
-                <DailyMissionsCard
-                  user={user}
-                  gamificationProfile={activeGamProfile}
-                  onProfileUpdate={setGamProfile}
-                />
-              )}
+              {/* Daily Missions — only on mobile/tablet (desktop shows it next to balance card) */}
+              <div className="lg:hidden">
+                {user?.onboarding_completed && (
+                  <DailyMissionsCard
+                    user={user}
+                    gamificationProfile={activeGamProfile}
+                    onProfileUpdate={setGamProfile}
+                  />
+                )}
+              </div>
               {user?.onboarding_completed && (
                 <BossBattleCard
                   user={user}
