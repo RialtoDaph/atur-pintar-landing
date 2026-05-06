@@ -1,0 +1,58 @@
+{
+  "name": "Achievement",
+  "type": "object",
+  "properties": {
+    "achievement_key": {
+      "type": "string",
+      "description": "Unique key achievement (e.g. first_transaction, streak_7, level_up_3)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Nama achievement"
+    },
+    "description": {
+      "type": "string",
+      "description": "Deskripsi achievement"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji icon"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "streak",
+        "transaction",
+        "level",
+        "goal",
+        "social",
+        "special"
+      ],
+      "description": "Kategori achievement"
+    },
+    "xp_reward": {
+      "type": "integer",
+      "default": 50,
+      "description": "XP bonus saat achievement diraih"
+    },
+    "unlocked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Waktu achievement diraih"
+    },
+    "is_unlocked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Status achievement sudah diraih"
+    }
+  },
+  "required": [
+    "achievement_key",
+    "title"
+  ],
+  "rls": {
+    "enabled": true,
+    "filter_field": "created_by",
+    "filter_value": "{{user.email}}"
+  }
+}

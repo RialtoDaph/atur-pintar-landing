@@ -72,7 +72,10 @@ Deno.serve(async (req) => {
 
         const thisMonthTx = (monthTx || []).filter(tx => (tx.date || tx.created_date || '').startsWith(month));
         const uniqueDays = new Set(thisMonthTx.map(tx => (tx.date || tx.created_date || '').slice(0, 10))).size;
-        const daysSoFar = Math.min(new Date().getDate(), 30);
+        // Use actual days in current month (28-31), not hardcoded 30 — keeps math accurate at month-end.
+        const _now = new Date();
+        const _daysInMonth = new Date(_now.getFullYear(), _now.getMonth() + 1, 0).getDate();
+        const daysSoFar = Math.min(_now.getDate(), _daysInMonth);
         const consistency_score = Math.min(250, Math.round((uniqueDays / Math.max(daysSoFar, 1)) * 250));
 
         const monthBudgets = (budgets || []).filter(b => b.month === month);

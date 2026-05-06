@@ -4,7 +4,7 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Name of the investment"
+      "description": "Nama investasi"
     },
     "type": {
       "type": "string",
@@ -18,28 +18,25 @@
         "lainnya"
       ],
       "default": "reksa_dana",
-      "description": "Type of investment"
+      "description": "Tipe investasi"
     },
     "account_id": {
       "type": "string",
-      "description": "ID akun/dompet investasi (e.g. Bibit, Pluang)"
-    },
-    "initial_amount": {
-      "type": "number",
-      "description": "Initial investment amount"
+      "description": "ID akun/platform investasi"
     },
     "current_value": {
       "type": "number",
-      "description": "Current market value (manual input)"
+      "default": 0,
+      "description": "Nilai saat ini \u2014 dihitung otomatis dari transaksi beli/jual"
     },
     "purchase_date": {
       "type": "string",
       "format": "date",
-      "description": "Date of purchase"
+      "description": "Tanggal mulai investasi"
     },
     "notes": {
       "type": "string",
-      "description": "Additional notes"
+      "description": "Catatan tambahan"
     },
     "icon": {
       "type": "string",
@@ -48,9 +45,7 @@
   },
   "required": [
     "name",
-    "type",
-    "initial_amount",
-    "current_value"
+    "type"
   ],
   "rls": {
     "enabled": true,

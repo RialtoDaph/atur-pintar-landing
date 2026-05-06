@@ -12,62 +12,54 @@ Deno.serve(async (req) => {
 
     const results = {};
 
+    // Helper to count successful deletions instead of relying on filtered length
+    // (skipped/failed items shouldn't be counted as deduplicated).
+    async function dedupBy(list, keyFn, deleteFn) {
+      const seen = {};
+      let deleted = 0;
+      for (const item of (list || [])) {
+        const key = keyFn(item);
+        if (!key) continue;
+        if (!seen[key]) {
+          seen[key] = item;
+        } else {
+          try { await deleteFn(item.id); deleted++; } catch (_) {}
+        }
+      }
+      return deleted;
+    }
+
     // ── 1. Deduplicate Accounts ──────────────────────────────────────────────
     const accounts = await base44.entities.Account.filter({ created_by: user.email });
-    const accountsByName = {};
-    for (const acc of accounts) {
-      const key = acc.name?.trim()?.toLowerCase();
-      if (!key) continue;
-      if (!accountsByName[key]) {
-        accountsByName[key] = acc;
-      } else {
-        // Keep the one with higher balance or older created_date; delete duplicate
-        await base44.entities.Account.delete(acc.id).catch(() => {});
-      }
-    }
-    results.accounts_deduplicated = accounts.length - Object.keys(accountsByName).length;
+    results.accounts_deduplicated = await dedupBy(
+      accounts,
+      (acc) => acc.name?.trim()?.toLowerCase(),
+      (id) => base44.entities.Account.delete(id),
+    );
 
     // ── 2. Deduplicate SavingsGoals ──────────────────────────────────────────
     const goals = await base44.entities.SavingsGoal.filter({ created_by: user.email });
-    const goalsByName = {};
-    for (const g of goals) {
-      const key = g.name?.trim()?.toLowerCase();
-      if (!key) continue;
-      if (!goalsByName[key]) {
-        goalsByName[key] = g;
-      } else {
-        await base44.entities.SavingsGoal.delete(g.id).catch(() => {});
-      }
-    }
-    results.goals_deduplicated = goals.length - Object.keys(goalsByName).length;
+    results.goals_deduplicated = await dedupBy(
+      goals,
+      (g) => g.name?.trim()?.toLowerCase(),
+      (id) => base44.entities.SavingsGoal.delete(id),
+    );
 
     // ── 3. Deduplicate Reminders ─────────────────────────────────────────────
     const reminders = await base44.entities.Reminder.filter({ created_by: user.email });
-    const remindersByTitle = {};
-    for (const r of reminders) {
-      const key = r.title?.trim()?.toLowerCase();
-      if (!key) continue;
-      if (!remindersByTitle[key]) {
-        remindersByTitle[key] = r;
-      } else {
-        await base44.entities.Reminder.delete(r.id).catch(() => {});
-      }
-    }
-    results.reminders_deduplicated = reminders.length - Object.keys(remindersByTitle).length;
+    results.reminders_deduplicated = await dedupBy(
+      reminders,
+      (r) => r.title?.trim()?.toLowerCase(),
+      (id) => base44.entities.Reminder.delete(id),
+    );
 
     // ── 4. Deduplicate Subscriptions ─────────────────────────────────────────
     const subs = await base44.entities.Subscription.filter({ created_by: user.email });
-    const subsByName = {};
-    for (const s of subs) {
-      const key = s.name?.trim()?.toLowerCase();
-      if (!key) continue;
-      if (!subsByName[key]) {
-        subsByName[key] = s;
-      } else {
-        await base44.entities.Subscription.delete(s.id).catch(() => {});
-      }
-    }
-    results.subscriptions_deduplicated = subs.length - Object.keys(subsByName).length;
+    results.subscriptions_deduplicated = await dedupBy(
+      subs,
+      (s) => s.name?.trim()?.toLowerCase(),
+      (id) => base44.entities.Subscription.delete(id),
+    );
 
     // ── 5. Deduplicate Alerts (by title, keep most recent) ──────────────────
     const alerts = await base44.entities.Alert.filter({ created_by: user.email });

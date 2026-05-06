@@ -71,17 +71,42 @@
     "message"
   ],
   "rls": {
-    "create": {
-      "created_by": "{{user.email}}"
-    },
     "read": {
-      "created_by": "{{user.email}}"
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
     },
+    "create": {},
     "update": {
-      "created_by": "{{user.email}}"
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
     },
     "delete": {
-      "created_by": "{{user.email}}"
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
     }
   }
 }

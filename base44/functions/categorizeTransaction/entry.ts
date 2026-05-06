@@ -19,7 +19,9 @@ Deno.serve(async (req) => {
 
   for (const learn of sortedLearns) {
     if (learn.note_fragment && noteLower.includes(learn.note_fragment.toLowerCase())) {
-      return Response.json({ category: learn.category, source: 'learning', confidence: Math.min(learn.count / 5, 1) });
+      // Return both keys for frontend compatibility — `category` is the key/id learned previously,
+      // `category_name` left null since learning stores ID not display name.
+      return Response.json({ category: learn.category, category_name: null, source: 'learning', confidence: Math.min(learn.count / 5, 1) });
     }
   }
 
