@@ -193,7 +193,7 @@ export default function Dashboard() {
 
         {/* Top Header */}
         <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-6 pb-14">
-          <div className="max-w-2xl md:max-w-4xl mx-auto">
+          <div className="max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
             {/* 1. Greeting */}
             <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
 
@@ -208,61 +208,59 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Daily Missions + Level — overlaps header/body boundary */}
-        <div className="max-w-2xl md:max-w-4xl mx-auto px-4 -mt-8 relative z-10 space-y-3">
-          {user?.onboarding_completed && (
-            <DailyMissionsCard
-              user={user}
-              gamificationProfile={activeGamProfile}
-              onProfileUpdate={setGamProfile}
-            />
-          )}
-          <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-            <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
-          </Suspense>
-          <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
-            <GoalsProgressWidget goals={goals} loading={goalsLoading} />
-          </Suspense>
-        </div>
+        {/* Body — mobile: stacked. tablet/desktop: 12-col grid (main 8 + side 4) */}
+        <div className="max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 -mt-8 relative z-10">
+          <div className="space-y-3 lg:grid lg:grid-cols-12 lg:gap-4 lg:space-y-0 lg:items-start">
 
-        {showSampleBanner && (
-          <div className="max-w-2xl mx-auto px-4 mt-3">
-            <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
-          </div>
-        )}
+            {/* ── MAIN COLUMN (lg: 8/12) ─────────────────────────── */}
+            <div className="space-y-3 lg:col-span-8 lg:space-y-4">
+              {/* Daily Missions */}
+              {user?.onboarding_completed && (
+                <DailyMissionsCard
+                  user={user}
+                  gamificationProfile={activeGamProfile}
+                  onProfileUpdate={setGamProfile}
+                />
+              )}
 
-        {user?.subscription_status === "expired" && (
-          <div className="max-w-2xl mx-auto px-4 mt-3">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
-              <span className="text-lg">⚠️</span>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-red-700">Langganan kamu sudah berakhir</p>
-                <p className="text-xs text-red-500">Perpanjang untuk akses fitur premium</p>
-              </div>
-              <a href="/Subscription" className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold">Perpanjang</a>
-            </div>
-          </div>
-        )}
+              {/* Sample data banner & subscription banners — keep here at top of main */}
+              {showSampleBanner && (
+                <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
+              )}
 
-        <div className="max-w-2xl md:max-w-4xl mx-auto px-4 mt-3">
-          {/* Mobile: single column, Tablet: 2-column grid */}
-          <div className="space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 md:items-start">
+              {user?.subscription_status === "expired" && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
+                  <span className="text-lg">⚠️</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-red-700">Langganan kamu sudah berakhir</p>
+                    <p className="text-xs text-red-500">Perpanjang untuk akses fitur premium</p>
+                  </div>
+                  <a href="/Subscription" className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold">Perpanjang</a>
+                </div>
+              )}
 
-            {/* Boss Battle */}
-            {user?.onboarding_completed && (
-              <BossBattleCard
-                user={user}
-                gamificationProfile={activeGamProfile}
-                onProfileUpdate={setGamProfile}
-              />
-            )}
-
-            {/* Today Transactions - full width */}
-            {user?.onboarding_completed && (
-              <div className="md:col-span-2">
+              {/* Today Transactions — main content */}
+              {user?.onboarding_completed && (
                 <TodayTransactionsCard transactions={transactions} allCategories={allCategories} />
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* ── SIDE COLUMN (lg: 4/12) ─────────────────────────── */}
+            <div className="space-y-3 lg:col-span-4 lg:space-y-4">
+              <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+                <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+              </Suspense>
+              <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
+                <GoalsProgressWidget goals={goals} loading={goalsLoading} />
+              </Suspense>
+              {user?.onboarding_completed && (
+                <BossBattleCard
+                  user={user}
+                  gamificationProfile={activeGamProfile}
+                  onProfileUpdate={setGamProfile}
+                />
+              )}
+            </div>
 
           </div>
           <div className="h-4" />
