@@ -39,27 +39,39 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
   async function loadMissions() {
     setLoading(true);
 
-    // Clean up stale uncompleted missions from past dates
-    base44.entities.DailyMission.filter({ created_by: user.email, is_completed: false })
-      .then(stale => {
-        const past = (stale || []).filter(m => m.date && m.date < today);
-        past.forEach(m => base44.entities.DailyMission.delete(m.id).catch(() => {}));
-      }).catch(() => {});
+    // Step 1: Clean up stale uncompleted missions from past dates — AWAIT so they're gone before we query today
+    const allUncompleted = await base44.entities.DailyMission.filter({
+      created_by: user.email, is_completed: false,
+    }).catch(() => []);
+    const stale = (allUncompleted || []).filter(m => m.date && m.date < today);
+    if (stale.length) {
+      await Promise.all(stale.map(m => base44.entities.DailyMission.delete(m.id).catch(() => {})));
+    }
 
-    const existing = await base44.entities.DailyMission.filter({
-      created_by: user.email,
-      date: today,
+    // Step 2: Fetch today's missions and dedupe by mission_key (in case duplicates already exist)
+    const todayRaw = await base44.entities.DailyMission.filter({
+      created_by: user.email, date: today,
     }).catch(() => []);
 
-    if (existing && existing.length >= 3) {
-      setMissions(existing);
-    } else {
-      // Generate default missions
-      const toCreate = DEFAULT_MISSIONS.filter(
-        dm => !existing.find(e => e.mission_key === dm.mission_key)
-      );
-      const created = await Promise.all(
-        toCreate.map(m =>
+    const seen = new Set();
+    const dupes = [];
+    const existing = [];
+    for (const m of (todayRaw || [])) {
+      if (seen.has(m.mission_key)) {
+        dupes.push(m);
+      } else {
+        seen.add(m.mission_key);
+        existing.push(m);
+      }
+    }
+    if (dupes.length) {
+      await Promise.all(dupes.map(m => base44.entities.DailyMission.delete(m.id).catch(() => {})));
+    }
+
+    // Step 3: Create only missions that don't exist yet for today
+    const toCreate = DEFAULT_MISSIONS.filter(dm => !seen.has(dm.mission_key));
+    const created = toCreate.length
+      ? await Promise.all(toCreate.map(m =>
           base44.entities.DailyMission.create({
             date: today,
             mission_key: m.mission_key,
@@ -68,10 +80,10 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
             xp_reward: m.xp_reward,
             is_completed: false,
           })
-        )
-      );
-      setMissions([...existing, ...created]);
-    }
+        ))
+      : [];
+
+    setMissions([...existing, ...created]);
     setLoading(false);
   }
 
