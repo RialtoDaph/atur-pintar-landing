@@ -214,15 +214,6 @@ export default function Dashboard() {
 
             {/* ── MAIN COLUMN (lg: 8/12) ─────────────────────────── */}
             <div className="space-y-3 lg:col-span-8 lg:space-y-4">
-              {/* Daily Missions */}
-              {user?.onboarding_completed && (
-                <DailyMissionsCard
-                  user={user}
-                  gamificationProfile={activeGamProfile}
-                  onProfileUpdate={setGamProfile}
-                />
-              )}
-
               {/* Sample data banner & subscription banners — keep here at top of main */}
               {showSampleBanner && (
                 <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
@@ -239,6 +230,14 @@ export default function Dashboard() {
                 </div>
               )}
 
+              {/* Budget Alert & Goals Progress — moved to main column for larger layout */}
+              <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+                <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+              </Suspense>
+              <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
+                <GoalsProgressWidget goals={goals} loading={goalsLoading} />
+              </Suspense>
+
               {/* Today Transactions — main content */}
               {user?.onboarding_completed && (
                 <TodayTransactionsCard transactions={transactions} allCategories={allCategories} />
@@ -247,12 +246,14 @@ export default function Dashboard() {
 
             {/* ── SIDE COLUMN (lg: 4/12) ─────────────────────────── */}
             <div className="space-y-3 lg:col-span-4 lg:space-y-4">
-              <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-                <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
-              </Suspense>
-              <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
-                <GoalsProgressWidget goals={goals} loading={goalsLoading} />
-              </Suspense>
+              {/* Daily Missions — moved to side column for compact layout */}
+              {user?.onboarding_completed && (
+                <DailyMissionsCard
+                  user={user}
+                  gamificationProfile={activeGamProfile}
+                  onProfileUpdate={setGamProfile}
+                />
+              )}
               {user?.onboarding_completed && (
                 <BossBattleCard
                   user={user}
