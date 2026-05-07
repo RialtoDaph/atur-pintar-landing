@@ -614,7 +614,7 @@ export default function LandingPage() {
         .g-text { background: linear-gradient(135deg,#FF6A00 0%,#FFB347 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
         .glow { box-shadow: 0 0 40px rgba(255,106,0,0.28); }
         .card-d { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
-        .iphone-frame { background:#111; border-radius:44px; border:3px solid #333; position:relative; padding:14px; box-shadow:0 30px 80px rgba(0,0,0,0.7),inset 0 0 0 1px #222; }
+        .iphone-frame { background:#111; border-radius:44px; border:3px solid #333; position:relative; padding:6px; box-shadow:0 30px 80px rgba(0,0,0,0.7),inset 0 0 0 1px #222; }
         .iphone-notch { width:90px; height:22px; background:#111; border-radius:0 0 14px 14px; margin:0 auto -8px; position:relative; z-index:1; }
       `}</style>
 
