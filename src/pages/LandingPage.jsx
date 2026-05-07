@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle, Mail, Instagram, Twitter, Sparkles, ChevronRig
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const NANA_AVATAR_URL = "https://api.dicebear.com/7.x/adventurer/svg?seed=Nana&backgroundColor=f97316";
-const VIDEO_URL = "https://www.youtube.com/embed/6KazLzryNbM";
+const VIDEO_URL = "https://www.youtube.com/embed/6KazLzryNbM?rel=0&modestbranding=1&playsinline=1";
 
 // ─── Matrix background ────────────────────────────────────────────────────────
 function MatrixBackground() {
@@ -816,9 +816,15 @@ export default function LandingPage() {
             <div className="mx-auto iphone-frame" style={{ width: 280 }}>
               <div className="iphone-notch" />
               <div className="overflow-hidden rounded-[30px] bg-black relative" style={{ aspectRatio: "9/16" }}>
+                {/* Scale iframe up so the YouTube vertical video fills the entire phone screen with no letterbox bars */}
                 <iframe
                   src={VIDEO_URL}
-                  className="absolute inset-0 w-full h-full block border-0"
+                  className="absolute top-1/2 left-1/2 border-0"
+                  style={{
+                    width: "177.78%",
+                    height: "177.78%",
+                    transform: "translate(-50%, -50%)"
+                  }}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   title="Demo Atur Pintar" />
