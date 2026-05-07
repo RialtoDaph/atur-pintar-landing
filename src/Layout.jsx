@@ -337,8 +337,8 @@ function LayoutInner({ children, currentPageName }) {
       {/* Main content */}
       <div ref={mainContentRef} className="sm:ml-20 pt-14 sm:pt-4 overflow-y-auto"
         style={{ paddingBottom: window.innerWidth >= 640 ? '16px' : (currentPageName === "Nana" ? '0px' : 'calc(80px + env(safe-area-inset-bottom, 0px))') }}>
-        {/* Desktop top tabs — only on Dashboard, to avoid clashing with each page's own header */}
-        {currentPageName === "Dashboard" && (
+        {/* Desktop top tabs — persist across Dashboard/Transactions/Analytics/Tips */}
+        {["Dashboard", "Transactions", "Analytics", "Tips"].includes(currentPageName) && (
           <div className="hidden sm:block sm:max-w-6xl sm:mx-auto px-5 pt-2">
             <DashboardTopTabs />
           </div>
