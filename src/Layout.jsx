@@ -11,6 +11,7 @@ import ReminderNotificationPopup from "@/components/reminders/ReminderNotificati
 import { syncAccountBalance } from "@/components/utils/accountSync";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
+import DashboardTopTabs from "@/components/dashboard/DashboardTopTabs";
 import { AnimatePresence, motion } from "framer-motion";
 import TourGuide from "@/components/onboarding/TourGuide";
 function LayoutInner({ children, currentPageName }) {
@@ -336,6 +337,12 @@ function LayoutInner({ children, currentPageName }) {
       {/* Main content */}
       <div ref={mainContentRef} className="sm:ml-20 pt-14 sm:pt-4 overflow-y-auto"
         style={{ paddingBottom: window.innerWidth >= 640 ? '16px' : (currentPageName === "Nana" ? '0px' : 'calc(80px + env(safe-area-inset-bottom, 0px))') }}>
+        {/* Desktop top tabs — persist across Dashboard/Transactions/Analytics/Tips */}
+        {["Dashboard", "Transactions", "Analytics", "Tips"].includes(currentPageName) && (
+          <div className="hidden sm:block sm:max-w-6xl sm:mx-auto px-5 pt-2">
+            <DashboardTopTabs />
+          </div>
+        )}
         <AnimatePresence mode="sync">
           <motion.div
             key={currentPageName}
