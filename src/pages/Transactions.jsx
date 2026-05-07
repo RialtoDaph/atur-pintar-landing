@@ -93,9 +93,20 @@ export default function Transactions() {
       // NOTE: We filter by created_by only and exclude soft-deleted client-side.
       // Filtering `is_deleted: false` server-side hides legacy transactions where
       // the field is undefined/null (pre-soft-delete records) → user sees history loss.
+      // Retry-once wrapper to handle transient rate limits gracefully
+      const withRetry = async (fn) => {
+        try { return await fn(); }
+        catch (err) {
+          if (String(err?.message || "").toLowerCase().includes("rate limit")) {
+            await new Promise(r => setTimeout(r, 1500));
+            return await fn();
+          }
+          throw err;
+        }
+      };
       const [txsRaw, accs, dts, subs] = await Promise.all([
-        base44.entities.Transaction.filter({ created_by: user.email }, "-date"),
-        base44.entities.Account.filter({ created_by: user.email }, "name"),
+        withRetry(() => base44.entities.Transaction.filter({ created_by: user.email }, "-date")),
+        withRetry(() => base44.entities.Account.filter({ created_by: user.email }, "name")),
         base44.entities.Debt.filter({ created_by: user.email }).catch(() => []),
         base44.entities.Subscription.filter({ created_by: user.email }).catch(() => []),
       ]);
