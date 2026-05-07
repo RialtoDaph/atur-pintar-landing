@@ -818,7 +818,13 @@ export default function LandingPage() {
               <div className="overflow-hidden rounded-[30px] bg-black relative" style={{ aspectRatio: "9/16" }}>
                 <iframe
                   src={VIDEO_URL}
-                  className="absolute inset-0 w-full h-full border-0"
+                  className="absolute top-1/2 left-1/2 border-0"
+                  style={{
+                    width: "300%",
+                    height: "100%",
+                    transform: "translate(-50%, -50%)",
+                    pointerEvents: "auto"
+                  }}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                   title="Demo Atur Pintar" />
