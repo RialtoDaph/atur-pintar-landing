@@ -194,10 +194,12 @@ export default function Dashboard() {
         {/* Top Header — transparent on desktop, dark on mobile */}
         <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] sm:bg-none sm:bg-transparent px-5 pt-6 pb-14 sm:pb-6">
           <div className="max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto">
-            {/* 1. Greeting */}
-            <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
+            {/* Greeting — mobile: above balance card (unchanged) */}
+            <div className="lg:hidden">
+              <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
+            </div>
 
-            {/* 2. Balance Card + Daily Missions side-by-side on desktop */}
+            {/* Balance Card + (Greeting stacked above Daily Missions) side-by-side on desktop */}
             <div className="lg:grid lg:grid-cols-12 lg:gap-4 lg:items-start">
               <div className="lg:col-span-6">
                 <BalanceCardCarousel
@@ -208,7 +210,8 @@ export default function Dashboard() {
                   loading={loading}
                 />
               </div>
-              <div className="hidden lg:block lg:col-span-6">
+              <div className="hidden lg:block lg:col-span-6 space-y-4">
+                <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
                 {user?.onboarding_completed && (
                   <DailyMissionsCard
                     user={user}
