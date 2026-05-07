@@ -813,22 +813,13 @@ export default function LandingPage() {
             <p className="text-white/40 text-sm mb-10">Web app — buka browser, langsung bisa. Tanpa install apapun.</p>
           </Reveal>
           <Reveal delay={120}>
-            <div className="mx-auto iphone-frame" style={{ width: 280 }}>
-              <div className="iphone-notch" />
-              <div className="overflow-hidden rounded-[30px] bg-black relative" style={{ aspectRatio: "9/16" }}>
-                <iframe
-                  src={VIDEO_URL}
-                  className="absolute top-1/2 left-1/2 border-0"
-                  style={{
-                    width: "300%",
-                    height: "100%",
-                    transform: "translate(-50%, -50%)",
-                    pointerEvents: "auto"
-                  }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  title="Demo Atur Pintar" />
-              </div>
+            <div className="mx-auto rounded-[30px] overflow-hidden bg-black relative" style={{ width: 280, aspectRatio: "9/16", boxShadow: "0 30px 80px rgba(0,0,0,0.7)" }}>
+              <iframe
+                src={VIDEO_URL}
+                className="absolute inset-0 w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Demo Atur Pintar" />
             </div>
             <p className="text-white/25 text-xs mt-5">iOS & Android segera hadir.</p>
           </Reveal>
