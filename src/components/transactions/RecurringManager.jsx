@@ -23,8 +23,13 @@ export async function processRecurringTransactions(userEmail) {
 
   for (const tx of all) {
     if (!tx.recurring_interval) continue;
+
+    // First-ever generation: if tx.date is already in the past (or today) and
+    // recurring_last_generated belum pernah ada, child pertama = tx.date itu sendiri.
+    // Kalau sudah pernah generate, lanjut dari interval setelah recurring_last_generated.
+    const firstRun = !tx.recurring_last_generated;
     const lastGen = tx.recurring_last_generated || tx.date;
-    let nextDate = addInterval(lastGen, tx.recurring_interval);
+    let nextDate = firstRun ? tx.date : addInterval(lastGen, tx.recurring_interval);
 
     // Only auto-generate for dates BEFORE today (not today itself)
     // Today's transaction must be manually recorded via "Tandai Selesai"
