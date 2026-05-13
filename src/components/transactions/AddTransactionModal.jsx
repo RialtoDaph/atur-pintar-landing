@@ -245,24 +245,14 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         };
         const keywords = keywordMap[aiCat] || [aiCat];
         const expenseCats = globalCategories.filter(c => c.type === "expense" || c.type === "both");
-        // 1. Try matching subcategories first (more specific)
+        // Match against global categories by name
         let matched = expenseCats.find(c => {
-          if (!c.is_subcategory) return false;
           const name = c.name.toLowerCase();
           return keywords.some(kw => name.includes(kw) || kw.includes(name));
         });
-        // 2. Fallback to parent category
+        // Fallback: pick "Lainnya" / "Other" or first available
         if (!matched) {
-          matched = expenseCats.find(c => {
-            if (c.is_subcategory) return false;
-            const name = c.name.toLowerCase();
-            return keywords.some(kw => name.includes(kw) || kw.includes(name));
-          });
-        }
-        // 3. Final fallback: pick "Lainnya" / "Other" or first parent category
-        if (!matched) {
-          matched = expenseCats.find(c => !c.is_subcategory && /lain|other/i.test(c.name))
-            || expenseCats.find(c => !c.is_subcategory);
+          matched = expenseCats.find(c => /lain|other/i.test(c.name)) || expenseCats[0];
         }
         if (matched) setCategory(matched.id);
       }
