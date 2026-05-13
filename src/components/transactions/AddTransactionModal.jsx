@@ -149,7 +149,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
   const selectedAccount = accounts.find(a => a.id === accountId);
   const amount = parseAmount(amountRaw);
-  const canSave = amount > 0 && accountId;
+  const canSave = amount > 0 && accountId && !!category;
 
   async function doSave() {
     setSaving(true);
@@ -158,7 +158,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
         amount,
         type: tab,
         date,
-        category: category || "other",
+        category,
         note,
         account_id: accountId,
         time: time || undefined,
