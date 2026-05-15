@@ -10,6 +10,32 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
+    const body = await req.json().catch(() => ({}));
+    const { action, email, plan, duration_days } = body;
+
+    // Manual activation action
+    if (action === 'activate' && email) {
+      const users = await base44.asServiceRole.entities.User.filter({ email });
+      if (users.length === 0) {
+        return Response.json({ error: 'User not found' }, { status: 404 });
+      }
+      const targetUser = users[0];
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + (duration_days || 365));
+      
+      await base44.asServiceRole.entities.User.update(targetUser.id, {
+        subscription_status: 'active',
+        subscription_plan: plan || 'yearly',
+        subscription_end_date: endDate.toISOString().split('T')[0]
+      });
+      
+      return Response.json({ 
+        success: true, 
+        message: `Subscription activated for ${email}`,
+        end_date: endDate.toISOString().split('T')[0]
+      });
+    }
+
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
 
