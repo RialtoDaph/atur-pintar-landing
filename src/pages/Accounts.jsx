@@ -287,7 +287,11 @@ export default function Accounts() {
     setDeleting(true);
     try {
       const txs = await base44.entities.Transaction.filter({ account_id: deleteTarget.id });
-      await Promise.all(txs.map(tx => base44.entities.Transaction.update(tx.id, { account_id: null })));
+      // Batch updates to avoid rate-limit (5 at a time)
+      const CHUNK = 5;
+      for (let i = 0; i < txs.length; i += CHUNK) {
+        await Promise.all(txs.slice(i, i + CHUNK).map(tx => base44.entities.Transaction.update(tx.id, { account_id: null })));
+      }
       await base44.entities.Account.delete(deleteTarget.id);
       setAccounts(prev => prev.filter(a => a.id !== deleteTarget.id));
       toast.success(`Rekening "${deleteTarget.name}" berhasil dihapus.`);
@@ -316,7 +320,11 @@ export default function Accounts() {
 
   async function setDefault(acc) {
     try {
-      await Promise.all(accounts.map(a => base44.entities.Account.update(a.id, { is_default: a.id === acc.id })));
+      // Only update accounts whose is_default state actually changes
+      const toUpdate = accounts.filter(a => (a.id === acc.id) !== !!a.is_default);
+      for (const a of toUpdate) {
+        await base44.entities.Account.update(a.id, { is_default: a.id === acc.id });
+      }
       setAccounts(prev => prev.map(a => ({ ...a, is_default: a.id === acc.id })));
       toast.success(`"${acc.name}" diset sebagai rekening utama`);
     } catch {
