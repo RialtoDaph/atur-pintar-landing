@@ -1,23 +1,30 @@
-import { useState, useRef } from "react";
-import { X, Upload, CheckCircle, FileText, ImageIcon, Loader2, RefreshCw, ChevronRight, AlertCircle } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { X, Upload, CheckCircle, FileText, ImageIcon, Loader2, RefreshCw, ChevronRight, AlertCircle, Search } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 import { detectCategory } from "./bankCSVParser";
+import AccountLogo from "@/components/ui/AccountLogo";
 
 const STEPS = ["template", "upload", "map", "preview", "done"];
 const STEP_LABELS = ["Bank/Wallet", "Upload", "Mapping", "Preview", "Selesai"];
 
-const BANK_TEMPLATES = [
-  { id: "auto", name: "Deteksi Otomatis", icon: "🔍", description: "Cocok untuk semua format" },
-  { id: "bca", name: "BCA", icon: "🏦", description: "Mutasi rekening BCA" },
-  { id: "mandiri", name: "Mandiri", icon: "🏦", description: "Mutasi rekening Mandiri" },
-  { id: "bri", name: "BRI", icon: "🏦", description: "Mutasi rekening BRI" },
-  { id: "bni", name: "BNI", icon: "🏦", description: "Mutasi rekening BNI" },
-  { id: "gopay", name: "GoPay", icon: "💚", description: "Riwayat transaksi GoPay" },
-  { id: "ovo", name: "OVO", icon: "💜", description: "Riwayat transaksi OVO" },
-  { id: "dana", name: "DANA", icon: "💙", description: "Riwayat transaksi DANA" },
-  { id: "shopee", name: "ShopeePay", icon: "🧡", description: "Riwayat transaksi ShopeePay" },
-];
+// Bank/Wallet names yang punya template parsing khusus
+const TEMPLATE_NAMES = ["BCA", "Mandiri", "BRI", "BNI", "GoPay", "OVO", "DANA", "ShopeePay", "Jenius", "CIMB Niaga", "SeaBank", "LinkAja", "Maybank"];
+const DESC_MAP = {
+  BCA: "Mutasi rekening BCA",
+  Mandiri: "Mutasi rekening Mandiri",
+  BRI: "Mutasi rekening BRI",
+  BNI: "Mutasi rekening BNI",
+  Jenius: "Mutasi rekening Jenius",
+  "CIMB Niaga": "Mutasi rekening CIMB Niaga",
+  SeaBank: "Mutasi rekening SeaBank",
+  Maybank: "Mutasi rekening Maybank",
+  GoPay: "Riwayat transaksi GoPay",
+  OVO: "Riwayat transaksi OVO",
+  DANA: "Riwayat transaksi DANA",
+  ShopeePay: "Riwayat transaksi ShopeePay",
+  LinkAja: "Riwayat transaksi LinkAja",
+};
 
 const CAT_EMOJI = {
   food: "🍔", transport: "🚗", shopping: "🛍️", health: "❤️",
@@ -89,6 +96,34 @@ export default function PDFImportModal({ onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState("");
   const [fileUrl, setFileUrl] = useState("");
+  const [bankTemplates, setBankTemplates] = useState([
+    { id: "auto", name: "Deteksi Otomatis", icon: "🔍", description: "Cocok untuk semua format", logo_url: null, isAuto: true }
+  ]);
+
+  // Load DefaultAccount → ambil logo asli untuk tiap template bank/wallet
+  useEffect(() => {
+    base44.entities.DefaultAccount.list("sort_order").then(accs => {
+      const byName = {};
+      for (const a of accs || []) {
+        if (a.is_active !== false) byName[a.name] = a;
+      }
+      const tpls = [
+        { id: "auto", name: "Deteksi Otomatis", icon: "🔍", description: "Cocok untuk semua format", logo_url: null, isAuto: true },
+        ...TEMPLATE_NAMES.map(n => {
+          const acc = byName[n];
+          return {
+            id: n.toLowerCase().replace(/\s+/g, "_"),
+            name: n,
+            icon: acc?.icon || "🏦",
+            description: DESC_MAP[n] || `Mutasi ${n}`,
+            logo_url: acc?.logo_url || null,
+            color: acc?.color || "#F97316",
+          };
+        })
+      ];
+      setBankTemplates(tpls);
+    }).catch(() => {});
+  }, []);
 
   // AI-extracted raw fields (column names detected by AI)
   const [extractedFields, setExtractedFields] = useState([]); // array of field names
@@ -289,12 +324,26 @@ Pastikan:
   const canMap = mapping.date && (mapping.amount || mapping.debit || mapping.credit);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg shadow-2xl flex flex-col" style={{ maxHeight: '92dvh' }}>
+    <>
+      {/* Backdrop — translucent so FAB at z-80 stays visible above */}
+      <div className="fixed inset-0 z-40 bg-black/40 sm:backdrop-blur-sm" onClick={onClose} />
+      {/* Mobile: floating popup positioned just above the FAB. Desktop: centered modal */}
+      <div
+        className="fixed z-40 pointer-events-none flex justify-center sm:inset-0 sm:items-center"
+        style={{
+          left: 0,
+          right: 0,
+          bottom: 'calc(112px + env(safe-area-inset-bottom, 0px))',
+          top: '64px'
+        }}>
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-3xl shadow-2xl flex flex-col overscroll-contain pointer-events-auto animate-slide-up-sheet w-[calc(100%-24px)] sm:w-full sm:max-w-lg"
+          style={{ maxHeight: "100%" }}
+          onClick={e => e.stopPropagation()}>
         {/* Header — sticky */}
         <div className="flex-shrink-0 px-5 pt-5 pb-4 border-b border-[#F2F4F7]">
-          {/* Drag handle (mobile) */}
-          <div className="w-10 h-1 rounded-full bg-[#E2E8F0] mx-auto mb-4 sm:hidden" />
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[15px] font-bold text-[#1A1A1A]">Import Mutasi PDF / Screenshot</h2>
             <button onClick={onClose} className="w-8 h-8 flex items-center justify-center hover:bg-[#F2F4F7] rounded-xl transition-colors flex-shrink-0">
@@ -312,13 +361,25 @@ Pastikan:
             <div>
               <p className="text-xs text-[#8FA4C8] mb-4">Pilih bank atau e-wallet untuk membantu pemetaan kolom otomatis.</p>
               <div className="grid grid-cols-2 gap-2">
-                {BANK_TEMPLATES.map(tpl => (
+                {bankTemplates.map(tpl => (
                   <button
                     key={tpl.id}
                     onClick={() => { setSelectedTemplate(tpl); setStep("upload"); }}
                     className="flex items-center gap-2.5 p-3 rounded-2xl border-2 border-[#E2E8F0] active:border-[#FF6A00] active:bg-[#FFF5EB] hover:border-[#FF6A00] hover:bg-[#FFF5EB] transition-all text-left tap-highlight-fix"
                   >
-                    <span className="text-xl flex-shrink-0">{tpl.icon}</span>
+                    {tpl.isAuto ? (
+                      <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-[#F2F4F7] flex items-center justify-center">
+                        <Search className="w-4 h-4 text-[#8FA4C8]" />
+                      </div>
+                    ) : tpl.logo_url ? (
+                      <AccountLogo
+                        logoUrl={tpl.logo_url}
+                        size="w-8 h-8"
+                        fallback={<span className="text-xl flex-shrink-0">{tpl.icon}</span>}
+                      />
+                    ) : (
+                      <span className="text-xl flex-shrink-0">{tpl.icon}</span>
+                    )}
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-bold text-[#1A1A1A] leading-tight">{tpl.name}</p>
                       <p className="text-[10px] text-[#8FA4C8] leading-tight mt-0.5 line-clamp-1">{tpl.description}</p>
@@ -334,7 +395,15 @@ Pastikan:
             <div className="space-y-3">
               {selectedTemplate && (
                 <div className="flex items-center gap-3 bg-[#FFF5EB] border border-[#FF6A00]/20 rounded-2xl px-4 py-3">
-                  <span className="text-xl flex-shrink-0">{selectedTemplate.icon}</span>
+                  {selectedTemplate.logo_url ? (
+                    <AccountLogo
+                      logoUrl={selectedTemplate.logo_url}
+                      size="w-8 h-8"
+                      fallback={<span className="text-xl flex-shrink-0">{selectedTemplate.icon}</span>}
+                    />
+                  ) : (
+                    <span className="text-xl flex-shrink-0">{selectedTemplate.icon}</span>
+                  )}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-[#FF6A00]">{selectedTemplate.name}</p>
                     <p className="text-[10px] text-[#8FA4C8]">{selectedTemplate.description}</p>
@@ -538,8 +607,9 @@ Pastikan:
             </div>
           )}
 
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
