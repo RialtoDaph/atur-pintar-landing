@@ -10,11 +10,13 @@ export default function ReceiptScanModal({ onClose, onSuccess }) {
   useLockBodyScroll();
   const [step, setStep] = useState("upload"); // upload | reviewing | done
   const [scanning, setScanning] = useState(false);
+  const [scanStatus, setScanStatus] = useState(""); // pesan progres saat scan
   const [extracted, setExtracted] = useState(null);
   const [scanId, setScanId] = useState(null);
   const [globalCategories, setGlobalCategories] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [lastFile, setLastFile] = useState(null); // untuk retry
   const fileRef = useRef(null);
   const cameraRef = useRef(null);
 
@@ -38,43 +40,111 @@ export default function ReceiptScanModal({ onClose, onSuccess }) {
     return active;
   }
 
+  // util: jalankan promise dengan timeout
+  function withTimeout(promise, ms, label) {
+    return Promise.race([
+      promise,
+      new Promise((_, rej) => setTimeout(() => rej(new Error(`${label} timeout (${ms / 1000}s)`)), ms))
+    ]);
+  }
+
   async function handleFile(e) {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = "";
+
+    // Validasi tipe & ukuran file SEBELUM upload
+    if (!file.type.startsWith("image/")) {
+      toast.error("File harus berupa gambar (JPG/PNG)");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Ukuran gambar maksimal 10MB. Coba kompres dulu.");
+      return;
+    }
+    if (file.size < 1024) {
+      toast.error("Gambar terlalu kecil/rusak. Coba foto ulang.");
+      return;
+    }
+
+    setLastFile(file);
+    await runScan(file);
+  }
+
+  async function runScan(file) {
     setScanning(true);
+    setScanStatus("Mengunggah gambar...");
     try {
       const cats = await loadCategories();
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-      const catList = cats.map(c => c.name).slice(0, 20).join(", ");
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `Kamu adalah sistem ekstraksi data struk belanja. Ekstrak informasi dari gambar struk ini.
-Kategori yang tersedia: ${catList}
-Pilih kategori_id yang paling cocok dari daftar ini (kembalikan nama kategori persis).
-Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanpa titik/koma), scan_date (YYYY-MM-DD, atau hari ini jika tidak ada), suggested_category (nama kategori dari daftar).`,
-        file_urls: [file_url],
-        response_json_schema: {
-          type: "object",
-          properties: {
-            merchant_name: { type: "string" },
-            total_amount: { type: "number" },
-            scan_date: { type: "string" },
-            suggested_category: { type: "string" },
+      const { file_url } = await withTimeout(
+        base44.integrations.Core.UploadFile({ file }),
+        30000,
+        "Upload gambar"
+      );
+
+      setScanStatus("Nana sedang membaca struk...");
+      const catList = cats.map(c => c.name).join(", ");
+      const today = new Date().toLocaleDateString("en-CA");
+
+      const data = await withTimeout(
+        base44.integrations.Core.InvokeLLM({
+          prompt: `Kamu adalah sistem OCR ahli untuk struk belanja Indonesia. Analisis gambar struk ini dengan teliti.
+
+PENTING - format angka Indonesia:
+- Titik (.) = pemisah ribuan: 15.000 → 15000
+- Koma (,) = desimal: 15.000,50 → 15000.50
+- Hilangkan simbol Rp, IDR, spasi
+
+Ekstrak:
+1. merchant_name: Nama toko/restoran (biasanya di atas struk)
+2. total_amount: TOTAL akhir yang dibayar (cari kata: TOTAL, GRAND TOTAL, JUMLAH BAYAR, TOTAL BAYAR). Harus berupa angka, JANGAN 0 kalau struk terlihat.
+3. scan_date: Tanggal transaksi format YYYY-MM-DD. Jika tidak terbaca pakai: ${today}
+4. suggested_category: Pilih SATU nama kategori PERSIS dari daftar: ${catList}
+
+Jika gambar buram atau bukan struk, isi merchant_name = "" dan total_amount = 0.`,
+          file_urls: [file_url],
+          model: "gemini_3_flash",
+          response_json_schema: {
+            type: "object",
+            properties: {
+              merchant_name: { type: "string" },
+              total_amount: { type: "number" },
+              scan_date: { type: "string" },
+              suggested_category: { type: "string" },
+            },
+            required: ["merchant_name", "total_amount", "scan_date"]
           }
-        }
-      });
+        }),
+        60000,
+        "Pembacaan struk"
+      );
 
-      const data = res;
+      // Validasi hasil — jika nominal 0, beri peringatan tapi tetap lanjut agar user bisa edit
+      const totalAmount = Number(data?.total_amount) || 0;
+      const merchantName = (data?.merchant_name || "").trim();
+
+      if (totalAmount === 0 && !merchantName) {
+        toast.error("Struk tidak terbaca. Pastikan foto jelas & cahaya cukup.");
+        setScanning(false);
+        setScanStatus("");
+        return;
+      }
+
+      if (totalAmount === 0) {
+        toast.warning("Nominal tidak terbaca jelas. Mohon isi manual.");
+      }
+
       const matchedCat = cats.find(c =>
         c.name.toLowerCase() === (data.suggested_category || "").toLowerCase()
       );
 
+      setScanStatus("Menyimpan data...");
       const scan = await base44.entities.ReceiptScan.create({
         image_url: file_url,
-        merchant_name: data.merchant_name || "",
-        total_amount: data.total_amount || 0,
-        scan_date: data.scan_date || new Date().toLocaleDateString("en-CA"),
+        merchant_name: merchantName,
+        total_amount: totalAmount,
+        scan_date: data.scan_date || today,
         suggested_category: matchedCat?.id || data.suggested_category || "",
         scanned_at: new Date().toISOString(),
         status: "pending",
@@ -84,18 +154,26 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
       const defAcc = accounts.find(a => a.is_default) || accounts[0];
       setExtracted({
         image_url: file_url,
-        merchant_name: data.merchant_name || "",
-        total_amount: data.total_amount || 0,
-        scan_date: data.scan_date || new Date().toLocaleDateString("en-CA"),
+        merchant_name: merchantName,
+        total_amount: totalAmount,
+        scan_date: data.scan_date || today,
         category: matchedCat?.id || "",
-        note: data.merchant_name || "",
+        note: merchantName,
         account_id: defAcc?.id || "",
       });
       setStep("reviewing");
     } catch (err) {
-      toast.error("Gagal memindai struk: " + (err.message || ""));
+      const msg = err?.message || "Terjadi kesalahan tidak diketahui";
+      if (msg.includes("timeout")) {
+        toast.error(`${msg}. Coba foto yang lebih jelas atau ulangi.`);
+      } else if (msg.toLowerCase().includes("network") || msg.toLowerCase().includes("fetch")) {
+        toast.error("Koneksi bermasalah. Cek internet kamu lalu coba lagi.");
+      } else {
+        toast.error("Gagal scan struk: " + msg);
+      }
     }
     setScanning(false);
+    setScanStatus("");
   }
 
   async function handleConfirm() {
@@ -104,9 +182,13 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
       toast.error("Pilih rekening terlebih dahulu");
       return;
     }
+    const amount = Math.round(extracted.total_amount || 0);
+    if (amount <= 0) {
+      toast.error("Nominal harus lebih dari 0");
+      return;
+    }
     setSaving(true);
     try {
-      const amount = Math.round(extracted.total_amount);
       const tx = await base44.entities.Transaction.create({
         amount,
         type: "expense",
@@ -181,14 +263,16 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
                 {scanning ? (
                   <div className="py-12 flex flex-col items-center gap-3">
                     <Loader2 className="w-10 h-10 text-[#F97316] animate-spin" />
-                    <p className="text-sm text-[#8FA4C8]">Nana sedang membaca struk kamu...</p>
+                    <p className="text-sm text-[#1A1A1A] font-semibold">{scanStatus || "Memproses..."}</p>
+                    <p className="text-[11px] text-[#8FA4C8]">Mohon tunggu, proses bisa sampai 60 detik</p>
                   </div>
                 ) : (
                   <>
                     <div className="w-20 h-20 rounded-full bg-[#FFF7ED] flex items-center justify-center mx-auto mb-4">
                       <Sparkles className="w-10 h-10 text-[#F97316]" />
                     </div>
-                    <p className="text-sm text-[#8FA4C8] mb-6">Foto struk belanja dan Nana AI akan otomatis mengisi data transaksi untuk kamu.</p>
+                    <p className="text-sm text-[#8FA4C8] mb-3">Foto struk belanja dan Nana AI akan otomatis mengisi data transaksi untuk kamu.</p>
+                    <p className="text-[11px] text-[#8FA4C8] mb-5">💡 Tips: pastikan foto jelas, cahaya cukup, & seluruh struk masuk dalam frame</p>
                     <div className="flex gap-3">
                       <button
                         onClick={() => cameraRef.current?.click()}
@@ -203,6 +287,13 @@ Kembalikan JSON dengan field: merchant_name (string), total_amount (number, tanp
                         <span className="text-xs font-semibold">Galeri</span>
                       </button>
                     </div>
+                    {lastFile && (
+                      <button
+                        onClick={() => runScan(lastFile)}
+                        className="mt-3 text-xs text-[#F97316] font-semibold underline">
+                        🔄 Coba scan ulang file sebelumnya
+                      </button>
+                    )}
                   </>
                 )}
                 <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFile} />
