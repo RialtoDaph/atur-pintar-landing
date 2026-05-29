@@ -409,7 +409,7 @@ function Screen10({ onNext }) {
           <NanaAvatar size="sm" />
           <div className="bg-[#F2F4F7] rounded-2xl rounded-tl-sm px-4 py-3 flex-1">
             <p className="text-sm text-[#1A1A1A] leading-relaxed">
-              Satu hal dulu. Kamu mau nabung buat apa dalam 3 bulan ke depan?
+              Sekarang, kamu mau nabung buat apa dalam 3 bulan ke depan?
             </p>
           </div>
         </div>
@@ -651,6 +651,20 @@ export default function OnboardingQuestionnaire({ onClose }) {
   const [saveError, setSaveError] = useState(null);
   const isSavingRef = useRef(false);
 
+  // Analytics: track funnel step (each screen change)
+  useEffect(() => {
+    try {
+      const screenNames = ["welcome", "quiz_intro", "quiz", "persona_reveal", "goal", "income", "welcome_game"];
+      base44.analytics.track({
+        eventName: "onboarding_step_view",
+        properties: {
+          step: screenNames[screen] || `screen_${screen}`,
+          quiz_question: screen === SCREEN.QUIZ ? questionIndex + 1 : null,
+        },
+      });
+    } catch {}
+  }, [screen, questionIndex]);
+
   function handleAnswer(key) {
     const newAnswers = [...answers, key];
     setAnswers(newAnswers);
@@ -690,20 +704,27 @@ export default function OnboardingQuestionnaire({ onClose }) {
     const personaData = PERSONAS[persona];
 
     try {
-      // Check existing GamificationProfile to avoid duplicate
-      const existingProfiles = await base44.entities.GamificationProfile.list();
+      // Check existing records to avoid duplicates (e.g. user re-doing onboarding after admin reset)
+      const [existingProfiles, existingPersonas] = await Promise.all([
+        base44.entities.GamificationProfile.list(),
+        base44.entities.UserPersona.list(),
+      ]);
       const needsProfile = !existingProfiles || existingProfiles.length === 0;
 
+      const personaPayload = {
+        persona_type: persona,
+        persona_label: personaData.label,
+        quiz_answers: answers,
+        primary_goal: primaryGoal,
+        primary_goal_label: primaryGoalLabel,
+        income_range: incomeRange,
+        onboarding_completed_at: today,
+      };
+
       const ops = [
-        base44.entities.UserPersona.create({
-          persona_type: persona,
-          persona_label: personaData.label,
-          quiz_answers: answers,
-          primary_goal: primaryGoal,
-          primary_goal_label: primaryGoalLabel,
-          income_range: incomeRange,
-          onboarding_completed_at: today,
-        }),
+        existingPersonas && existingPersonas.length > 0
+          ? base44.entities.UserPersona.update(existingPersonas[0].id, personaPayload)
+          : base44.entities.UserPersona.create(personaPayload),
         base44.auth.updateMe({
           onboarding_completed: true,
           primary_goal: primaryGoal,
@@ -720,6 +741,20 @@ export default function OnboardingQuestionnaire({ onClose }) {
       }
 
       await Promise.all(ops);
+
+      // Analytics: track completion
+      try {
+        base44.analytics.track({
+          eventName: "onboarding_completed",
+          properties: {
+            persona,
+            primary_goal: primaryGoal,
+            income_range: incomeRange,
+            quiz_skipped: answers.length === 0,
+          },
+        });
+      } catch {}
+
       setScreen(SCREEN.WELCOME_GAME);
     } catch (err) {
       setSaveError(err?.message || "Gagal menyimpan data. Coba lagi ya.");
