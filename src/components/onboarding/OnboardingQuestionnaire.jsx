@@ -47,6 +47,39 @@ export default function OnboardingQuestionnaire({ onClose }) {
     } catch {}
   }, [screen, questionIndex]);
 
+  // Android hardware back button: intercept and navigate to previous screen
+  // instead of exiting the app. Push a sentinel state on mount; on popstate,
+  // step back through the onboarding flow.
+  useEffect(() => {
+    window.history.pushState({ onboarding: true }, "");
+    const handler = () => {
+      // Always re-push so we keep intercepting subsequent back presses
+      window.history.pushState({ onboarding: true }, "");
+      if (isSavingRef.current) return; // ignore during save
+      if (screen === SCREEN.QUIZ && questionIndex > 0) {
+        setQuestionIndex(i => i - 1);
+        setAnswers(prev => prev.slice(0, -1));
+      } else if (screen === SCREEN.QUIZ) {
+        setScreen(SCREEN.QUIZ_INTRO);
+      } else if (screen === SCREEN.PERSONA) {
+        // Going back from persona = re-do last quiz question
+        setScreen(SCREEN.QUIZ);
+        setQuestionIndex(QUESTIONS.length - 1);
+        setAnswers(prev => prev.slice(0, -1));
+      } else if (screen === SCREEN.GOAL) {
+        // Skipped quiz → back to intro; otherwise back to persona reveal
+        setScreen(answers.length === 0 ? SCREEN.QUIZ_INTRO : SCREEN.PERSONA);
+      } else if (screen === SCREEN.INCOME) {
+        setScreen(SCREEN.GOAL);
+      } else if (screen === SCREEN.QUIZ_INTRO) {
+        setScreen(SCREEN.WELCOME);
+      }
+      // SCREEN.WELCOME and SCREEN.WELCOME_GAME: no-op (stay)
+    };
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
+  }, [screen, questionIndex, answers.length]);
+
   function handleAnswer(key) {
     const newAnswers = [...answers, key];
     setAnswers(newAnswers);
@@ -173,6 +206,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
             questionIndex={questionIndex}
             totalQuestions={QUESTIONS.length}
             question={QUESTIONS[questionIndex]}
+            previousAnswer={answers[questionIndex]}
             onAnswer={handleAnswer}
             onBack={handleQuizBack}
             canGoBack={questionIndex > 0}

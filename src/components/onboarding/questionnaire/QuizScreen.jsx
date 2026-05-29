@@ -1,12 +1,18 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { ScreenWrapper } from "./shared";
 
 // ─── Screen 4–8: Quiz Questions ──────────────────────────────────────────────
-export default function QuizScreen({ questionIndex, totalQuestions, question, onAnswer, onBack, canGoBack }) {
-  const [selected, setSelected] = useState(null);
+export default function QuizScreen({ questionIndex, totalQuestions, question, previousAnswer, onAnswer, onBack, canGoBack }) {
+  const [selected, setSelected] = useState(previousAnswer || null);
   const isTransitioning = useRef(false);
+
+  // Reset transition lock when question changes (e.g. user goes back)
+  useEffect(() => {
+    isTransitioning.current = false;
+    setSelected(previousAnswer || null);
+  }, [questionIndex, previousAnswer]);
 
   function handleSelect(key) {
     if (isTransitioning.current) return;
@@ -20,6 +26,10 @@ export default function QuizScreen({ questionIndex, totalQuestions, question, on
     isTransitioning.current = true;
     onBack();
   }
+
+  // Progress: baseline = questions answered so far, animate to current if selected
+  const baselinePct = (questionIndex / totalQuestions) * 100;
+  const targetPct = ((questionIndex + (selected ? 1 : 0)) / totalQuestions) * 100;
 
   return (
     <ScreenWrapper>
@@ -38,13 +48,13 @@ export default function QuizScreen({ questionIndex, totalQuestions, question, on
             )}
             <span>Pertanyaan {questionIndex + 1} dari {totalQuestions}</span>
           </div>
-          <span>{Math.round(((questionIndex + 1) / totalQuestions) * 100)}%</span>
+          <span>{Math.round(targetPct)}%</span>
         </div>
         <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-[#FF6B35] rounded-full"
-            initial={{ width: `${(questionIndex / totalQuestions) * 100}%` }}
-            animate={{ width: `${((questionIndex + 1) / totalQuestions) * 100}%` }}
+            initial={{ width: `${baselinePct}%` }}
+            animate={{ width: `${targetPct}%` }}
             transition={{ duration: 0.4 }}
           />
         </div>
