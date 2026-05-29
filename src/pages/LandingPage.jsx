@@ -632,21 +632,12 @@ export default function LandingPage() {
         </div>
         <div className="hidden sm:flex items-center gap-6 ml-10">
           <button onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Fitur</button>
-          {!featureWaitingList &&
           <button onClick={() => pricingRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Harga</button>
-          }
           <Link to="/About" className="text-xs text-white/50 hover:text-white transition-colors">Tentang</Link>
         </div>
-        {!featureWaitingList &&
         <button onClick={() => base44.auth.redirectToLogin()} className="text-xs font-bold bg-[#FF6A00] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
-            Masuk / Daftar
-          </button>
-        }
-        {featureWaitingList &&
-        <button onClick={scrollToWaitingList} className="text-xs font-bold bg-[#FF6A00] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
-            Amankan Tempatku →
-          </button>
-        }
+          Masuk / Daftar
+        </button>
       </nav>
 
       {/* ── HERO ── */}
@@ -833,8 +824,8 @@ export default function LandingPage() {
       {/* ── FAQ ── */}
       <FaqSection />
 
-      {/* ── PRICING (hidden when feature_waiting_list) ── */}
-      {!featureWaitingList &&
+      {/* ── PRICING ── */}
+      {true &&
       <section ref={pricingRef} className="pb-24 px-5 sm:px-12 lg:px-20 relative z-10">
           <div className="max-w-3xl mx-auto">
             <Reveal>
@@ -910,8 +901,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA (hidden when feature_waiting_list) ── */}
-      {!featureWaitingList &&
+      {/* ── FINAL CTA ── */}
+      {true &&
       <section className="pb-0 px-5 sm:px-12 lg:px-20 relative z-10">
           <div className="relative rounded-3xl overflow-hidden py-20 px-8 sm:px-16 text-center" style={{ background: "#1A1A2E" }}>
             <div className="absolute top-0 left-0 w-64 h-64 rounded-full bg-[#FF6A00]/10 blur-[80px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
