@@ -228,7 +228,7 @@ function Screen3({ onNext }) {
     <ScreenWrapper>
       <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-10">
         <div className="text-5xl mb-5">🧠</div>
-        <h2 className="text-2xl font-bold text-[#1A1A1A] mb-3">Dulu kenalan,<br />baru kasih saran.</h2>
+        <h2 className="text-2xl font-bold text-[#1A1A1A] mb-3">Kenalan dulu,<br />baru kasih saran.</h2>
         <p className="text-[#4A5568] text-sm leading-relaxed max-w-xs mx-auto mb-8">
           5 pertanyaan singkat biar Nana tau gimana cara terbaik bantu kamu.
           <br /><br />
