@@ -215,7 +215,7 @@ function Screen1({ onNext }) {
       </div>
       <div className="px-6 pb-8">
         <CTAButton onClick={onNext}>
-          Yuk Mulai → <ArrowRight className="w-4 h-4" />
+          Yuk Mulai →
         </CTAButton>
       </div>
     </ScreenWrapper>
@@ -243,7 +243,7 @@ function Screen3({ onNext }) {
       </div>
       <div className="px-6 pb-8">
         <CTAButton onClick={onNext}>
-          Mulai Quiz → <ArrowRight className="w-4 h-4" />
+          Mulai Quiz →
         </CTAButton>
       </div>
     </ScreenWrapper>
@@ -450,7 +450,7 @@ function Screen10({ onNext }) {
           onClick={handleNext}
           disabled={!selected || (selected === "custom" && !customGoal.trim())}
         >
-          Lanjut <ArrowRight className="w-4 h-4" />
+          Lanjut →
         </CTAButton>
       </div>
     </ScreenWrapper>
@@ -500,7 +500,7 @@ function Screen11({ onNext, loading }) {
           disabled={!selected}
           loading={loading}
         >
-          Selesai! <ArrowRight className="w-4 h-4" />
+          Selesai! →
         </CTAButton>
       </div>
     </ScreenWrapper>
