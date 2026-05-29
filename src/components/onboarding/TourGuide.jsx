@@ -199,7 +199,7 @@ export default function TourGuide({ onComplete }) {
       }
 
       <div
-        className="absolute bg-[#0A0A0A] border border-[#FF6A00]/40 rounded-2xl shadow-2xl px-4 py-4 my-1"
+        className="absolute bg-[#0A0A0A] border border-[#FF6A00]/40 rounded-2xl shadow-2xl px-4 py-4"
         style={{ ...(targetRect ? tooltipStyle : fallbackStyle), pointerEvents: "all", zIndex: 10000 }}
         onClick={(e) => e.stopPropagation()}>
         
