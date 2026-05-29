@@ -137,7 +137,7 @@ function getNanaReply(input) {
   for (const { keywords, reply } of NANA_RESPONSES) {
     if (keywords.some((k) => lower.includes(k))) return reply;
   }
-  return "Pertanyaan yang bagus! Tapi untuk jawaban yang benar-benar personal, aku butuh lihat kondisi keuangan kamu yang sesungguhnya. Daftar dulu — begitu akses dibuka, kita bisa ngobrol lebih dalam dengan data yang nyata.";
+  return "Pertanyaan yang bagus! Tapi untuk jawaban yang benar-benar personal, aku butuh lihat kondisi keuangan kamu yang sesungguhnya. Daftar gratis sekarang dan kita bisa ngobrol lebih dalam dengan data yang nyata.";
 }
 
 const QUICK_QUESTIONS = [
@@ -175,7 +175,7 @@ function NanaChatDemo({ scrollToWaitingList }) {
       if (newLeft <= 0) {
         setDone(true);
         setTimeout(() => {
-          setMessages((prev) => [...prev, { role: "nana", text: "Penasaran kan? Aku sudah tunjukkan sedikit dari yang bisa aku lakukan. Kalau kamu daftar, aku bisa lihat kondisi keuangan kamu yang sebenarnya dan bantu lebih dalam. Amankan tempatmu sekarang ya 🧡" }]);
+          setMessages((prev) => [...prev, { role: "nana", text: "Penasaran kan? Aku sudah tunjukkan sedikit dari yang bisa aku lakukan. Kalau kamu daftar gratis, aku bisa lihat kondisi keuangan kamu yang sebenarnya dan bantu lebih dalam. Yuk mulai sekarang 🧡" }]);
         }, 800);
       }
     }, 1500);
@@ -259,8 +259,8 @@ function NanaChatDemo({ scrollToWaitingList }) {
             {/* Input */}
             <div className="px-3 pb-3 border-t border-white/8 pt-2">
               {done ?
-              <button onClick={scrollToWaitingList} className="w-full py-3 bg-[#FF6A00] rounded-xl text-white text-sm font-bold hover:bg-[#e05e00] transition-colors">
-                  Amankan Tempatku →
+              <button onClick={() => base44.auth.redirectToLogin()} className="w-full py-3 bg-[#FF6A00] rounded-xl text-white text-sm font-bold hover:bg-[#e05e00] transition-colors">
+                  Mulai Gratis Sekarang →
                 </button> :
               <div className="flex gap-2">
                   <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -288,10 +288,10 @@ function NanaChatDemo({ scrollToWaitingList }) {
 const FAQS = [
 { q: "Apakah Atur Pintar gratis?", a: "Ya, ada versi gratis selamanya. Kamu bisa catat transaksi, pakai Nana AI 5x sehari, dan akses fitur gamifikasi tanpa bayar apapun." },
 { q: "Apakah data keuangan saya aman?", a: "Data kamu dienkripsi dan tidak pernah dijual ke pihak ketiga. Atur Pintar tidak punya akses ke rekening bank kamu — semua diinput manual oleh kamu sendiri." },
-{ q: "Bisa dipakai di HP?", a: "Bisa langsung dari browser HP kamu — tidak perlu install apapun. Versi iOS dan Android sedang dalam pengembangan." },
-{ q: "Kenapa harus join waiting list?", a: "Kami ingin onboarding yang personal — bukan ramai-ramai sekaligus. Dengan waiting list, kamu dapat perhatian lebih dan akses sebelum semua orang." },
-{ q: "Apa yang didapat saat akses dibuka?", a: "Early access sebelum publik, badge Founding Member permanen di profil kamu, dan 30 hari Premium gratis." },
-{ q: "Kapan akses dibuka?", a: "Kami kirim akses via email berurutan sesuai nomor antrian. Semakin cepat daftar, semakin awal kamu bisa pakai." }];
+{ q: "Bisa dipakai di HP?", a: "Bisa langsung dari browser HP kamu — tidak perlu install apapun. Web app sudah fully responsive dan terasa seperti aplikasi native." },
+{ q: "Kapan versi iOS & Android rilis?", a: "Aplikasi mobile untuk App Store dan Play Store sedang dalam tahap finalisasi. Sementara itu, web app sudah siap dipakai dengan semua fitur lengkap." },
+{ q: "Gimana cara mulai?", a: "Klik tombol 'Mulai Gratis', daftar pakai email, dan kamu langsung bisa pakai semua fitur dasar tanpa bayar apapun." },
+{ q: "Bedanya Free dan Plus?", a: "Free: tracker lengkap, Nana AI 5x/hari, 1 goal. Plus (Rp 49rb/bln): Nana AI unlimited, analytics advanced, shared wallet unlimited, dan semua fitur premium lainnya." }];
 
 
 function FaqSection() {
@@ -829,17 +829,14 @@ export default function LandingPage() {
               <p className="text-white/60 text-base mb-10 max-w-md mx-auto">Dan Atur Pintar ada buat lawan mager bareng kamu.</p>
             </Reveal>
             <Reveal delay={180}>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <button onClick={() => base44.auth.redirectToLogin()} className="group flex items-center justify-center gap-2.5 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
-                  Download Sekarang — Gratis →
-                </button>
-                <button onClick={() => pricingRef.current?.scrollIntoView({ behavior: "smooth" })} className="flex items-center justify-center gap-2 text-white border border-white/20 hover:border-white/40 font-semibold text-sm px-6 py-4 rounded-2xl transition-all">
-                  Lihat cara kerjanya dulu ↓
+                  Mulai Gratis Sekarang →
                 </button>
               </div>
             </Reveal>
             <Reveal delay={250}>
-              <p className="text-white/25 text-xs mt-8">Tersedia sebagai web app. iOS & Android segera hadir.</p>
+              <p className="text-white/25 text-xs mt-8">Web app siap pakai sekarang. Aplikasi iOS & Android segera hadir.</p>
             </Reveal>
           </div>
         </section>
