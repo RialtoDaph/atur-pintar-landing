@@ -97,7 +97,7 @@ export default function UMKMPintarAdBanner() {
               {/* Logo row */}
               <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <div
-                  className="flex items-center justify-center flex-shrink-0"
+                  className="flex items-center justify-center flex-shrink-0 overflow-hidden"
                   style={{
                     width: 32,
                     height: 32,
@@ -106,12 +106,11 @@ export default function UMKMPintarAdBanner() {
                     border: "1px solid rgba(232,82,10,0.5)",
                   }}
                 >
-                  <span
-                    className="font-bold leading-none"
-                    style={{ color: "#E8520A", fontSize: 11 }}
-                  >
-                    V
-                  </span>
+                  <img
+                    src="https://media.base44.com/images/public/69a82e8090f60786b869983c/3a4fdd82d_TangkapanLayar2026-05-08pukul224953.png"
+                    alt="Vrekas.id"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <span
                   className="text-white font-bold"
