@@ -45,6 +45,7 @@ function getRect(id) {
 }
 
 export default function TourGuide({ onComplete }) {
+  const [showWelcome, setShowWelcome] = useState(true);
   const [stepIndex, setStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState(null);
   const navigate = useNavigate();
@@ -62,14 +63,16 @@ export default function TourGuide({ onComplete }) {
 
   // Navigate to correct page when step changes
   useEffect(() => {
+    if (showWelcome) return;
     const targetPath = `/${currentStep.page}`;
     if (!location.pathname.startsWith(targetPath)) {
       navigate(createPageUrl(currentStep.page));
     }
-  }, [stepIndex]);
+  }, [stepIndex, showWelcome]);
 
   // Find and highlight element after step/navigation changes
   useEffect(() => {
+    if (showWelcome) return;
     clearTimers();
     setTargetRect(null);
 
@@ -105,7 +108,7 @@ export default function TourGuide({ onComplete }) {
     timeoutRef.current = setTimeout(tryFind, 500);
 
     return () => clearTimers();
-  }, [stepIndex, location.pathname]);
+  }, [stepIndex, location.pathname, showWelcome]);
 
   // Cleanup on unmount
   useEffect(() => () => clearTimers(), []);
@@ -138,6 +141,37 @@ export default function TourGuide({ onComplete }) {
     { top: spotlight.top, left: 0, width: spotlight.left, height: spotlight.height },
     { top: spotlight.top, left: spotlight.left + spotlight.width, right: 0, height: spotlight.height },
   ] : [{ top: 0, left: 0, right: 0, bottom: 0 }];
+
+  if (showWelcome) {
+    return createPortal(
+      <div data-tour-overlay="true" className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center p-5">
+        <div className="bg-[#0A0A0A] border border-[#FF6A00]/40 rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#FF6A00] to-[#e05e00] flex items-center justify-center text-4xl shadow-lg">
+            👋
+          </div>
+          <h2 className="text-white font-bold text-xl mb-2">Selamat Datang di Atur Pintar!</h2>
+          <p className="text-[#8FA4C8] text-sm leading-relaxed mb-6">
+            Yuk, kenalan dulu sama fitur-fitur utama biar kamu makin gampang ngatur keuangan. Tur singkat ini cuma 6 langkah, kok 😉
+          </p>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => setShowWelcome(false)}
+              className="w-full py-3 rounded-2xl bg-[#FF6A00] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors tap-highlight-fix"
+            >
+              Mulai Tur 🚀
+            </button>
+            <button
+              onClick={onComplete}
+              className="w-full py-2.5 text-[#8FA4C8] text-xs font-medium hover:text-white transition-colors tap-highlight-fix"
+            >
+              Nanti aja
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
+  }
 
   return createPortal(
     <div data-tour-overlay="true" className="fixed inset-0 z-[9999]" style={{ pointerEvents: "none" }}>
