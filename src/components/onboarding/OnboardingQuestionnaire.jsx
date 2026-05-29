@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
@@ -234,12 +234,6 @@ function Screen3({ onNext }) {
           <br /><br />
           Gak ada jawaban yang salah, yang salah itu kalau bohong ke diri sendiri. 😄
         </p>
-        {/* Progress dots */}
-        <div className="flex gap-2 mb-8">
-          {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="w-2 h-2 rounded-full bg-[#E2E8F0]" />
-          ))}
-        </div>
       </div>
       <div className="px-6 pb-8">
         <CTAButton onClick={onNext}>
@@ -251,20 +245,31 @@ function Screen3({ onNext }) {
 }
 
 // ─── Screen 4–8: Quiz Questions ──────────────────────────────────────────────
-function QuizScreen({ questionIndex, totalQuestions, question, onAnswer }) {
+function QuizScreen({ questionIndex, totalQuestions, question, onAnswer, onBack, canGoBack }) {
   const [selected, setSelected] = useState(null);
 
   function handleSelect(key) {
     setSelected(key);
-    setTimeout(() => onAnswer(key), 300);
+    setTimeout(() => onAnswer(key), 500);
   }
 
   return (
     <ScreenWrapper>
       {/* Progress */}
       <div className="px-6 pt-6 pb-4">
-        <div className="flex justify-between text-xs text-[#8FA4C8] mb-2">
-          <span>Pertanyaan {questionIndex + 1} dari {totalQuestions}</span>
+        <div className="flex items-center justify-between text-xs text-[#8FA4C8] mb-2">
+          <div className="flex items-center gap-2">
+            {canGoBack && (
+              <button
+                onClick={onBack}
+                className="flex items-center gap-1 text-[#FF6B35] font-medium tap-highlight-fix"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                Kembali
+              </button>
+            )}
+            <span>Pertanyaan {questionIndex + 1} dari {totalQuestions}</span>
+          </div>
           <span>{Math.round(((questionIndex + 1) / totalQuestions) * 100)}%</span>
         </div>
         <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
@@ -449,7 +454,7 @@ function Screen10({ onNext }) {
 }
 
 // ─── Screen 11: Income Range ─────────────────────────────────────────────────
-function Screen11({ onNext, loading }) {
+function Screen11({ onNext, loading, error }) {
   const [selected, setSelected] = useState(null);
 
   return (
@@ -483,6 +488,12 @@ function Screen11({ onNext, loading }) {
         <p className="text-xs text-[#8FA4C8] text-center">
           Data ini cuma buat Nana kasih saran yang relevan. Gak ada yang tau selain kamu dan Nana. 🔒
         </p>
+
+        {error && (
+          <div className="mt-4 bg-red-50 border border-red-200 rounded-xl p-3">
+            <p className="text-xs text-red-600 text-center">{error}</p>
+          </div>
+        )}
       </div>
 
       <div className="px-6 pb-8">
@@ -501,13 +512,21 @@ function Screen11({ onNext, loading }) {
 // ─── Screen 12: Welcome to the Game ─────────────────────────────────────────
 function Screen12({ persona, primaryGoal, primaryGoalLabel, onDone }) {
   useEffect(() => {
+    let cancelled = false;
     const end = Date.now() + 2500;
+    let rafId;
     const frame = () => {
+      if (cancelled) return;
       confetti({ particleCount: 4, angle: 60, spread: 55, origin: { x: 0 }, colors: ["#FF6B35", "#FFD700", "#FF9A5C"] });
       confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1 }, colors: ["#FF6B35", "#FFD700", "#FF9A5C"] });
-      if (Date.now() < end) requestAnimationFrame(frame);
+      if (Date.now() < end) rafId = requestAnimationFrame(frame);
     };
-    setTimeout(frame, 400);
+    const timeoutId = setTimeout(frame, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
@@ -572,13 +591,7 @@ function Screen12({ persona, primaryGoal, primaryGoalLabel, onDone }) {
           className="bg-gradient-to-r from-[#FF6B35] to-[#FF9A5C] rounded-2xl p-4 text-white"
         >
           <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-2">🏆 Mission Pertama</p>
-          <p className="text-sm font-semibold mb-3">Catat 1 pengeluaran hari ini → +10 XP</p>
-          <button
-            onClick={onDone}
-            className="bg-white text-[#FF6B35] text-xs font-bold px-4 py-2 rounded-xl"
-          >
-            Catat Sekarang →
-          </button>
+          <p className="text-sm font-semibold">Catat 1 pengeluaran hari ini → +10 XP</p>
         </motion.div>
       </div>
 
@@ -610,6 +623,8 @@ export default function OnboardingQuestionnaire({ onClose }) {
   const [primaryGoal, setPrimaryGoal] = useState(null);
   const [primaryGoalLabel, setPrimaryGoalLabel] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const isSavingRef = useRef(false);
 
   function handleAnswer(key) {
     const newAnswers = [...answers, key];
@@ -625,45 +640,68 @@ export default function OnboardingQuestionnaire({ onClose }) {
     }
   }
 
+  function handleQuizBack() {
+    if (questionIndex > 0) {
+      setQuestionIndex(i => i - 1);
+      setAnswers(prev => prev.slice(0, -1));
+    }
+  }
+
   function handleGoalNext(goal) {
     const goalObj = FIRST_GOALS.find(g => g.key === goal);
     setPrimaryGoal(goal);
+    // If custom goal, the goal string itself IS the label; else use predefined label
     setPrimaryGoalLabel(goalObj?.label || goal);
     setScreen(SCREEN.INCOME);
   }
 
   async function handleIncomeNext(incomeRange) {
+    if (isSavingRef.current) return; // prevent double-submit
+    isSavingRef.current = true;
     setSaving(true);
+    setSaveError(null);
+
     const today = new Date().toISOString().split("T")[0];
     const personaData = PERSONAS[persona];
 
-    await Promise.all([
-      // Save UserPersona
-      base44.entities.UserPersona.create({
-        persona_type: persona,
-        persona_label: personaData.label,
-        quiz_answers: answers,
-        primary_goal: primaryGoal,
-        primary_goal_label: primaryGoalLabel,
-        income_range: incomeRange,
-        onboarding_completed_at: today,
-      }),
-      // Mark user onboarding complete
-      base44.auth.updateMe({
-        onboarding_completed: true,
-        primary_goal: primaryGoal,
-      }),
-      // Init GamificationProfile
-      base44.entities.GamificationProfile.create({
-        total_points: 0,
-        level: 1,
-        daily_streak: 0,
-        last_activity_date: today,
-      }),
-    ]);
+    try {
+      // Check existing GamificationProfile to avoid duplicate
+      const existingProfiles = await base44.entities.GamificationProfile.list();
+      const needsProfile = !existingProfiles || existingProfiles.length === 0;
 
-    setSaving(false);
-    setScreen(SCREEN.WELCOME_GAME);
+      const ops = [
+        base44.entities.UserPersona.create({
+          persona_type: persona,
+          persona_label: personaData.label,
+          quiz_answers: answers,
+          primary_goal: primaryGoal,
+          primary_goal_label: primaryGoalLabel,
+          income_range: incomeRange,
+          onboarding_completed_at: today,
+        }),
+        base44.auth.updateMe({
+          onboarding_completed: true,
+          primary_goal: primaryGoal,
+        }),
+      ];
+
+      if (needsProfile) {
+        ops.push(base44.entities.GamificationProfile.create({
+          total_points: 0,
+          level: 1,
+          daily_streak: 0,
+          last_activity_date: today,
+        }));
+      }
+
+      await Promise.all(ops);
+      setScreen(SCREEN.WELCOME_GAME);
+    } catch (err) {
+      setSaveError(err?.message || "Gagal menyimpan data. Coba lagi ya.");
+    } finally {
+      setSaving(false);
+      isSavingRef.current = false;
+    }
   }
 
   return (
@@ -682,6 +720,8 @@ export default function OnboardingQuestionnaire({ onClose }) {
             totalQuestions={QUESTIONS.length}
             question={QUESTIONS[questionIndex]}
             onAnswer={handleAnswer}
+            onBack={handleQuizBack}
+            canGoBack={questionIndex > 0}
           />
         )}
         {screen === SCREEN.PERSONA && persona && (
@@ -691,7 +731,7 @@ export default function OnboardingQuestionnaire({ onClose }) {
           <Screen10 key="goal" onNext={handleGoalNext} />
         )}
         {screen === SCREEN.INCOME && (
-          <Screen11 key="income" onNext={handleIncomeNext} loading={saving} />
+          <Screen11 key="income" onNext={handleIncomeNext} loading={saving} error={saveError} />
         )}
         {screen === SCREEN.WELCOME_GAME && (
           <Screen12
@@ -702,7 +742,6 @@ export default function OnboardingQuestionnaire({ onClose }) {
             onDone={() => {
               localStorage.setItem("onboarding_done", "true");
               onClose();
-              window.location.reload();
             }}
           />
         )}
