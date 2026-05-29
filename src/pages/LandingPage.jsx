@@ -596,10 +596,10 @@ export default function LandingPage() {
           </Reveal>
 
           <Reveal delay={160}>
-            <p className="text-base sm:text-lg text-white/55 max-w-xl mb-10 leading-relaxed mx-auto sm:mx-0">
-              Bukan karena harus — tapi karena seru.<br />
-              Catat duit, naik level, saingan sama teman.<br />
-              Atur Pintar hadir buat kamu yang capek merasa <em>guilty</em> soal keuangan.
+            <p className="text-base sm:text-lg text-white/55 max-w-xl mb-10 leading-relaxed mx-auto sm:mx-0">Bukan karena harus tapi karena seru.
+Catat duit, naik level, saingan sama teman.
+Atur Pintar hadir buat kamu yang capek merasa guilty soal keuangan.
+
             </p>
           </Reveal>
 
