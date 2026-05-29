@@ -338,11 +338,11 @@ export default function Accounts() {
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] pb-10">
-      <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-6" data-tour="accounts-page-header">
+      <div className="bg-gradient-to-b from-[#0A0A0A] to-[#0d0d0d] px-5 pt-10 pb-6">
         <div className="max-w-2xl mx-auto">
           <p className="text-[#8FA4C8] text-sm font-medium">Multi-Rekening</p>
           <h1 className="text-white text-2xl font-bold mt-0.5">Rekening & Dompet</h1>
-          <div className="mt-4 bg-white/10 rounded-2xl px-5 py-4 border border-white/5">
+          <div className="mt-4 bg-white/10 rounded-2xl px-5 py-4 border border-white/5" data-tour="accounts-page-header">
             <p className="text-[#8FA4C8] text-xs">Total Saldo Semua Rekening</p>
             <p className="text-white text-3xl font-bold mt-0.5">{formatRupiah(totalBalance)}</p>
             <p className="text-[#8FA4C8] text-xs mt-1">{accounts.length} rekening aktif</p>
