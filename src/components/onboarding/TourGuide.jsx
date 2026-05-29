@@ -77,6 +77,8 @@ export default function TourGuide({ onComplete }) {
     setTargetRect(null);
 
     let attempts = 0;
+    // Wait longer for pages that need data-fetch / lazy load (Accounts, Analytics)
+    const maxAttempts = 120; // ~12 seconds total
 
     function tryFind() {
       attempts++;
@@ -99,9 +101,10 @@ export default function TourGuide({ onComplete }) {
         }, 600);
         return;
       }
-      if (attempts < 50) {
+      if (attempts < maxAttempts) {
         intervalRef.current = setTimeout(tryFind, 100);
       }
+      // If never found, tooltip falls back to bottom-center (handled below) and Lanjut still works
     }
 
     // Start polling after a short delay to allow page to render
@@ -129,7 +132,7 @@ export default function TourGuide({ onComplete }) {
   } : null;
 
   const fallbackStyle = !targetRect ? {
-    bottom: 100, left: "50%", transform: "translateX(-50%)", width: TOOLTIP_WIDTH,
+    bottom: 120, left: "50%", marginLeft: -(TOOLTIP_WIDTH / 2), width: TOOLTIP_WIDTH,
   } : {};
 
   // Render dim overlay as 4 separate rects around the spotlight so the spotlight area
