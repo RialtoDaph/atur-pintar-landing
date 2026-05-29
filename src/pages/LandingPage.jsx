@@ -340,13 +340,12 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-// ─── Waiting List Form ────────────────────────────────────────────────────────
-function WaitingListSection({ fomoCounter, incrementCounter }) {
-  const [form, setForm] = useState({ name: "", email: "", whatsapp: "", job: "", city: "", biggest_money_problem: "", current_finance_tracking_method: "", early_access_interest: "" });
+// ─── Newsletter Form ──────────────────────────────────────────────────────────
+function NewsletterSection() {
+  const [form, setForm] = useState({ name: "", email: "" });
   const [honeypot, setHoneypot] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [queueNumber, setQueueNumber] = useState(null);
   const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
@@ -367,29 +366,18 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
       const res = await base44.functions.invoke("submitWaitingList", {
         name: form.name,
         email: form.email,
-        whatsapp: form.whatsapp || undefined,
-        job: form.job,
-        city: form.city,
-        biggest_money_problem: form.biggest_money_problem || undefined,
-        current_finance_tracking_method: form.current_finance_tracking_method,
-        early_access_interest: form.early_access_interest,
+        source: "newsletter",
         honeypot
       });
       if (res.data?.error) throw new Error(res.data.error);
-      const qNum = fomoCounter + 1;
-      setQueueNumber(qNum);
-      incrementCounter();
       setSuccess(true);
-      // Send confirmation email
-      base44.functions.invoke("sendWaitingListEmail", { name: form.name, email: form.email, queueNumber: qNum }).catch(() => {});
-      // Mini confetti
-      if (window.confetti) window.confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 }, colors: ["#FF6A00", "#FFB347", "#ffffff"] });
+      if (window.confetti) window.confetti({ particleCount: 60, spread: 60, origin: { y: 0.7 }, colors: ["#FF6A00", "#FFB347", "#ffffff"] });
     } catch (err) {
       const msg = err.message || "";
       if (msg.includes("rate") || msg.includes("banyak") || msg.includes("limit")) {
         setErrors({ general: "Terlalu banyak percobaan, coba lagi nanti" });
       } else {
-        setErrors({ general: "Gagal mendaftar, coba lagi." });
+        setErrors({ general: "Gagal berlangganan, coba lagi." });
       }
     } finally {
       setLoading(false);
@@ -398,18 +386,18 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
 
   if (success) {
     return (
-      <section id="waiting-list-section" className="pb-24 px-5 sm:px-12 lg:px-20 relative z-10">
+      <section id="newsletter-section" className="pb-24 px-5 sm:px-12 lg:px-20 relative z-10">
         <div className="max-w-lg mx-auto card-d rounded-3xl p-10 text-center">
           <div className="w-16 h-16 rounded-full bg-[#FF6A00]/20 flex items-center justify-center mx-auto mb-5">
             <CheckCircle className="w-8 h-8 text-[#FF6A00]" />
           </div>
           <h2 className="text-2xl font-black text-white mb-2">Yeay! 🎉</h2>
-          <p className="text-[#FF6A00] font-bold text-lg mb-3">Kamu #{queueNumber} dalam antrian.</p>
+          <p className="text-[#FF6A00] font-bold text-lg mb-3">Kamu sudah berlangganan.</p>
           <p className="text-white/60 text-sm leading-relaxed">
-            Yeay! Kamu sudah masuk daftar tunggu Atur Pintar. Kami akan hubungi kamu segera!
+            Tips keuangan, update fitur baru, dan cerita seru dari Nana akan mampir ke inbox kamu.
           </p>
           <p className="text-white/40 text-xs mt-3">
-            Konfirmasi dikirim ke <span className="text-white font-semibold">{form.email}</span>
+            Dikirim ke <span className="text-white font-semibold">{form.email}</span>
           </p>
         </div>
       </section>);
@@ -417,35 +405,19 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
   }
 
   return (
-    <section id="waiting-list-section" className="pb-24 px-5 sm:px-12 lg:px-20 relative z-10">
+    <section id="newsletter-section" className="pb-24 px-5 sm:px-12 lg:px-20 relative z-10">
       <div className="max-w-lg mx-auto">
         <Reveal>
           <div className="text-center mb-8">
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-2">Kamu yang pertama.</h2>
-            <p className="text-[#FF6A00] font-bold text-lg mb-3">Amankan tempatmu sekarang.</p>
-            <p className="text-white/50 text-sm">Semakin cepat daftar — semakin awal dapat akses.</p>
-            <div className="mt-5 space-y-2 text-left max-w-xs mx-auto">
-              {["Early access sebelum publik", "Badge \"Founding Member\" permanen di profilmu", "30 hari Premium gratis"].map((b, i) =>
-              <div key={i} className="flex items-center gap-2.5">
-                  <span className="text-green-400 text-sm">✅</span>
-                  <span className="text-white/70 text-sm">{b}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </Reveal>
-
-        <Reveal delay={80}>
-          <div className="card-d rounded-2xl p-2 mb-4 text-center">
-            <p className="text-white/50 text-xs">Kamu akan jadi</p>
-            <p className="text-[#FF6A00] font-black text-2xl">#{fomoCounter + 1}</p>
-            <p className="text-white/50 text-xs">dalam antrian</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-white mb-2">Dapat tips langsung ke inbox.</h2>
+            <p className="text-[#FF6A00] font-bold text-lg mb-3">Newsletter Atur Pintar.</p>
+            <p className="text-white/50 text-sm">Tips keuangan ringan, update fitur baru, dan cerita seru — tanpa spam.</p>
           </div>
         </Reveal>
 
         <Reveal delay={120}>
           <form onSubmit={handleSubmit} className="card-d rounded-2xl p-6 space-y-4">
-            {/* Honeypot - hidden from real users */}
+            {/* Honeypot */}
             <div style={{ position: "absolute", left: "-9999px", top: "-9999px", opacity: 0, pointerEvents: "none" }} aria-hidden="true">
               <input tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
             </div>
@@ -457,7 +429,7 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
             }
 
             <div>
-              <label className="text-white/60 text-xs mb-1.5 block">Nama lengkap *</label>
+              <label className="text-white/60 text-xs mb-1.5 block">Nama *</label>
               <input required value={form.name} onChange={(e) => {setForm((f) => ({ ...f, name: e.target.value }));setErrors((er) => ({ ...er, name: undefined }));}} placeholder="Nama kamu" className={`bg-[hsl(var(--foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border placeholder-white/25 outline-none focus:border-[#FF6A00]/50 ${errors.name ? "border-red-500/60" : "border-white/10"}`} />
               {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
             </div>
@@ -466,45 +438,10 @@ function WaitingListSection({ fomoCounter, incrementCounter }) {
               <input required type="email" value={form.email} onChange={(e) => {setForm((f) => ({ ...f, email: e.target.value }));setErrors((er) => ({ ...er, email: undefined }));}} placeholder="email@kamu.com" className={`bg-[hsl(var(--foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border placeholder-white/25 outline-none focus:border-[#FF6A00]/50 ${errors.email ? "border-red-500/60" : "border-white/10"}`} />
               {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
             </div>
-            <div>
-              <label className="text-white/60 text-xs mb-1.5 block">Nomor WhatsApp (opsional)</label>
-              <input value={form.whatsapp} onChange={(e) => setForm((f) => ({ ...f, whatsapp: e.target.value }))} placeholder="08xxxxxxxxxx" className="bg-[hsl(var(--card-foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border border-white/10 placeholder-white/25 outline-none focus:border-[#FF6A00]/50" />
-            </div>
-            <div>
-              <label className="text-white/60 text-xs mb-1.5 block">Pekerjaan *</label>
-              <input required value={form.job} onChange={(e) => setForm((f) => ({ ...f, job: e.target.value }))} placeholder="Karyawan, pelajar, freelancer..." className="bg-[hsl(var(--card-foreground))] text-white px-4 py-3 text-sm rounded-xl w-full border border-white/10 placeholder-white/25 outline-none focus:border-[#FF6A00]/50" />
-            </div>
-            <div>
-              <label className="text-white/60 text-xs mb-1.5 block">Kota domisili *</label>
-              <input required value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} placeholder="Jakarta, Bandung, dll..." className="bg-[hsl(var(--card-foreground))] text-white px-4 py-3 text-sm opacity-100 rounded-xl w-full border border-white/10 placeholder-white/25 outline-none focus:border-[#FF6A00]/50" />
-            </div>
-            <div>
-              <label className="text-white/60 text-xs mb-1.5 block">Tantangan terbesar mengatur uang saat ini (opsional)</label>
-              <textarea value={form.biggest_money_problem} onChange={(e) => setForm((f) => ({ ...f, biggest_money_problem: e.target.value }))} placeholder="Ceritakan kondisimu..." rows={3} className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/25 outline-none focus:border-[#FF6A00]/50 resize-none" />
-            </div>
-            <div>
-              <label className="text-white/60 text-xs mb-1.5 block">Cara catat keuangan sekarang *</label>
-              <select required value={form.current_finance_tracking_method} onChange={(e) => setForm((f) => ({ ...f, current_finance_tracking_method: e.target.value }))} className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#FF6A00]/50">
-                <option value="" disabled>Pilih...</option>
-                <option value="Tidak mencatat">Tidak mencatat</option>
-                <option value="Notes di HP">Notes di HP</option>
-                <option value="Excel / Spreadsheet">Excel / Spreadsheet</option>
-                <option value="Aplikasi lain">Aplikasi lain</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-white/60 text-xs mb-1.5 block">Tertarik coba versi awal? *</label>
-              <select required value={form.early_access_interest} onChange={(e) => setForm((f) => ({ ...f, early_access_interest: e.target.value }))} className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#FF6A00]/50">
-                <option value="" disabled>Pilih...</option>
-                <option value="Ya">Ya</option>
-                <option value="Mungkin">Mungkin</option>
-                <option value="Belum yakin">Belum yakin</option>
-              </select>
-            </div>
             <button type="submit" disabled={loading} className="w-full py-4 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-black text-base rounded-full transition-all disabled:opacity-60 mt-2">
-              {loading ? "Mendaftarkan..." : "Amankan Tempatku →"}
+              {loading ? "Berlangganan..." : "Langganan Newsletter →"}
             </button>
-            <p className="text-center text-white/30 text-xs">Gratis. Tanpa kartu kredit. Tanpa syarat tersembunyi.</p>
+            <p className="text-center text-white/30 text-xs">Gratis. Bisa unsubscribe kapan saja.</p>
           </form>
         </Reveal>
       </div>
@@ -590,8 +527,8 @@ export default function LandingPage() {
     return () => clearTimeout(firstTimer);
   }, []);
 
-  const scrollToWaitingList = useCallback(() => {
-    document.getElementById("waiting-list-section")?.scrollIntoView({ behavior: "smooth" });
+  const scrollToNewsletter = useCallback(() => {
+    document.getElementById("newsletter-section")?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   const incrementCounter = useCallback(() => setFomoCounter((prev) => prev + 1), []);
@@ -669,10 +606,10 @@ export default function LandingPage() {
           <Reveal delay={240}>
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-center sm:justify-start mb-8">
               <button
-                onClick={scrollToWaitingList}
+                onClick={() => base44.auth.redirectToLogin()}
                 className="group flex items-center gap-2.5 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95 w-full sm:w-auto justify-center">
                 
-                Amankan Tempatku — Gratis
+                Mulai Gratis Sekarang
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
               <button
@@ -686,12 +623,9 @@ export default function LandingPage() {
 
           <Reveal delay={300}>
             <div className="text-sm text-white/50 text-center sm:text-left">
-              <span className="text-[#FF6A00] font-black text-lg tabular-nums">
-                <AnimatedCounter value={fomoCounter} />
-              </span>{" "}
-              <span className="text-white/60 font-semibold">orang sudah antre duluan.</span>
-              <br />
-              <span className="text-white/35 text-xs">Kamu mau nomor berapa?</span>
+              <button onClick={scrollToNewsletter} className="text-white/60 hover:text-white font-semibold underline underline-offset-4 decoration-[#FF6A00]/40 transition-colors">
+                Atau langganan newsletter dulu →
+              </button>
             </div>
           </Reveal>
         </div>
@@ -754,7 +688,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── NANA CHAT DEMO ── */}
-      <NanaChatDemo scrollToWaitingList={scrollToWaitingList} />
+      <NanaChatDemo scrollToWaitingList={scrollToNewsletter} />
 
       {/* ── GAMIFIKASI ── */}
       <section className="pb-16 px-5 sm:px-12 lg:px-20 relative z-10">
@@ -786,8 +720,8 @@ export default function LandingPage() {
                 XP nambah tiap catat, jaga streak & dengerin Nana.<br />
                 <span className="text-white/65 font-semibold">Karena konsistensi harusnya ada rewardnya.</span>
               </p>
-              <button onClick={scrollToWaitingList} className="flex-shrink-0 flex items-center gap-1.5 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
-                Amankan Tempatku →
+              <button onClick={() => base44.auth.redirectToLogin()} className="flex-shrink-0 flex items-center gap-1.5 bg-[#FF6A00] hover:bg-[#e05e00] text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
+                Mulai Gratis →
               </button>
             </div>
           </Reveal>
@@ -879,27 +813,8 @@ export default function LandingPage() {
         </section>
       }
 
-      {/* ── WAITING LIST ── */}
-      <WaitingListSection fomoCounter={fomoCounter} incrementCounter={incrementCounter} />
-
-      {/* ── CLOSING INFO ── */}
-      <section className="pb-12 px-5 sm:px-12 lg:px-20 relative z-10">
-        <div className="max-w-lg mx-auto text-center">
-          <div className="card-d rounded-2xl px-6 py-5 border border-[#FF6A00]/15">
-            <p className="text-[#FF6A00] text-[10px] font-black uppercase tracking-widest mb-1">⏳ Early Access</p>
-            <p className="text-white/60 text-xs mb-3 leading-relaxed">Pendaftaran waiting list akan segera ditutup setelah kuota awal terpenuhi.</p>
-            <div className="flex flex-col gap-1.5 text-left max-w-xs mx-auto">
-              {["Early access sebelum publik", 'Badge "Founding Member" permanen di profilmu', "30 hari Premium gratis"].map((b, i) =>
-              <div key={i} className="flex items-center gap-2">
-                  <span className="text-green-400 text-xs flex-shrink-0">✅</span>
-                  <span className="text-white/55 text-xs">{b}</span>
-                </div>
-              )}
-            </div>
-            <p className="text-white/25 text-[10px] mt-3">Gratis · Tanpa kartu kredit · Tanpa syarat tersembunyi</p>
-          </div>
-        </div>
-      </section>
+      {/* ── NEWSLETTER ── */}
+      <NewsletterSection />
 
       {/* ── FINAL CTA ── */}
       {true &&
