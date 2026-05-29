@@ -348,7 +348,7 @@ function LayoutInner({ children, currentPageName }) {
               }
             </button>
 
-            <Link to={createPageUrl("ProfileSettings")} className="w-8 h-8 rounded-full bg-[#F97316] flex items-center justify-center text-white text-xs font-bold tap-highlight-fix overflow-hidden">
+            <Link to={createPageUrl("ProfileSettings")} data-tour="profile-avatar" className="w-8 h-8 rounded-full bg-[#F97316] flex items-center justify-center text-white text-xs font-bold tap-highlight-fix overflow-hidden">
               {user?.photo_url ? <img src={user.photo_url} alt="avatar" className="w-full h-full object-cover" /> : initials}
             </Link>
           </div>
@@ -388,6 +388,7 @@ function LayoutInner({ children, currentPageName }) {
               {idx === 2 && <div className="w-16 flex-shrink-0" aria-hidden="true" />}
               <button
                 onClick={() => handleTabClick(item.page)}
+                data-tour={item.page === "Nana" ? "nana-tab" : item.page === "Analytics" ? "analytics-tab" : undefined}
                 className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
                 active ? "text-[#F97316]" : "text-[#888]"}`}>
 

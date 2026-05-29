@@ -5,14 +5,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 const TOUR_STEPS = [
-  { id: "balance-card", page: "Dashboard", title: "Dashboard Keuangan 💰", desc: "Ini Dashboard kamu — lihat ringkasan saldo, pemasukan, dan pengeluaran bulan ini dalam satu tampilan.", placement: "bottom" },
-  { id: "add-transaction-btn", page: "Dashboard", title: "Tambah Transaksi ➕", desc: "Ketuk tombol + untuk catat pemasukan, pengeluaran, atau tabungan baru. Pilih rekening & kategori dalam detik.", placement: "bottom-left" },
-  { id: "accounts-nav", page: "Accounts", title: "Rekening & Dompet 🏦", desc: "Kelola semua akun keuanganmu di satu tempat — bank, cash, e-wallet. Saldo selalu tersinkronisasi otomatis.", placement: "bottom" },
-  { id: "add-budget-btn", page: "Budget", title: "Budget per Kategori 📊", desc: "Pantau budget bulanan di sini. Atur batas pengeluaran dan dapatkan alert otomatis saat mendekati limit.", placement: "bottom-left" },
-  { id: "mobile-more-tab", page: "Budget", title: "Menu Lengkap 📂", desc: "Ketuk 'Lainnya' untuk akses Utang & Cicilan, Goals Tabungan, Reminder tagihan, dan Shared Wallet.", placement: "top" },
-  { id: "nana-chat", page: "Dashboard", title: "Tanya Nana AI 🤖", desc: "Tanya Nana kapan saja untuk saran keuangan personal — analisis pengeluaran, tips menabung, dan lainnya.", placement: "top-left" },
-  { id: "tips-nav-link", page: "Menu", title: "Tips & Panduan 💡", desc: "Temukan tips keuangan personal dan panduan penggunaan fitur-fitur Atur Pintar di sini.", placement: "bottom" },
-  { id: "mobile-more-tab", page: "Menu", title: "Siap Mulai! 🎉", desc: "Pengaturan akun ada di pojok kanan atas (ikon profil). Selamat menggunakan Atur Pintar — kontrol uangmu mulai sekarang!", placement: "top" },
+  { id: "balance-card", page: "Dashboard", title: "Selamat datang di Dashboard 💰", desc: "Di sini kamu bisa lihat saldo, pemasukan, dan pengeluaran bulan ini dalam satu tampilan.", placement: "bottom" },
+  { id: "add-transaction-btn", page: "Dashboard", title: "Catat Transaksi ➕", desc: "Ketuk tombol + untuk catat pemasukan atau pengeluaran baru. Pilih rekening dan kategori dalam hitungan detik.", placement: "top" },
+  { id: "nana-tab", page: "Dashboard", title: "Tanya Nana AI 🤖", desc: "Tanya Nana untuk saran keuangan personal, analisis pengeluaran, dan tips menabung kapan saja.", placement: "top" },
+  { id: "analytics-tab", page: "Dashboard", title: "Lihat Analytics 📊", desc: "Pantau pola pengeluaran, kategori favorit, dan insight keuangan bulanan kamu di sini.", placement: "top" },
+  { id: "accounts-page-header", page: "Accounts", title: "Kelola Rekening 🏦", desc: "Tambah bank, e-wallet, dan cash di satu tempat. Saldo selalu tersinkronisasi otomatis tiap transaksi.", placement: "bottom" },
+  { id: "profile-avatar", page: "Dashboard", title: "Siap Mulai! 🎉", desc: "Pengaturan akun dan profil ada di ikon ini. Selamat menggunakan Atur Pintar, kontrol uangmu mulai sekarang!", placement: "bottom" },
 ];
 
 const TOOLTIP_WIDTH = 280;
