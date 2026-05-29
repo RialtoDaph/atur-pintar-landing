@@ -7,56 +7,54 @@ import { ArrowRight, CheckCircle, Mail, Instagram, Twitter, Sparkles, ChevronRig
 const NANA_AVATAR_URL = "https://api.dicebear.com/7.x/adventurer/svg?seed=Nana&backgroundColor=f97316";
 const VIDEO_URL = "https://www.youtube.com/embed/6KazLzryNbM";
 
-// ─── Matrix background (static snapshot — drawn once, no animation) ──────────
-function MatrixBackground() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-
-    const drawSnapshot = () => {
-      const w = canvas.width = window.innerWidth;
-      const h = canvas.height = window.innerHeight;
-      ctx.fillStyle = "#0A0A0A";
-      ctx.fillRect(0, 0, w, h);
-      ctx.font = "13px monospace";
-      const chars = "01アイウエオカキクケコABCDEF∑∆∫πΩ";
-      const colStep = 18;
-      const rowStep = 13;
-      // Draw a static "frozen frame" of matrix rain
-      for (let x = 0; x < w; x += colStep) {
-        const trailLen = 8 + Math.floor(Math.random() * 18);
-        const startY = Math.floor(Math.random() * (h / rowStep));
-        for (let i = 0; i < trailLen; i++) {
-          const y = (startY + i) * rowStep;
-          if (y > h) break;
-          const char = chars[Math.floor(Math.random() * chars.length)];
-          const fade = i / trailLen;
-          if (fade < 0.2) ctx.fillStyle = `rgba(255,106,0,${0.85 - fade})`;
-          else if (fade < 0.5) ctx.fillStyle = `rgba(255,179,71,${0.5 - fade * 0.4})`;
-          else ctx.fillStyle = `rgba(255,106,0,${Math.max(0.05, 0.25 - fade * 0.2)})`;
-          ctx.fillText(char, x, y);
-        }
-      }
-    };
-
-    drawSnapshot();
-    // Redraw on resize (debounced)
-    let resizeTimer;
-    const onResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(drawSnapshot, 200);
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      clearTimeout(resizeTimer);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" style={{ zIndex: 0, opacity: 0.45 }} />;
+// ─── Brush Background (orange brushstroke glows — pure CSS, zero JS cost) ────
+function BrushBackground() {
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+      {/* Top-left wide brush */}
+      <div
+        className="absolute"
+        style={{
+          top: "-10%",
+          left: "-15%",
+          width: "70vw",
+          height: "55vh",
+          background: "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255,106,0,0.28) 0%, rgba(255,106,0,0.10) 40%, transparent 70%)",
+          filter: "blur(60px)",
+          transform: "rotate(-18deg)"
+        }} />
+      {/* Right middle warm streak */}
+      <div
+        className="absolute"
+        style={{
+          top: "25%",
+          right: "-20%",
+          width: "65vw",
+          height: "50vh",
+          background: "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(255,179,71,0.22) 0%, rgba(255,106,0,0.08) 45%, transparent 75%)",
+          filter: "blur(70px)",
+          transform: "rotate(15deg)"
+        }} />
+      {/* Bottom-left soft brush */}
+      <div
+        className="absolute"
+        style={{
+          bottom: "-10%",
+          left: "10%",
+          width: "60vw",
+          height: "45vh",
+          background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,106,0,0.18) 0%, rgba(255,106,0,0.05) 50%, transparent 80%)",
+          filter: "blur(80px)",
+          transform: "rotate(-8deg)"
+        }} />
+      {/* Subtle grain for texture */}
+      <div
+        className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+        style={{
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
+        }} />
+    </div>
+  );
 }
 
 // ─── Scroll reveal ────────────────────────────────────────────────────────────
@@ -600,7 +598,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white font-sans overflow-x-hidden">
-      <MatrixBackground />
+      <BrushBackground />
       <style>{`
         .g-text { background: linear-gradient(135deg,#FF6A00 0%,#FFB347 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
         .glow { box-shadow: 0 0 40px rgba(255,106,0,0.28); }
