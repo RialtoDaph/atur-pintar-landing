@@ -4,7 +4,7 @@ import { X, ArrowRight, ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
-const TOUR_STEPS = [
+const MOBILE_TOUR_STEPS = [
   { id: "balance-card", page: "Dashboard", title: "Kartu Ringkasan 💰", desc: "Geser ke kiri atau ketuk kartu untuk lihat 5 ringkasan: Bulan Ini, Semua Rekening, Investasi, Utang, dan Keuangan Bersama. Titik oranye di bawah menunjukkan slide aktif.", placement: "bottom" },
   { id: "add-transaction-btn", page: "Dashboard", title: "Catat Transaksi ➕", desc: "Ketuk tombol + untuk catat pemasukan atau pengeluaran baru. Pilih rekening dan kategori dalam hitungan detik.", placement: "top" },
   { id: "nana-tab", page: "Dashboard", title: "Tanya Nana AI 🤖", desc: "Tanya Nana untuk saran keuangan personal, analisis pengeluaran, dan tips menabung kapan saja.", placement: "top" },
@@ -12,6 +12,11 @@ const TOUR_STEPS = [
   { id: "accounts-page-header", page: "Accounts", title: "Kelola Rekening 🏦", desc: "Tambah bank, e-wallet, dan cash di satu tempat. Saldo selalu tersinkronisasi otomatis tiap transaksi.", placement: "bottom" },
   { id: "profile-avatar", page: "Dashboard", title: "Siap Mulai! 🎉", desc: "Pengaturan akun dan profil ada di ikon ini. Selamat menggunakan Atur Pintar, kontrol uangmu mulai sekarang!", placement: "bottom" },
 ];
+
+// TODO: Desktop tour steps — customize terpisah nanti (placeholder = sama dengan mobile sementara)
+const DESKTOP_TOUR_STEPS = MOBILE_TOUR_STEPS;
+
+const TOUR_STEPS = typeof window !== "undefined" && window.innerWidth >= 640 ? DESKTOP_TOUR_STEPS : MOBILE_TOUR_STEPS;
 
 const TOOLTIP_WIDTH = 280;
 const TOOLTIP_HEIGHT = 160;
