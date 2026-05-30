@@ -102,17 +102,36 @@ export default function TourGuide({ onComplete }) {
         } else {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
         }
-        timeoutRef.current = setTimeout(() => {
-          // Re-query after scroll — AnimatePresence may have re-mounted
+        // Re-query rect multiple times — animation/scroll/layout shift can change final position
+        let settleAttempts = 0;
+        let lastRect = null;
+        function settleRect() {
+          settleAttempts++;
           const candidates2 = document.querySelectorAll(`[data-tour="${currentStep.id}"]`);
+          let visibleEl = null;
           for (const c of candidates2) {
             const r = c.getBoundingClientRect();
-            if (r.width > 0 && r.height > 0) {
-              setTargetRect({ top: r.top, left: r.left, width: r.width, height: r.height, bottom: r.bottom, right: r.right });
-              return;
-            }
+            if (r.width > 0 && r.height > 0) { visibleEl = c; break; }
           }
-        }, 700);
+          if (!visibleEl) {
+            if (settleAttempts < 20) timeoutRef.current = setTimeout(settleRect, 100);
+            return;
+          }
+          const r = visibleEl.getBoundingClientRect();
+          const newRect = { top: r.top, left: r.left, width: r.width, height: r.height, bottom: r.bottom, right: r.right };
+          // Wait until rect stops moving (2 identical readings) or max attempts
+          if (lastRect && Math.abs(lastRect.top - newRect.top) < 1 && Math.abs(lastRect.left - newRect.left) < 1) {
+            setTargetRect(newRect);
+            return;
+          }
+          lastRect = newRect;
+          if (settleAttempts < 20) {
+            timeoutRef.current = setTimeout(settleRect, 100);
+          } else {
+            setTargetRect(newRect);
+          }
+        }
+        timeoutRef.current = setTimeout(settleRect, 500);
         return;
       }
       if (attempts < maxAttempts) {
