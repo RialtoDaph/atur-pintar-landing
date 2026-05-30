@@ -176,7 +176,7 @@ export default function TourGuide({ onComplete }) {
 
     window.addEventListener("scroll", remeasure, true);
     window.addEventListener("resize", remeasure);
-    const interval = setInterval(remeasure, 250);
+    const interval = setInterval(remeasure, 1000);
 
     return () => {
       if (ro) ro.disconnect();
