@@ -57,7 +57,7 @@ export default function TourGuide({ onComplete }) {
   const isLast = stepIndex === TOUR_STEPS.length - 1;
 
   function clearTimers() {
-    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+    if (intervalRef.current) { clearTimeout(intervalRef.current); intervalRef.current = null; }
     if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
   }
 
@@ -73,18 +73,20 @@ export default function TourGuide({ onComplete }) {
   // Find and highlight element after step/navigation changes
   useEffect(() => {
     if (showWelcome) return;
+    // Only start polling once pathname matches the target page — avoids races during navigation
+    const targetPath = `/${currentStep.page}`;
+    if (location.pathname !== targetPath) return;
+
     clearTimers();
     setTargetRect(null);
 
     let attempts = 0;
-    // Wait longer for pages that need data-fetch / lazy load (Accounts, Analytics)
-    const maxAttempts = 120; // ~12 seconds total
+    const maxAttempts = 150; // ~15 seconds total — covers lazy-loaded pages
 
     function tryFind() {
       attempts++;
       const el = document.querySelector(`[data-tour="${currentStep.id}"]`);
       if (el) {
-        // Scroll the element into view using its nearest scrollable parent
         const scrollable = document.querySelector(".overflow-y-auto");
         if (scrollable) {
           const elRect = el.getBoundingClientRect();
@@ -94,7 +96,6 @@ export default function TourGuide({ onComplete }) {
         } else {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
         }
-        // After scroll animation (~500ms), measure final position
         timeoutRef.current = setTimeout(() => {
           const rect = getRect(currentStep.id);
           setTargetRect(rect);
@@ -104,14 +105,12 @@ export default function TourGuide({ onComplete }) {
       if (attempts < maxAttempts) {
         intervalRef.current = setTimeout(tryFind, 100);
       }
-      // If never found, tooltip falls back to bottom-center (handled below) and Lanjut still works
     }
 
-    // Start polling after a short delay to allow page to render
-    timeoutRef.current = setTimeout(tryFind, 500);
+    timeoutRef.current = setTimeout(tryFind, 400);
 
     return () => clearTimers();
-  }, [stepIndex, location.pathname, showWelcome]);
+  }, [stepIndex, location.pathname, showWelcome, currentStep.id, currentStep.page]);
 
   // Cleanup on unmount
   useEffect(() => () => clearTimers(), []);
