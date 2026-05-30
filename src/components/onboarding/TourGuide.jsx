@@ -23,21 +23,44 @@ const TOOLTIP_HEIGHT = 160;
 
 function getTooltipStyle(rect, placement) {
   if (!rect) return {};
-  const padding = 12;
+  const padding = 16;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   let top, left;
 
-  if (placement === "bottom" || placement === "bottom-left") {
+  // Auto-flip: if requested placement doesn't fit, use opposite
+  const spaceBelow = vh - rect.bottom;
+  const spaceAbove = rect.top;
+  let actualPlacement = placement;
+  if ((placement === "bottom" || placement === "bottom-left") && spaceBelow < TOOLTIP_HEIGHT + padding + 16 && spaceAbove > spaceBelow) {
+    actualPlacement = placement === "bottom-left" ? "top-left" : "top";
+  } else if ((placement === "top" || placement === "top-left") && spaceAbove < TOOLTIP_HEIGHT + padding + 16 && spaceBelow > spaceAbove) {
+    actualPlacement = placement === "top-left" ? "bottom-left" : "bottom";
+  }
+
+  if (actualPlacement === "bottom" || actualPlacement === "bottom-left") {
     top = rect.bottom + padding;
-    left = placement === "bottom-left" ? rect.right - TOOLTIP_WIDTH : rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+    left = actualPlacement === "bottom-left" ? rect.right - TOOLTIP_WIDTH : rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
   } else {
     top = rect.top - TOOLTIP_HEIGHT - padding;
-    left = placement === "top-left" ? rect.right - TOOLTIP_WIDTH : rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+    left = actualPlacement === "top-left" ? rect.right - TOOLTIP_WIDTH : rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
   }
 
   left = Math.max(8, Math.min(left, vw - TOOLTIP_WIDTH - 8));
   top = Math.max(8, Math.min(top, vh - TOOLTIP_HEIGHT - 8));
+
+  // Final guard: if tooltip overlaps spotlight (within padding), push it away
+  const spotlightTop = rect.top - 6;
+  const spotlightBottom = rect.bottom + 6;
+  const tooltipBottom = top + TOOLTIP_HEIGHT;
+  if (top < spotlightBottom && tooltipBottom > spotlightTop) {
+    if (spaceBelow > spaceAbove) {
+      top = Math.min(spotlightBottom + padding, vh - TOOLTIP_HEIGHT - 8);
+    } else {
+      top = Math.max(spotlightTop - TOOLTIP_HEIGHT - padding, 8);
+    }
+  }
+
   return { top, left, width: TOOLTIP_WIDTH };
 }
 
