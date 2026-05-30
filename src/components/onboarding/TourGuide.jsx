@@ -149,6 +149,44 @@ export default function TourGuide({ onComplete }) {
   // Cleanup on unmount
   useEffect(() => () => clearTimers(), []);
 
+  // Live-track target element position — re-measure on scroll, resize, and layout shifts (e.g. desktop sidebar hover-expand)
+  useEffect(() => {
+    if (showWelcome || !targetRect) return;
+
+    function remeasure() {
+      const candidates = document.querySelectorAll(`[data-tour="${currentStep.id}"]`);
+      for (const c of candidates) {
+        const r = c.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          setTargetRect(prev => {
+            if (prev && Math.abs(prev.top - r.top) < 1 && Math.abs(prev.left - r.left) < 1 && Math.abs(prev.width - r.width) < 1) return prev;
+            return { top: r.top, left: r.left, width: r.width, height: r.height, bottom: r.bottom, right: r.right };
+          });
+          return;
+        }
+      }
+    }
+
+    const el = document.querySelector(`[data-tour="${currentStep.id}"]`);
+    const ro = el && "ResizeObserver" in window ? new ResizeObserver(remeasure) : null;
+    if (ro && el) ro.observe(el);
+    // Also observe body for sidebar expand and other layout changes
+    const bodyRo = "ResizeObserver" in window ? new ResizeObserver(remeasure) : null;
+    if (bodyRo) bodyRo.observe(document.body);
+
+    window.addEventListener("scroll", remeasure, true);
+    window.addEventListener("resize", remeasure);
+    const interval = setInterval(remeasure, 250);
+
+    return () => {
+      if (ro) ro.disconnect();
+      if (bodyRo) bodyRo.disconnect();
+      window.removeEventListener("scroll", remeasure, true);
+      window.removeEventListener("resize", remeasure);
+      clearInterval(interval);
+    };
+  }, [showWelcome, targetRect !== null, currentStep.id]);
+
   function handleNext() {
     if (isLast) onComplete();
     else setStepIndex(i => i + 1);
