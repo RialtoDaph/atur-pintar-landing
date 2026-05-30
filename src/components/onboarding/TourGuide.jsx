@@ -23,7 +23,7 @@ const TOOLTIP_HEIGHT = 160;
 
 function getTooltipStyle(rect, placement) {
   if (!rect) return {};
-  const padding = 16;
+  const padding = 28;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   let top, left;
