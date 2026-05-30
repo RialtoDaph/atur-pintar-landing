@@ -570,9 +570,11 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
                   {isRecurring && <p className="text-[10px] text-[#8FA4C8]">masuk ke Transaksi Rutin</p>}
                 </div>
                 <button onClick={() => setIsRecurring(r => !r)}
-                  className="w-11 h-6 rounded-full transition-colors relative flex-shrink-0"
+                  role="switch"
+                  aria-checked={isRecurring}
+                  className="w-11 h-6 rounded-full transition-colors relative flex-shrink-0 p-0.5"
                   style={{ backgroundColor: isRecurring ? "#F97316" : "#E2E8F0" }}>
-                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${isRecurring ? "translate-x-5" : "translate-x-0.5"}`} />
+                  <span className={`block w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${isRecurring ? "translate-x-5" : "translate-x-0"}`} />
                 </button>
               </div>
               {isRecurring && (
