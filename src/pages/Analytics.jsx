@@ -385,7 +385,7 @@ export default function Analytics() {
           totalIncome={totalIncome}
           totalExpenses={periodExpenses}
           savingsRate={savingsRate}
-          periodLabel={formatPeriodLabel(isPremium ? filterPeriod : "3")}
+          periodLabel={formatPeriodLabel(filterPeriod)}
           periodSubtitle={periodSubtitle}
           hasPrevData={hasPrevData}
           prevIncome={prevIncome}
