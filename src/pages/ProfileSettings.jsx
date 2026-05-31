@@ -7,6 +7,7 @@ import {
 import ChangePasswordModal from "@/components/profile/ChangePasswordModal";
 import EditProfileForm from "@/components/profile/EditProfileForm";
 import AddAccountBottomSheet from "@/components/profile/AddAccountBottomSheet";
+import EditAccountModal from "@/components/profile/EditAccountModal";
 import AccountAvatar from "@/components/ui/AccountAvatar";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useAppSettings } from "@/components/utils/useAppSettings";
@@ -15,105 +16,9 @@ import { createPageUrl } from "@/utils";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
 import { toast } from "sonner";
 
-const DEFAULT_ICONS = ["🏦", "💵", "📱", "💳", "🏧", "🐷", "💰", "🎯"];
-
 function formatRupiah(n) {
   if (n === undefined || n === null) return "Rp 0";
   return "Rp " + Number(n).toLocaleString("id-ID");
-}
-
-// ─── Account Modal ────────────────────────────────────────────────────────────
-function AccountModal({ account, defaultType, onClose, onSave }) {
-  const [form, setForm] = useState({
-    name: account?.name || "",
-    type: account?.type || defaultType || "bank",
-    balance: account?.balance || 0,
-    icon: account?.icon || "🏦",
-    color: account?.color || "#F97316",
-    is_default: account?.is_default || false,
-  });
-  const [saving, setSaving] = useState(false);
-
-  async function handleSave() {
-    if (!form.name.trim()) return;
-    setSaving(true);
-    if (account?.id) {
-      const updated = await base44.entities.Account.update(account.id, form);
-      onSave(updated);
-    } else {
-      const created = await base44.entities.Account.create(form);
-      onSave(created);
-    }
-    setSaving(false);
-  }
-
-  return (
-    <>
-      <div className="fixed inset-0 bg-black/60 z-[90]" onClick={onClose} />
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="fixed bottom-0 left-0 right-0 z-[95] bg-white rounded-t-3xl shadow-2xl overscroll-contain animate-slide-up-sheet"
-        style={{ maxHeight: "85dvh", display: "flex", flexDirection: "column" }}
-      >
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-          <div className="w-10 h-1 bg-[#E2E8F0] rounded-full" />
-        </div>
-        <div className="flex items-center justify-between px-5 pt-2 pb-4 border-b border-[#F2F4F7] flex-shrink-0">
-          <p className="font-bold text-[#1A1A1A] text-base">{account?.id ? "Edit Rekening" : "Tambah Rekening"}</p>
-          <button onClick={onClose} className="p-2 rounded-xl bg-[#F2F4F7] hover:bg-[#E2E8F0]"><X className="w-5 h-5 text-[#8FA4C8]" /></button>
-        </div>
-        <div className="px-5 py-4 space-y-4 overflow-y-auto flex-1">
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">Icon</p>
-            <div className="flex gap-2 flex-wrap">
-              {DEFAULT_ICONS.map(ic => (
-                <button key={ic} onClick={() => setForm(f => ({ ...f, icon: ic }))}
-                  className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all ${form.icon === ic ? "ring-2 ring-[#F97316] bg-[#F97316]/10" : "bg-[#F2F4F7]"}`}>
-                  {ic}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Nama Rekening</p>
-            <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              placeholder="e.g., Rekening BCA, OVO, Dompet"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5">Saldo Awal</p>
-            <input type="text" inputMode="numeric"
-              value={form._balanceDisplay ?? (form.balance ? Number(form.balance).toLocaleString("id-ID") : "")}
-              onChange={e => {
-                const raw = e.target.value.replace(/[^0-9]/g, "");
-                setForm(f => ({ ...f, balance: parseFloat(raw) || 0, _balanceDisplay: raw === "" ? "" : Number(raw).toLocaleString("id-ID") }));
-              }}
-              placeholder="0"
-              className="w-full px-4 py-3 bg-[#F2F4F7] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30" />
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-[#1A1A1A]">Rekening Utama</p>
-              <p className="text-xs text-[#8FA4C8]">Default saat catat transaksi</p>
-            </div>
-            <button onClick={() => setForm(f => ({ ...f, is_default: !f.is_default }))}
-              className={`w-11 h-6 rounded-full transition-colors relative ${form.is_default ? "bg-[#F97316]" : "bg-[#E2E8F0]"}`}>
-              <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${form.is_default ? "left-6" : "left-1"}`} />
-            </button>
-          </div>
-        </div>
-        <div className="px-5 pt-3 pb-6 flex-shrink-0 border-t border-[#F2F4F7]" style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}>
-          <button onClick={handleSave} disabled={saving || !form.name.trim()}
-            className="w-full py-4 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-40 flex items-center justify-center gap-2 active:scale-95 transition-all">
-            {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
-            {account?.id ? "Simpan Perubahan" : "Buat Rekening"}
-          </button>
-        </div>
-      </div>
-    </>
-  );
 }
 
 // ─── Profile completion helper ────────────────────────────────────────────────
@@ -447,13 +352,14 @@ export default function ProfileSettings() {
       )}
 
       {showAccountModal && editAccount && (
-        <AccountModal
+        <EditAccountModal
           account={editAccount}
           onClose={() => { setShowAccountModal(false); setEditAccount(null); }}
           onSave={(acc) => {
             setAccounts(prev => prev.map(a => a.id === acc.id ? acc : a));
             setShowAccountModal(false);
             setEditAccount(null);
+            toast.success(`${acc.name} diperbarui ✓`);
           }}
         />
       )}
