@@ -41,7 +41,6 @@ export default function AddInvestmentModal({ onClose, onSave }) {
         type: form.type,
         purchase_date: form.purchase_date || undefined,
         notes: form.notes || undefined,
-        initial_amount: 0,
         current_value: 0,
       });
     } finally {

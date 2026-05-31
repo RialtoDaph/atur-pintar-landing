@@ -13,8 +13,9 @@ function parseNum(str) {
 
 export default function InvestmentTransactionModal({ investment, type, onClose, onSave }) {
   useLockBodyScroll();
+  const today = new Date().toISOString().split("T")[0];
   const [amountDisplay, setAmountDisplay] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(today);
   const [saving, setSaving] = useState(false);
 
   const isBuy = type === "buy";
@@ -25,6 +26,7 @@ export default function InvestmentTransactionModal({ investment, type, onClose, 
   async function handleSave() {
     const amount = parseNum(amountDisplay);
     if (!amount || amount <= 0) return;
+    if (date > today) return;
     setSaving(true);
     try {
       await onSave(amount, date);
@@ -92,15 +94,19 @@ export default function InvestmentTransactionModal({ investment, type, onClose, 
             <input
               type="date"
               value={date}
+              max={today}
               onChange={e => setDate(e.target.value)}
               className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#FF6A00]/30"
             />
+            {date > today && (
+              <p className="text-xs text-[#FF6B6B] mt-1">Tanggal tidak boleh di masa depan</p>
+            )}
           </div>
         </div>
 
         <button
           onClick={handleSave}
-          disabled={saving || !parseNum(amountDisplay)}
+          disabled={saving || !parseNum(amountDisplay) || date > today}
           className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
           style={{ backgroundColor: color }}
         >

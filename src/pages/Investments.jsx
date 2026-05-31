@@ -21,6 +21,7 @@ export default function InvestmentsPage() {
   const [txModal, setTxModal] = useState(null); // { inv, type: "buy"|"sell" }
   const [accounts, setAccounts] = useState([]);
   const [user, setUser] = useState(null);
+  const [txSaving, setTxSaving] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => setUser(u)).catch(() => {});
@@ -49,8 +50,7 @@ export default function InvestmentsPage() {
     const totalBeli = invTxs.filter(tx => tx.type === "buy").reduce((s, tx) => s + (tx.total_amount || 0), 0);
     const totalJual = invTxs.filter(tx => tx.type === "sell").reduce((s, tx) => s + (tx.total_amount || 0), 0);
     const saldoAktif = totalBeli - totalJual;
-    const untungRugi = totalJual - totalBeli;
-    return { totalBeli, totalJual, saldoAktif, untungRugi };
+    return { totalBeli, totalJual, saldoAktif };
   }
 
   const portfolioTotalBeli = transactions.filter(tx => tx.type === "buy").reduce((s, tx) => s + (tx.total_amount || 0), 0);
@@ -84,22 +84,28 @@ export default function InvestmentsPage() {
   }
 
   async function handleSaveTransaction(invId, type, amount, date) {
-    await base44.entities.InvestmentTransaction.create({
-      investment_id: invId,
-      type,
-      total_amount: amount,
-      transaction_date: date || new Date().toISOString().split("T")[0],
-    });
+    if (txSaving) return;
+    setTxSaving(true);
+    try {
+      await base44.entities.InvestmentTransaction.create({
+        investment_id: invId,
+        type,
+        total_amount: amount,
+        transaction_date: date || new Date().toISOString().split("T")[0],
+      });
 
-    // Sinkron saldo account: beli = keluar (expense), jual = masuk (income)
-    const inv = investments.find(i => i.id === invId);
-    if (inv?.account_id) {
-      const txType = type === "buy" ? "expense" : "income";
-      await syncAccountBalance(inv.account_id, amount, txType, 1).catch(() => {});
+      // Sinkron saldo account: beli = keluar (expense), jual = masuk (income)
+      const inv = investments.find(i => i.id === invId);
+      if (inv?.account_id) {
+        const txType = type === "buy" ? "expense" : "income";
+        await syncAccountBalance(inv.account_id, amount, txType, 1).catch(() => {});
+      }
+
+      setTxModal(null);
+      await loadData();
+    } finally {
+      setTxSaving(false);
     }
-
-    setTxModal(null);
-    loadData();
   }
 
   const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
@@ -174,9 +180,9 @@ export default function InvestmentsPage() {
           investments.map(inv => {
             const invType = INVESTMENT_TYPES_MAP[inv.type] || INVESTMENT_TYPES_MAP.lainnya;
             const typeLabel = settings.language === 'en' ? invType.label_en : invType.label_id;
-            const { totalBeli, totalJual, saldoAktif, untungRugi } = getMetrics(inv.id);
+            const { totalBeli, totalJual, saldoAktif } = getMetrics(inv.id);
             const walletAccount = accounts.find(a => a.id === inv.account_id);
-            const isProfit = untungRugi >= 0;
+            const isOrphan = inv.account_id && !walletAccount;
 
             return (
               <div key={inv.id} className="bg-white rounded-2xl p-4 shadow-sm">
@@ -218,12 +224,16 @@ export default function InvestmentsPage() {
                     <p className="text-sm font-semibold text-[#4A5568]">{formatCurrency(totalBeli)}</p>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-xl p-2.5">
-                    <p className="text-[10px] text-[#8FA4C8] mb-0.5">Realisasi</p>
-                    <p className={`text-sm font-bold ${totalJual > 0 ? (isProfit ? "text-[#00C9A7]" : "text-[#FF6B6B]") : "text-[#CBD5E0]"}`}>
-                      {totalJual > 0 ? (isProfit ? "+" : "") + formatCurrency(untungRugi) : "-"}
+                    <p className="text-[10px] text-[#8FA4C8] mb-0.5">Total Jual</p>
+                    <p className={`text-sm font-semibold ${totalJual > 0 ? "text-[#1A1A1A]" : "text-[#CBD5E0]"}`}>
+                      {totalJual > 0 ? formatCurrency(totalJual) : "-"}
                     </p>
                   </div>
                 </div>
+
+                {isOrphan && (
+                  <p className="text-xs text-[#FF6B6B] mb-2">⚠️ Akun investasi sudah dihapus — saldo tidak tersinkron</p>
+                )}
 
                 {inv.notes && <p className="text-xs text-[#8FA4C8] italic mb-3">{inv.notes}</p>}
 
