@@ -20,6 +20,7 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
   const [missions, setMissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showLevelUp, setShowLevelUp] = useState(null);
+  const [dismissedBanner, setDismissedBanner] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -113,7 +114,15 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
   const completed = DEFAULT_MISSIONS.length - activeMissions.length;
   const totalXP = DEFAULT_MISSIONS.reduce((s, m) => s + m.xp_reward, 0);
   // All done = no active missions left AND we've already loaded (so we don't flash banner before load)
-  const allDone = !loading && activeMissions.length === 0;
+  const allDone = !loading && activeMissions.length === 0 && !dismissedBanner;
+
+  // Auto-hide banner after 5 seconds
+  useEffect(() => {
+    if (!loading && activeMissions.length === 0 && !dismissedBanner) {
+      const timer = setTimeout(() => setDismissedBanner(true), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, activeMissions.length, dismissedBanner]);
 
   // Level progress
   const xp = gamificationProfile?.total_points || 0;
