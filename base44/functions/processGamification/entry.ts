@@ -114,32 +114,39 @@ Deno.serve(async (req) => {
 
     const today = todayStr();
     const yesterday = yesterdayStr();
-    const last = profile.last_activity_date;
 
-    let newStreak = profile.daily_streak || 0;
+    // Re-fetch the latest profile state right before computing streak to guard against
+    // race conditions where two activity triggers fire in parallel (e.g. transaction-added
+    // event + a direct call) and both read stale data, causing the streak to be incremented twice.
+    const freshProfiles = await base44.entities.GamificationProfile.filter({ created_by: userEmail });
+    const freshProfile = (freshProfiles || []).find(p => p.id === profile.id) || profile;
+    const last = freshProfile.last_activity_date;
+    const currentStreak = freshProfile.daily_streak || 0;
+
+    let newStreak = currentStreak;
     let streakChanged = false;
 
     if (isActivity) {
       if (last === today) {
-        // Same day — no change
+        // Same day — no change. Idempotent: repeated activity on the same day never bumps streak.
       } else if (last === yesterday) {
-        newStreak = (profile.daily_streak || 0) + 1;
+        newStreak = currentStreak + 1;
         streakChanged = true;
       } else {
-        // More than 1 day ago or null — start fresh at 1
+        // More than 1 day ago or null (brand-new account) — start fresh at 1.
         newStreak = 1;
         streakChanged = true;
       }
     } else {
       // Non-activity trigger (e.g. daily_check): if streak should already be reset
       // because user skipped >1 day, reflect that here without touching last_activity_date.
-      if (last && last !== today && last !== yesterday && (profile.daily_streak || 0) > 0) {
+      if (last && last !== today && last !== yesterday && currentStreak > 0) {
         newStreak = 0;
         streakChanged = true;
       }
     }
 
-    const newLongest = Math.max(profile.longest_streak || 0, newStreak);
+    const newLongest = Math.max(freshProfile.longest_streak || 0, newStreak);
 
     // ── 3. XP award ───────────────────────────────────────────────────────────
     let xpToAdd = 0;
