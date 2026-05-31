@@ -108,12 +108,12 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
     }
   }
 
-  const completed = missions.filter(m => m.is_completed).length;
   // Active = not yet completed (we remove on complete via optimistic update; this is a safety net)
   const activeMissions = missions.filter(m => !m.is_completed);
+  const completed = DEFAULT_MISSIONS.length - activeMissions.length;
   const totalXP = DEFAULT_MISSIONS.reduce((s, m) => s + m.xp_reward, 0);
-  // All done = no active missions left AND at least one default mission exists for today
-  const allDone = activeMissions.length === 0 && missions.length > 0;
+  // All done = no active missions left AND we've already loaded (so we don't flash banner before load)
+  const allDone = !loading && activeMissions.length === 0;
 
   // Level progress
   const xp = gamificationProfile?.total_points || 0;
