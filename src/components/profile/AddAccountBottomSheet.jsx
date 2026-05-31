@@ -44,12 +44,12 @@ function FormBottomSheet({ preset, accountType, onBack, onClose, onSave }) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 z-50" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 z-[90]" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl overscroll-contain"
-        style={{ maxHeight: "90dvh", display: "flex", flexDirection: "column" }}
+        className="fixed bottom-0 left-0 right-0 z-[95] bg-white rounded-t-3xl shadow-2xl overscroll-contain animate-slide-up-sheet"
+        style={{ maxHeight: "85dvh", display: "flex", flexDirection: "column" }}
       >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
@@ -200,13 +200,13 @@ export default function AddAccountBottomSheet({ accountType, onClose, onSave }) 
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/60 z-50" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 z-[90]" onClick={onClose} />
 
       {/* Bottom Sheet */}
       <div
         role="dialog"
         aria-modal="true"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl overscroll-contain"
+        className="fixed bottom-0 left-0 right-0 z-[95] bg-white rounded-t-3xl shadow-2xl overscroll-contain animate-slide-up-sheet"
         style={{ maxHeight: "80dvh", display: "flex", flexDirection: "column" }}
       >
         {/* Handle bar */}
