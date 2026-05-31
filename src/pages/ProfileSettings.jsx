@@ -48,13 +48,23 @@ function AccountModal({ account, defaultType, onClose, onSave }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md shadow-xl">
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[#F2F4F7]">
-          <p className="font-bold text-[#1A1A1A]">{account?.id ? "Edit Rekening" : "Tambah Rekening"}</p>
-          <button onClick={onClose} className="p-2 rounded-xl hover:bg-[#F2F4F7]"><X className="w-5 h-5 text-[#8FA4C8]" /></button>
+    <>
+      <div className="fixed inset-0 bg-black/60 z-50" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl overscroll-contain animate-slide-up-sheet"
+        style={{ maxHeight: "90dvh", display: "flex", flexDirection: "column" }}
+      >
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 bg-[#E2E8F0] rounded-full" />
         </div>
-        <div className="px-5 py-4 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-5 pt-2 pb-4 border-b border-[#F2F4F7] flex-shrink-0">
+          <p className="font-bold text-[#1A1A1A] text-base">{account?.id ? "Edit Rekening" : "Tambah Rekening"}</p>
+          <button onClick={onClose} className="p-2 rounded-xl bg-[#F2F4F7] hover:bg-[#E2E8F0]"><X className="w-5 h-5 text-[#8FA4C8]" /></button>
+        </div>
+        <div className="px-5 py-4 space-y-4 overflow-y-auto flex-1">
           <div>
             <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2">Icon</p>
             <div className="flex gap-2 flex-wrap">
@@ -94,15 +104,15 @@ function AccountModal({ account, defaultType, onClose, onSave }) {
             </button>
           </div>
         </div>
-        <div className="px-5 pb-6 pt-2">
+        <div className="px-5 pt-3 pb-6 flex-shrink-0 border-t border-[#F2F4F7]" style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }}>
           <button onClick={handleSave} disabled={saving || !form.name.trim()}
-            className="w-full py-3.5 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+            className="w-full py-4 bg-[#F97316] text-white rounded-2xl font-bold text-sm disabled:opacity-40 flex items-center justify-center gap-2 active:scale-95 transition-all">
             {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
             {account?.id ? "Simpan Perubahan" : "Buat Rekening"}
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
