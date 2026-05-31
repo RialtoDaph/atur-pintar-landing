@@ -12,8 +12,21 @@ const ALERT_CONFIG = {
   budget_exceeded:     { icon: AlertTriangle, color: "text-red-600",    bg: "bg-red-50",    label: "Budget" },
 };
 
-export default function AlertsDrawerAlertsTab({ adminNotifs, alerts, onReload, onAlertClick }) {
+export default function AlertsDrawerAlertsTab({ adminNotifs, alerts, onReload, onAlertClick, currentUserEmail }) {
   const visibleAlerts = alerts.filter(a => a.status !== "dismissed");
+
+  async function dismissAdminNotif(n) {
+    // Per-user dismiss: append email to read_by. For broadcast (target_type === 'all')
+    // we never touch is_read — that would leak read-status to other users.
+    if (!currentUserEmail) return;
+    const readBy = n.read_by || [];
+    if (readBy.includes(currentUserEmail)) { onReload(); return; }
+    const update = n.target_type === "specific"
+      ? { read_by: [...readBy, currentUserEmail], is_read: true }
+      : { read_by: [...readBy, currentUserEmail] };
+    await base44.entities.AdminNotification.update(n.id, update).catch(() => {});
+    onReload();
+  }
 
   async function dismissAlert(id) {
     await base44.entities.Alert.update(id, { status: "dismissed" });
@@ -51,7 +64,16 @@ export default function AlertsDrawerAlertsTab({ adminNotifs, alerts, onReload, o
                   <Bell className="w-4 h-4 text-[#FF6A00]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[#1A1A1A] text-sm">{n.title}</p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-semibold text-[#1A1A1A] text-sm">{n.title}</p>
+                    <button
+                      onClick={() => dismissAdminNotif(n)}
+                      className="p-1 rounded-lg hover:bg-[#F2F4F7] text-[#8FA4C8] flex-shrink-0"
+                      aria-label="Tutup notifikasi"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   <p className="text-[#4A5568] text-xs mt-0.5 leading-relaxed">{n.message}</p>
                 </div>
               </div>

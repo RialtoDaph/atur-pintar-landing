@@ -160,6 +160,7 @@ export default function AlertsDrawer({ onClose, user }) {
                 alerts={alerts}
                 onReload={loadData}
                 onAlertClick={handleAlertClick}
+                currentUserEmail={user?.email}
               />
             ) : tab === "reminders" ? (
               <AlertsDrawerRemindersTab
