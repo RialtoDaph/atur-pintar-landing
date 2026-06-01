@@ -48,7 +48,7 @@ export default function BudgetNanaPanel({ budgets, spendingByCategory, goals }) 
   });
 
   const alertBudgets = [...exceeded, ...critical, ...nearLimit];
-  if (alertBudgets.length === 0) return null;
+  const allHealthy = alertBudgets.length === 0;
 
   const totalSavingsTarget = goals?.reduce((s, g) => s + Math.max((g.target_amount || 0) - (g.current_amount || 0), 0), 0) || 0;
 
@@ -68,11 +68,34 @@ export default function BudgetNanaPanel({ budgets, spendingByCategory, goals }) 
       `- ${getCatLabel(b.category, lang)}: ${b.pct}% dari ${fmt(b.amount)}, sisa ${fmt(b.remaining)}`
     ).join("\n");
 
+    const healthyText = allHealthy
+      ? budgets.map(b => {
+          const spent = spendingByCategory[b.category] || 0;
+          const pct = b.amount > 0 ? Math.round((spent / b.amount) * 100) : 0;
+          return `- ${getCatLabel(b.category, lang)}: ${pct}% dari ${fmt(b.amount)}, sisa ${fmt(Math.max(b.amount - spent, 0))}`;
+        }).join("\n")
+      : "";
+
     const goalsText = totalSavingsTarget > 0
       ? `\nTarget tabungan yang belum tercapai: ${fmt(totalSavingsTarget)}`
       : "";
 
-    const prompt = `Kamu adalah Nana AI, asisten keuangan personal.
+    const prompt = allHealthy
+      ? `Kamu adalah Nana AI, asisten keuangan personal.
+
+PENTING: Berikan HANYA saran tentang anggaran dan pengeluaran. Jangan bahas investasi, utang, atau topik lain.
+
+Status anggaran pengguna bulan ini (semua sehat, di bawah 70%):
+${healthyText}
+${goalsText}
+
+Berikan saran proaktif KHUSUS ANGGARAN:
+1. Kebiasaan baik untuk mempertahankan anggaran tetap sehat
+2. Peluang realokasi sisa anggaran ke tabungan/investasi
+3. Tips agar konsisten sampai akhir bulan
+
+Format: poin singkat, emoji, maksimal 150 kata. Bahasa Indonesia santai.`
+      : `Kamu adalah Nana AI, asisten keuangan personal.
 
 PENTING: Berikan HANYA saran tentang anggaran dan pengeluaran di bawah ini. Jangan bahas investasi, utang, atau topik lain.
 
@@ -98,8 +121,8 @@ Format: emoji, singkat, berdampak. Maksimal 150 kata. Bahasa Indonesia santai.`;
     setLoading(false);
   }
 
-  const severityColor = exceeded.length > 0 ? "#FF6B6B" : critical.length > 0 ? "#F5A623" : "#FFB347";
-  const severityBg = exceeded.length > 0 ? "#FF6B6B" : critical.length > 0 ? "#F5A623" : "#FFB347";
+  const severityColor = exceeded.length > 0 ? "#FF6B6B" : critical.length > 0 ? "#F5A623" : nearLimit.length > 0 ? "#FFB347" : "#4F7CFF";
+  const severityBg = severityColor;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -114,19 +137,24 @@ Format: emoji, singkat, berdampak. Maksimal 150 kata. Bahasa Indonesia santai.`;
         <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: severityBg + "20" }}>
           {exceeded.length > 0
             ? <AlertTriangle className="w-5 h-5" style={{ color: severityColor }} />
-            : <TrendingDown className="w-5 h-5" style={{ color: severityColor }} />
+            : allHealthy
+              ? <Sparkles className="w-5 h-5" style={{ color: severityColor }} />
+              : <TrendingDown className="w-5 h-5" style={{ color: severityColor }} />
           }
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-[#1A1A1A]">
             {exceeded.length > 0
               ? `⚠️ ${exceeded.length} Anggaran Terlampaui`
-              : `🔔 ${alertBudgets.length} Anggaran Mendekati Batas`}
+              : allHealthy
+                ? `💡 Rekomendasi Anggaran Nana AI`
+                : `🔔 ${alertBudgets.length} Anggaran Mendekati Batas`}
           </p>
           <p className="text-xs text-[#8FA4C8]">
-            {lang === "id"
-              ? "Ketuk untuk saran penyesuaian dari Nana AI"
-              : "Tap for Nana AI lifestyle tips"}
+            {allHealthy
+              ? (lang === "id" ? "Tips proaktif menjaga anggaranmu tetap sehat" : "Proactive tips to keep your budget healthy")
+              : (lang === "id" ? "Ketuk untuk saran penyesuaian dari Nana AI" : "Tap for Nana AI lifestyle tips")
+            }
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -139,6 +167,7 @@ Format: emoji, singkat, berdampak. Maksimal 150 kata. Bahasa Indonesia santai.`;
       </button>
 
       {/* Budget status pills */}
+      {!allHealthy && (
       <div className="px-4 pb-3 flex flex-wrap gap-1.5">
         {exceeded.map(b => (
           <span key={b.id} className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#FF6B6B]/10 text-[#FF6B6B]">
@@ -156,6 +185,7 @@ Format: emoji, singkat, berdampak. Maksimal 150 kata. Bahasa Indonesia santai.`;
           </span>
         ))}
       </div>
+      )}
 
       {/* Nana AI Advice */}
       {expanded && (
