@@ -418,25 +418,38 @@ Deno.serve(async (req) => {
 
         let progressed = false;
 
+        // Fetch today's tx once — reused by multiple challenge handlers
+        const txToday = await base44.entities.Transaction.filter({ created_by: userEmail }, "-date", 50).catch(() => []);
+        const todayTxList = (txToday || []).filter(tx => {
+          const txDate = (tx.date || tx.created_date || "").slice(0, 10);
+          return txDate === today && !tx.is_deleted;
+        });
+
         if (ch.challenge_key === "nabung_30_hari") {
-          // Check if user has a savings transaction >= 10000 today
-          const txToday = await base44.entities.Transaction.filter({ created_by: userEmail }, "-date", 50).catch(() => []);
-          const hasSavings = (txToday || []).some(tx => {
-            const txDate = (tx.date || tx.created_date || "").slice(0, 10);
-            return txDate === today && tx.type === "savings" && (tx.amount || 0) >= 10000;
-          });
+          // Min 1 savings tx >= 10rb today
+          const hasSavings = todayTxList.some(tx => tx.type === "savings" && (tx.amount || 0) >= 10000);
           if (hasSavings) progressed = true;
         }
 
         if (ch.challenge_key === "no_impulsif_7") {
-          // Check if user has NO impulse/shopping expense today
-          const txToday = await base44.entities.Transaction.filter({ created_by: userEmail }, "-date", 50).catch(() => []);
-          const hasImpulse = (txToday || []).some(tx => {
-            const txDate = (tx.date || tx.created_date || "").slice(0, 10);
+          // No impulse/shopping expense today
+          const hasImpulse = todayTxList.some(tx => {
             const cat = (tx.category || "").toLowerCase();
-            return txDate === today && tx.type === "expense" && (cat.includes("shopping") || cat.includes("belanja") || cat.includes("hiburan") || cat === "entertainment");
+            return tx.type === "expense" && (cat.includes("shopping") || cat.includes("belanja") || cat.includes("hiburan") || cat === "entertainment");
           });
           if (!hasImpulse) progressed = true;
+        }
+
+        if (ch.challenge_key === "7_hari_catat") {
+          // Min 1 expense logged today (any category)
+          const hasExpense = todayTxList.some(tx => tx.type === "expense" && (tx.amount || 0) > 0);
+          if (hasExpense) progressed = true;
+        }
+
+        if (ch.challenge_key === "audit_langganan") {
+          // Auto-progress daily during the 7-day window — user just needs to cancel something during the challenge.
+          // We give 1 progress day per active day to mark engagement.
+          progressed = true;
         }
 
         if (progressed) {
