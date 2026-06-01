@@ -133,19 +133,27 @@ Deno.serve(async (req) => {
     const FREEZE_MAX = 2;
     const FREEZE_REGEN_DAYS = 7;
 
-    // Hitung berapa freeze yang diregen sejak last_regen
-    let freezesAvailable = freshProfile.streak_freezes_available ?? 1;
+    // Hitung berapa freeze yang diregen sejak last_regen.
+    // Untuk user lama yg profilnya dibuat sebelum fitur freeze ada (streak_freezes_available
+    // dan streak_freeze_last_regen masih undefined), kasih 1 freeze awal & set last_regen ke today.
+    const hasFreezeFields =
+      freshProfile.streak_freezes_available !== undefined &&
+      freshProfile.streak_freeze_last_regen;
+    let freezesAvailable = hasFreezeFields ? (freshProfile.streak_freezes_available ?? 1) : 1;
     let freezeLastRegen = freshProfile.streak_freeze_last_regen || today;
     let freezeLastUsed = freshProfile.streak_freeze_last_used || null;
     let freezeUsedToday = false;
 
-    const daysSinceRegen = Math.floor(
-      (new Date(today) - new Date(freezeLastRegen)) / (1000 * 60 * 60 * 24)
-    );
-    if (daysSinceRegen >= FREEZE_REGEN_DAYS) {
-      const regenAmount = Math.floor(daysSinceRegen / FREEZE_REGEN_DAYS);
-      freezesAvailable = Math.min(FREEZE_MAX, freezesAvailable + regenAmount);
-      freezeLastRegen = today;
+    // Hanya regen kalau field memang sudah ada (hindari kasih regen palsu utk user baru)
+    if (hasFreezeFields) {
+      const daysSinceRegen = Math.floor(
+        (new Date(today) - new Date(freezeLastRegen)) / (1000 * 60 * 60 * 24)
+      );
+      if (daysSinceRegen >= FREEZE_REGEN_DAYS) {
+        const regenAmount = Math.floor(daysSinceRegen / FREEZE_REGEN_DAYS);
+        freezesAvailable = Math.min(FREEZE_MAX, freezesAvailable + regenAmount);
+        freezeLastRegen = today;
+      }
     }
 
     // Cek apakah user skip tepat 1 hari (last = day before yesterday)

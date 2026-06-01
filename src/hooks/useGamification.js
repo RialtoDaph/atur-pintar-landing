@@ -61,9 +61,11 @@ export function useGamification(user) {
   async function getOrCreateProfile() {
     const existing = await base44.entities.GamificationProfile.filter({ created_by: user.email });
     if (!existing || existing.length === 0) {
+      const today = format(new Date(), "yyyy-MM-dd");
       return await base44.entities.GamificationProfile.create({
         daily_streak: 0, longest_streak: 0, total_points: 0, level: 1,
         achievements: [], last_activity_date: null,
+        streak_freezes_available: 1, streak_freeze_last_regen: today,
       });
     }
     const sorted = [...existing].sort((a, b) => (b.total_points || 0) - (a.total_points || 0));

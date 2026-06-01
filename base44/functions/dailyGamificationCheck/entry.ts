@@ -40,9 +40,23 @@ Deno.serve(async (req) => {
       const userEmail = profile.created_by;
       if (!userEmail) continue;
 
-      // 1. Streak reset: if last_activity_date is before yesterday, reset streak to 0
+      // 1. Streak reset: if last_activity_date is older than yesterday, reset streak to 0.
+      // BUT: skip tepat 1 hari (last = day before yesterday) dilindungi oleh Streak Freeze —
+      // jangan reset di sini. Freeze baru akan benar-benar dikonsumsi saat user catat aktivitas
+      // berikutnya via processGamification. Kalau user skip 2 hari atau lebih, baru reset.
+      const dayBeforeYesterday = (() => {
+        const d = new Date();
+        d.setDate(d.getDate() - 2);
+        return d.toISOString().slice(0, 10);
+      })();
       const last = profile.last_activity_date;
-      if (last && last !== today && last !== yesterday && (profile.daily_streak || 0) > 0) {
+      if (
+        last &&
+        last !== today &&
+        last !== yesterday &&
+        last !== dayBeforeYesterday &&
+        (profile.daily_streak || 0) > 0
+      ) {
         await base44.asServiceRole.entities.GamificationProfile.update(profile.id, {
           daily_streak: 0,
         }).catch((e) => console.error('dailyGamificationCheck: streak reset failed:', e));
