@@ -5,6 +5,7 @@ const TABS = [
   { name: "Dashboard", label: "Dashboard" },
   { name: "Transactions", label: "Transaksi" },
   { name: "Analytics", label: "Analitik" },
+  { name: "Nana", label: "Nana AI" },
   { name: "Tips", label: "Tips" },
 ];
 
