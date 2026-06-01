@@ -35,6 +35,21 @@
       "default": [],
       "description": "Daftar achievement yang diraih"
     },
+    "streak_freezes_available": {
+      "type": "integer",
+      "default": 1,
+      "description": "Jumlah streak freeze yang tersedia (auto-protect streak kalau skip 1 hari). Max 2, regen 1 per 7 hari."
+    },
+    "streak_freeze_last_regen": {
+      "type": "string",
+      "format": "date",
+      "description": "Tanggal terakhir streak freeze di-regenerate"
+    },
+    "streak_freeze_last_used": {
+      "type": "string",
+      "format": "date",
+      "description": "Tanggal terakhir streak freeze dipakai (untuk notifikasi user)"
+    },
     "description": {
       "type": "string",
       "maxLength": 1000,

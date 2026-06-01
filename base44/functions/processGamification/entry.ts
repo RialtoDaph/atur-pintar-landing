@@ -86,6 +86,7 @@ Deno.serve(async (req) => {
       profile = await base44.entities.GamificationProfile.create({
         daily_streak: 0, longest_streak: 0, total_points: 0, level: 1,
         achievements: [], last_activity_date: null,
+        streak_freezes_available: 1, streak_freeze_last_regen: todayStr(),
       });
     } else {
       const sorted = [...profiles].sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
@@ -126,21 +127,61 @@ Deno.serve(async (req) => {
     let newStreak = currentStreak;
     let streakChanged = false;
 
+    // ── Streak Freeze logic ───────────────────────────────────────────────────
+    // Auto-protect streak kalau user skip 1 hari (last_activity = 2 hari lalu) DAN
+    // ada freeze tersedia. Freeze regen: +1 per 7 hari sejak last_regen, max 2.
+    const FREEZE_MAX = 2;
+    const FREEZE_REGEN_DAYS = 7;
+
+    // Hitung berapa freeze yang diregen sejak last_regen
+    let freezesAvailable = freshProfile.streak_freezes_available ?? 1;
+    let freezeLastRegen = freshProfile.streak_freeze_last_regen || today;
+    let freezeLastUsed = freshProfile.streak_freeze_last_used || null;
+    let freezeUsedToday = false;
+
+    const daysSinceRegen = Math.floor(
+      (new Date(today) - new Date(freezeLastRegen)) / (1000 * 60 * 60 * 24)
+    );
+    if (daysSinceRegen >= FREEZE_REGEN_DAYS) {
+      const regenAmount = Math.floor(daysSinceRegen / FREEZE_REGEN_DAYS);
+      freezesAvailable = Math.min(FREEZE_MAX, freezesAvailable + regenAmount);
+      freezeLastRegen = today;
+    }
+
+    // Cek apakah user skip tepat 1 hari (last = day before yesterday)
+    function dayBeforeYesterdayStr() {
+      const d = new Date();
+      d.setDate(d.getDate() - 2);
+      return d.toISOString().slice(0, 10);
+    }
+    const dayBeforeYesterday = dayBeforeYesterdayStr();
+
     if (isActivity) {
       if (last === today) {
         // Same day — no change. Idempotent: repeated activity on the same day never bumps streak.
       } else if (last === yesterday) {
         newStreak = currentStreak + 1;
         streakChanged = true;
+      } else if (
+        last === dayBeforeYesterday &&
+        currentStreak > 0 &&
+        freezesAvailable > 0
+      ) {
+        // Skip 1 hari & ada freeze → auto-protect streak (lanjut + 1, freeze terpakai)
+        newStreak = currentStreak + 1;
+        streakChanged = true;
+        freezesAvailable -= 1;
+        freezeLastUsed = yesterday;
+        freezeUsedToday = true;
       } else {
-        // More than 1 day ago or null (brand-new account) — start fresh at 1.
+        // More than 1 day ago or null — start fresh at 1.
         newStreak = 1;
         streakChanged = true;
       }
     } else {
-      // Non-activity trigger (e.g. daily_check): if streak should already be reset
-      // because user skipped >1 day, reflect that here without touching last_activity_date.
-      if (last && last !== today && last !== yesterday && currentStreak > 0) {
+      // Non-activity trigger (e.g. daily_check): reset display if skipped >1 day
+      // tanpa freeze (jangan terapkan freeze di sini — freeze hanya kepakai kalau ada aktivitas).
+      if (last && last !== today && last !== yesterday && last !== dayBeforeYesterday && currentStreak > 0) {
         newStreak = 0;
         streakChanged = true;
       }
@@ -319,7 +360,12 @@ Deno.serve(async (req) => {
       daily_streak: newStreak,
       longest_streak: newLongest,
       achievements: profile.achievements || [],
+      streak_freezes_available: freezesAvailable,
+      streak_freeze_last_regen: freezeLastRegen,
     };
+    if (freezeLastUsed) {
+      profileUpdates.streak_freeze_last_used = freezeLastUsed;
+    }
     if (isActivity) {
       profileUpdates.last_activity_date = today;
     }
@@ -475,6 +521,8 @@ Deno.serve(async (req) => {
       level: finalLevel,
       leveledUp: finalLevel > oldLevel,
       unlockedAchievements: unlockedAchievements.map(a => a.key),
+      streakFreezesAvailable: freezesAvailable,
+      streakFreezeUsedToday: freezeUsedToday,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

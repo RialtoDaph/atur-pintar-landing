@@ -33,6 +33,7 @@ export default function DashboardGreeting({ user, gamificationProfile }) {
   else greeting = `Malam, ${name}!`;
 
   const streak = gamificationProfile?.daily_streak ?? 0;
+  const freezes = gamificationProfile?.streak_freezes_available ?? 0;
 
   function toggleDark() {
     const next = !isDark;
@@ -53,6 +54,14 @@ export default function DashboardGreeting({ user, gamificationProfile }) {
         >
           <span className="text-sm">🔥</span>
           <span className="text-white sm:text-[#1A1A1A] dark:sm:text-white text-[11px] font-bold">{streak} hari</span>
+          {freezes > 0 && (
+            <span
+              className="ml-1 text-[10px] text-white sm:text-[#1A1A1A] dark:sm:text-white opacity-80"
+              title={`Streak Freeze tersedia: ${freezes}`}
+            >
+              ❄️{freezes}
+            </span>
+          )}
         </Link>
         <button
           onClick={toggleDark}

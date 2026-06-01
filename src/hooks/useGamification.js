@@ -80,10 +80,20 @@ export function useGamification(user) {
     try {
       const p = await getOrCreateProfile();
       setProfile(p);
-      const today     = format(new Date(), "yyyy-MM-dd");
-      const yesterday = format(subDays(new Date(), 1), "yyyy-MM-dd");
+      const today              = format(new Date(), "yyyy-MM-dd");
+      const yesterday          = format(subDays(new Date(), 1), "yyyy-MM-dd");
+      const dayBeforeYesterday = format(subDays(new Date(), 2), "yyyy-MM-dd");
       const last = p.last_activity_date;
-      if (last && last !== today && last !== yesterday && (p.daily_streak || 0) > 0) {
+      // Streak hanya reset secara display kalau user skip >1 hari TANPA freeze.
+      // Skip tepat 1 hari (last = day before yesterday) tidak reset di sini —
+      // freeze akan dipakai otomatis saat user catat aktivitas pertama hari ini.
+      if (
+        last &&
+        last !== today &&
+        last !== yesterday &&
+        last !== dayBeforeYesterday &&
+        (p.daily_streak || 0) > 0
+      ) {
         const updated = await base44.entities.GamificationProfile.update(p.id, { daily_streak: 0 });
         setProfile({ ...p, ...updated });
         setStreakResetMsg("Streak kamu reset nih 😢 Tambah transaksi hari ini untuk mulai lagi!");
@@ -116,6 +126,14 @@ export function useGamification(user) {
       const newStreak = data.streak || 0;
       if (data.streakChanged && newStreak > 1) {
         setStreakPopup({ message: `🔥 Streak ${newStreak} hari!`, streak: newStreak });
+      }
+
+      // Streak Freeze used — kasih toast supaya user tahu freeze-nya kepakai
+      if (data.streakFreezeUsedToday) {
+        toast.success("❄️ Streak Freeze dipakai!", {
+          description: `Streak kamu aman, lanjut ke ${newStreak} hari. Sisa freeze: ${data.streakFreezesAvailable}`,
+          duration: 6000,
+        });
       }
 
       // Level up popup
