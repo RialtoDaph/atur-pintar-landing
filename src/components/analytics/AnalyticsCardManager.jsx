@@ -33,8 +33,8 @@ export default function AnalyticsCardManager({ cards, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl flex flex-col" style={{ maxHeight: "min(90dvh, calc(100dvh - 6rem))" }}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#F2F4F7]">
           <div>
