@@ -201,48 +201,80 @@ export default function Dashboard() {
               <DashboardGreeting user={user} gamificationProfile={activeGamProfile} />
             </div>
 
-            {/* Balance Card + Daily Missions side-by-side on desktop */}
-            <div className="lg:grid lg:grid-cols-12 lg:gap-4 lg:items-start">
-              <div className="lg:col-span-6">
-                <BalanceCardCarousel
-                  income={monthIncome}
-                  expense={monthExpense}
-                  savings={0}
-                  accounts={accounts}
-                  loading={loading}
-                />
-              </div>
-              <div className="hidden lg:block lg:col-span-6 space-y-4">
-                {user?.onboarding_completed && (
-                  <DailyMissionsCard
-                    user={user}
-                    gamificationProfile={activeGamProfile}
-                    onProfileUpdate={setGamProfile}
-                  />
-                )}
-              </div>
+            {/* Mobile: Balance card stays here (unchanged). Desktop: moved to body grid below. */}
+            <div className="lg:hidden">
+              <BalanceCardCarousel
+                income={monthIncome}
+                expense={monthExpense}
+                savings={0}
+                accounts={accounts}
+                loading={loading}
+              />
             </div>
           </div>
         </div>
 
-        {/* Body — mobile: stacked. tablet/desktop: 4-column grid */}
+        {/* Body — mobile: stacked (unchanged). Desktop: 2-column layout matching mockup */}
         <div className="max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 -mt-8 sm:mt-0 relative z-10">
-          <div className="space-y-3 lg:grid lg:grid-cols-5 lg:gap-4 lg:space-y-0 lg:items-start">
 
-            {/* ── MAIN COLUMN (4/5) ─────────────────────────── */}
-            <div className="space-y-3 lg:col-span-4 lg:space-y-4">
-              {/* Daily Missions — di mobile muncul di atas (setelah balance card), di desktop sudah ditampilkan di header */}
-              <div className="lg:hidden">
-                {user?.onboarding_completed && (
-                  <DailyMissionsCard
-                    user={user}
-                    gamificationProfile={activeGamProfile}
-                    onProfileUpdate={setGamProfile}
-                  />
-                )}
+          {/* ============ MOBILE LAYOUT (unchanged) ============ */}
+          <div className="space-y-3 lg:hidden">
+            {user?.onboarding_completed && (
+              <DailyMissionsCard
+                user={user}
+                gamificationProfile={activeGamProfile}
+                onProfileUpdate={setGamProfile}
+              />
+            )}
+
+            {showSampleBanner && (
+              <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
+            )}
+
+            {user?.subscription_status === "expired" && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
+                <span className="text-lg">⚠️</span>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-red-700">Langganan kamu sudah berakhir</p>
+                  <p className="text-xs text-red-500">Perpanjang untuk akses fitur premium</p>
+                </div>
+                <a href="/Subscription" className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold">Perpanjang</a>
               </div>
+            )}
 
-              {/* Sample data banner & subscription banners — keep here at top of main */}
+            <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+              <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+            </Suspense>
+            <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
+              <GoalsProgressWidget goals={goals} loading={goalsLoading} />
+            </Suspense>
+
+            {user?.onboarding_completed && (
+              <TodayTransactionsCard transactions={transactions} allCategories={allCategories} />
+            )}
+
+            {user?.onboarding_completed && (
+              <BossBattleCard
+                user={user}
+                gamificationProfile={activeGamProfile}
+                onProfileUpdate={setGamProfile}
+              />
+            )}
+          </div>
+
+          {/* ============ DESKTOP LAYOUT (2 columns, mockup-style) ============ */}
+          <div className="hidden lg:grid lg:grid-cols-12 lg:gap-4 lg:items-start">
+
+            {/* LEFT COLUMN (7/12): Balance → Cashflow/Budget Alert → Today Tx */}
+            <div className="lg:col-span-7 space-y-4">
+              <BalanceCardCarousel
+                income={monthIncome}
+                expense={monthExpense}
+                savings={0}
+                accounts={accounts}
+                loading={loading}
+              />
+
               {showSampleBanner && (
                 <SampleDataBanner onDismiss={() => { setShowSampleBanner(false); loadData(); }} />
               )}
@@ -258,24 +290,29 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {/* Budget Alert & Goals Progress — 2 kolom di desktop, stacked di mobile */}
-              <div className="space-y-3 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-4">
-                <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
-                  <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
-                </Suspense>
-                <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
-                  <GoalsProgressWidget goals={goals} loading={goalsLoading} />
-                </Suspense>
-              </div>
+              <Suspense fallback={<div className="bg-white rounded-2xl h-20 animate-pulse shadow-sm" />}>
+                <BudgetAlertWidget transactions={transactions} loading={loading} budgets={budgets} />
+              </Suspense>
 
-              {/* Today Transactions — main content */}
               {user?.onboarding_completed && (
                 <TodayTransactionsCard transactions={transactions} allCategories={allCategories} />
               )}
             </div>
 
-            {/* ── SIDE COLUMN (1/5) ─────────────────────────── */}
-            <div className="space-y-3 lg:col-span-1 lg:space-y-4">
+            {/* RIGHT COLUMN (5/12): Daily Missions → Goals Progress → Boss Battle */}
+            <div className="lg:col-span-5 space-y-4">
+              {user?.onboarding_completed && (
+                <DailyMissionsCard
+                  user={user}
+                  gamificationProfile={activeGamProfile}
+                  onProfileUpdate={setGamProfile}
+                />
+              )}
+
+              <Suspense fallback={<div className="bg-white rounded-2xl h-24 animate-pulse shadow-sm" />}>
+                <GoalsProgressWidget goals={goals} loading={goalsLoading} />
+              </Suspense>
+
               {user?.onboarding_completed && (
                 <BossBattleCard
                   user={user}
