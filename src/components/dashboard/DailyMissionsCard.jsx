@@ -11,10 +11,11 @@ function getLevelInfo(xp) {
   return { current, next };
 }
 
+// Keep in sync with functions/generateDailyMissions.js — single source of truth for XP rewards.
 const DEFAULT_MISSIONS = [
-  { mission_key: "catat_transaksi", icon: "📝", title: "Catat 1 pengeluaran", xp_reward: 10 },
-  { mission_key: "cek_budget", icon: "📊", title: "Cek budget minggu ini", xp_reward: 15 },
-  { mission_key: "tanya_nana", icon: "✨", title: "Tanya Nana 1 pertanyaan", xp_reward: 20 },
+  { mission_key: "catat_transaksi", icon: "📝", title: "Catat Transaksi", xp_reward: 10 },
+  { mission_key: "cek_budget",      icon: "📊", title: "Cek Budget",      xp_reward: 10 },
+  { mission_key: "tanya_nana",      icon: "💬", title: "Tanya Nana AI",   xp_reward: 10 },
 ];
 
 export default function DailyMissionsCard({ user, gamificationProfile, onProfileUpdate }) {

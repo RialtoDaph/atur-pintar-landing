@@ -155,9 +155,22 @@ export default function Gamifikasi() {
 
             {/* Streak info */}
             <div className="bg-white rounded-2xl shadow-sm p-4">
-              <p className="text-sm font-bold text-[#1A1A1A] mb-1">🔥 Streak Harian</p>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm font-bold text-[#1A1A1A]">🔥 Streak Harian</p>
+                <span
+                  className="text-xs font-bold text-[#1A1A1A] bg-[#F2F4F7] px-2 py-0.5 rounded-full"
+                  title="Streak Freeze otomatis lindungi streak kamu kalau skip 1 hari. Regen +1 per 7 hari, max 2."
+                >
+                  ❄️ {gamificationProfile?.streak_freezes_available ?? 0} freeze
+                </span>
+              </div>
               <p className="text-3xl font-black text-[#FF6B35]">{gamificationProfile?.daily_streak || 0} <span className="text-base font-semibold text-[#8FA4C8]">hari berturut-turut</span></p>
               <p className="text-xs text-[#8FA4C8] mt-1">Terakhir aktif: {gamificationProfile?.last_activity_date || "-"}</p>
+              {gamificationProfile?.streak_freeze_last_used && (
+                <p className="text-[11px] text-[#1A1A1A] mt-2 bg-[#F2F4F7] px-2 py-1.5 rounded-lg">
+                  ❄️ Freeze terakhir terpakai: {gamificationProfile.streak_freeze_last_used}
+                </p>
+              )}
             </div>
           </>
         )}
@@ -176,9 +189,9 @@ export default function Gamifikasi() {
               </div>
             </div>
 
-            {["streak", "transaction", "goal", "level"].map(cat => {
+            {["streak", "transaction", "goal", "level", "special"].map(cat => {
               const catDefs = ACHIEVEMENTS_DEF.filter(a => a.category === cat);
-              const catLabels = { streak: "🔥 Streak", transaction: "📝 Transaksi", goal: "🎯 Goals", level: "⚡ Level" };
+              const catLabels = { streak: "🔥 Streak", transaction: "📝 Transaksi", goal: "🎯 Goals", level: "⚡ Level", special: "✨ Spesial" };
               return (
                 <div key={cat}>
                   <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-2 px-1">{catLabels[cat]}</p>
