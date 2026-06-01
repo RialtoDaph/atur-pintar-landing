@@ -62,10 +62,10 @@ export default function TxFilterBottomSheet({ open, filters, onApply, onClose })
   ].filter(Boolean).length;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
       <div
         className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-y-auto"
-        style={{ maxHeight: "85dvh", paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
+        style={{ maxHeight: "min(85dvh, calc(100dvh - 6rem))" }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-center pt-3 pb-1">
