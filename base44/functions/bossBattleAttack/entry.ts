@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
     const streakBonus = Math.min(streak * 50, 500);
     const damage = completedMissions * 100 + streakBonus;
 
-    if (damage === 0) {
+    if (completedMissions === 0) {
       return Response.json({
         noDamage: true,
         message: 'Selesaikan minimal 1 mission hari ini untuk menyerang boss!',

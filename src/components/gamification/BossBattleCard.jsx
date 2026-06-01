@@ -35,7 +35,6 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
 
   async function handleAttack() {
     if (!boss || attacking) return;
-    // Already attacked today?
     if (contribution?.last_attack_date === today) {
       setDamageResult({ msg: "Sudah menyerang hari ini! Kembali besok ⚔️", dmg: 0 });
       return;
@@ -43,59 +42,54 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
 
     setAttacking(true);
 
-    // Calculate damage from missions
-    const missions = await base44.entities.DailyMission.filter({ created_by: user.email, date: today }).catch(() => []);
-    const completedMissions = (missions || []).filter(m => m.is_completed).length;
-    const streak = gamificationProfile?.daily_streak || 0;
-    const streakBonus = Math.min(streak * 50, 500);
-    const damage = completedMissions * 100 + streakBonus;
+    // Delegate to backend — atomic attack + reward distribution
+    const resp = await base44.functions.invoke("bossBattleAttack", {}).catch(err => ({ data: { error: err?.message || "Gagal serang" } }));
+    const result = resp?.data || {};
 
-    // Update boss HP
-    const newHP = Math.max(0, (boss.current_hp || 0) - damage);
-    const isFirstContrib = !contribution;
-    const newParticipantCount = isFirstContrib ? (boss.participant_count || 0) + 1 : (boss.participant_count || 0);
-
-    await base44.entities.BossBattle.update(boss.id, {
-      current_hp: newHP,
-      participant_count: newParticipantCount,
-      status: newHP <= 0 ? "won" : "active",
-    });
-
-    // Save contribution
-    if (contribution) {
-      await base44.entities.BossBattleContribution.update(contribution.id, {
-        damage_dealt: (contribution.damage_dealt || 0) + damage,
-        habits_completed: (contribution.habits_completed || 0) + completedMissions,
-        last_attack_date: today,
-        total_damage_all_time: (contribution.total_damage_all_time || 0) + damage,
-      });
-    } else {
-      await base44.entities.BossBattleContribution.create({
-        boss_id: boss.id,
-        month: currentMonth,
-        damage_dealt: damage,
-        habits_completed: completedMissions,
-        last_attack_date: today,
-        total_damage_all_time: damage,
-      });
+    if (result.error) {
+      setDamageResult({ msg: result.error, dmg: 0 });
+      setAttacking(false);
+      return;
+    }
+    if (result.alreadyAttacked) {
+      setDamageResult({ msg: "Sudah menyerang hari ini! Kembali besok ⚔️", dmg: 0 });
+      setAttacking(false);
+      return;
+    }
+    if (result.noDamage) {
+      setDamageResult({ msg: result.message || "Selesaikan minimal 1 mission dulu!", dmg: 0 });
+      setAttacking(false);
+      return;
     }
 
-    // Add +20 XP
-    if (gamificationProfile) {
-      const newXP = (gamificationProfile.total_points || 0) + 20;
-      await base44.entities.GamificationProfile.update(gamificationProfile.id, { total_points: newXP });
-      if (onProfileUpdate) onProfileUpdate({ ...gamificationProfile, total_points: newXP });
-    }
-
-    setBoss(prev => ({ ...prev, current_hp: newHP, participant_count: newParticipantCount, status: newHP <= 0 ? "won" : "active" }));
+    // Optimistic UI update from authoritative server response
+    const damage = result.damage || 0;
+    setBoss(prev => ({
+      ...prev,
+      current_hp: result.newHP,
+      status: result.bossDefeated ? "won" : "active",
+      participant_count: !contribution ? (prev.participant_count || 0) + 1 : prev.participant_count,
+    }));
     setContribution(prev => ({
       ...(prev || {}),
       damage_dealt: ((prev?.damage_dealt) || 0) + damage,
+      total_damage_all_time: ((prev?.total_damage_all_time) || 0) + damage,
       last_attack_date: today,
     }));
-    setDamageResult({ msg: `⚔️ Kamu kasih ${damage} damage ke boss!`, dmg: damage, missions: completedMissions, streak });
 
-    if (newHP <= 0) setShowWinModal(true);
+    // Refresh profile from DB to reflect XP awarded by processGamification
+    const profiles = await base44.entities.GamificationProfile.filter({ created_by: user.email }).catch(() => []);
+    const fresh = (profiles || []).sort((a, b) => (b.total_points || 0) - (a.total_points || 0))[0];
+    if (fresh && onProfileUpdate) onProfileUpdate(fresh);
+
+    setDamageResult({
+      msg: `⚔️ Kamu kasih ${damage} damage ke boss!`,
+      dmg: damage,
+      missions: result.completedMissions,
+      streak: result.streak,
+    });
+
+    if (result.bossDefeated) setShowWinModal(true);
     setAttacking(false);
   }
 
