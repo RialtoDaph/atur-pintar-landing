@@ -208,6 +208,8 @@ Deno.serve(async (req) => {
     else if (trigger === "mood_checkin") xpToAdd = 5;
     else if (trigger === "onboarding_completed") xpToAdd = 50;
     else if (trigger === "mission_completed") xpToAdd = Math.max(0, parseInt(metadata?.xp_reward || 0, 10));
+    else if (trigger === "challenge_claimed") xpToAdd = Math.max(0, parseInt(metadata?.xp_reward || 0, 10));
+    else if (trigger === "boss_attack") xpToAdd = Math.max(0, parseInt(metadata?.xp_reward || 20, 10));
 
     // Streak milestone bonus
     if (streakChanged && newStreak === 7) xpToAdd += 100;

@@ -5,7 +5,6 @@ import { ACHIEVEMENTS_DEF, LEVELS } from "@/hooks/useGamification";
 import BossBattleCard from "@/components/gamification/BossBattleCard";
 import ChallengeSection from "@/components/gamification/ChallengeSection";
 import LeaderboardTab from "@/components/gamification/LeaderboardTab";
-import { expireChallenges } from "@/lib/updateChallengesAfterTransaction";
 
 function getLevelInfo(xp) {
   const current = LEVELS.find(l => xp >= l.min && xp <= l.max) || LEVELS[0];
@@ -34,8 +33,7 @@ export default function Gamifikasi() {
   useEffect(() => {
     base44.auth.me().then(async u => {
       setUser(u);
-      // Check and expire challenges that passed end_date
-      await expireChallenges(u.email);
+      // Expired challenges are handled centrally by processGamification + dailyGamificationCheck
       const [profiles, achs, fhsList] = await Promise.all([
         base44.entities.GamificationProfile.filter({ created_by: u.email }).catch(() => []),
         base44.entities.Achievement.filter({ created_by: u.email }).catch(() => []),

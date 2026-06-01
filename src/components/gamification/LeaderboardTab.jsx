@@ -8,52 +8,20 @@ export default function LeaderboardTab({ currentUser }) {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [myRank, setMyRank] = useState(-1);
+
   useEffect(() => {
     async function load() {
       setLoading(true);
-      // Fetch all contributions and aggregate by created_by
-      const [contribs, profiles] = await Promise.all([
-        base44.entities.BossBattleContribution.list().catch(() => []),
-        base44.entities.GamificationProfile.list().catch(() => []),
-      ]);
-
-      // Aggregate total_damage_all_time per user
-      const map = {};
-      for (const c of contribs || []) {
-        if (!c.created_by) continue;
-        if (!map[c.created_by]) map[c.created_by] = { email: c.created_by, totalDamage: 0 };
-        map[c.created_by].totalDamage += c.total_damage_all_time || c.damage_dealt || 0;
-      }
-
-      // Add XP from GamificationProfile
-      const profileMap = {};
-      for (const p of profiles || []) {
-        if (p.created_by) profileMap[p.created_by] = p;
-      }
-
-      const sorted = Object.values(map)
-        .filter(e => e.totalDamage > 0)
-        .map(e => ({
-          ...e,
-          xp: profileMap[e.email]?.total_points || 0,
-          streak: profileMap[e.email]?.daily_streak || 0,
-        }))
-        .sort((a, b) => b.totalDamage - a.totalDamage)
-        .slice(0, 20);
-
-      setEntries(sorted);
+      // Backend aggregates across all users via service role (frontend RLS only returns own data)
+      const resp = await base44.functions.invoke("getLeaderboard", {}).catch(() => ({ data: { entries: [], myRank: -1 } }));
+      const data = resp?.data || {};
+      setEntries(data.entries || []);
+      setMyRank(typeof data.myRank === "number" ? data.myRank : -1);
       setLoading(false);
     }
     load();
   }, []);
-
-  const formatEmail = (email) => {
-    if (!email) return "Pengguna";
-    const local = email.split("@")[0];
-    // Mask middle: show first 3 chars + *** + last char
-    if (local.length <= 4) return local + "@...";
-    return local.slice(0, 3) + "***" + local.slice(-1) + "@...";
-  };
 
   if (loading) {
     return (
@@ -74,8 +42,6 @@ export default function LeaderboardTab({ currentUser }) {
       </div>
     );
   }
-
-  const myRank = entries.findIndex(e => e.email === currentUser?.email);
 
   return (
     <div className="space-y-4">
@@ -105,7 +71,7 @@ export default function LeaderboardTab({ currentUser }) {
             <span className="text-2xl mb-1">🥈</span>
             <div className="bg-white rounded-t-xl rounded-b-lg shadow-sm p-3 w-full text-center border-2 border-[#C0C0C0]/30" style={{ height: 80 }}>
               <p className="text-[10px] text-[#8FA4C8] font-bold">#2</p>
-              <p className="text-xs font-bold text-[#1A1A1A] truncate">{formatEmail(entries[1].email)}</p>
+              <p className="text-xs font-bold text-[#1A1A1A] truncate">{entries[1].displayName}</p>
               <p className="text-[10px] font-black text-[#8FA4C8] mt-0.5">{entries[1].totalDamage.toLocaleString("id-ID")}</p>
             </div>
           </div>
@@ -114,7 +80,7 @@ export default function LeaderboardTab({ currentUser }) {
             <span className="text-3xl mb-1">🥇</span>
             <div className="bg-gradient-to-b from-[#FFD700]/10 to-white rounded-t-xl rounded-b-lg shadow-md p-3 w-full text-center border-2 border-[#FFD700]/40" style={{ height: 96 }}>
               <p className="text-[10px] text-[#FF6B35] font-bold">#1</p>
-              <p className="text-xs font-bold text-[#1A1A1A] truncate">{formatEmail(entries[0].email)}</p>
+              <p className="text-xs font-bold text-[#1A1A1A] truncate">{entries[0].displayName}</p>
               <p className="text-[10px] font-black text-[#FF6B35] mt-0.5">{entries[0].totalDamage.toLocaleString("id-ID")}</p>
             </div>
           </div>
@@ -123,7 +89,7 @@ export default function LeaderboardTab({ currentUser }) {
             <span className="text-2xl mb-1">🥉</span>
             <div className="bg-white rounded-t-xl rounded-b-lg shadow-sm p-3 w-full text-center border-2 border-[#CD7F32]/20" style={{ height: 64 }}>
               <p className="text-[10px] text-[#8FA4C8] font-bold">#3</p>
-              <p className="text-xs font-bold text-[#1A1A1A] truncate">{formatEmail(entries[2].email)}</p>
+              <p className="text-xs font-bold text-[#1A1A1A] truncate">{entries[2].displayName}</p>
               <p className="text-[10px] font-black text-[#8FA4C8] mt-0.5">{entries[2].totalDamage.toLocaleString("id-ID")}</p>
             </div>
           </div>
@@ -133,10 +99,10 @@ export default function LeaderboardTab({ currentUser }) {
       {/* Full list */}
       <div className="space-y-2">
         {entries.map((e, i) => {
-          const isMe = e.email === currentUser?.email;
+          const isMe = !!e.isMe;
           return (
             <motion.div
-              key={e.email}
+              key={i}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.04 }}
@@ -151,7 +117,7 @@ export default function LeaderboardTab({ currentUser }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-bold truncate ${isMe ? "text-[#FF6B35]" : "text-[#1A1A1A]"}`}>
-                  {isMe ? "Kamu 👤" : formatEmail(e.email)}
+                  {e.displayName}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-[10px] text-[#8FA4C8]">⚡ {e.xp.toLocaleString("id-ID")} XP</span>

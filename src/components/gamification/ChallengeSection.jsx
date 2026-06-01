@@ -90,14 +90,23 @@ export default function ChallengeSection({ user, gamificationProfile, onProfileU
   }
 
   async function claimReward(challenge) {
+    // Mark challenge completed first (frontend-safe — only flips status)
     await base44.entities.Challenge.update(challenge.id, { status: "completed" });
     setChallenges(prev => prev.map(c => c.id === challenge.id ? { ...c, status: "completed" } : c));
 
-    if (gamificationProfile) {
-      const newXP = (gamificationProfile.total_points || 0) + (challenge.xp_reward || 0);
-      await base44.entities.GamificationProfile.update(gamificationProfile.id, { total_points: newXP });
-      if (onProfileUpdate) onProfileUpdate({ ...gamificationProfile, total_points: newXP });
+    // Delegate XP/level/achievement logic to backend (avoids race + enables level-up detection)
+    await base44.functions.invoke("processGamification", {
+      trigger: "challenge_claimed",
+      metadata: { challenge_key: challenge.challenge_key, xp_reward: challenge.xp_reward || 0 },
+    }).catch(() => {});
+
+    // Refresh profile from DB
+    if (user?.email) {
+      const profiles = await base44.entities.GamificationProfile.filter({ created_by: user.email }).catch(() => []);
+      const fresh = (profiles || []).sort((a, b) => (b.total_points || 0) - (a.total_points || 0))[0];
+      if (fresh && onProfileUpdate) onProfileUpdate(fresh);
     }
+
     setCompletionModal(null);
   }
 
