@@ -30,18 +30,16 @@ export default function DashboardDesktopTopBar({
         <span className="text-sm text-gray-400">Cari transaksi, kategori, rekening...</span>
       </button>
 
-      {/* Streak pill */}
-      {streak > 0 && (
-        <Link
-          to="/Gamifikasi"
-          className="flex items-center gap-1.5 h-11 px-4 rounded-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] transition-colors shadow-sm"
-          title="Lihat progres gamifikasi"
-        >
-          <span className="text-base">🔥</span>
-          <span className="text-sm font-bold text-[#1A1A1A]">{streak}</span>
-          <span className="text-sm text-gray-600">hari</span>
-        </Link>
-      )}
+      {/* Streak pill — always visible on desktop */}
+      <Link
+        to="/Gamifikasi"
+        className="flex items-center gap-1.5 h-11 px-4 rounded-full bg-white border border-[#E2E8F0] hover:border-[#CBD5E1] transition-colors shadow-sm"
+        title="Lihat progres gamifikasi"
+      >
+        <span className="text-base">🔥</span>
+        <span className="text-sm font-bold text-[#1A1A1A]">{streak}</span>
+        <span className="text-sm text-gray-600">hari</span>
+      </Link>
 
       {/* Bell / Alerts */}
       <button
