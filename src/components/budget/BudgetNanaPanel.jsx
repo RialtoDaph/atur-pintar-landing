@@ -206,6 +206,7 @@ Format: emoji, singkat, berdampak. Maksimal 150 kata. Bahasa Indonesia santai.`;
                   />
                 </div>
                 <span className="text-xs font-semibold text-[#FF6A00]">Nana AI</span>
+                <button onClick={() => { setAdvice(null); getLifestyleAdvice(); }} className="ml-auto text-[10px] text-[#8FA4C8] hover:text-[#FF6A00] transition-colors">↻ Refresh</button>
               </div>
               <ReactMarkdown className="prose prose-sm max-w-none text-[#1A1A1A] [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>li]:mb-1 text-xs leading-relaxed">
                 {advice}
