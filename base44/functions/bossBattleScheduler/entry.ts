@@ -22,16 +22,9 @@ Deno.serve(async (req) => {
 
     const allBosses = await base44.asServiceRole.entities.BossBattle.filter({});
 
-    let activated = 0;
     let lostMarked = 0;
 
     for (const boss of (allBosses || [])) {
-      // Activate upcoming boss if its month has started
-      if (boss.status === 'upcoming' && boss.month <= currentMonth) {
-        await base44.asServiceRole.entities.BossBattle.update(boss.id, { status: 'active' });
-        activated++;
-      }
-
       // Mark expired active boss as lost
       if (boss.status === 'active' && boss.end_date && boss.end_date < today) {
         await base44.asServiceRole.entities.BossBattle.update(boss.id, { status: 'lost' });
@@ -39,7 +32,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return Response.json({ success: true, activated, lostMarked, today });
+    return Response.json({ success: true, lostMarked, today });
   } catch (error) {
     console.error('bossBattleScheduler error:', error);
     return Response.json({ error: error.message }, { status: 500 });

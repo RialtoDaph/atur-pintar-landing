@@ -125,8 +125,18 @@ Deno.serve(async (req) => {
         const userProfiles = await base44.asServiceRole.entities.GamificationProfile.filter({ created_by: email });
         const userProfile = (userProfiles || []).sort((a, b) => (b.total_points || 0) - (a.total_points || 0))[0];
         if (userProfile) {
+          // Recalc level too — direct XP write bypasses processGamification, so we must
+          // recompute level ourselves to keep total_points & level in sync.
+          const newTotal = (userProfile.total_points || 0) + (boss.reward_xp || 200);
+          const LEVEL_THRESHOLDS = [
+            { level: 1, min: 0 }, { level: 2, min: 500 }, { level: 3, min: 1500 },
+            { level: 4, min: 3000 }, { level: 5, min: 6000 }, { level: 6, min: 10000 }, { level: 7, min: 20000 },
+          ];
+          let newLevel = 1;
+          for (const l of LEVEL_THRESHOLDS) if (newTotal >= l.min) newLevel = l.level;
           await base44.asServiceRole.entities.GamificationProfile.update(userProfile.id, {
-            total_points: (userProfile.total_points || 0) + (boss.reward_xp || 200),
+            total_points: newTotal,
+            level: newLevel,
           });
         }
 

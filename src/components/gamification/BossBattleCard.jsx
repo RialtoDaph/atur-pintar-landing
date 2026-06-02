@@ -21,8 +21,9 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
 
   async function loadBoss() {
     setLoading(true);
-    const bosses = await base44.entities.BossBattle.filter({ status: "active", month: currentMonth }).catch(() => []);
-    const activeBoss = bosses?.[0];
+    // Match backend bossBattleAttack: prefer current-month boss, fallback to any active boss
+    const bosses = await base44.entities.BossBattle.filter({ status: "active" }).catch(() => []);
+    const activeBoss = (bosses || []).find(b => b.month === currentMonth) || bosses?.[0];
     if (!activeBoss) { setLoading(false); return; }
     setBoss(activeBoss);
 
