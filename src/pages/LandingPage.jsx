@@ -6,11 +6,11 @@ import { ArrowRight, CheckCircle, Mail, Instagram, Twitter, Sparkles, ChevronDow
 // ─── Constants ────────────────────────────────────────────────────────────────
 const VIDEO_URL = "https://www.youtube.com/embed/6KazLzryNbM";
 
-// ─── Brush Background (orange brushstroke glows — pure CSS, zero JS cost) ────
+// ─── Brush Background — radial gradients tanpa CSS `filter: blur` (yg bikin lag di mobile).
+// Gradient sudah punya soft falloff alami, jadi hasil visual mirip tapi GPU-friendly.
 function BrushBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
-      {/* Top-left wide brush */}
+    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0, willChange: "auto" }}>
       <div
         className="absolute"
         style={{
@@ -18,11 +18,9 @@ function BrushBackground() {
           left: "-15%",
           width: "70vw",
           height: "55vh",
-          background: "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255,106,0,0.28) 0%, rgba(255,106,0,0.10) 40%, transparent 70%)",
-          filter: "blur(60px)",
-          transform: "rotate(-18deg)"
+          background: "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(255,106,0,0.22) 0%, rgba(255,106,0,0.08) 40%, transparent 70%)",
+          transform: "rotate(-18deg) translateZ(0)"
         }} />
-      {/* Right middle warm streak */}
       <div
         className="absolute"
         style={{
@@ -30,11 +28,9 @@ function BrushBackground() {
           right: "-20%",
           width: "65vw",
           height: "50vh",
-          background: "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(255,179,71,0.22) 0%, rgba(255,106,0,0.08) 45%, transparent 75%)",
-          filter: "blur(70px)",
-          transform: "rotate(15deg)"
+          background: "radial-gradient(ellipse 55% 45% at 50% 50%, rgba(255,179,71,0.18) 0%, rgba(255,106,0,0.06) 45%, transparent 75%)",
+          transform: "rotate(15deg) translateZ(0)"
         }} />
-      {/* Bottom-left soft brush */}
       <div
         className="absolute"
         style={{
@@ -42,15 +38,8 @@ function BrushBackground() {
           left: "10%",
           width: "60vw",
           height: "45vh",
-          background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,106,0,0.18) 0%, rgba(255,106,0,0.05) 50%, transparent 80%)",
-          filter: "blur(80px)",
-          transform: "rotate(-8deg)"
-        }} />
-      {/* Subtle grain for texture */}
-      <div
-        className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
-        style={{
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
+          background: "radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,106,0,0.14) 0%, rgba(255,106,0,0.04) 50%, transparent 80%)",
+          transform: "rotate(-8deg) translateZ(0)"
         }} />
     </div>
   );
@@ -112,30 +101,28 @@ function FomoToast({ data, visible }) {
 
 }
 
-// ─── Scroll Progress ──────────────────────────────────────────────────────────
+// ─── Scroll Progress — pakai direct DOM mutation (gak trigger React re-render tiap scroll)
 function ScrollProgress() {
-  const [pct, setPct] = useState(0);
+  const fillRef = useRef(null);
   useEffect(() => {
     let ticking = false;
     const update = () => {
       const el = document.documentElement;
       const scrolled = el.scrollTop || document.body.scrollTop;
       const total = el.scrollHeight - el.clientHeight;
-      setPct(total > 0 ? scrolled / total * 100 : 0);
+      const pct = total > 0 ? scrolled / total * 100 : 0;
+      if (fillRef.current) fillRef.current.style.height = `${pct}%`;
       ticking = false;
     };
     const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   return (
     <div style={{ position: "fixed", right: 4, top: "50%", transform: "translateY(-50%)", zIndex: 9998, height: 160, width: 3, borderRadius: 4, background: "rgba(255,106,0,0.12)", pointerEvents: "none" }}>
-      <div style={{ width: "100%", height: `${pct}%`, background: "#FF6A00", borderRadius: 4, transition: "height 0.1s" }} />
+      <div ref={fillRef} style={{ width: "100%", height: "0%", background: "#FF6A00", borderRadius: 4, transition: "height 0.1s" }} />
     </div>);
 
 }
@@ -586,7 +573,7 @@ export default function LandingPage() {
       <ScrollProgress />
 
       {/* ── NAV ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center px-5 sm:px-12 lg:px-20 py-3 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center px-5 sm:px-12 lg:px-20 py-3 bg-[#0A0A0A]/95 border-b border-white/5">
         <div className="flex items-center gap-2">
           <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-7 h-7" />
           <span className="font-black text-white text-sm tracking-tight">Atur Pintar</span>
@@ -603,7 +590,7 @@ export default function LandingPage() {
 
       {/* ── HERO ── */}
       <section className="pt-28 pb-24 px-5 sm:px-12 lg:px-20 relative z-10 text-center sm:text-left">
-        <div className="absolute top-10 left-0 w-[600px] h-[500px] rounded-full bg-[#FF6A00]/6 blur-[140px] pointer-events-none" />
+        <div className="absolute top-10 left-0 w-[600px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,106,0,0.06) 0%, transparent 70%)" }} />
         <div className="max-w-3xl mx-auto sm:mx-0">
           <Reveal>
             <div className="inline-flex items-center gap-2 bg-[#FF6A00]/10 border border-[#FF6A00]/25 rounded-full px-4 py-1.5 mb-7">
@@ -835,8 +822,8 @@ export default function LandingPage() {
       {/* ── FINAL CTA ── */}
       <section className="pb-0 px-5 sm:px-12 lg:px-20 relative z-10">
           <div className="relative rounded-3xl overflow-hidden py-20 px-8 sm:px-16 text-center" style={{ background: "#1A1A2E" }}>
-            <div className="absolute top-0 left-0 w-64 h-64 rounded-full bg-[#FF6A00]/10 blur-[80px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-[#FF6A00]/8 blur-[100px] pointer-events-none translate-x-1/3 translate-y-1/3" />
+            <div className="absolute top-0 left-0 w-64 h-64 rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" style={{ background: "radial-gradient(circle, rgba(255,106,0,0.10) 0%, transparent 70%)" }} />
+            <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full pointer-events-none translate-x-1/3 translate-y-1/3" style={{ background: "radial-gradient(circle, rgba(255,106,0,0.08) 0%, transparent 70%)" }} />
             <Reveal>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black g-text mb-4 leading-tight">Duit bukan musuh.<br />Malas yang musuh.</h2>
             </Reveal>
