@@ -1026,37 +1026,55 @@ export function AppSettingsProvider({ children }) {
 
   useEffect(() => {
     (async () => {
+      // Try session cache first
       try {
-        const user = await base44.auth.me();
-        // Always query existing settings first, sorted oldest-first
-        const allSettings = await base44.entities.AppSettings.filter({ created_by: user.email }, 'created_date');
-        if (allSettings.length > 0) {
-          // Use the OLDEST record (index 0 when sorted asc)
-          const userSettings = allSettings[0];
-          setSettings({ ...DEFAULT_SETTINGS, ...userSettings });
-          setSettingsId(userSettings.id);
-          // Sync settings_id on user if missing/stale
-          if (user.settings_id !== userSettings.id) {
-            await base44.auth.updateMe({ settings_id: userSettings.id }).catch(() => {});
-          }
-        } else {
-          // No settings exist yet — create one
-          const newSettings = await base44.entities.AppSettings.create(DEFAULT_SETTINGS);
-          await base44.auth.updateMe({ settings_id: newSettings.id }).catch(() => {});
-          setSettings({ ...DEFAULT_SETTINGS, ...newSettings });
-          setSettingsId(newSettings.id);
+        const cached = sessionStorage.getItem('app_settings_cache');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          setSettings({ ...DEFAULT_SETTINGS, ...parsed.settings });
+          setSettingsId(parsed.id);
+          setLoading(false);
+          return;
         }
-      } catch (e) {
-        console.error('AppSettings load error:', e);
-        setSettings(DEFAULT_SETTINGS);
-      } finally {
-        setLoading(false);
-      }
+      } catch {}
+
+      const fetchWithRetry = async (attempt = 0) => {
+        try {
+          const user = await base44.auth.me();
+          const allSettings = await base44.entities.AppSettings.filter({ created_by: user.email }, 'created_date');
+          if (allSettings.length > 0) {
+            const userSettings = allSettings[0];
+            setSettings({ ...DEFAULT_SETTINGS, ...userSettings });
+            setSettingsId(userSettings.id);
+            try { sessionStorage.setItem('app_settings_cache', JSON.stringify({ settings: userSettings, id: userSettings.id })); } catch {}
+            if (user.settings_id !== userSettings.id) {
+              await base44.auth.updateMe({ settings_id: userSettings.id }).catch(() => {});
+            }
+          } else {
+            const newSettings = await base44.entities.AppSettings.create(DEFAULT_SETTINGS);
+            await base44.auth.updateMe({ settings_id: newSettings.id }).catch(() => {});
+            setSettings({ ...DEFAULT_SETTINGS, ...newSettings });
+            setSettingsId(newSettings.id);
+            try { sessionStorage.setItem('app_settings_cache', JSON.stringify({ settings: newSettings, id: newSettings.id })); } catch {}
+          }
+        } catch (e) {
+          if (e?.status === 429 && attempt < 3) {
+            await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt)));
+            return fetchWithRetry(attempt + 1);
+          }
+          console.error('AppSettings load error:', e);
+          setSettings(DEFAULT_SETTINGS);
+        }
+      };
+      await fetchWithRetry();
+      setLoading(false);
     })();
   }, []);
 
   const updateSettings = async (newSettings) => {
     setSettings(newSettings);
+    // Bust cache so next session reload picks up fresh values
+    try { sessionStorage.setItem('app_settings_cache', JSON.stringify({ settings: newSettings, id: settingsId })); } catch {}
     if (settingsId) {
       await base44.entities.AppSettings.update(settingsId, newSettings);
     }
