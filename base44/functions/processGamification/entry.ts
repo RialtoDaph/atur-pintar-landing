@@ -98,17 +98,13 @@ Deno.serve(async (req) => {
     }
 
     // ── 2. Streak update ──────────────────────────────────────────────────────
-    // Streak hanya naik kalau trigger berasal dari aktivitas user yang nyata.
-    // Trigger "daily_check" (misal saat user buka dashboard) TIDAK boleh menyentuh
-    // streak atau last_activity_date — ini cuma untuk recalc skor & cek achievement.
+    // Streak hanya naik kalau user ngelakuin aksi pencatatan keuangan yang nyata.
+    // Buka dashboard, chat Nana, mood checkin, atau update goal TIDAK boleh
+    // ngangkat streak — itu cuma engagement, bukan habit keuangan.
     const ACTIVITY_TRIGGERS = new Set([
       "transaction_created",
       "goal_created",
-      "goal_updated",
       "budget_created",
-      "nana_message_sent",
-      "persona_created",
-      "mood_checkin",
       "onboarding_completed",
     ]);
     const isActivity = ACTIVITY_TRIGGERS.has(trigger);
