@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppSettings } from "@/components/utils/useAppSettings";
+import EmptyState from "@/components/ui/EmptyState";
 
 const COLORS = {
   blue: "#4F7CFF", green: "#34C87A", orange: "#F5A623",
@@ -19,9 +20,14 @@ export default function GoalsMiniList({ goals, loading }) {
 
   if (goals.length === 0) {
     return (
-      <div className="px-5 pb-5 text-center py-6 text-[#8FA4C8] text-sm">
-        {t('no_goals')}
-      </div>
+      <EmptyState
+        emoji="🎯"
+        title={t('no_goals')}
+        subtitle="Tentukan target tabungan supaya impianmu tercapai lebih cepat"
+        ctaLabel="Buat Tujuan"
+        ctaTo={createPageUrl("Goals")}
+        compact
+      />
     );
   }
 

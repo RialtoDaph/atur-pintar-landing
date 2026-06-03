@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
 
 function compactRupiah(value) {
   const abs = Math.abs(value);
@@ -35,8 +36,12 @@ export default function TodayTransactionsCard({ transactions, allCategories }) {
   if (todayTx.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-5 shadow-sm">
-        <h3 className="text-sm font-bold text-[#1A1A1A] mb-4">Transaksi Hari Ini</h3>
-        <p className="text-center text-[#8FA4C8] text-sm py-6">Belum ada transaksi hari ini</p>
+        <h3 className="text-sm font-bold text-[#1A1A1A] mb-2">Transaksi Hari Ini</h3>
+        <EmptyState
+          emoji="✨"
+          title="Belum ada transaksi hari ini"
+          subtitle="Yuk catat pemasukan atau pengeluaran pertamamu hari ini"
+        />
       </div>
     );
   }

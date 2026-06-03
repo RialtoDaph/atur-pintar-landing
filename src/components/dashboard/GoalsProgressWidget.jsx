@@ -37,13 +37,16 @@ export default function GoalsProgressWidget({ goals = [], loading = false }) {
       </div>
 
       {activeGoals.length === 0 ? (
-        <Link to={createPageUrl("Goals")} className="flex items-center gap-3 px-4 pb-4">
-          <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-lg text-[#8FA4C8]">
-            <Plus className="w-4 h-4" />
+        <Link to={createPageUrl("Goals")} className="flex items-center gap-3 px-4 pb-4 hover:bg-[#F8FAFC] active:bg-[#F2F4F7] transition-colors rounded-b-2xl">
+          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#F97316]/15 to-[#FB923C]/10 flex items-center justify-center text-xl flex-shrink-0">
+            🎯
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-[#1A1A1A]">Belum ada tujuan</p>
-            <p className="text-[11px] text-[#8FA4C8]">Mulai bikin target tabungan</p>
+            <p className="text-[11px] text-[#8FA4C8] leading-snug">Mulai bikin target tabungan biar lebih terarah</p>
+          </div>
+          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-[#F97316] text-white flex-shrink-0">
+            <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
           </div>
         </Link>
       ) : (

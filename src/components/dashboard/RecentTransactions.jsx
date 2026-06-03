@@ -1,5 +1,7 @@
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { RefreshCw } from "lucide-react";
+import EmptyState from "@/components/ui/EmptyState";
+import { createPageUrl } from "@/utils";
 
 const CATEGORY_CONFIG = {
   housing: { emoji: "🏠", color: "#4F7CFF" },
@@ -43,9 +45,13 @@ export default function RecentTransactions({ transactions, loading }) {
 
   if (displayTxs.length === 0) {
     return (
-      <div className="px-5 pb-5 text-center py-8 text-[#8FA4C8] text-sm">
-        {t('no_transactions')}
-      </div>
+      <EmptyState
+        emoji="📝"
+        title={t('no_transactions')}
+        subtitle="Mulai catat transaksi untuk lihat aktivitas keuanganmu di sini"
+        ctaLabel="Catat Transaksi"
+        ctaTo={createPageUrl("Transactions")}
+      />
     );
   }
 
