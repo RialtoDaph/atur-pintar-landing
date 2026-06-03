@@ -52,13 +52,13 @@ export default function AddSubscriptionModal({ onClose, onSaved }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px)+90px)] sm:pb-4"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         role="dialog"
         aria-modal="true"
-        className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px)+90px)] sm:pb-6 max-h-[90vh] overflow-y-auto overscroll-contain"
+        className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 max-h-[85vh] overflow-y-auto overscroll-contain"
       >
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-[#1A1A1A]">Tambah Langganan</h2>
