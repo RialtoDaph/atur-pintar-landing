@@ -1,7 +1,8 @@
 import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Pencil, Trash2, Power, Calendar, Wallet, Tag } from "lucide-react";
+import { X, Pencil, Trash2, Power, Calendar, Wallet, Tag, Plus } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import AddSubscriptionModal from "./AddSubscriptionModal";
 
 function daysLeft(dateStr) {
   if (!dateStr) return 999;
@@ -296,6 +297,7 @@ function SubCard({ sub, idx, formatCurrency, onRefresh }) {
 
 // ── Main Tab ─────────────────────────────────────────────────────────────────
 export default function TxLanggananTab({ subscriptions, formatCurrency, onRefresh }) {
+  const [showAdd, setShowAdd] = useState(false);
   const stats = useMemo(() => {
     const active = subscriptions.filter(s => s.status === "active");
     const totalMonthly = active.reduce((sum, s) => {
@@ -311,8 +313,19 @@ export default function TxLanggananTab({ subscriptions, formatCurrency, onRefres
     <div className="pb-4 pt-3">
       {/* Summary banner */}
       <div className="mx-3 bg-[#1A1E25] rounded-2xl p-4 mb-4 shadow-sm">
-        <p className="text-[11px] text-[#8FA4C8] mb-1">Total per bulan</p>
-        <p className="text-xl font-bold text-white">{formatCurrency(stats.totalMonthly)}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] text-[#8FA4C8] mb-1">Total per bulan</p>
+            <p className="text-xl font-bold text-white">{formatCurrency(stats.totalMonthly)}</p>
+          </div>
+          <button
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-1.5 bg-[#F97316] text-white text-xs font-semibold px-3 py-2 rounded-xl tap-highlight-fix flex-shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Tambah
+          </button>
+        </div>
         <div className="flex gap-2 mt-2">
           <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#4ADE80]/20 text-[#4ADE80]">
             ✓ {stats.activeCount} aktif
@@ -344,6 +357,13 @@ export default function TxLanggananTab({ subscriptions, formatCurrency, onRefres
             />
           ))}
         </div>
+      )}
+
+      {showAdd && (
+        <AddSubscriptionModal
+          onClose={() => setShowAdd(false)}
+          onSaved={onRefresh}
+        />
       )}
     </div>
   );
