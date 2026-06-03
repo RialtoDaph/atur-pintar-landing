@@ -104,8 +104,11 @@ export default function AlertsDrawer({ onClose, user }) {
                 <p className="text-[#8FA4C8] text-xs">Pusat Notifikasi</p>
                 <p className="text-white font-bold text-base mt-0.5">Pengingat & Notifikasi</p>
               </div>
-              <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors tap-highlight-fix">
-                <X className="w-4 h-4" />
+              <button
+                onClick={onClose}
+                aria-label="Tutup notifikasi"
+                className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors tap-highlight-fix">
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 

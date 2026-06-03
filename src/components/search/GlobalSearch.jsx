@@ -83,20 +83,21 @@ export default function GlobalSearch({ onClose }) {
       >
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-[#F2F4F7]">
-          <Search className="w-5 h-5 text-[#8FA4C8] flex-shrink-0" />
+          <Search className="w-5 h-5 text-[#8FA4C8] flex-shrink-0" aria-hidden="true" />
           <input
             ref={inputRef}
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Cari transaksi, tujuan, utang, investasi..."
+            aria-label="Cari di seluruh data keuangan"
             className="flex-1 text-[#1A1A1A] text-sm placeholder-[#8FA4C8] focus:outline-none bg-transparent"
           />
           {query && (
-            <button onClick={() => setQuery("")} className="text-[#8FA4C8] hover:text-[#1A1A1A]">
-              <X className="w-4 h-4" />
+            <button onClick={() => setQuery("")} aria-label="Hapus pencarian" className="text-[#8FA4C8] hover:text-[#1A1A1A]">
+              <X className="w-4 h-4" aria-hidden="true" />
             </button>
           )}
-          <button onClick={onClose} className="text-[#8FA4C8] hover:text-[#1A1A1A] text-xs font-medium ml-1">
+          <button onClick={onClose} aria-label="Tutup pencarian" className="text-[#8FA4C8] hover:text-[#1A1A1A] text-xs font-medium ml-1">
             Tutup
           </button>
         </div>

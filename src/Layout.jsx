@@ -224,7 +224,7 @@ function LayoutInner({ children, currentPageName }) {
 
         {/* Logo — only icon when collapsed, with text when expanded */}
         <div className="mb-6 h-8 px-1 flex items-center gap-2">
-          <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-8 h-8 flex-shrink-0" />
+          <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Atur Pintar logo" className="w-8 h-8 flex-shrink-0" />
           <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
             <p className="text-base font-bold text-white tracking-tight leading-tight">Atur Pintar</p>
             <p className="text-[10px] text-[#8FA4C8] leading-tight">Financial Tracker</p>
@@ -240,13 +240,15 @@ function LayoutInner({ children, currentPageName }) {
                 to={createPageUrl(item.page)}
                 data-tour={item.tourId || undefined}
                 title={item.label}
+                aria-label={item.label}
+                aria-current={active ? "page" : undefined}
                 className={`flex items-center gap-2.5 h-9 px-3 rounded-lg text-[13px] font-medium transition-all duration-150 ${
                 active ?
                 "bg-[#F97316] text-white shadow-md" :
                 "text-[#888] hover:text-white hover:bg-white/10 active:bg-white/15"}`
                 }>
 
-                <item.icon className="w-4 h-4 flex-shrink-0" />
+                <item.icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 <span className="truncate opacity-0 group-hover:opacity-100 transition-opacity duration-200">{item.label}</span>
               </Link>);
 
@@ -313,14 +315,17 @@ function LayoutInner({ children, currentPageName }) {
             </button> :
 
           <div className="flex items-center gap-1">
-              <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo" className="w-8 h-8 flex-shrink-0" />
+              <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Atur Pintar logo" className="w-8 h-8 flex-shrink-0" />
               <p className="text-white text-base font-bold tracking-tight">Atur Pintar</p>
             </div>
           }
 
           <div className="flex items-center gap-2">
-            <button onClick={() => {setShowAlertsDrawer(true);setUnreadAlertCount(0);setUnreadAdminCount(0);}} className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
-              <Bell className="w-4 h-4" />
+            <button
+              onClick={() => {setShowAlertsDrawer(true);setUnreadAlertCount(0);setUnreadAdminCount(0);}}
+              aria-label={`Buka notifikasi${unreadAlertCount + unreadAdminCount > 0 ? ` (${unreadAlertCount + unreadAdminCount} belum dibaca)` : ''}`}
+              className="relative w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white tap-highlight-fix">
+              <Bell className="w-4 h-4" aria-hidden="true" />
               {unreadAlertCount + unreadAdminCount > 0 &&
               <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#EF4444] text-white text-[9px] font-bold flex items-center justify-center">
                   {unreadAlertCount + unreadAdminCount > 9 ? "9+" : unreadAlertCount + unreadAdminCount}
@@ -328,8 +333,12 @@ function LayoutInner({ children, currentPageName }) {
               }
             </button>
 
-            <Link to={createPageUrl("ProfileSettings")} data-tour="profile-avatar" className="w-8 h-8 rounded-full bg-[#F97316] flex items-center justify-center text-white text-xs font-bold tap-highlight-fix overflow-hidden">
-              {user?.photo_url ? <img src={user.photo_url} alt="avatar" className="w-full h-full object-cover" /> : initials}
+            <Link
+              to={createPageUrl("ProfileSettings")}
+              data-tour="profile-avatar"
+              aria-label="Buka pengaturan profil"
+              className="w-8 h-8 rounded-full bg-[#F97316] flex items-center justify-center text-white text-xs font-bold tap-highlight-fix overflow-hidden">
+              {user?.photo_url ? <img src={user.photo_url} alt={`Foto profil ${displayName || 'pengguna'}`} className="w-full h-full object-cover" /> : initials}
             </Link>
           </div>
         </div>
@@ -369,15 +378,17 @@ function LayoutInner({ children, currentPageName }) {
               <button
                 onClick={() => handleTabClick(item.page)}
                 data-tour={item.page === "Nana" ? "nana-tab" : item.page === "Analytics" ? "analytics-tab" : undefined}
+                aria-label={item.label}
+                aria-current={active ? "page" : undefined}
                 className={`flex-1 flex flex-col items-center py-3 gap-0.5 text-[10px] font-medium transition-colors tap-highlight-fix bg-transparent border-none cursor-pointer ${
                 active ? "text-[#F97316]" : "text-[#888]"}`}>
 
                 {item.avatarUrl ? (
                   <div className={`w-5 h-5 rounded-full overflow-hidden flex-shrink-0 ${active ? "ring-2 ring-[#F97316]" : ""}`}>
-                    <img src={item.avatarUrl} alt={item.label} className="w-full h-full object-cover" />
+                    <img src={item.avatarUrl} alt="" aria-hidden="true" className="w-full h-full object-cover" />
                   </div>
                 ) : (
-                  <item.icon className="w-5 h-5" />
+                  <item.icon className="w-5 h-5" aria-hidden="true" />
                 )}
                 {item.label}
               </button>
@@ -392,6 +403,7 @@ function LayoutInner({ children, currentPageName }) {
       <button
         onClick={handleFabClick}
         data-tour="add-transaction-btn"
+        aria-label={showAddTransaction ? "Tutup form transaksi" : "Catat transaksi baru"}
         className="fixed left-1/2 -translate-x-1/2 z-[80] flex items-center justify-center rounded-full active:scale-95 transition-all duration-200 tap-highlight-fix sm:hidden"
         style={{
           width: 56, height: 56,
@@ -405,7 +417,7 @@ function LayoutInner({ children, currentPageName }) {
             boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3)',
             transform: showAddTransaction ? 'rotate(135deg)' : 'rotate(0deg)'
           }}>
-            <Plus className="w-6 h-6 text-white" strokeWidth={2.5} />
+            <Plus className="w-6 h-6 text-white" strokeWidth={2.5} aria-hidden="true" />
           </span>
         </button>
       }
