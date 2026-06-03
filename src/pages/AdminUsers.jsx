@@ -221,7 +221,7 @@ export default function AdminUsers() {
   if (loading) return (
     <AdminLayout currentPage="AdminUsers">
       <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
       </div>
     </AdminLayout>
   );
@@ -246,7 +246,7 @@ export default function AdminUsers() {
             </div>
             <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
               <p className="text-xs text-[#8FA4C8] font-medium">Premium</p>
-              <p className="text-2xl font-bold text-[#FF6A00]">{premiumUsers}</p>
+              <p className="text-2xl font-bold text-[#F97316]">{premiumUsers}</p>
             </div>
             <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
               <p className="text-xs text-[#8FA4C8] font-medium">Free</p>
@@ -350,7 +350,7 @@ export default function AdminUsers() {
                 {cleaningUp ? "🗑️ Cleaning..." : "🗑️ Cleanup"}
               </button>
               <button onClick={loadData} className="p-2 hover:bg-[#F8FAFC] rounded-lg transition-colors">
-                <RefreshCw className="w-4 h-4 text-[#FF6A00]" />
+                <RefreshCw className="w-4 h-4 text-[#F97316]" />
               </button>
             </div>
           </div>
@@ -362,7 +362,7 @@ export default function AdminUsers() {
                 key={f}
                 onClick={() => setFilter(f)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === f ? "bg-[#FF6A00] text-white" : "bg-[#F8FAFC] text-[#1A1A1A] hover:bg-[#E2E8F0]"
+                  filter === f ? "bg-[#F97316] text-white" : "bg-[#F8FAFC] text-[#1A1A1A] hover:bg-[#E2E8F0]"
                 }`}
               >
                 {f === "all" ? "All" : f === "inactive" ? "Inactive" : f === "no_onboarding" ? `Belum Onboarding (${noOnboardingCount})` : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -392,7 +392,7 @@ export default function AdminUsers() {
                       <td className="py-3 px-2 text-[#1A1A1A] font-medium">{u.full_name || "—"}</td>
                       <td className="py-3 px-2 text-[#1A1A1A] text-xs">{u.email}</td>
                       <td className="py-3 px-2 text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${u.subscription_plan === "premium_monthly" ? "bg-[#FF6A00] text-white" : "bg-gray-200 text-gray-700"}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${u.subscription_plan === "premium_monthly" ? "bg-[#F97316] text-white" : "bg-gray-200 text-gray-700"}`}>
                           {u.subscription_plan || "free"}
                         </span>
                       </td>
@@ -449,7 +449,7 @@ export default function AdminUsers() {
             <div className="flex gap-3">
               <button onClick={() => setRoleChangeModal(null)} className="flex-1 px-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm font-medium hover:bg-[#F8FAFC]">Batal</button>
               <button onClick={() => changeUserRole(roleChangeModal.user, roleChangeModal.newRole)}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#E55A00]">
+                className="flex-1 px-4 py-2.5 rounded-xl bg-[#F97316] text-white text-sm font-bold hover:bg-[#EA580C]">
                 Ya, Ubah Role
               </button>
             </div>

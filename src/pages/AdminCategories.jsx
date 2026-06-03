@@ -5,7 +5,7 @@ import { Plus, Pencil, Trash2, Check, X, Eye, EyeOff, ChevronDown, ChevronRight,
 import { toast } from "sonner";
 
 const COLORS = [
-  "#FF6A00", "#F59E0B", "#EF4444", "#E91E63", "#EC4899",
+  "#F97316", "#F59E0B", "#EF4444", "#E91E63", "#EC4899",
   "#8B5CF6", "#3B82F6", "#06B6D4", "#10B981", "#27AE60",
   "#64748B", "#95A5A6"
 ];
@@ -17,7 +17,7 @@ const EMOJIS = [
   "💝","🎓","🏖️","🏡","💍","🔧","🎯","🌍","🤝","📊"
 ];
 
-const EMPTY_FORM = { name: "", emoji: "📦", color: "#FF6A00", type: "expense", is_subcategory: false, parent_category: "" };
+const EMPTY_FORM = { name: "", emoji: "📦", color: "#F97316", type: "expense", is_subcategory: false, parent_category: "" };
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -56,7 +56,7 @@ export default function AdminCategories() {
     setForm({
       name: cat.name,
       emoji: cat.emoji || "📦",
-      color: cat.color || "#FF6A00",
+      color: cat.color || "#F97316",
       type: cat.type || "expense",
       is_subcategory: cat.is_subcategory || false,
       parent_category: cat.parent_category || "",
@@ -152,7 +152,7 @@ export default function AdminCategories() {
   if (loading) return (
     <AdminLayout currentPage="AdminCategories">
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
       </div>
     </AdminLayout>
   );
@@ -171,7 +171,7 @@ export default function AdminCategories() {
           </div>
           <button
             onClick={() => openAddForm()}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#FF6A00] text-white rounded-xl text-sm font-semibold hover:bg-[#E55A00] shadow-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-semibold hover:bg-[#EA580C] shadow-sm transition-colors"
           >
             <Plus className="w-4 h-4" /> Tambah Kategori
           </button>
@@ -189,7 +189,7 @@ export default function AdminCategories() {
 
         {/* Inline Form */}
         {showForm && (
-          <div className="bg-white rounded-2xl shadow-sm border border-[#FF6A00]/30 p-5 mb-5">
+          <div className="bg-white rounded-2xl shadow-sm border border-[#F97316]/30 p-5 mb-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-[#1A1A1A]">
                 {editId ? "Edit Kategori" : "Tambah Kategori Baru"}
@@ -226,7 +226,7 @@ export default function AdminCategories() {
                 <input type="text" value={form.name}
                   onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                   placeholder="contoh: Makanan & Minuman"
-                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]" />
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]" />
               </div>
 
               {/* Tipe & Jenis */}
@@ -236,7 +236,7 @@ export default function AdminCategories() {
                   {[["expense","💸 Keluar"],["income","💰 Masuk"],["both","↔️ Dua"]].map(([val, lbl]) => (
                     <button key={val} type="button"
                       onClick={() => setForm(p => ({ ...p, type: val }))}
-                      className={`flex-1 py-2 rounded-xl text-[11px] font-semibold border transition-all ${form.type === val ? "bg-[#FF6A00]/10 border-[#FF6A00] text-[#FF6A00]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
+                      className={`flex-1 py-2 rounded-xl text-[11px] font-semibold border transition-all ${form.type === val ? "bg-[#F97316]/10 border-[#F97316] text-[#F97316]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
                       {lbl}
                     </button>
                   ))}
@@ -248,12 +248,12 @@ export default function AdminCategories() {
                 <div className="flex gap-2">
                   <button type="button"
                     onClick={() => setForm(p => ({ ...p, is_subcategory: false, parent_category: "" }))}
-                    className={`flex-1 py-2 rounded-xl text-[11px] font-semibold border transition-all ${!form.is_subcategory ? "bg-[#FF6A00]/10 border-[#FF6A00] text-[#FF6A00]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
+                    className={`flex-1 py-2 rounded-xl text-[11px] font-semibold border transition-all ${!form.is_subcategory ? "bg-[#F97316]/10 border-[#F97316] text-[#F97316]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
                     📁 Induk
                   </button>
                   <button type="button"
                     onClick={() => setForm(p => ({ ...p, is_subcategory: true }))}
-                    className={`flex-1 py-2 rounded-xl text-[11px] font-semibold border transition-all ${form.is_subcategory ? "bg-[#FF6A00]/10 border-[#FF6A00] text-[#FF6A00]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
+                    className={`flex-1 py-2 rounded-xl text-[11px] font-semibold border transition-all ${form.is_subcategory ? "bg-[#F97316]/10 border-[#F97316] text-[#F97316]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
                     📂 Sub
                   </button>
                 </div>
@@ -267,7 +267,7 @@ export default function AdminCategories() {
                     {parentCategories.filter(p => !editId || p.id !== editId).map(p => (
                       <button key={p.id} type="button"
                         onClick={() => setForm(prev => ({ ...prev, parent_category: p.name }))}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${form.parent_category === p.name ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${form.parent_category === p.name ? "border-[#F97316] bg-[#F97316]/10 text-[#F97316]" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#4A5568] hover:border-[#CBD5E0]"}`}>
                         <span>{p.emoji}</span> {p.name}
                       </button>
                     ))}
@@ -281,7 +281,7 @@ export default function AdminCategories() {
                 <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
                   {EMOJIS.map(e => (
                     <button key={e} type="button" onClick={() => setForm(p => ({ ...p, emoji: e }))}
-                      className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${form.emoji === e ? "ring-2 ring-[#FF6A00] bg-[#FF6A00]/10" : "bg-[#F2F4F7] hover:bg-[#E2E8F0]"}`}>
+                      className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${form.emoji === e ? "ring-2 ring-[#F97316] bg-[#F97316]/10" : "bg-[#F2F4F7] hover:bg-[#E2E8F0]"}`}>
                       {e}
                     </button>
                   ))}
@@ -301,8 +301,8 @@ export default function AdminCategories() {
                     <div className="w-7 h-7 rounded-lg border border-[#E2E8F0]" style={{ backgroundColor: form.color }} />
                     <input type="text" value={form.color}
                       onChange={e => setForm(p => ({ ...p, color: e.target.value }))}
-                      placeholder="#FF6A00"
-                      className="w-24 px-2 py-1.5 rounded-lg border border-[#E2E8F0] text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                      placeholder="#F97316"
+                      className="w-24 px-2 py-1.5 rounded-lg border border-[#E2E8F0] text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
                   </div>
                 </div>
               </div>
@@ -315,7 +315,7 @@ export default function AdminCategories() {
                 <X className="w-4 h-4" /> Batal
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-semibold hover:bg-[#E55A00] disabled:opacity-60 transition-colors">
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#F97316] text-white text-sm font-semibold hover:bg-[#EA580C] disabled:opacity-60 transition-colors">
                 <Check className="w-4 h-4" />
                 {saving ? "Menyimpan..." : editId ? "Simpan Perubahan" : "Tambah Kategori"}
               </button>
@@ -348,7 +348,7 @@ export default function AdminCategories() {
 
                   {/* Icon */}
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                    style={{ backgroundColor: (parent.color || "#FF6A00") + "20" }}>
+                    style={{ backgroundColor: (parent.color || "#F97316") + "20" }}>
                     {parent.emoji}
                   </div>
 
@@ -401,7 +401,7 @@ export default function AdminCategories() {
                         className={`flex items-center gap-3 px-4 py-2.5 ${idx < children.length - 1 ? "border-b border-[#F2F4F7]" : ""} ${!child.is_active ? "opacity-50" : ""}`}>
                         <div className="w-5 flex-shrink-0" /> {/* indent */}
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center text-base flex-shrink-0"
-                          style={{ backgroundColor: (child.color || "#FF6A00") + "20" }}>
+                          style={{ backgroundColor: (child.color || "#F97316") + "20" }}>
                           {child.emoji}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -434,7 +434,7 @@ export default function AdminCategories() {
                 {/* Add sub button when expanded */}
                 {isExpanded && (
                   <button onClick={() => openAddForm(parent.name)}
-                    className="w-full flex items-center gap-2 px-4 py-2.5 text-xs text-[#8FA4C8] hover:text-[#FF6A00] hover:bg-[#FFF7ED] border-t border-[#F2F4F7] transition-colors">
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-xs text-[#8FA4C8] hover:text-[#F97316] hover:bg-[#FFF7ED] border-t border-[#F2F4F7] transition-colors">
                     <Plus className="w-3.5 h-3.5" />
                     Tambah subkategori "{parent.name}"
                   </button>

@@ -109,7 +109,7 @@ export default function AdminLogs() {
   if (loading) return (
     <AdminLayout currentPage="AdminLogs">
       <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
       </div>
     </AdminLayout>
   );
@@ -136,7 +136,7 @@ export default function AdminLogs() {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-2 mb-1"><ScrollText className="w-4 h-4 text-[#FF6A00]" /><p className="text-xs text-[#8FA4C8]">Total Logs</p></div>
+            <div className="flex items-center gap-2 mb-1"><ScrollText className="w-4 h-4 text-[#F97316]" /><p className="text-xs text-[#8FA4C8]">Total Logs</p></div>
             <p className="text-2xl font-bold text-[#1A1A1A]">{logs.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -175,10 +175,10 @@ export default function AdminLogs() {
             <div className="relative flex-1 min-w-[180px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" />
               <input type="text" placeholder="Cari action, detail..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
             </div>
             <select value={filterType} onChange={e => { setFilterType(e.target.value); setPage(1); }}
-              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]">
+              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]">
               <option value="all">Semua Tipe</option>
               <option value="login">Login</option>
               <option value="activity">Activity</option>
@@ -186,7 +186,7 @@ export default function AdminLogs() {
               <option value="sensitive_access">Akses Sensitif</option>
             </select>
             <select value={filterSeverity} onChange={e => { setFilterSeverity(e.target.value); setPage(1); }}
-              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]">
+              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]">
               <option value="all">Semua Severity</option>
               <option value="info">Info</option>
               <option value="warning">Warning</option>
@@ -199,14 +199,14 @@ export default function AdminLogs() {
             <div className="relative min-w-[180px] flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8FA4C8]" />
               <input type="text" placeholder="Filter email pengguna..." value={filterUser} onChange={e => { setFilterUser(e.target.value); setPage(1); }}
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
             </div>
             <div className="flex items-center gap-2">
               <input type="date" value={filterDateFrom} onChange={e => { setFilterDateFrom(e.target.value); setPage(1); }}
-                className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
               <span className="text-[#8FA4C8] text-sm">–</span>
               <input type="date" value={filterDateTo} onChange={e => { setFilterDateTo(e.target.value); setPage(1); }}
-                className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
             </div>
             {hasActiveFilters && (
               <button onClick={() => { setFilterUser(""); setFilterDateFrom(""); setFilterDateTo(""); setPage(1); }}
@@ -218,9 +218,9 @@ export default function AdminLogs() {
           {hasActiveFilters && (
             <p className="text-xs text-[#8FA4C8]">
               Menampilkan {filtered.length} dari {logs.length} log
-              {filterUser && <span> · User: <span className="text-[#FF6A00] font-medium">{filterUser}</span></span>}
-              {filterDateFrom && <span> · Dari: <span className="text-[#FF6A00] font-medium">{filterDateFrom}</span></span>}
-              {filterDateTo && <span> · Sampai: <span className="text-[#FF6A00] font-medium">{filterDateTo}</span></span>}
+              {filterUser && <span> · User: <span className="text-[#F97316] font-medium">{filterUser}</span></span>}
+              {filterDateFrom && <span> · Dari: <span className="text-[#F97316] font-medium">{filterDateFrom}</span></span>}
+              {filterDateTo && <span> · Sampai: <span className="text-[#F97316] font-medium">{filterDateTo}</span></span>}
             </p>
           )}
         </div>
@@ -303,7 +303,7 @@ export default function AdminLogs() {
                   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
                 })().map(n => (
                   <button key={n} onClick={() => setPage(n)}
-                    className={`px-3 py-1.5 rounded-lg border text-sm ${page === n ? "bg-[#FF6A00] text-white border-[#FF6A00]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
+                    className={`px-3 py-1.5 rounded-lg border text-sm ${page === n ? "bg-[#F97316] text-white border-[#F97316]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
                     {n}
                   </button>
                 ))}

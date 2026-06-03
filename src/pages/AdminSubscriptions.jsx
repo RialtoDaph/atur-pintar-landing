@@ -78,12 +78,12 @@ export default function AdminSubscriptions() {
   const formatDate = (d) => d ? new Date(d).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }) : "-";
 
   const planLabel = (plan) => plan === "premium_monthly" ? "Premium Bulanan" : plan === "premium_yearly" ? "Premium Tahunan" : "Free";
-  const planColor = (plan) => plan === "premium_monthly" ? "bg-[#FF6A00]/10 text-[#FF6A00]" : plan === "premium_yearly" ? "bg-purple-50 text-purple-600" : "bg-[#F2F4F7] text-[#8FA4C8]";
+  const planColor = (plan) => plan === "premium_monthly" ? "bg-[#F97316]/10 text-[#F97316]" : plan === "premium_yearly" ? "bg-purple-50 text-purple-600" : "bg-[#F2F4F7] text-[#8FA4C8]";
 
   if (loading) return (
     <AdminLayout currentPage="AdminSubscriptions">
       <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
       </div>
     </AdminLayout>
   );
@@ -105,7 +105,7 @@ export default function AdminSubscriptions() {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-2 mb-1"><Users className="w-4 h-4 text-[#FF6A00]" /><p className="text-xs text-[#8FA4C8]">Total Users</p></div>
+            <div className="flex items-center gap-2 mb-1"><Users className="w-4 h-4 text-[#F97316]" /><p className="text-xs text-[#8FA4C8]">Total Users</p></div>
             <p className="text-2xl font-bold text-[#1A1A1A]">{users.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -153,7 +153,7 @@ export default function AdminSubscriptions() {
                         <td className="px-5 py-4 text-sm text-[#8FA4C8]">{formatDate(p.created_date)}</td>
                         <td className="px-5 py-4">
                           {p.payment_proof_url ? (
-                            <button onClick={() => setViewProof(p.payment_proof_url)} className="flex items-center gap-1 text-xs text-[#FF6A00] font-medium hover:underline">
+                            <button onClick={() => setViewProof(p.payment_proof_url)} className="flex items-center gap-1 text-xs text-[#F97316] font-medium hover:underline">
                               <Eye className="w-3.5 h-3.5" /> Lihat
                             </button>
                           ) : <span className="text-xs text-[#8FA4C8]">-</span>}

@@ -187,7 +187,7 @@ export default function AdminSettings() {
   if (loading) return (
     <AdminLayout currentPage="AdminSettings">
       <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
       </div>
     </AdminLayout>
   );
@@ -217,14 +217,14 @@ export default function AdminSettings() {
             <div>
               <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Nama Aplikasi</label>
               <input type="text" value={settings.app_name} onChange={e => setSettings({ ...settings, app_name: e.target.value })}
-                className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
             </div>
 
             <div>
               <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Email Notifikasi Keamanan</label>
               <input type="email" value={settings.admin_alert_email} onChange={e => setSettings({ ...settings, admin_alert_email: e.target.value })}
                 placeholder="email@domain.com"
-                className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
               <p className="text-xs text-[#8FA4C8] mt-1">Email ini akan menerima notifikasi otomatis setiap kali ada akses ke data sensitif pengguna.</p>
             </div>
 
@@ -253,20 +253,20 @@ export default function AdminSettings() {
                 <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Harga Premium Bulanan (Rp)</label>
                 <input type="number" value={settings.premium_price_monthly}
                   onChange={e => setSettings({ ...settings, premium_price_monthly: parseInt(e.target.value) || 49000 })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
                 <p className="text-xs text-[#8FA4C8] mt-1">Default: Rp 49.000</p>
               </div>
               <div>
                 <label className="text-xs font-medium text-[#8FA4C8] block mb-1.5">Harga Premium Tahunan (Rp)</label>
                 <input type="number" value={settings.premium_price_yearly}
                   onChange={e => setSettings({ ...settings, premium_price_yearly: parseInt(e.target.value) || 399900 })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
                 <p className="text-xs text-[#8FA4C8] mt-1">Default: Rp 399.900</p>
               </div>
             </div>
 
             <button onClick={handleSaveSettings} disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6A00] text-white rounded-xl text-sm font-bold hover:bg-[#E55A00] disabled:opacity-60 transition-colors">
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-bold hover:bg-[#EA580C] disabled:opacity-60 transition-colors">
               <Save className="w-4 h-4" />
               {saving ? "Menyimpan..." : "Simpan Pengaturan"}
             </button>
@@ -296,7 +296,7 @@ export default function AdminSettings() {
             ))}
           </div>
           <button onClick={handleSaveSettings} disabled={saving}
-            className="mt-4 flex items-center gap-2 px-5 py-2.5 bg-[#FF6A00] text-white rounded-xl text-sm font-bold hover:bg-[#E55A00] disabled:opacity-60 transition-colors">
+            className="mt-4 flex items-center gap-2 px-5 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-bold hover:bg-[#EA580C] disabled:opacity-60 transition-colors">
             <Save className="w-4 h-4" />
             {saving ? "Menyimpan..." : "Simpan Feature Flags"}
           </button>
@@ -306,7 +306,7 @@ export default function AdminSettings() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E2E8F0]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-[#1A1A1A]">Manajemen Admin ({admins.length})</h2>
-            <button onClick={() => setShowAddAdmin(true)} className="flex items-center gap-2 px-3 py-2 bg-[#FF6A00] text-white text-sm rounded-lg hover:bg-[#E55A00]">
+            <button onClick={() => setShowAddAdmin(true)} className="flex items-center gap-2 px-3 py-2 bg-[#F97316] text-white text-sm rounded-lg hover:bg-[#EA580C]">
               <Plus className="w-4 h-4" /> Tambah Admin
             </button>
           </div>
@@ -348,12 +348,12 @@ export default function AdminSettings() {
                 </button>
               </div>
               <input type="email" value={newAdminEmail} onChange={e => setNewAdminEmail(e.target.value)}
-                placeholder="Masukkan email user..." className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                placeholder="Masukkan email user..." className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
               <div className="flex gap-3">
                 <button onClick={() => setShowAddAdmin(false)} className="flex-1 px-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm font-medium hover:bg-[#F8FAFC]">
                   Batal
                 </button>
-                <button onClick={() => addAdmin(newAdminEmail)} className="flex-1 px-4 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-medium hover:bg-[#E55A00]">
+                <button onClick={() => addAdmin(newAdminEmail)} className="flex-1 px-4 py-2.5 rounded-xl bg-[#F97316] text-white text-sm font-medium hover:bg-[#EA580C]">
                   Tambah
                 </button>
               </div>

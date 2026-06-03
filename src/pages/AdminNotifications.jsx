@@ -157,7 +157,7 @@ export default function AdminNotifications() {
   if (loading) return (
     <AdminLayout currentPage="AdminNotifications">
       <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
       </div>
     </AdminLayout>
   );
@@ -175,7 +175,7 @@ export default function AdminNotifications() {
               <RefreshCw className="w-4 h-4" />
             </button>
             <div className="flex gap-3">
-              <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#FF6A00] text-white rounded-xl text-sm font-medium hover:bg-[#E55A00] shadow-sm">
+              <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-medium hover:bg-[#EA580C] shadow-sm">
                 <Plus className="w-4 h-4" />
                 Kirim Notifikasi
               </button>
@@ -195,7 +195,7 @@ export default function AdminNotifications() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-2 mb-1"><Bell className="w-4 h-4 text-[#FF6A00]" /><p className="text-xs text-[#8FA4C8]">Total Notifikasi</p></div>
+            <div className="flex items-center gap-2 mb-1"><Bell className="w-4 h-4 text-[#F97316]" /><p className="text-xs text-[#8FA4C8]">Total Notifikasi</p></div>
             <p className="text-2xl font-bold text-[#1A1A1A]">{notifications.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -227,7 +227,7 @@ export default function AdminNotifications() {
                         <p className="text-xs text-[#8FA4C8]">{u.email} • {u.daysSinceActivity} days inactive</p>
                       </div>
                       <button onClick={() => sendToInactiveUser(u.email, u.full_name || u.email, u.daysSinceActivity)}
-                        className="px-3 py-1 bg-[#FF6A00] text-white text-xs font-bold rounded hover:bg-[#E55A00]">Send</button>
+                        className="px-3 py-1 bg-[#F97316] text-white text-xs font-bold rounded hover:bg-[#EA580C]">Send</button>
                     </div>
                   ))}
                 </div>
@@ -247,7 +247,7 @@ export default function AdminNotifications() {
             {['approved', 'welcome', 'renewal', 'reengagement', 'maintenance'].map(t => (
               <button key={t}
                 onClick={() => applyTemplate(t)}
-                className="px-3 py-2 text-xs font-medium text-[#FF6A00] border border-[#FF6A00] rounded-lg hover:bg-[#FF6A00]/5">
+                className="px-3 py-2 text-xs font-medium text-[#F97316] border border-[#F97316] rounded-lg hover:bg-[#F97316]/5">
                 {t === 'approved' ? '✅ Approved' : t === 'welcome' ? '🎉 Welcome' : t === 'renewal' ? '⏰ Renewal' : t === 'reengagement' ? '📱 Reeng' : '🔧 Maintenance'}
               </button>
             ))}
@@ -304,11 +304,11 @@ export default function AdminNotifications() {
                   <label className="text-xs font-medium text-[#8FA4C8] mb-1.5 block">Target</label>
                   <div className="flex gap-3">
                     <button onClick={() => setForm(p => ({ ...p, target_type: "all" }))}
-                      className={`flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${form.target_type === "all" ? "border-[#FF6A00] bg-[#FF6A00]/5 text-[#FF6A00]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
+                      className={`flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${form.target_type === "all" ? "border-[#F97316] bg-[#F97316]/5 text-[#F97316]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
                       <Users className="w-4 h-4" /> Semua User
                     </button>
                     <button onClick={() => setForm(p => ({ ...p, target_type: "specific" }))}
-                      className={`flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${form.target_type === "specific" ? "border-[#FF6A00] bg-[#FF6A00]/5 text-[#FF6A00]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
+                      className={`flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${form.target_type === "specific" ? "border-[#F97316] bg-[#F97316]/5 text-[#F97316]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
                       <User className="w-4 h-4" /> User Tertentu
                     </button>
                   </div>
@@ -318,7 +318,7 @@ export default function AdminNotifications() {
                   <div>
                     <label className="text-xs font-medium text-[#8FA4C8] mb-1.5 block">Email User</label>
                     <select value={form.target_email} onChange={e => setForm(p => ({ ...p, target_email: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6A00]">
+                      className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]">
                       <option value="">Pilih user...</option>
                       {allUsers.map(u => (
                         <option key={u.id} value={u.email}>{u.full_name} ({u.email})</option>
@@ -330,14 +330,14 @@ export default function AdminNotifications() {
                 <div>
                   <label className="text-xs font-medium text-[#8FA4C8] mb-1.5 block">Judul</label>
                   <input type="text" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
-                    placeholder="contoh: Update fitur baru..." className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                    placeholder="contoh: Update fitur baru..." className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
                 </div>
 
                 <div>
                   <label className="text-xs font-medium text-[#8FA4C8] mb-1.5 block">Pesan</label>
                   <textarea value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                     placeholder="Tulis pesan notifikasi..." rows={4}
-                    className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00] resize-none" />
+                    className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] resize-none" />
                 </div>
               </div>
 
@@ -346,7 +346,7 @@ export default function AdminNotifications() {
                   Batal
                 </button>
                 <button onClick={handleSend} disabled={sending || !form.title || !form.message}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-medium hover:bg-[#E55A00] disabled:opacity-60">
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#F97316] text-white text-sm font-medium hover:bg-[#EA580C] disabled:opacity-60">
                   <Send className="w-4 h-4" />
                   {sending ? "Mengirim..." : "Kirim"}
                 </button>

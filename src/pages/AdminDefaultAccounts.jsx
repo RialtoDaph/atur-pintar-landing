@@ -95,7 +95,7 @@ export default function AdminDefaultAccounts() {
   if (loading) return (
     <AdminLayout currentPage="AdminDefaultAccounts">
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
       </div>
     </AdminLayout>
   );
@@ -111,7 +111,7 @@ export default function AdminDefaultAccounts() {
             <p className="text-xs text-[#8FA4C8] mt-0.5">Pilihan rekening yang muncul saat user tambah akun</p>
           </div>
           <button onClick={openAdd}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#FF6A00] text-white rounded-xl text-sm font-semibold hover:bg-[#E55A00] transition-colors">
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-semibold hover:bg-[#EA580C] transition-colors">
             <Plus className="w-4 h-4" /> Tambah
           </button>
         </div>
@@ -128,7 +128,7 @@ export default function AdminDefaultAccounts() {
 
         {/* Inline form */}
         {showForm && (
-          <div className="bg-white rounded-2xl shadow-sm border border-[#FF6A00]/30 p-4 mb-4">
+          <div className="bg-white rounded-2xl shadow-sm border border-[#F97316]/30 p-4 mb-4">
             <div className="flex items-center justify-between mb-3">
               <p className="font-bold text-sm text-[#1A1A1A]">{editId ? "Edit" : "Tambah Baru"}</p>
               <button onClick={cancel} className="p-1.5 rounded-lg hover:bg-[#F2F4F7]">
@@ -160,7 +160,7 @@ export default function AdminDefaultAccounts() {
                 <div className="flex gap-2">
                   {TYPES.map(t => (
                     <button key={t.key} type="button" onClick={() => setForm(f => ({ ...f, type: t.key }))}
-                      className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${form.type === t.key ? "bg-[#FF6A00]/10 border-[#FF6A00] text-[#FF6A00]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
+                      className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${form.type === t.key ? "bg-[#F97316]/10 border-[#F97316] text-[#F97316]" : "bg-[#F2F4F7] border-transparent text-[#8FA4C8]"}`}>
                       {t.icon}
                     </button>
                   ))}
@@ -173,13 +173,13 @@ export default function AdminDefaultAccounts() {
                   <p className="text-xs font-semibold text-[#8FA4C8] mb-1">Nama *</p>
                   <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     placeholder="BCA, GoPay..."
-                    className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                    className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#F97316]" />
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-[#8FA4C8] mb-1">Institusi</p>
                   <input value={form.institution} onChange={e => setForm(f => ({ ...f, institution: e.target.value }))}
                     placeholder="PT Bank BCA..."
-                    className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                    className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#F97316]" />
                 </div>
               </div>
 
@@ -188,7 +188,7 @@ export default function AdminDefaultAccounts() {
                 <p className="text-xs font-semibold text-[#8FA4C8] mb-1">Logo URL (opsional)</p>
                 <input value={form.logo_url} onChange={e => setForm(f => ({ ...f, logo_url: e.target.value }))}
                   placeholder="https://..."
-                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#F97316]" />
                 {form.logo_url && (
                   <div className="mt-2 flex items-center gap-2">
                     <p className="text-xs text-[#8FA4C8]">Preview:</p>
@@ -201,7 +201,7 @@ export default function AdminDefaultAccounts() {
               <div>
                 <p className="text-xs font-semibold text-[#8FA4C8] mb-1">Urutan (sort_order)</p>
                 <input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))}
-                  className="w-24 px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                  className="w-24 px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-[#F8FAFC] outline-none focus:ring-2 focus:ring-[#F97316]" />
               </div>
 
               {/* Icons */}
@@ -210,7 +210,7 @@ export default function AdminDefaultAccounts() {
                 <div className="flex flex-wrap gap-1.5">
                   {ICONS.map(ic => (
                     <button key={ic} type="button" onClick={() => setForm(f => ({ ...f, icon: ic }))}
-                      className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${form.icon === ic ? "ring-2 ring-[#FF6A00] bg-[#FF6A00]/10" : "bg-[#F2F4F7]"}`}>
+                      className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${form.icon === ic ? "ring-2 ring-[#F97316] bg-[#F97316]/10" : "bg-[#F2F4F7]"}`}>
                       {ic}
                     </button>
                   ))}
@@ -230,7 +230,7 @@ export default function AdminDefaultAccounts() {
                     <div className="w-7 h-7 rounded-lg border border-[#E2E8F0]" style={{ backgroundColor: form.color }} />
                     <input type="text" value={form.color}
                       onChange={e => setForm(f => ({ ...f, color: e.target.value }))}
-                      className="w-22 px-2 py-1.5 rounded-lg border border-[#E2E8F0] text-xs font-mono outline-none focus:ring-2 focus:ring-[#FF6A00]" />
+                      className="w-22 px-2 py-1.5 rounded-lg border border-[#E2E8F0] text-xs font-mono outline-none focus:ring-2 focus:ring-[#F97316]" />
                   </div>
                 </div>
               </div>
@@ -251,7 +251,7 @@ export default function AdminDefaultAccounts() {
                 <X className="w-4 h-4" /> Batal
               </button>
               <button onClick={save} disabled={saving}
-                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#FF6A00] text-white text-sm font-semibold hover:bg-[#E55A00] disabled:opacity-60 transition-colors">
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#F97316] text-white text-sm font-semibold hover:bg-[#EA580C] disabled:opacity-60 transition-colors">
                 <Check className="w-4 h-4" />
                 {saving ? "Menyimpan..." : editId ? "Simpan" : "Tambah"}
               </button>
