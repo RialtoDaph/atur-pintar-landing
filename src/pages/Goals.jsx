@@ -199,7 +199,8 @@ export default function Goals() {
     setShowAddGoal(true);
   }
 
-  if (loading) {
+  // Only show full-screen spinner on detail view while loading (list view has its own skeleton at line ~432)
+  if (loading && goalId && !goal) {
     return (
       <div className="min-h-screen bg-[#F2F4F7] flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-[#1A1A1A] border-t-transparent animate-spin" />
