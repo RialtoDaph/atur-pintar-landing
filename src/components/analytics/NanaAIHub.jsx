@@ -115,7 +115,7 @@ Aturan: maks 80 kata total. Bahasa santai, tidak menggurui. Sebut angka/kategori
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 p-5 sm:p-6 pb-3">
-        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#FF6A00]">
+        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#F97316]">
           <img src={NANA_AVATAR} alt="Nana" className="w-full h-full object-contain" />
         </div>
         <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ Aturan: maks 80 kata total. Bahasa santai, tidak menggurui. Sebut angka/kategori
           <p className="text-xs text-[#8FA4C8] mb-4">Yuk mulai catat transaksi kamu, biar Nana bisa kasih insight</p>
           <Link
             to={createPageUrl("Transactions")}
-            className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors"
+            className="px-4 py-2 bg-[#F97316] text-white text-xs font-semibold rounded-xl hover:bg-[#EA580C] transition-colors"
           >
             Catat Transaksi Sekarang
           </Link>
@@ -149,7 +149,7 @@ Aturan: maks 80 kata total. Bahasa santai, tidak menggurui. Sebut angka/kategori
                     key={id}
                     onClick={() => setTab(id)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 tap-highlight-fix ${
-                      active ? "bg-[#FF6A00] text-white shadow-sm" : "bg-[#F2F4F7] text-[#8FA4C8]"
+                      active ? "bg-[#F97316] text-white shadow-sm" : "bg-[#F2F4F7] text-[#8FA4C8]"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -194,7 +194,7 @@ function NarasiTab({ narrative, loading, onGenerate }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center gap-2 py-8 text-sm text-[#8FA4C8]">
-        <Loader2 className="w-4 h-4 animate-spin text-[#FF6A00]" />
+        <Loader2 className="w-4 h-4 animate-spin text-[#F97316]" />
         Nana sedang menganalisis...
       </div>
     );
@@ -204,7 +204,7 @@ function NarasiTab({ narrative, loading, onGenerate }) {
     return (
       <button
         onClick={onGenerate}
-        className="w-full flex items-center justify-center gap-2 py-8 text-sm font-semibold text-[#FF6A00] bg-[#FF6A00]/5 hover:bg-[#FF6A00]/10 transition-colors rounded-xl border border-dashed border-[#FF6A00]/30"
+        className="w-full flex items-center justify-center gap-2 py-8 text-sm font-semibold text-[#F97316] bg-[#F97316]/5 hover:bg-[#F97316]/10 transition-colors rounded-xl border border-dashed border-[#F97316]/30"
       >
         <Sparkles className="w-4 h-4" />
         Analisis dengan Nana AI
@@ -218,7 +218,7 @@ function NarasiTab({ narrative, loading, onGenerate }) {
         <p className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest">Rangkuman Nana</p>
         <button
           onClick={onGenerate}
-          className="flex items-center gap-1 text-[10px] text-[#8FA4C8] hover:text-[#FF6A00] transition-colors tap-highlight-fix"
+          className="flex items-center gap-1 text-[10px] text-[#8FA4C8] hover:text-[#F97316] transition-colors tap-highlight-fix"
         >
           <RefreshCw className="w-3 h-3" />
           Perbarui
@@ -284,7 +284,7 @@ function BudgetTab({ budgets, transactions, formatCurrency, formatShortNumber })
       <div className="flex flex-col items-center justify-center py-8 text-center">
         <span className="text-3xl mb-2">💸</span>
         <p className="text-xs text-[#8FA4C8] mb-3">Belum ada budget yang dibuat.</p>
-        <Link to={createPageUrl("Budget")} className="px-3 py-1.5 bg-[#FF6A00] text-white text-xs font-semibold rounded-lg">Buat Budget</Link>
+        <Link to={createPageUrl("Budget")} className="px-3 py-1.5 bg-[#F97316] text-white text-xs font-semibold rounded-lg">Buat Budget</Link>
       </div>
     );
   }

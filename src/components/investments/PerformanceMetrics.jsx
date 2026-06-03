@@ -95,7 +95,7 @@ export default function PerformanceMetrics({ investments, totalValue, totalInves
       <div className="bg-white/10 rounded-2xl p-4">
         <p className="text-white/60 text-xs font-medium mb-1">Durasi Pegang</p>
         <div className="flex items-center gap-1.5">
-          <Clock className="w-4 h-4 text-[#FF6A00]" />
+          <Clock className="w-4 h-4 text-[#F97316]" />
           <p className="font-bold text-lg text-white">{holdingLabel}</p>
         </div>
       </div>

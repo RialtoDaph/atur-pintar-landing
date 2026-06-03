@@ -16,7 +16,7 @@ function AmountInput({ label, value, onChange, placeholder }) {
       <div className="relative">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] text-sm">Rp</span>
         <input type="text" inputMode="numeric" placeholder={placeholder || "0"}
-          className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+          className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
           value={fmtNum(value)}
           onChange={e => onChange(parseNum(e.target.value))} />
       </div>
@@ -96,7 +96,7 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Jenis</label>
             <button
               onClick={() => setShowTypeSelect(true)}
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] text-left transition-colors hover:border-[#CBD5E0] tap-highlight-fix flex items-center justify-between">
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] text-left transition-colors hover:border-[#CBD5E0] tap-highlight-fix flex items-center justify-between">
               
               <span>{DEBT_TYPES.find((t) => t.key === form.type)?.emoji} {DEBT_TYPES.find((t) => t.key === form.type)?.label}</span>
               <span className="text-[#8FA4C8]">›</span>
@@ -107,7 +107,7 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
             <div>
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Nama Utang</label>
               <input type="text" placeholder="e.g. KPR BCA, Kartu Kredit Mandiri"
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] tap-highlight-fix"
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] tap-highlight-fix"
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
             </div>
@@ -117,7 +117,7 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
             <div>
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Bunga per Tahun (%)</label>
               <input type="number" placeholder="0 (opsional)"
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] tap-highlight-fix"
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] tap-highlight-fix"
                 value={form.interest_rate}
                 onChange={e => setForm(f => ({ ...f, interest_rate: e.target.value }))} />
             </div>
@@ -129,7 +129,7 @@ export default function AddDebtModal({ onClose, onSave, debt }) {
           </div>
 
           <button onClick={handleSave} disabled={saving || !form.name || !form.total_amount || !form.remaining_amount}
-          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors tap-highlight-fix">
+          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00] transition-colors tap-highlight-fix">
             {saving ? "Menyimpan..." : isEdit ? "Perbarui Utang" : "Simpan Utang"}
           </button>
         </div>

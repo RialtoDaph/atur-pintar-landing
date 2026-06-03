@@ -22,7 +22,7 @@ function StepBar({ step }) {
     <div className="flex items-center gap-1 mb-5">
       {labels.map((l, i) => (
         <div key={l} className="flex items-center gap-1 flex-1">
-          <div className={`flex-1 text-center text-[10px] font-semibold py-1 rounded-full transition-all ${i <= idx ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
+          <div className={`flex-1 text-center text-[10px] font-semibold py-1 rounded-full transition-all ${i <= idx ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
             {l}
           </div>
           {i < labels.length - 1 && <ChevronRight className="w-3 h-3 text-[#CBD5E0] flex-shrink-0" />}
@@ -135,11 +135,11 @@ export default function CSVImportModal({ onClose, onSuccess }) {
                   <button
                     key={tpl.id}
                     onClick={() => applyTemplate(tpl)}
-                    className="flex items-center gap-3 p-3.5 rounded-2xl border-2 border-[#E2E8F0] hover:border-[#FF6A00] hover:bg-[#FFF5EB] transition-all text-left group"
+                    className="flex items-center gap-3 p-3.5 rounded-2xl border-2 border-[#E2E8F0] hover:border-[#F97316] hover:bg-[#FFF5EB] transition-all text-left group"
                   >
                     <span className="text-2xl">{tpl.icon}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#FF6A00] transition-colors">{tpl.name}</p>
+                      <p className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#F97316] transition-colors">{tpl.name}</p>
                       <p className="text-[10px] text-[#8FA4C8] truncate">{tpl.description}</p>
                     </div>
                   </button>
@@ -152,23 +152,23 @@ export default function CSVImportModal({ onClose, onSuccess }) {
           {step === "upload" && (
             <div>
               {selectedTemplate && (
-                <div className="flex items-center gap-2 bg-[#FFF5EB] border border-[#FF6A00]/20 rounded-xl px-3 py-2 mb-4">
+                <div className="flex items-center gap-2 bg-[#FFF5EB] border border-[#F97316]/20 rounded-xl px-3 py-2 mb-4">
                   <span className="text-lg">{selectedTemplate.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-[#FF6A00]">{selectedTemplate.name}</p>
+                    <p className="text-xs font-bold text-[#F97316]">{selectedTemplate.name}</p>
                     <p className="text-[10px] text-[#8FA4C8]">{selectedTemplate.description}</p>
                   </div>
-                  <button onClick={() => setStep("template")} className="text-[10px] text-[#8FA4C8] hover:text-[#FF6A00] font-semibold">Ganti</button>
+                  <button onClick={() => setStep("template")} className="text-[10px] text-[#8FA4C8] hover:text-[#F97316] font-semibold">Ganti</button>
                 </div>
               )}
 
               <div
-                className="border-2 border-dashed border-[#E2E8F0] rounded-2xl p-10 text-center cursor-pointer hover:border-[#FF6A00] transition-colors group"
+                className="border-2 border-dashed border-[#E2E8F0] rounded-2xl p-10 text-center cursor-pointer hover:border-[#F97316] transition-colors group"
                 onClick={() => fileRef.current?.click()}
                 onDragOver={e => e.preventDefault()}
                 onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
               >
-                <Upload className="w-8 h-8 text-[#8FA4C8] group-hover:text-[#FF6A00] mx-auto mb-3 transition-colors" />
+                <Upload className="w-8 h-8 text-[#8FA4C8] group-hover:text-[#F97316] mx-auto mb-3 transition-colors" />
                 <p className="font-semibold text-[#1A1A1A] mb-1 text-sm">Upload file CSV mutasi</p>
                 <p className="text-xs text-[#8FA4C8]">Drag & drop atau klik untuk pilih file</p>
                 <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={e => handleFile(e.target.files[0])} />
@@ -190,10 +190,10 @@ export default function CSVImportModal({ onClose, onSuccess }) {
           {step === "map" && (
             <div>
               <div className="flex items-center gap-2 mb-4 bg-[#F2F4F7] rounded-xl px-4 py-2.5">
-                <FileText className="w-4 h-4 text-[#FF6A00] flex-shrink-0" />
+                <FileText className="w-4 h-4 text-[#F97316] flex-shrink-0" />
                 <p className="text-sm text-[#4A5568]">
                   <span className="font-bold text-[#1A1A1A]">{rows.length}</span> baris dari{" "}
-                  <span className="font-semibold text-[#FF6A00]">{fileName}</span>
+                  <span className="font-semibold text-[#F97316]">{fileName}</span>
                 </p>
               </div>
 
@@ -223,7 +223,7 @@ export default function CSVImportModal({ onClose, onSuccess }) {
                   <div className="flex gap-2">
                     {["expense", "income"].map(t => (
                       <button key={t} onClick={() => setDefaultType(t)}
-                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${defaultType === t ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${defaultType === t ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
                         {t === "expense" ? "💸 Pengeluaran" : "💰 Pemasukan"}
                       </button>
                     ))}
@@ -249,7 +249,7 @@ export default function CSVImportModal({ onClose, onSuccess }) {
               <button
                 onClick={buildPreview}
                 disabled={!canMap}
-                className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
+                className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
               >
                 Proses & Lihat Preview →
               </button>
@@ -266,7 +266,7 @@ export default function CSVImportModal({ onClose, onSuccess }) {
                     <p className="text-xs text-amber-600">{previewErrors.length} baris dilewati (format tidak valid)</p>
                   )}
                 </div>
-                <button onClick={() => setStep("map")} className="flex items-center gap-1 text-xs text-[#8FA4C8] hover:text-[#FF6A00] transition-colors">
+                <button onClick={() => setStep("map")} className="flex items-center gap-1 text-xs text-[#8FA4C8] hover:text-[#F97316] transition-colors">
                   <RefreshCw className="w-3 h-3" /> Edit Mapping
                 </button>
               </div>
@@ -283,7 +283,7 @@ export default function CSVImportModal({ onClose, onSuccess }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium text-[#1A1A1A] truncate">{tx.note || tx.category}</p>
-                      <p className="text-[10px] text-[#8FA4C8]">{tx.date} · <span className="text-[#FF6A00]">{tx.category}</span></p>
+                      <p className="text-[10px] text-[#8FA4C8]">{tx.date} · <span className="text-[#F97316]">{tx.category}</span></p>
                     </div>
                     <span className={`text-xs font-bold flex-shrink-0 ${tx.type === "income" ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
                       {tx.type === "income" ? "+" : "−"}Rp {tx.amount.toLocaleString("id-ID")}
@@ -310,7 +310,7 @@ export default function CSVImportModal({ onClose, onSuccess }) {
               <button
                 onClick={handleImport}
                 disabled={importing || preview.length === 0}
-                className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2"
               >
                 {importing
                   ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Mengimpor...</>
@@ -331,7 +331,7 @@ export default function CSVImportModal({ onClose, onSuccess }) {
               </p>
               <p className="text-xs text-[#8FA4C8] mb-6">Kategori terisi otomatis berdasarkan keterangan transaksi</p>
               <button onClick={() => { onSuccess?.(); onClose(); }}
-                className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] hover:bg-[#e05e00] transition-colors">
+                className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] hover:bg-[#e05e00] transition-colors">
                 Lihat Transaksi
               </button>
             </div>
@@ -350,7 +350,7 @@ function MappingRow({ label, required, value, headers, onChange, compact }) {
     <div className={compact ? "" : ""}>
       <label className="text-[10px] font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1 block">{label}</label>
       <select
-        className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+        className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
         value={value}
         onChange={e => onChange(e.target.value)}
       >
@@ -383,7 +383,7 @@ function CategorySummary({ transactions }) {
       <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-2">Ringkasan Kategori (Auto-detect)</p>
       <div className="flex flex-wrap gap-1.5">
         {sorted.map(item => (
-          <div key={`${item.type}:${item.category}`} className={`flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold border ${item.type === "income" ? "bg-green-50 border-green-200 text-green-700" : "bg-[#FFF5EB] border-[#FF6A00]/20 text-[#FF6A00]"}`}>
+          <div key={`${item.type}:${item.category}`} className={`flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold border ${item.type === "income" ? "bg-green-50 border-green-200 text-green-700" : "bg-[#FFF5EB] border-[#F97316]/20 text-[#F97316]"}`}>
             <span>{CAT_EMOJI[item.category] || "📦"}</span>
             <span>{item.category}</span>
             <span className="bg-white/60 px-1 rounded-full text-[9px]">{item.count}</span>

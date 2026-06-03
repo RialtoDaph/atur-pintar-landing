@@ -139,7 +139,7 @@ export default function AdminStreakManager({ onActionComplete }) {
           />
           <button
             onClick={resetStreakByEmail}
-            className="px-4 py-2 bg-[#FF6A00] text-white text-sm font-medium rounded-lg hover:bg-[#E55A00] transition-colors"
+            className="px-4 py-2 bg-[#F97316] text-white text-sm font-medium rounded-lg hover:bg-[#E55A00] transition-colors"
           >
             Reset
           </button>
@@ -161,7 +161,7 @@ export default function AdminStreakManager({ onActionComplete }) {
       <div className="overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-3 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-3 border-[#F97316] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : users.length === 0 ? (
           <div className="text-center py-8 text-[#8FA4C8] text-sm">
@@ -204,7 +204,7 @@ export default function AdminStreakManager({ onActionComplete }) {
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => resetStreakForUser(user.email)}
-                        className="p-2 hover:bg-orange-50 rounded-lg text-[#FF6A00] transition-colors"
+                        className="p-2 hover:bg-orange-50 rounded-lg text-[#F97316] transition-colors"
                         title="Reset Streak"
                       >
                         <RefreshCw className="w-4 h-4" />

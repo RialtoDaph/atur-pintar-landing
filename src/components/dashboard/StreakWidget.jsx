@@ -48,7 +48,7 @@ export default function StreakWidget({
           {xpFloatMsg && (
             <motion.div
               initial={{ opacity: 1, y: 0 }} animate={{ opacity: 0, y: -24 }} transition={{ duration: 1.8 }}
-              className="absolute top-2 right-14 text-xs font-black text-[#FF6A00] pointer-events-none z-10"
+              className="absolute top-2 right-14 text-xs font-black text-[#F97316] pointer-events-none z-10"
             >
               {xpFloatMsg}
             </motion.div>
@@ -59,10 +59,10 @@ export default function StreakWidget({
           <motion.div
             animate={isActiveToday ? { scale: [1, 1.15, 1] } : {}}
             transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
-            className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${isActiveToday ? "bg-[#FF6A00]/10" : "bg-[#F2F4F7]"}`}
+            className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center flex-shrink-0 ${isActiveToday ? "bg-[#F97316]/10" : "bg-[#F2F4F7]"}`}
           >
-            <Flame className={`w-4 h-4 ${isActiveToday ? "text-[#FF6A00]" : "text-[#8FA4C8]"}`} />
-            <p className={`text-xs font-black leading-none mt-0.5 ${isActiveToday ? "text-[#FF6A00]" : "text-[#8FA4C8]"}`}>
+            <Flame className={`w-4 h-4 ${isActiveToday ? "text-[#F97316]" : "text-[#8FA4C8]"}`} />
+            <p className={`text-xs font-black leading-none mt-0.5 ${isActiveToday ? "text-[#F97316]" : "text-[#8FA4C8]"}`}>
               {safeProfile.daily_streak}
             </p>
           </motion.div>
@@ -90,7 +90,7 @@ export default function StreakWidget({
         {expanded && (
           <div className="border-t border-[#F2F4F7] px-4 py-3 grid grid-cols-3 gap-3">
             <div className="text-center">
-              <p className="text-2xl font-black text-[#FF6A00]">{safeProfile.daily_streak}</p>
+              <p className="text-2xl font-black text-[#F97316]">{safeProfile.daily_streak}</p>
               <p className="text-[10px] text-[#8FA4C8] font-medium">Streak Kini</p>
             </div>
             <div className="text-center">
@@ -111,7 +111,7 @@ export default function StreakWidget({
                   <span className="text-xs font-bold" style={{ color: currentLevel.color }}>{nextLevel.name}</span>
                 </div>
               ) : (
-                <p className="text-xs font-bold text-[#FF6A00]">🏆 Level Maksimum tercapai!</p>
+                <p className="text-xs font-bold text-[#F97316]">🏆 Level Maksimum tercapai!</p>
               )}
             </div>
           </div>

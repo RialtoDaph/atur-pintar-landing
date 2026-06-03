@@ -33,7 +33,7 @@ export default function EducationResources() {
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#F8FAFC] transition-colors"
       >
         <div className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-[#FF6A00]" />
+          <BookOpen className="w-4 h-4 text-[#F97316]" />
           <span className="font-semibold text-[#1A1A1A] text-sm">{title}</span>
           <span className="text-xs text-[#8FA4C8]">({resources.length})</span>
         </div>
@@ -56,10 +56,10 @@ export default function EducationResources() {
             >
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] font-semibold text-[#8FA4C8] uppercase tracking-widest">{resource.category}</p>
-                <p className="text-sm font-medium text-[#1A1A1A] group-hover:text-[#FF6A00] transition-colors">{resource.title}</p>
+                <p className="text-sm font-medium text-[#1A1A1A] group-hover:text-[#F97316] transition-colors">{resource.title}</p>
                 <p className="text-xs text-[#8FA4C8] mt-0.5">{resource.description}</p>
               </div>
-              <ExternalLink className="w-3.5 h-3.5 text-[#CBD5E0] group-hover:text-[#FF6A00] flex-shrink-0 mt-1" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#CBD5E0] group-hover:text-[#F97316] flex-shrink-0 mt-1" />
             </a>
           ))}
         </div>

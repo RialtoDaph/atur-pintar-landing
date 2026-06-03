@@ -50,13 +50,13 @@ export default function BehaviorInsightsTabs({ transactions, filterPeriod, custo
                 key={id}
                 onClick={() => setTab(id)}
                 className={`relative flex items-center gap-1.5 px-3 py-3 text-xs font-semibold whitespace-nowrap flex-shrink-0 tap-highlight-fix transition-colors ${
-                  active ? "text-[#FF6A00]" : "text-[#8FA4C8] hover:text-[#1A1A1A]"
+                  active ? "text-[#F97316]" : "text-[#8FA4C8] hover:text-[#1A1A1A]"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 {label}
                 {active && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-[#FF6A00] rounded-full" />
+                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-[#F97316] rounded-full" />
                 )}
               </button>
             );

@@ -194,11 +194,11 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                     onClick={() => setForm({ ...form, account_id: acc.id })}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold border-[1.5px] transition-all ${
                       form.account_id === acc.id
-                        ? "border-[#FF6A00] bg-[#FFF7ED] text-[#EA580C]"
+                        ? "border-[#F97316] bg-[#FFF7ED] text-[#EA580C]"
                         : "border-[#E2E8F0] bg-[#F8FAFC] text-[#4A5568]"
                     }`}
                   >
-                    <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#FF6A00"} size="w-5 h-5" />
+                    <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#F97316"} size="w-5 h-5" />
                     {acc.name}
                   </button>
                 ))}
@@ -213,7 +213,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-lg">{settings.currency_symbol}</span>
               <input
                 autoFocus type="text" inputMode="numeric"
-                className="w-full border border-[#E2E8F0] rounded-xl pl-9 pr-4 py-3 text-2xl font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                className="w-full border border-[#E2E8F0] rounded-xl pl-9 pr-4 py-3 text-2xl font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
                 placeholder="0"
                 value={form.amount}
                 onChange={(e) => {
@@ -242,7 +242,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className={`grid grid-cols-3 sm:grid-cols-4 gap-2 p-2 rounded-lg transition-colors ${snapshot.isDraggingOver ? "bg-[#FF6A00]/5" : ""}`}
+                    className={`grid grid-cols-3 sm:grid-cols-4 gap-2 p-2 rounded-lg transition-colors ${snapshot.isDraggingOver ? "bg-[#F97316]/5" : ""}`}
                   >
                     {orderedCats.map((c, idx) => (
                       <Draggable key={c.key} draggableId={c.key} index={idx}>
@@ -258,19 +258,19 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                                 onClick={() => handleCategoryClick(c)}
                                 className={`w-full flex flex-col items-center gap-1 p-2 rounded-xl border transition-all relative ${
                                   form.category === c.key || subCatsByParent[c.key]?.some(s => s.key === form.category)
-                                    ? "border-[#FF6A00] bg-[#FF6A00]/10"
+                                    ? "border-[#F97316] bg-[#F97316]/10"
                                     : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
                                 }`}
                               >
                                 <span className="text-lg sm:text-xl">{c.emoji}</span>
                                 <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
                                 {subCatsByParent[c.key]?.length > 0 && (
-                                  <span className="absolute top-1 right-1 w-3 h-3 bg-[#FF6A00] rounded-full flex items-center justify-center">
+                                  <span className="absolute top-1 right-1 w-3 h-3 bg-[#F97316] rounded-full flex items-center justify-center">
                                     <span className="text-white text-[7px] font-bold">▾</span>
                                   </span>
                                 )}
                                 {subCatsByParent[c.key]?.some(s => s.key === form.category) && (
-                                  <span className="text-[8px] text-[#FF6A00] font-semibold truncate w-full text-center">
+                                  <span className="text-[8px] text-[#F97316] font-semibold truncate w-full text-center">
                                     {subCatsByParent[c.key].find(s => s.key === form.category)?.emoji}{" "}
                                     {subCatsByParent[c.key].find(s => s.key === form.category)?.label}
                                   </span>
@@ -279,7 +279,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                             </div>
                             {snapshot.isDragging && (
                               <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-xl">
-                                <GripVertical className="w-4 h-4 text-[#FF6A00]" />
+                                <GripVertical className="w-4 h-4 text-[#F97316]" />
                               </div>
                             )}
                           </div>
@@ -298,7 +298,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
             <div>
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('note_optional')}</label>
               <input
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
                 placeholder={t('note_placeholder')}
                 value={form.note}
                 onChange={(e) => setForm({ ...form, note: e.target.value })}
@@ -307,7 +307,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
             <div>
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('date')}</label>
               <input type="date"
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
                 value={form.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
               />
@@ -318,7 +318,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                 <select
                   value={form.goal_id || ""}
                   onChange={(e) => setForm({ ...form, goal_id: e.target.value })}
-                  className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                  className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
                 >
                   <option value="">{t('no_goal')}</option>
                   {goals.map(goal => (
@@ -368,7 +368,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                     setForm(f => ({ ...f, category: sub.key }));
                     setSubCatPopup(null);
                   }}
-                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#FF6A00] hover:bg-[#FF6A00]/5 transition-all"
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#F97316] hover:bg-[#F97316]/5 transition-all"
                 >
                   <span className="text-2xl">{sub.emoji}</span>
                   <span className="text-[10px] font-semibold text-[#4A5568] text-center leading-tight">{sub.label}</span>

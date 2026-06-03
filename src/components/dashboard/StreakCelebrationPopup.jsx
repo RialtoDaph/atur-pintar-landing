@@ -6,7 +6,7 @@ import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 function StreakInner({ message, streak, onClose }) {
   useLockBodyScroll();
   useEffect(() => {
-    confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: ["#FF6A00", "#FFB347", "#FFF"] });
+    confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 }, colors: ["#F97316", "#FFB347", "#FFF"] });
     const t = setTimeout(onClose, 3500);
     return () => clearTimeout(t);
   }, []);
@@ -34,7 +34,7 @@ function StreakInner({ message, streak, onClose }) {
         <motion.div
           animate={{ rotate: [-8, 8, -8, 8, 0] }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#FF6A00] shadow-lg"
+          className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#F97316] shadow-lg"
         >
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
@@ -50,7 +50,7 @@ function StreakInner({ message, streak, onClose }) {
           className="flex flex-col items-center"
         >
           <div className="flex items-center gap-2">
-            <span className="text-4xl font-black text-[#FF6A00]">{streak}</span>
+            <span className="text-4xl font-black text-[#F97316]">{streak}</span>
             <span className="text-3xl">🔥</span>
           </div>
           <p className="text-sm font-bold text-[#8FA4C8] mt-0.5">HARI BERTURUT-TURUT</p>
@@ -62,7 +62,7 @@ function StreakInner({ message, streak, onClose }) {
           whileTap={{ scale: 0.95 }}
           onClick={onClose}
           className="w-full py-3 rounded-2xl font-bold text-white text-sm"
-          style={{ background: "#FF6A00" }}
+          style={{ background: "#F97316" }}
         >
           Lanjutkan! 💪
         </motion.button>

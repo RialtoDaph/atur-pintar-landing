@@ -131,7 +131,7 @@ export default function SpendingPatternCard({ transactions = [], filterPeriod = 
             />
             <Bar dataKey="total" radius={[6, 6, 0, 0]}>
               {dayData.map((entry, idx) => (
-                <Cell key={idx} fill={entry.total === maxVal ? "#FF6A00" : "#FFC785"} />
+                <Cell key={idx} fill={entry.total === maxVal ? "#F97316" : "#FFC785"} />
               ))}
             </Bar>
           </BarChart>
@@ -176,7 +176,7 @@ export default function SpendingPatternCard({ transactions = [], filterPeriod = 
             />
             <Bar dataKey="total" radius={[6, 6, 0, 0]}>
               {hourData.map((entry, idx) => (
-                <Cell key={idx} fill={entry.total === maxVal ? "#FF6A00" : "#FFC785"} />
+                <Cell key={idx} fill={entry.total === maxVal ? "#F97316" : "#FFC785"} />
               ))}
             </Bar>
           </BarChart>

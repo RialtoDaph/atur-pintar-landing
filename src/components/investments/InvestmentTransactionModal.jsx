@@ -83,7 +83,7 @@ export default function InvestmentTransactionModal({ investment, type, onClose, 
                 }}
                 placeholder="0"
                 autoFocus
-                className="w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm font-semibold text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#FF6A00]/30"
+                className="w-full pl-10 pr-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm font-semibold text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
               />
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function InvestmentTransactionModal({ investment, type, onClose, 
               value={date}
               max={today}
               onChange={e => setDate(e.target.value)}
-              className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#FF6A00]/30"
+              className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-sm text-[#1A1A1A] outline-none focus:ring-2 focus:ring-[#F97316]/30"
             />
             {date > today && (
               <p className="text-xs text-[#FF6B6B] mt-1">Tanggal tidak boleh di masa depan</p>

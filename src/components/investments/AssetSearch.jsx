@@ -73,9 +73,9 @@ export default function AssetSearch({ type, onSelect, placeholder }) {
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           onFocus={() => searchTerm && setShowResults(true)}
-          className="w-full pl-10 pr-4 py-3 border border-[#E2E8F0] rounded-xl text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+          className="w-full pl-10 pr-4 py-3 border border-[#E2E8F0] rounded-xl text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
         />
-        {loading && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#FF6A00] animate-spin" />}
+        {loading && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#F97316] animate-spin" />}
       </div>
 
       {showResults && results.length > 0 && (

@@ -91,7 +91,7 @@ export default function AdminActivityFeed() {
     <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-[#F2F4F7]">
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-[#FF6A00]" />
+          <Activity className="w-4 h-4 text-[#F97316]" />
           <p className="text-sm font-bold text-[#1A1A1A]">Aktivitas Real-time</p>
           {autoRefresh && (
             <span className="flex items-center gap-1 text-[10px] text-green-600 font-medium">
@@ -107,7 +107,7 @@ export default function AdminActivityFeed() {
           )}
           <button
             onClick={() => setAutoRefresh(v => !v)}
-            className={`text-[10px] px-2 py-1 rounded-lg font-medium ${autoRefresh ? "bg-[#FF6A00]/10 text-[#FF6A00]" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
+            className={`text-[10px] px-2 py-1 rounded-lg font-medium ${autoRefresh ? "bg-[#F97316]/10 text-[#F97316]" : "bg-[#F2F4F7] text-[#8FA4C8]"}`}>
             {autoRefresh ? "Auto" : "Off"}
           </button>
           <button onClick={load} className="p-1.5 rounded-lg hover:bg-[#F8FAFC]">

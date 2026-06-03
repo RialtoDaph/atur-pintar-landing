@@ -22,7 +22,7 @@ export default function NanaInsightCard({ todayExpense }) {
       <div className="flex-1 min-w-0">
         {hasData ?
         <p className="text-sm text-[#1A1A1A] leading-snug">
-            Pengeluaran hari ini <span className="font-bold text-[#FF6B35]">Rp {todayExpense.toLocaleString("id-ID")}</span>.{" "}
+            Pengeluaran hari ini <span className="font-bold text-[#F97316]">Rp {todayExpense.toLocaleString("id-ID")}</span>.{" "}
             <span className="text-[#4A5568]">{comment}</span>
           </p> :
 
@@ -33,7 +33,7 @@ export default function NanaInsightCard({ todayExpense }) {
       </div>
       <Link
         to="/Nana"
-        className="flex-shrink-0 text-[11px] font-bold text-[#FF6B35] bg-[#FFF0E8] px-2.5 py-1.5 rounded-xl whitespace-nowrap">
+        className="flex-shrink-0 text-[11px] font-bold text-[#F97316] bg-[#FFF0E8] px-2.5 py-1.5 rounded-xl whitespace-nowrap">
         
         Tanya Nana →
       </Link>

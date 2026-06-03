@@ -117,7 +117,7 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
               <button
                 onClick={() => setSplitMode("equal")}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition-all tap-highlight-fix ${
-                  splitMode === "equal" ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] bg-[#F8FAFC]"
+                  splitMode === "equal" ? "border-[#F97316] bg-[#F97316]/10 text-[#F97316]" : "border-[#E2E8F0] text-[#4A5568] bg-[#F8FAFC]"
                 }`}
               >
                 <Equal className="w-4 h-4" /> {t('equal_split')}
@@ -125,7 +125,7 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
               <button
                 onClick={() => setSplitMode("itemized")}
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-semibold transition-all tap-highlight-fix ${
-                  splitMode === "itemized" ? "border-[#FF6A00] bg-[#FF6A00]/10 text-[#FF6A00]" : "border-[#E2E8F0] text-[#4A5568] bg-[#F8FAFC]"
+                  splitMode === "itemized" ? "border-[#F97316] bg-[#F97316]/10 text-[#F97316]" : "border-[#E2E8F0] text-[#4A5568] bg-[#F8FAFC]"
                 }`}
               >
                 <List className="w-4 h-4" /> {t('itemized_split')}
@@ -146,8 +146,8 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
                 <div className="flex flex-wrap gap-1.5">
                   {appUsers.filter(u => !participants.find(p => p.email === u.email)).map(u => (
                     <button key={u.id} onClick={() => addFromAppUser(u)}
-                      className="flex items-center gap-1.5 text-xs bg-[#F2F4F7] hover:bg-[#FF6A00]/10 hover:border-[#FF6A00] border border-[#E2E8F0] rounded-full px-2.5 py-1 transition-all">
-                      <span className="w-4 h-4 rounded-full bg-[#FF6A00] text-white text-[9px] font-bold flex items-center justify-center flex-shrink-0">
+                      className="flex items-center gap-1.5 text-xs bg-[#F2F4F7] hover:bg-[#F97316]/10 hover:border-[#F97316] border border-[#E2E8F0] rounded-full px-2.5 py-1 transition-all">
+                      <span className="w-4 h-4 rounded-full bg-[#F97316] text-white text-[9px] font-bold flex items-center justify-center flex-shrink-0">
                         {u.full_name?.[0]?.toUpperCase() || "?"}
                       </span>
                       <span className="text-[#1A1A1A] font-medium">{u.full_name}</span>
@@ -167,7 +167,7 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
                       {p.email && (
                         <button onClick={() => inviteParticipant(p.email)} disabled={inviting === p.email}
                           title={`Invite ${p.email}`}
-                          className="text-[#8FA4C8] hover:text-[#FF6A00] transition-colors ml-0.5">
+                          className="text-[#8FA4C8] hover:text-[#F97316] transition-colors ml-0.5">
                           <Mail className="w-3 h-3" />
                         </button>
                       )}
@@ -183,7 +183,7 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
             <div className="space-y-2">
               <div className="flex gap-2">
                 <input
-                  className="flex-1 border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
+                  className="flex-1 border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
                   placeholder={t('friend_name')}
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
@@ -195,7 +195,7 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
                 </button>
               </div>
               <input
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
                 placeholder={t('email_optional')}
                 value={newEmail}
                 onChange={e => setNewEmail(e.target.value)}
@@ -224,8 +224,8 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
                           onClick={() => toggleItemAllocation(idx, p.name)}
                           className={`text-xs px-2.5 py-1 rounded-full border font-medium transition-all ${
                             item.allocated_to.includes(p.name)
-                              ? "bg-[#FF6A00] border-[#FF6A00] text-white"
-                              : "bg-white border-[#E2E8F0] text-[#4A5568] hover:border-[#FF6A00]"
+                              ? "bg-[#F97316] border-[#F97316] text-white"
+                              : "bg-white border-[#E2E8F0] text-[#4A5568] hover:border-[#F97316]"
                           }`}
                         >
                           {p.name}
@@ -251,7 +251,7 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
                     <span className="text-sm font-medium text-[#1A1A1A]">{s.name}</span>
                     {s.name !== "Saya" && <span className="ml-2 text-[10px] text-[#8FA4C8]">→ {t('iou_will_be_created')}</span>}
                   </div>
-                  <span className="text-sm font-bold text-[#FF6A00]">{formatRupiah(s.amount)}</span>
+                  <span className="text-sm font-bold text-[#F97316]">{formatRupiah(s.amount)}</span>
                 </div>
               ))}
             </div>
@@ -264,7 +264,7 @@ export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
           <button
             onClick={handleConfirm}
             disabled={participants.length === 0}
-            className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] hover:bg-[#e05e00] disabled:opacity-40 transition-colors tap-highlight-fix"
+            className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] hover:bg-[#e05e00] disabled:opacity-40 transition-colors tap-highlight-fix"
           >
             {t('confirm_record_transaction')}
           </button>

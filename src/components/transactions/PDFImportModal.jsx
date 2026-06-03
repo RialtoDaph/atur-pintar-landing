@@ -39,13 +39,13 @@ function StepBar({ step }) {
       {STEPS.map((s, i) => (
         <div key={s} className="flex items-center flex-1">
           <div className="flex flex-col items-center flex-1 gap-1">
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${i < idx ? "bg-[#FF6A00] text-white" : i === idx ? "bg-[#FF6A00] text-white ring-4 ring-[#FF6A00]/20" : "bg-[#F2F4F7] text-[#CBD5E0]"}`}>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${i < idx ? "bg-[#F97316] text-white" : i === idx ? "bg-[#F97316] text-white ring-4 ring-[#F97316]/20" : "bg-[#F2F4F7] text-[#CBD5E0]"}`}>
               {i < idx ? "✓" : i + 1}
             </div>
-            <span className={`text-[9px] font-semibold leading-none ${i <= idx ? "text-[#FF6A00]" : "text-[#CBD5E0]"}`}>{STEP_LABELS[i]}</span>
+            <span className={`text-[9px] font-semibold leading-none ${i <= idx ? "text-[#F97316]" : "text-[#CBD5E0]"}`}>{STEP_LABELS[i]}</span>
           </div>
           {i < STEPS.length - 1 && (
-            <div className={`h-0.5 flex-1 mb-4 mx-1 rounded-full transition-all ${i < idx ? "bg-[#FF6A00]" : "bg-[#F2F4F7]"}`} />
+            <div className={`h-0.5 flex-1 mb-4 mx-1 rounded-full transition-all ${i < idx ? "bg-[#F97316]" : "bg-[#F2F4F7]"}`} />
           )}
         </div>
       ))}
@@ -58,7 +58,7 @@ function MappingRow({ label, required, value, fields, onChange }) {
     <div>
       <label className="text-[10px] font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1 block">{label}{required && " *"}</label>
       <select
-        className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+        className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
         value={value}
         onChange={e => onChange(e.target.value)}
       >
@@ -79,7 +79,7 @@ function CategorySummary({ transactions }) {
       <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-2">Ringkasan Kategori</p>
       <div className="flex flex-wrap gap-1.5">
         {Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([cat, count]) => (
-          <div key={cat} className="flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold border bg-[#FFF5EB] border-[#FF6A00]/20 text-[#FF6A00]">
+          <div key={cat} className="flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold border bg-[#FFF5EB] border-[#F97316]/20 text-[#F97316]">
             <span>{CAT_EMOJI[cat] || "📦"}</span>
             <span>{cat}</span>
             <span className="bg-white/60 px-1 rounded-full text-[9px]">{count}</span>
@@ -365,7 +365,7 @@ Pastikan:
                   <button
                     key={tpl.id}
                     onClick={() => { setSelectedTemplate(tpl); setStep("upload"); }}
-                    className="flex items-center gap-2.5 p-3 rounded-2xl border-2 border-[#E2E8F0] active:border-[#FF6A00] active:bg-[#FFF5EB] hover:border-[#FF6A00] hover:bg-[#FFF5EB] transition-all text-left tap-highlight-fix"
+                    className="flex items-center gap-2.5 p-3 rounded-2xl border-2 border-[#E2E8F0] active:border-[#F97316] active:bg-[#FFF5EB] hover:border-[#F97316] hover:bg-[#FFF5EB] transition-all text-left tap-highlight-fix"
                   >
                     {tpl.isAuto ? (
                       <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-[#F2F4F7] flex items-center justify-center">
@@ -394,7 +394,7 @@ Pastikan:
           {step === "upload" && (
             <div className="space-y-3">
               {selectedTemplate && (
-                <div className="flex items-center gap-3 bg-[#FFF5EB] border border-[#FF6A00]/20 rounded-2xl px-4 py-3">
+                <div className="flex items-center gap-3 bg-[#FFF5EB] border border-[#F97316]/20 rounded-2xl px-4 py-3">
                   {selectedTemplate.logo_url ? (
                     <AccountLogo
                       logoUrl={selectedTemplate.logo_url}
@@ -405,17 +405,17 @@ Pastikan:
                     <span className="text-xl flex-shrink-0">{selectedTemplate.icon}</span>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-[#FF6A00]">{selectedTemplate.name}</p>
+                    <p className="text-xs font-bold text-[#F97316]">{selectedTemplate.name}</p>
                     <p className="text-[10px] text-[#8FA4C8]">{selectedTemplate.description}</p>
                   </div>
-                  <button onClick={() => setStep("template")} className="text-[10px] text-[#8FA4C8] hover:text-[#FF6A00] font-semibold whitespace-nowrap tap-highlight-fix">Ganti</button>
+                  <button onClick={() => setStep("template")} className="text-[10px] text-[#8FA4C8] hover:text-[#F97316] font-semibold whitespace-nowrap tap-highlight-fix">Ganti</button>
                 </div>
               )}
 
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-16 gap-4">
                   <div className="w-16 h-16 rounded-2xl bg-[#FFF5EB] flex items-center justify-center">
-                    <Loader2 className="w-8 h-8 text-[#FF6A00] animate-spin" />
+                    <Loader2 className="w-8 h-8 text-[#F97316] animate-spin" />
                   </div>
                   <div className="text-center">
                     <p className="font-bold text-[#1A1A1A] text-sm">Membaca file...</p>
@@ -426,7 +426,7 @@ Pastikan:
               ) : (
                 <>
                   <button
-                    className="w-full border-2 border-dashed border-[#E2E8F0] rounded-2xl py-10 text-center active:border-[#FF6A00] active:bg-[#FFF5EB] hover:border-[#FF6A00] transition-colors tap-highlight-fix"
+                    className="w-full border-2 border-dashed border-[#E2E8F0] rounded-2xl py-10 text-center active:border-[#F97316] active:bg-[#FFF5EB] hover:border-[#F97316] transition-colors tap-highlight-fix"
                     onClick={() => fileRef.current?.click()}
                     onDragOver={e => e.preventDefault()}
                     onDrop={e => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }}
@@ -458,9 +458,9 @@ Pastikan:
             <div className="space-y-4">
               {/* Info row */}
               <div className="flex items-center gap-2 bg-[#F2F4F7] rounded-2xl px-4 py-3">
-                <FileText className="w-4 h-4 text-[#FF6A00] flex-shrink-0" />
+                <FileText className="w-4 h-4 text-[#F97316] flex-shrink-0" />
                 <p className="text-xs text-[#4A5568]">
-                  <span className="font-bold text-[#1A1A1A]">{extractedRows.length}</span> baris terdeteksi dari <span className="font-semibold text-[#FF6A00] truncate">{fileName}</span>
+                  <span className="font-bold text-[#1A1A1A]">{extractedRows.length}</span> baris terdeteksi dari <span className="font-semibold text-[#F97316] truncate">{fileName}</span>
                 </p>
               </div>
 
@@ -493,7 +493,7 @@ Pastikan:
                   <div className="grid grid-cols-2 gap-2">
                     {["expense", "income"].map(t => (
                       <button key={t} onClick={() => setDefaultType(t)}
-                        className={`py-3 rounded-2xl text-sm font-semibold transition-colors tap-highlight-fix ${defaultType === t ? "bg-[#FF6A00] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
+                        className={`py-3 rounded-2xl text-sm font-semibold transition-colors tap-highlight-fix ${defaultType === t ? "bg-[#F97316] text-white" : "bg-[#F2F4F7] text-[#4A5568]"}`}>
                         {t === "expense" ? "💸 Pengeluaran" : "💰 Pemasukan"}
                       </button>
                     ))}
@@ -521,7 +521,7 @@ Pastikan:
               <button
                 onClick={buildPreview}
                 disabled={!canMap}
-                className="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 active:bg-[#e05e00] hover:bg-[#e05e00] transition-colors tap-highlight-fix"
+                className="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 active:bg-[#e05e00] hover:bg-[#e05e00] transition-colors tap-highlight-fix"
               >
                 Proses & Lihat Preview →
               </button>
@@ -537,7 +537,7 @@ Pastikan:
                   <p className="text-sm font-bold text-[#1A1A1A]">{preview.length} transaksi siap diimpor</p>
                   {previewErrors.length > 0 && <p className="text-xs text-amber-600 mt-0.5">{previewErrors.length} baris dilewati</p>}
                 </div>
-                <button onClick={() => setStep("map")} className="flex items-center gap-1 text-xs text-[#8FA4C8] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
+                <button onClick={() => setStep("map")} className="flex items-center gap-1 text-xs text-[#8FA4C8] hover:text-[#F97316] transition-colors tap-highlight-fix">
                   <RefreshCw className="w-3 h-3" /> Edit Mapping
                 </button>
               </div>
@@ -554,7 +554,7 @@ Pastikan:
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-[#1A1A1A] truncate">{tx.note || "-"}</p>
-                      <p className="text-[10px] text-[#8FA4C8] mt-0.5">{tx.date} · <span className="text-[#FF6A00]">{tx.category}</span></p>
+                      <p className="text-[10px] text-[#8FA4C8] mt-0.5">{tx.date} · <span className="text-[#F97316]">{tx.category}</span></p>
                     </div>
                     <span className={`text-xs font-bold flex-shrink-0 ${tx.type === "income" ? "text-[#22C55E]" : "text-[#EF4444]"}`}>
                       {tx.type === "income" ? "+" : "−"}Rp{(tx.amount || 0).toLocaleString("id-ID")}
@@ -580,7 +580,7 @@ Pastikan:
               <button
                 onClick={handleImport}
                 disabled={importing || preview.length === 0}
-                className="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 active:bg-[#e05e00] hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2 tap-highlight-fix"
+                className="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 active:bg-[#e05e00] hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2 tap-highlight-fix"
               >
                 {importing
                   ? <><Loader2 className="w-4 h-4 animate-spin" /> Mengimpor...</>
@@ -601,7 +601,7 @@ Pastikan:
               </p>
               <p className="text-xs text-[#8FA4C8] mb-8">Kategori terisi otomatis dari keterangan transaksi</p>
               <button onClick={() => { onSuccess?.(); onClose(); }}
-                className="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#FF6A00] active:bg-[#e05e00] hover:bg-[#e05e00] transition-colors tap-highlight-fix">
+                className="w-full py-4 rounded-2xl font-bold text-sm text-white bg-[#F97316] active:bg-[#e05e00] hover:bg-[#e05e00] transition-colors tap-highlight-fix">
                 Lihat Transaksi
               </button>
             </div>

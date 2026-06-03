@@ -116,7 +116,7 @@ export async function seedSampleData() {
     target_amount: 25000000,
     current_amount: 7500000,
     icon: "✈️",
-    color: "#FF6A00",
+    color: "#F97316",
     deadline: day(8, 1),
     status: "active",
     description: "Tabungan untuk liburan impian ke Jepang"
@@ -169,9 +169,9 @@ export default function SampleDataBanner({ onDismiss }) {
   }
 
   return (
-    <div className="bg-gradient-to-r my-10 px-4 py-3 rounded-2xl from-[#FF6A00]/10 to-[#FF6A00]/5 border border-[#FF6A00]/20 flex items-center justify-between gap-3">
+    <div className="bg-gradient-to-r my-10 px-4 py-3 rounded-2xl from-[#F97316]/10 to-[#F97316]/5 border border-[#F97316]/20 flex items-center justify-between gap-3">
       <div className="flex items-center gap-2.5 min-w-0">
-        <Sparkles className="w-4 h-4 text-[#FF6A00] flex-shrink-0" />
+        <Sparkles className="w-4 h-4 text-[#F97316] flex-shrink-0" />
         <div className="min-w-0">
           <p className="text-xs font-bold text-[#1A1A1A]">Data contoh aktif</p>
           <p className="text-[10px] text-[#8FA4C8] leading-tight">Grafik menggunakan data simulasi. Hapus saat siap input data nyata.</p>

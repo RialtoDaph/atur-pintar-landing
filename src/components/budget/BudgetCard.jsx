@@ -48,7 +48,7 @@ export default function BudgetCard({ budget, categoryMeta, spent, onEdit, onDele
           </span>
           <button
             onClick={() => onEdit(budget)}
-            className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors"
+            className="text-[#CBD5E0] hover:text-[#F97316] transition-colors"
           >
             <Pencil className="w-4 h-4" />
           </button>

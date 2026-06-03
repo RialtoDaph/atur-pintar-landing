@@ -41,7 +41,7 @@ export default function ReceiptCorrectionForm({ receiptData, onChange }) {
       {!editing ? (
         <button
           onClick={() => setEditing(true)}
-          className="flex items-center gap-1.5 text-xs text-[#8FA4C8] hover:text-[#FF6A00] transition-colors font-medium"
+          className="flex items-center gap-1.5 text-xs text-[#8FA4C8] hover:text-[#F97316] transition-colors font-medium"
         >
           <Pencil className="w-3 h-3" />
           Koreksi data struk
@@ -54,7 +54,7 @@ export default function ReceiptCorrectionForm({ receiptData, onChange }) {
           <div>
             <label className="text-[10px] text-[#8FA4C8] font-semibold uppercase tracking-widest mb-1 block">Nama Toko</label>
             <input
-              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
               value={form.store_name}
               onChange={e => setForm(f => ({ ...f, store_name: e.target.value }))}
             />
@@ -65,7 +65,7 @@ export default function ReceiptCorrectionForm({ receiptData, onChange }) {
             <label className="text-[10px] text-[#8FA4C8] font-semibold uppercase tracking-widest mb-1 block">Tanggal</label>
             <input
               type="date"
-              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
               value={form.date}
               onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
             />
@@ -76,7 +76,7 @@ export default function ReceiptCorrectionForm({ receiptData, onChange }) {
             <label className="text-[10px] text-[#8FA4C8] font-semibold uppercase tracking-widest mb-1 block">Total Tagihan (Rp)</label>
             <input
               type="number"
-              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
               value={form.total_amount}
               onChange={e => setForm(f => ({ ...f, total_amount: Number(e.target.value) || 0 }))}
             />
@@ -87,7 +87,7 @@ export default function ReceiptCorrectionForm({ receiptData, onChange }) {
             <label className="text-[10px] text-[#8FA4C8] font-semibold uppercase tracking-widest mb-1 block">Pajak/PPN (Rp)</label>
             <input
               type="number"
-              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
               value={form.tax_amount}
               onChange={e => setForm(f => ({ ...f, tax_amount: Number(e.target.value) || 0 }))}
             />
@@ -107,21 +107,21 @@ export default function ReceiptCorrectionForm({ receiptData, onChange }) {
                 {(form.items || []).map((item, i) => (
                   <div key={i} className="flex gap-1.5 items-center">
                     <input
-                      className="flex-1 border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                      className="flex-1 border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-[#F8FAFC]"
                       placeholder="Nama item"
                       value={item.name}
                       onChange={e => updateItem(i, "name", e.target.value)}
                     />
                     <input
                       type="number"
-                      className="w-20 border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                      className="w-20 border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-[#F8FAFC]"
                       placeholder="Harga"
                       value={item.price}
                       onChange={e => updateItem(i, "price", e.target.value)}
                     />
                     <input
                       type="number"
-                      className="w-12 border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                      className="w-12 border border-[#E2E8F0] rounded-lg px-2 py-1.5 text-xs text-[#1A1A1A] focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-[#F8FAFC]"
                       placeholder="Qty"
                       value={item.quantity}
                       onChange={e => updateItem(i, "quantity", e.target.value)}
@@ -135,7 +135,7 @@ export default function ReceiptCorrectionForm({ receiptData, onChange }) {
                   <button onClick={addItem} className="flex items-center gap-1 text-xs text-[#8FA4C8] hover:text-[#1A1A1A] font-medium">
                     <Plus className="w-3 h-3" /> Tambah item
                   </button>
-                  <button onClick={recalcTotal} className="flex items-center gap-1 text-xs text-[#FF6A00] hover:text-orange-600 font-medium ml-auto">
+                  <button onClick={recalcTotal} className="flex items-center gap-1 text-xs text-[#F97316] hover:text-orange-600 font-medium ml-auto">
                     Hitung ulang total
                   </button>
                 </div>

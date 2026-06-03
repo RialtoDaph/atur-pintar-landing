@@ -123,17 +123,17 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
               if (isTaken(parent.id) && children.length === 0) return null;
               return (
                 <div key={parent.id} className="rounded-xl overflow-hidden border transition-all"
-                  style={{ borderColor: isSelected ? "#FF6A0060" : "#E2E8F0" }}>
+                  style={{ borderColor: isSelected ? "#F9731660" : "#E2E8F0" }}>
                   {/* Parent row — click selects parent, chevron expands subs */}
-                  <div className="flex items-center" style={{ backgroundColor: isSelected ? "#FF6A0010" : "#F8FAFC" }}>
+                  <div className="flex items-center" style={{ backgroundColor: isSelected ? "#F9731610" : "#F8FAFC" }}>
                     <button
                       onClick={() => !isTaken(parent.id) && setCategory(isParentSelected ? "" : parent.id)}
                       disabled={isTaken(parent.id)}
                       className="flex items-center gap-2.5 px-3 py-2.5 flex-1 text-left transition-colors disabled:opacity-40">
                       <span className="text-lg">{parent.emoji}</span>
-                      <span className="text-xs font-semibold flex-1" style={{ color: isSelected ? "#FF6A00" : "#1A1A1A" }}>{parent.name}</span>
+                      <span className="text-xs font-semibold flex-1" style={{ color: isSelected ? "#F97316" : "#1A1A1A" }}>{parent.name}</span>
                       {isChildSelected && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#FF6A0020] text-[#FF6A00]">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#F9731620] text-[#F97316]">
                           {children.find(c => c.id === category)?.name}
                         </span>
                       )}
@@ -152,9 +152,9 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
                         <button key={sub.id} onClick={() => setCategory(sub.id)}
                           className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold border transition-all"
                           style={{
-                            backgroundColor: category === sub.id ? "#FF6A0020" : "#F2F4F7",
-                            borderColor: category === sub.id ? "#FF6A00" : "#E2E8F0",
-                            color: category === sub.id ? "#FF6A00" : "#4A5568"
+                            backgroundColor: category === sub.id ? "#F9731620" : "#F2F4F7",
+                            borderColor: category === sub.id ? "#F97316" : "#E2E8F0",
+                            color: category === sub.id ? "#F97316" : "#4A5568"
                           }}>
                           <span>{sub.emoji}</span>{sub.name}
                         </button>
@@ -172,9 +172,9 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
                     <button key={c.key} onClick={() => setCategory(c.key)}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-semibold border transition-all"
                       style={{
-                        backgroundColor: category === c.key ? "#FF6A0020" : "#F2F4F7",
-                        borderColor: category === c.key ? "#FF6A00" : "#E2E8F0",
-                        color: category === c.key ? "#FF6A00" : "#4A5568"
+                        backgroundColor: category === c.key ? "#F9731620" : "#F2F4F7",
+                        borderColor: category === c.key ? "#F97316" : "#E2E8F0",
+                        color: category === c.key ? "#F97316" : "#4A5568"
                       }}>
                       <span>{c.emoji}</span>{c.label}
                     </button>
@@ -195,7 +195,7 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
             <input
               type="text"
               inputMode="numeric"
-              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3.5 text-xl font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3.5 text-xl font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
               placeholder="0"
               value={displayAmount}
               onChange={handleAmountChange} />
@@ -214,7 +214,7 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
           <button
             onClick={handleSave}
             disabled={saving || !category || !rawAmount}
-            className="flex-1 py-3.5 rounded-xl bg-[#FF6A00] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 py-3.5 rounded-xl bg-[#F97316] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {saving ? (
               <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Menyimpan...</>

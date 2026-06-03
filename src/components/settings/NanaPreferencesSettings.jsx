@@ -78,7 +78,7 @@ export default function NanaPreferencesSettings() {
     return (
       <Card>
         <CardContent className="pt-6 flex justify-center">
-          <Loader2 className="w-5 h-5 animate-spin text-[#FF6A00]" />
+          <Loader2 className="w-5 h-5 animate-spin text-[#F97316]" />
         </CardContent>
       </Card>
     );
@@ -128,7 +128,7 @@ export default function NanaPreferencesSettings() {
           <p className="text-xs text-[#8FA4C8] mb-3">Pilih topik yang ingin Anda terima saran lebih sering</p>
           <div className="space-y-2">
             {ADVICE_TYPES.map((type) => (
-              <div key={type.id} className="flex items-start gap-3 p-3 rounded-lg border border-[#2D2D2D] hover:border-[#FF6A00]/30 transition-colors">
+              <div key={type.id} className="flex items-start gap-3 p-3 rounded-lg border border-[#2D2D2D] hover:border-[#F97316]/30 transition-colors">
                 <Checkbox
                   id={type.id}
                   checked={(preferences.preferred_advice_types || []).includes(type.id)}
@@ -162,7 +162,7 @@ export default function NanaPreferencesSettings() {
         <Button
           onClick={savePreferences}
           disabled={saving}
-          className="w-full bg-[#FF6A00] hover:bg-[#e05e00] text-white"
+          className="w-full bg-[#F97316] hover:bg-[#e05e00] text-white"
         >
           {saving ? (
             <>

@@ -13,7 +13,7 @@ export default function FinancialHealthCard({ score = 0 }) {
   return (
     <div
       className="rounded-2xl p-5 shadow-md"
-      style={{ background: "linear-gradient(135deg, #FF6B35, #FF8C5A)" }}
+      style={{ background: "linear-gradient(135deg, #F97316, #FB923C)" }}
     >
       <p className="text-white/80 text-xs font-semibold uppercase tracking-widest mb-1">
         Financial Health Score

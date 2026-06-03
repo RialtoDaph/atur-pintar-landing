@@ -114,7 +114,7 @@ export default function AlertsDrawer({ onClose, user }) {
               <button
                 onClick={() => setTab("alerts")}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 relative ${
-                  tab === "alerts" ? "bg-[#FF6A00] text-white shadow-sm" : "text-[#8FA4C8]"
+                  tab === "alerts" ? "bg-[#F97316] text-white shadow-sm" : "text-[#8FA4C8]"
                 }`}
               >
                 <Bell className="w-3.5 h-3.5" /> Notif
@@ -127,12 +127,12 @@ export default function AlertsDrawer({ onClose, user }) {
               <button
                 onClick={() => setTab("reminders")}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 relative ${
-                  tab === "reminders" ? "bg-[#FF6A00] text-white shadow-sm" : "text-[#8FA4C8]"
+                  tab === "reminders" ? "bg-[#F97316] text-white shadow-sm" : "text-[#8FA4C8]"
                 }`}
               >
                 <Calendar className="w-3.5 h-3.5" /> Pengingat
                 {upcomingCount > 0 && tab !== "reminders" && (
-                  <span className="absolute top-0.5 right-1 w-4 h-4 bg-[#FF6A00] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute top-0.5 right-1 w-4 h-4 bg-[#F97316] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                     {upcomingCount}
                   </span>
                 )}
@@ -140,7 +140,7 @@ export default function AlertsDrawer({ onClose, user }) {
               <button
                 onClick={() => setTab("insights")}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
-                  tab === "insights" ? "bg-[#FF6A00] text-white shadow-sm" : "text-[#8FA4C8]"
+                  tab === "insights" ? "bg-[#F97316] text-white shadow-sm" : "text-[#8FA4C8]"
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" /> Insights

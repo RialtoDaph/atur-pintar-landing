@@ -69,14 +69,14 @@ export default function TaxCalculator({ investmentId, formatCurrency }) {
           <select
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value))}
-            className="text-xs border border-[#E2E8F0] rounded-lg px-2 py-0.5 text-[#4A5568] focus:ring-1 focus:ring-[#FF6A00] bg-white"
+            className="text-xs border border-[#E2E8F0] rounded-lg px-2 py-0.5 text-[#4A5568] focus:ring-1 focus:ring-[#F97316] bg-white"
           >
             {YEAR_OPTIONS.map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="text-xs text-[#FF6A00] font-medium hover:underline"
+          className="text-xs text-[#F97316] font-medium hover:underline"
         >
           {showForm ? (lang === 'en' ? 'Cancel' : 'Batal') : '+ ' + (lang === 'en' ? 'Add' : 'Tambah')}
         </button>
@@ -91,7 +91,7 @@ export default function TaxCalculator({ investmentId, formatCurrency }) {
             <select
               value={form.tax_type}
               onChange={(e) => setForm({ ...form, tax_type: e.target.value })}
-              className="w-full text-xs border border-[#E2E8F0] rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#FF6A00]"
+              className="w-full text-xs border border-[#E2E8F0] rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#F97316]"
             >
               <option value="capital_gain">Capital Gain</option>
               <option value="dividend">{typeLabels.dividend}</option>
@@ -108,7 +108,7 @@ export default function TaxCalculator({ investmentId, formatCurrency }) {
               placeholder="0"
               value={form.gross_amount}
               onChange={(e) => setForm({ ...form, gross_amount: e.target.value })}
-              className="w-full text-xs border border-[#E2E8F0] rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#FF6A00]"
+              className="w-full text-xs border border-[#E2E8F0] rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#F97316]"
             />
           </div>
           <div>
@@ -122,13 +122,13 @@ export default function TaxCalculator({ investmentId, formatCurrency }) {
               placeholder="15"
               value={form.tax_rate}
               onChange={(e) => setForm({ ...form, tax_rate: e.target.value })}
-              className="w-full text-xs border border-[#E2E8F0] rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#FF6A00]"
+              className="w-full text-xs border border-[#E2E8F0] rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#F97316]"
             />
           </div>
           <button
             onClick={handleSaveTax}
             disabled={!form.gross_amount}
-            className="w-full text-xs font-medium bg-[#FF6A00] text-white py-1.5 rounded-lg hover:bg-[#e05e00] disabled:opacity-40"
+            className="w-full text-xs font-medium bg-[#F97316] text-white py-1.5 rounded-lg hover:bg-[#e05e00] disabled:opacity-40"
           >
             {lang === 'en' ? 'Save' : 'Simpan'}
           </button>

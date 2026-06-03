@@ -78,9 +78,9 @@ export default function DashboardInsights({ transactions, goals }) {
   if (urgentGoals.length > 0) {
     insights.push({
       id: "urgent_goals",
-      icon: <AlertTriangle className="w-4 h-4 text-[#FF6A00]" />,
-      color: "bg-[#FF6A00]/15 border-[#FF6A00]/50",
-        textColor: "text-[#FF6A00]",
+      icon: <AlertTriangle className="w-4 h-4 text-[#F97316]" />,
+      color: "bg-[#F97316]/15 border-[#F97316]/50",
+        textColor: "text-[#F97316]",
       text: `${urgentGoals.length} tujuan tabungan mendekati deadline — "${urgentGoals[0].name}" dalam ${Math.ceil((new Date(urgentGoals[0].deadline) - now) / (1000 * 60 * 60 * 24))} hari.`,
     });
   }

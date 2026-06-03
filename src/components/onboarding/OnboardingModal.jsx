@@ -51,7 +51,7 @@ export default function OnboardingModal({ onClose }) {
         {/* Progress bar */}
         <div className="h-1 bg-[#F2F4F7]">
           <div
-            className="h-1 bg-[#FF6A00] transition-all duration-300"
+            className="h-1 bg-[#F97316] transition-all duration-300"
             style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
           />
         </div>
@@ -69,8 +69,8 @@ export default function OnboardingModal({ onClose }) {
             <h2 className="text-lg font-bold text-[#1A1A1A] mb-2">{current.title}</h2>
             <p className="text-sm text-[#4A5568] leading-relaxed">{current.desc}</p>
             {current.hint && (
-              <div className="mt-3 bg-[#FFF5EB] border border-[#FF6A00]/20 rounded-xl px-4 py-2.5">
-                <p className="text-xs text-[#FF6A00] font-medium">{current.hint}</p>
+              <div className="mt-3 bg-[#FFF5EB] border border-[#F97316]/20 rounded-xl px-4 py-2.5">
+                <p className="text-xs text-[#F97316] font-medium">{current.hint}</p>
               </div>
             )}
           </div>
@@ -86,7 +86,7 @@ export default function OnboardingModal({ onClose }) {
             )}
             <button
               onClick={isLast ? onClose : () => setStep(s => s + 1)}
-              className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-xl bg-[#F97316] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors flex items-center justify-center gap-2"
             >
               {isLast ? "Mulai Sekarang 🚀" : (
                 <>Selanjutnya <ArrowRight className="w-4 h-4" /></>

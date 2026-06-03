@@ -80,7 +80,7 @@ export default function RiskProfileAssessment() {
     return (
       <Card>
         <CardContent className="pt-6 flex justify-center">
-          <Loader2 className="w-5 h-5 animate-spin text-[#FF6A00]" />
+          <Loader2 className="w-5 h-5 animate-spin text-[#F97316]" />
         </CardContent>
       </Card>
     );
@@ -182,7 +182,7 @@ export default function RiskProfileAssessment() {
               type="number"
               value={profile.monthly_income || ""}
               onChange={(e) => setProfile({ ...profile, monthly_income: Number(e.target.value) })}
-              className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]"
+              className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]"
               placeholder="0"
             />
           </div>
@@ -192,7 +192,7 @@ export default function RiskProfileAssessment() {
               type="number"
               value={profile.emergency_fund_months || ""}
               onChange={(e) => setProfile({ ...profile, emergency_fund_months: Number(e.target.value) })}
-              className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]"
+              className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]"
               placeholder="0"
             />
           </div>
@@ -207,7 +207,7 @@ export default function RiskProfileAssessment() {
             max="1"
             value={profile.debt_to_income_ratio || ""}
             onChange={(e) => setProfile({ ...profile, debt_to_income_ratio: Number(e.target.value) })}
-            className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]"
+            className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]"
             placeholder="0"
           />
           <p className="text-[10px] text-[#8FA4C8]">Contoh: 0.3 = total utang 30% dari pendapatan bulanan</p>
@@ -216,7 +216,7 @@ export default function RiskProfileAssessment() {
         <Button
           onClick={saveProfile}
           disabled={saving}
-          className="w-full bg-[#FF6A00] hover:bg-[#e05e00] text-white"
+          className="w-full bg-[#F97316] hover:bg-[#e05e00] text-white"
         >
           {saving ? (
             <>

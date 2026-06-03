@@ -23,15 +23,15 @@ export default function GoalsProgressWidget({ goals = [], loading = false }) {
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
         <div className="flex items-center gap-2">
-          <Target className="w-4 h-4 text-[#FF6A00]" />
+          <Target className="w-4 h-4 text-[#F97316]" />
           <h2 className="font-bold text-[#0A0A0A] text-sm">Tujuan Tabungan</h2>
           {activeGoals.length > 0 && (
-            <span className="text-[10px] font-bold text-[#FF6A00] bg-[#FF6A00]/10 px-1.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-bold text-[#F97316] bg-[#F97316]/10 px-1.5 py-0.5 rounded-full">
               {overallPercent}%
             </span>
           )}
         </div>
-        <Link to={createPageUrl("Goals")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
+        <Link to={createPageUrl("Goals")} className="text-xs text-[#F97316] font-semibold flex items-center gap-0.5">
           Lihat semua <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
@@ -51,7 +51,7 @@ export default function GoalsProgressWidget({ goals = [], loading = false }) {
           <div className="flex gap-2 w-max">
             {activeGoals.map(g => {
               const completed = g.percent >= 100;
-              const barColor = completed ? "#00C9A7" : g.percent >= 60 ? "#F5A623" : "#FF6A00";
+              const barColor = completed ? "#00C9A7" : g.percent >= 60 ? "#F5A623" : "#F97316";
               return (
                 <Link
                   key={g.id}

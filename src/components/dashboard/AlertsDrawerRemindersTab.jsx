@@ -73,7 +73,7 @@ export default function AlertsDrawerRemindersTab({ user, reminders, onReload }) 
       {/* Add button */}
       <button
         onClick={() => { setEditing(null); setShowAdd(true); }}
-        className="w-full bg-[#FF6A00] text-white py-3 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all"
+        className="w-full bg-[#F97316] text-white py-3 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all"
         style={{ boxShadow: '0 4px 16px rgba(255,106,0,0.3)' }}
       >
         <Plus className="w-4 h-4" /> Tambah Pengingat
@@ -81,7 +81,7 @@ export default function AlertsDrawerRemindersTab({ user, reminders, onReload }) 
 
       {/* Summary */}
       {activeReminders.length > 0 && (
-        <div className="bg-[#FF6A00] rounded-2xl p-3 text-white">
+        <div className="bg-[#F97316] rounded-2xl p-3 text-white">
           <p className="text-[10px] opacity-80 font-medium uppercase tracking-wide">Total Aktif</p>
           <p className="text-lg font-bold mt-0.5">{formatCurrency(totalDue)}</p>
           <p className="text-[10px] opacity-70 mt-0.5">{activeReminders.length} pengingat aktif</p>
@@ -183,7 +183,7 @@ export default function AlertsDrawerRemindersTab({ user, reminders, onReload }) 
                     <p className="font-medium text-[#0A0A0A] text-xs truncate">{r.title}</p>
                     <p className="text-[10px] text-[#8FA4C8]">Tgl {r.due_day}</p>
                   </div>
-                  <button onClick={() => toggleActive(r)} className="text-[#8FA4C8] hover:text-[#FF6A00] transition-colors">
+                  <button onClick={() => toggleActive(r)} className="text-[#8FA4C8] hover:text-[#F97316] transition-colors">
                     <ToggleLeft className="w-5 h-5" />
                   </button>
                   <button onClick={() => setDeleteConfirm(r.id)} className="text-[#FF6B6B]">

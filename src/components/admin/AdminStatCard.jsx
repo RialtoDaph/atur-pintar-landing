@@ -1,6 +1,6 @@
 export default function AdminStatCard({ icon: Icon, label, value, sub, color = "orange", trend }) {
   const colorMap = {
-    orange: "bg-[#FF6A00]/10 text-[#FF6A00]",
+    orange: "bg-[#F97316]/10 text-[#F97316]",
     blue: "bg-blue-50 text-blue-600",
     green: "bg-green-50 text-green-600",
     red: "bg-red-50 text-red-600",

@@ -97,7 +97,7 @@ export default function NanaDemoChat() {
       <div className="card-dark rounded-3xl overflow-hidden" style={{ boxShadow: "0 0 60px rgba(255,106,0,0.15)" }}>
         {/* Header */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-white/8 bg-white/3">
-          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#FF6A00]/40">
+          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#F97316]/40">
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
               alt="Nana"
@@ -106,7 +106,7 @@ export default function NanaDemoChat() {
           </div>
           <div>
             <p className="text-white text-sm font-bold flex items-center gap-1.5">
-              Nana AI <Sparkles className="w-3 h-3 text-[#FF6A00]" />
+              Nana AI <Sparkles className="w-3 h-3 text-[#F97316]" />
             </p>
             <p className="text-[10px] text-green-400 font-medium">● Demo Mode</p>
           </div>
@@ -119,7 +119,7 @@ export default function NanaDemoChat() {
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
                   msg.role === "user"
-                    ? "bg-[#FF6A00] text-white rounded-br-sm"
+                    ? "bg-[#F97316] text-white rounded-br-sm"
                     : "bg-white/8 text-white/90 rounded-bl-sm"
                 }`}
               >
@@ -145,7 +145,7 @@ export default function NanaDemoChat() {
             <button
               key={s}
               onClick={() => sendMessage(s)}
-              className="flex-shrink-0 text-[10px] font-medium bg-white/6 hover:bg-[#FF6A00]/15 border border-white/10 hover:border-[#FF6A00]/40 text-white/60 hover:text-[#FF6A00] px-3 py-1.5 rounded-full transition-all"
+              className="flex-shrink-0 text-[10px] font-medium bg-white/6 hover:bg-[#F97316]/15 border border-white/10 hover:border-[#F97316]/40 text-white/60 hover:text-[#F97316] px-3 py-1.5 rounded-full transition-all"
             >
               {s}
             </button>
@@ -155,7 +155,7 @@ export default function NanaDemoChat() {
         {/* Input */}
         <div className="flex gap-2 px-4 pb-4 pt-2 bg-[#0D0D0D]">
           <input
-            className="flex-1 bg-white/8 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-[#FF6A00]/50 transition-colors"
+            className="flex-1 bg-white/8 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none focus:border-[#F97316]/50 transition-colors"
             placeholder="Ketik transaksi kamu..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -164,7 +164,7 @@ export default function NanaDemoChat() {
           <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || typing}
-            className="w-10 h-10 rounded-xl bg-[#FF6A00] hover:bg-[#e05e00] disabled:opacity-40 flex items-center justify-center transition-colors flex-shrink-0"
+            className="w-10 h-10 rounded-xl bg-[#F97316] hover:bg-[#e05e00] disabled:opacity-40 flex items-center justify-center transition-colors flex-shrink-0"
           >
             <Send className="w-4 h-4 text-white" />
           </button>

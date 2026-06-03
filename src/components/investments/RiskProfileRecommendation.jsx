@@ -77,7 +77,7 @@ export default function RiskProfileRecommendation({ investments }) {
       </div>
       <Link
         to={createPageUrl("Settings")}
-        className="block w-full text-center text-xs font-semibold text-white bg-[#FF6A00] hover:bg-[#e05e00] py-2 rounded-xl transition-colors"
+        className="block w-full text-center text-xs font-semibold text-white bg-[#F97316] hover:bg-[#e05e00] py-2 rounded-xl transition-colors"
       >
         {settings.language === 'en' ? 'Set Up Risk Profile →' : 'Atur Profil Risiko →'}
       </Link>
@@ -94,7 +94,7 @@ export default function RiskProfileRecommendation({ investments }) {
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm">
       <div className="flex items-start gap-3 mb-4">
-        <CheckCircle2 className="w-5 h-5 text-[#FF6A00] mt-0.5 flex-shrink-0" />
+        <CheckCircle2 className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
         <div>
           <h3 className="font-bold text-[#1A1A1A] text-sm">
             {lang === 'en' ? 'Risk Profile Recommendation' : 'Rekomendasi Berdasarkan Profil Risiko'}

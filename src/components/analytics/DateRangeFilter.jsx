@@ -77,7 +77,7 @@ export default function DateRangeFilter({ onFilterChange, defaultPeriod = "6" })
           }}
           className={`px-2.5 py-1 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
             period === opt.value
-              ? "bg-[#FF6A00] text-white"
+              ? "bg-[#F97316] text-white"
               : "bg-[#F2F4F7] text-[#0A0A0A] hover:bg-[#E2E8F0]"
           }`}
         >
@@ -94,19 +94,19 @@ export default function DateRangeFilter({ onFilterChange, defaultPeriod = "6" })
               value={customStart}
               max={customEnd || undefined}
               onChange={(e) => { setCustomStart(e.target.value); setError(""); }}
-              className="px-2 py-1 rounded-lg bg-[#F2F4F7] text-[#0A0A0A] text-xs border border-[#E2E8F0] focus:outline-none focus:border-[#FF6A00]"
+              className="px-2 py-1 rounded-lg bg-[#F2F4F7] text-[#0A0A0A] text-xs border border-[#E2E8F0] focus:outline-none focus:border-[#F97316]"
             />
             <input
               type="date"
               value={customEnd}
               min={customStart || undefined}
               onChange={(e) => { setCustomEnd(e.target.value); setError(""); }}
-              className="px-2 py-1 rounded-lg bg-[#F2F4F7] text-[#0A0A0A] text-xs border border-[#E2E8F0] focus:outline-none focus:border-[#FF6A00]"
+              className="px-2 py-1 rounded-lg bg-[#F2F4F7] text-[#0A0A0A] text-xs border border-[#E2E8F0] focus:outline-none focus:border-[#F97316]"
             />
             <button
               onClick={handleCustomRange}
               disabled={!customStart || !customEnd}
-              className="px-2.5 py-1 rounded-lg bg-[#FF6A00] text-white text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-2.5 py-1 rounded-lg bg-[#F97316] text-white text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               Terapkan
             </button>

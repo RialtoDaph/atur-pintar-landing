@@ -90,7 +90,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <input
               type="text"
               value={data.note || ""}
-              onChange={(e) => setData({ ...data, note: e.target.value })} className="bg-white text-black px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+              onChange={(e) => setData({ ...data, note: e.target.value })} className="bg-white text-black px-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#F97316]"
 
               placeholder="Nama kontrak/tagihan" />
 
@@ -105,7 +105,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
                 inputMode="numeric"
                 value={formatAmount(data.amount)}
                 onChange={handleAmountChange}
-                className="bg-white text-black pl-9 pr-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+                className="bg-white text-black pl-9 pr-3 py-2 text-sm rounded-lg w-full border border-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-[#F97316]"
                 placeholder="0" />
               
             </div>
@@ -119,7 +119,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
                   key={cat.key}
                   onClick={() => setData({ ...data, category: cat.key })}
                   className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                    data.category === cat.key ? "bg-[#FF6A00] text-white border-[#FF6A00]" : "bg-[#F2F4F7] text-[#1A1A1A] border-transparent hover:bg-[#E2E8F0]"
+                    data.category === cat.key ? "bg-[#F97316] text-white border-[#F97316]" : "bg-[#F2F4F7] text-[#1A1A1A] border-transparent hover:bg-[#E2E8F0]"
                   }`}
                 >
                   {cat.emoji} {cat.label}
@@ -136,7 +136,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
                   key={icon}
                   onClick={() => setData({ ...data, icon })}
                   className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all ${
-                    data.icon === icon ? "bg-[#FF6A00] scale-110" : "bg-[#F2F4F7] hover:bg-[#E2E8F0]"
+                    data.icon === icon ? "bg-[#F97316] scale-110" : "bg-[#F2F4F7] hover:bg-[#E2E8F0]"
                   }`}
                 >
                   {icon}
@@ -150,7 +150,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <select
               value={data.recurring_interval || "monthly"}
               onChange={(e) => setData({ ...data, recurring_interval: e.target.value })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] capitalize bg-white text-black">
+              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] capitalize bg-white text-black">
 
               {INTERVALS.map((i) =>
               <option key={i} value={i} className="capitalize">
@@ -171,7 +171,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
                   d.setDate(day);
                   setData({ ...data, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}` });
                 }}
-                className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00] bg-white text-black">
+                className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-white text-black">
                 {Array.from({length:31},(_,i)=>i+1).map(d=><option key={d} value={d}>Tanggal {d}</option>)}
               </select>
             </div>
@@ -187,7 +187,7 @@ export default function EditContractModal({ contract, onClose, onSave }) {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 px-4 py-2 rounded-lg bg-[#FF6A00] text-white font-semibold text-sm hover:bg-[#e05e00] disabled:opacity-50 transition-colors">
+              className="flex-1 px-4 py-2 rounded-lg bg-[#F97316] text-white font-semibold text-sm hover:bg-[#EA580C] disabled:opacity-50 transition-colors">
 
               {saving ? "Menyimpan..." : "Simpan"}
             </button>

@@ -172,7 +172,7 @@ export default function AdminWaitingListSection() {
           </button>
           <button
             onClick={exportCSV}
-            className="flex items-center gap-2 px-3 py-2 bg-[#FF6A00] text-white text-sm font-medium rounded-lg hover:bg-[#e05e00] transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-[#F97316] text-white text-sm font-medium rounded-lg hover:bg-[#e05e00] transition-colors"
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Export CSV</span>
@@ -219,12 +219,12 @@ export default function AdminWaitingListSection() {
           placeholder="Cari nama atau email..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+          className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316]"
         />
         <select
           value={filterInterest}
           onChange={(e) => setFilterInterest(e.target.value)}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+          className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316]"
         >
           <option>Semua</option>
           <option>Ya</option>
@@ -234,7 +234,7 @@ export default function AdminWaitingListSection() {
         <select
           value={filterInvited}
           onChange={(e) => setFilterInvited(e.target.value)}
-          className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#FF6A00]"
+          className="px-3 py-2 border border-[#E2E8F0] rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316]"
         >
           <option>Semua</option>
           <option>Sudah</option>
@@ -320,7 +320,7 @@ export default function AdminWaitingListSection() {
                       onClick={() => handleSendInvite(w.id)}
                       disabled={w.invited || inviting[w.id]}
                       className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
-                        w.invited ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#FF6A00] text-white hover:bg-[#e05e00]"
+                        w.invited ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-[#F97316] text-white hover:bg-[#e05e00]"
                       }`}
                     >
                       {inviting[w.id] ? "..." : "Invite"}

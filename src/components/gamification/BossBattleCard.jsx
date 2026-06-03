@@ -102,12 +102,12 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm p-4 border-2 border-[#FF6B35]/20">
+      <div className="bg-white rounded-2xl shadow-sm p-4 border-2 border-[#F97316]/20">
         {/* Header */}
         <div className="flex items-center gap-2 mb-3">
           <span className="text-2xl">{boss.icon || "👹"}</span>
           <div className="flex-1">
-            <p className="text-[10px] font-black text-[#FF6B35] uppercase tracking-widest">Boss Bulan Ini</p>
+            <p className="text-[10px] font-black text-[#F97316] uppercase tracking-widest">Boss Bulan Ini</p>
             <p className="text-sm font-bold text-[#1A1A1A]">{boss.name}</p>
           </div>
           {boss.status === "won" && <span className="text-xs bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full">Kalah!</span>}
@@ -136,7 +136,7 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
         {/* Stats */}
         <div className="flex gap-4 mb-3">
           <p className="text-xs text-[#8FA4C8]">👥 <span className="font-semibold text-[#1A1A1A]">{boss.participant_count || 0}</span> pejuang aktif</p>
-          <p className="text-xs text-[#8FA4C8]">🏆 Reward: <span className="font-semibold text-[#FF6B35]">{boss.reward_xp || 200} XP</span></p>
+          <p className="text-xs text-[#8FA4C8]">🏆 Reward: <span className="font-semibold text-[#F97316]">{boss.reward_xp || 200} XP</span></p>
         </div>
 
         {/* Damage result */}
@@ -146,9 +146,9 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="mb-3 bg-[#FFF7ED] border border-[#FF6B35]/20 rounded-xl px-3 py-2"
+              className="mb-3 bg-[#FFF7ED] border border-[#F97316]/20 rounded-xl px-3 py-2"
             >
-              <p className="text-xs font-semibold text-[#FF6B35]">{damageResult.msg}</p>
+              <p className="text-xs font-semibold text-[#F97316]">{damageResult.msg}</p>
               {damageResult.dmg > 0 && (
                 <p className="text-[11px] text-[#8FA4C8] mt-0.5">
                   {damageResult.missions} mission × 100 + streak bonus {Math.min((damageResult.streak || 0) * 50, 500)} = {damageResult.dmg} dmg · +20 XP
@@ -166,7 +166,7 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
             className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${
               alreadyAttackedToday
                 ? "bg-[#F2F4F7] text-[#8FA4C8] cursor-not-allowed"
-                : "bg-[#FF6B35] text-white hover:bg-[#E05E28] active:scale-95 shadow-md shadow-[#FF6B35]/25"
+                : "bg-[#F97316] text-white hover:bg-[#E05E28] active:scale-95 shadow-md shadow-[#F97316]/25"
             }`}
           >
             <Sword className="w-4 h-4" />
@@ -195,13 +195,13 @@ export default function BossBattleCard({ user, gamificationProfile, onProfileUpd
               className="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl"
             >
               <div className="text-5xl mb-3">🎉</div>
-              <p className="text-xs font-black text-[#FF6B35] uppercase tracking-widest mb-1">Komunitas Menang!</p>
+              <p className="text-xs font-black text-[#F97316] uppercase tracking-widest mb-1">Komunitas Menang!</p>
               <h2 className="text-xl font-bold text-[#1A1A1A] mb-2">{boss.name} dikalahkan!</h2>
               <p className="text-[#4A5568] text-sm mb-2">+{boss.reward_xp || 200} XP untuk semua peserta!</p>
               <p className="text-[#4A5568] text-sm mb-6">🏆 Badge '{boss.reward_badge || "Penakluk Boss"}' unlocked!</p>
               <button
                 onClick={() => setShowWinModal(false)}
-                className="w-full py-3.5 rounded-2xl bg-[#FF6B35] text-white font-bold text-sm shadow-lg shadow-[#FF6B35]/30"
+                className="w-full py-3.5 rounded-2xl bg-[#F97316] text-white font-bold text-sm shadow-lg shadow-[#F97316]/30"
               >
                 Luar Biasa! 🎊
               </button>

@@ -61,16 +61,16 @@ export default function IntegrationSettings() {
         className="w-full flex items-center justify-between px-5 py-3.5 bg-white rounded-2xl hover:bg-[#F8FAFC] transition-colors border border-[#E2E8F0]"
       >
         <div className="flex items-center gap-3">
-          <Mail className="w-5 h-5 text-[#FF6A00]" />
+          <Mail className="w-5 h-5 text-[#F97316]" />
           <div className="text-left">
             <p className="font-medium text-[#1A1A1A] text-sm">Ringkasan Email Bulanan</p>
             <p className="text-xs text-[#8FA4C8]">Kirim laporan ke email Anda</p>
           </div>
         </div>
         {sendingEmail ? (
-          <Loader2 className="w-4 h-4 text-[#FF6A00] animate-spin" />
+          <Loader2 className="w-4 h-4 text-[#F97316] animate-spin" />
         ) : (
-          <span className="text-xs font-semibold text-[#FF6A00]">Kirim</span>
+          <span className="text-xs font-semibold text-[#F97316]">Kirim</span>
         )}
       </button>
 

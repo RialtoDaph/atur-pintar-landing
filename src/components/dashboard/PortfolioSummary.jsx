@@ -49,7 +49,7 @@ export default function PortfolioSummary({ user, periodSubtitle }) {
             <h2 className="font-bold text-[#0A0A0A] text-sm">{t('portfolio_title')}</h2>
             {periodSubtitle && <p className="text-xs text-[#8FA4C8] mt-0.5">{periodSubtitle}</p>}
           </div>
-          <Link to={createPageUrl("Investments")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
+          <Link to={createPageUrl("Investments")} className="text-xs text-[#F97316] font-semibold flex items-center gap-0.5">
             {t('view_all')} <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
@@ -59,7 +59,7 @@ export default function PortfolioSummary({ user, periodSubtitle }) {
           <p className="text-xs text-[#8FA4C8] mb-4">Tambahkan investasi pertamamu dan pantau performanya dari sini</p>
           <Link
             to={createPageUrl("Investments")}
-            className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors"
+            className="px-4 py-2 bg-[#F97316] text-white text-xs font-semibold rounded-xl hover:bg-[#EA580C] transition-colors"
           >
             Tambah Investasi
           </Link>
@@ -103,7 +103,7 @@ export default function PortfolioSummary({ user, periodSubtitle }) {
           <h2 className="font-bold text-[#0A0A0A] text-sm">{t('portfolio_title')}</h2>
           {periodSubtitle && <p className="text-xs text-[#8FA4C8] mt-0.5">{periodSubtitle}</p>}
         </div>
-        <Link to={createPageUrl("Investments")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
+        <Link to={createPageUrl("Investments")} className="text-xs text-[#F97316] font-semibold flex items-center gap-0.5">
           {t('view_all')} <ChevronRight className="w-3 h-3" />
         </Link>
       </div>

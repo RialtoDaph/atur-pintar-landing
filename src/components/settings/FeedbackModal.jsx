@@ -70,12 +70,12 @@ export default function FeedbackModal({ user, onClose }) {
                 onMouseLeave={() => setHoveredRating(0)}
                 aria-label={`${star} bintang`}
                 aria-pressed={rating === star}
-                className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#FF6A00] rounded"
+                className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#F97316] rounded"
               >
                 <Star
                   className={`w-8 h-8 transition-colors ${
                     star <= (hoveredRating || rating)
-                      ? "text-[#FF6A00] fill-[#FF6A00]"
+                      ? "text-[#F97316] fill-[#F97316]"
                       : "text-[#E2E8F0]"
                   }`}
                 />
@@ -100,7 +100,7 @@ export default function FeedbackModal({ user, onClose }) {
             placeholder="Ceritakan pengalaman Anda menggunakan Atur.in..."
             aria-required="true"
             aria-describedby={touched && !message.trim() ? "feedback-error" : undefined}
-            className={`w-full border rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] resize-none transition-colors ${
+            className={`w-full border rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] resize-none transition-colors ${
               touched && !message.trim() ? "border-red-400" : "border-[#E2E8F0]"
             }`}
           />
@@ -122,7 +122,7 @@ export default function FeedbackModal({ user, onClose }) {
             onClick={handleSubmit}
             disabled={sending}
             aria-busy={sending}
-            className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white text-sm font-semibold hover:bg-[#e05e00] transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:ring-offset-2"
+            className="flex-1 py-3 rounded-xl bg-[#F97316] text-white text-sm font-semibold hover:bg-[#e05e00] transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#F97316] focus:ring-offset-2"
           >
             {sending ? "Mengirim..." : "Kirim Feedback"}
           </button>

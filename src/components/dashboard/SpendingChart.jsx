@@ -73,7 +73,7 @@ export default function SpendingChart({ transactions, loading, periodSubtitle })
           <p className="text-xs text-[#8FA4C8] mb-4">Catat transaksi pertamamu biar kita tahu kamu paling boros di mana</p>
           <Link
             to={createPageUrl("Transactions")}
-            className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors"
+            className="px-4 py-2 bg-[#F97316] text-white text-xs font-semibold rounded-xl hover:bg-[#EA580C] transition-colors"
           >
             Catat Transaksi
           </Link>
@@ -112,7 +112,7 @@ export default function SpendingChart({ transactions, loading, periodSubtitle })
         {data.length > INITIAL_VISIBLE && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="w-full text-center text-xs text-[#FF6A00] font-medium pt-1 hover:opacity-75 transition-opacity"
+            className="w-full text-center text-xs text-[#F97316] font-medium pt-1 hover:opacity-75 transition-opacity"
           >
             {showAll ? "Sembunyikan ▲" : `Lihat ${data.length - INITIAL_VISIBLE} kategori lainnya ▼`}
           </button>

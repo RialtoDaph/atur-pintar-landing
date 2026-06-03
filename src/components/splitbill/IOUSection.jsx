@@ -47,8 +47,8 @@ export default function IOUSection() {
           <p className="text-[#8FA4C8] text-xs">Orang yang belum bayar ke kamu</p>
         </div>
         {totalUnpaid > 0 &&
-        <div className="bg-[#FF6A00]/20 rounded-xl px-3 py-1.5 text-right">
-            <p className="text-[#FF6A00] text-xs font-medium">Belum diterima</p>
+        <div className="bg-[#F97316]/20 rounded-xl px-3 py-1.5 text-right">
+            <p className="text-[#F97316] text-xs font-medium">Belum diterima</p>
             <p className="text-white text-sm font-bold">{formatRupiah(totalUnpaid)}</p>
           </div>
         }
@@ -64,7 +64,7 @@ export default function IOUSection() {
       <div className="space-y-2">
           {unpaid.map((iou) =>
         <div key={iou.id} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#FF6A00]/10 flex items-center justify-center text-lg flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-[#F97316]/10 flex items-center justify-center text-lg flex-shrink-0">
                 🤝
               </div>
               <div className="flex-1 min-w-0">
@@ -73,7 +73,7 @@ export default function IOUSection() {
                 {iou.notes && <p className="text-xs text-[#8FA4C8] truncate">{iou.notes}</p>}
               </div>
               <div className="text-right flex-shrink-0">
-                <p className="text-[#FF6A00] font-bold text-sm">{formatRupiah(iou.amount)}</p>
+                <p className="text-[#F97316] font-bold text-sm">{formatRupiah(iou.amount)}</p>
               </div>
               <div className="flex gap-1 flex-shrink-0">
                 <button

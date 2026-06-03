@@ -64,7 +64,7 @@ export default function MonthEndForecastCard({ transactions = [], budgets = [], 
     );
   }
 
-  const statusColor = data.overBudget ? "#FF6B6B" : data.hasBudget ? "#00C9A7" : "#FF6A00";
+  const statusColor = data.overBudget ? "#FF6B6B" : data.hasBudget ? "#00C9A7" : "#F97316";
 
   return (
     <Wrapper>

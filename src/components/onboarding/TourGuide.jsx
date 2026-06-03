@@ -263,8 +263,8 @@ export default function TourGuide({ onComplete }) {
   if (showWelcome) {
     return createPortal(
       <div data-tour-overlay="true" className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center p-5">
-        <div className="bg-[#0A0A0A] border border-[#FF6A00]/40 rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#FF6A00] to-[#e05e00] flex items-center justify-center text-4xl shadow-lg">
+        <div className="bg-[#0A0A0A] border border-[#F97316]/40 rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#F97316] to-[#e05e00] flex items-center justify-center text-4xl shadow-lg">
             👋
           </div>
           <h2 className="text-white font-bold text-xl mb-2">Selamat Datang di Atur Pintar!</h2>
@@ -274,7 +274,7 @@ export default function TourGuide({ onComplete }) {
           <div className="flex flex-col gap-2">
             <button
               onClick={() => setShowWelcome(false)}
-              className="w-full py-3 rounded-2xl bg-[#FF6A00] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors tap-highlight-fix"
+              className="w-full py-3 rounded-2xl bg-[#F97316] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors tap-highlight-fix"
             >
               Mulai Tur 🚀
             </button>
@@ -306,21 +306,21 @@ export default function TourGuide({ onComplete }) {
           style={{
             top: spotlight.top, left: spotlight.left,
             width: spotlight.width, height: spotlight.height,
-            border: "2px solid #FF6A00",
+            border: "2px solid #F97316",
             boxShadow: "0 0 0 1px rgba(255,106,0,0.3)"
           }}
         />
       )}
 
       <div
-        className="absolute bg-[#0A0A0A] border border-[#FF6A00]/40 rounded-2xl p-4 shadow-2xl"
+        className="absolute bg-[#0A0A0A] border border-[#F97316]/40 rounded-2xl p-4 shadow-2xl"
         style={{ ...(targetRect ? tooltipStyle : fallbackStyle), pointerEvents: "all", zIndex: 10000 }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3">
           <div className="flex gap-1">
             {TOUR_STEPS.map((_, i) => (
-              <div key={i} className={`h-1.5 rounded-full transition-all ${i === stepIndex ? "w-5 bg-[#FF6A00]" : "w-1.5 bg-white/20"}`} />
+              <div key={i} className={`h-1.5 rounded-full transition-all ${i === stepIndex ? "w-5 bg-[#F97316]" : "w-1.5 bg-white/20"}`} />
             ))}
           </div>
           <button onClick={onComplete} className="text-[#8FA4C8] hover:text-white transition-colors tap-highlight-fix">
@@ -341,7 +341,7 @@ export default function TourGuide({ onComplete }) {
                 <ArrowLeft className="w-3 h-3" /> Kembali
               </button>
             )}
-            <button onClick={handleNext} className="flex items-center gap-1 px-4 py-1.5 rounded-xl bg-[#FF6A00] text-white text-xs font-bold hover:bg-[#e05e00] transition-colors tap-highlight-fix">
+            <button onClick={handleNext} className="flex items-center gap-1 px-4 py-1.5 rounded-xl bg-[#F97316] text-white text-xs font-bold hover:bg-[#e05e00] transition-colors tap-highlight-fix">
               {isLast ? "Selesai 🎉" : (<>Lanjut <ArrowRight className="w-3 h-3" /></>)}
             </button>
           </div>

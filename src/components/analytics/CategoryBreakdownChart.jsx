@@ -88,7 +88,7 @@ export default function CategoryBreakdownChart({ transactions, loading, periodSu
           <span className="text-4xl mb-3">🛍️</span>
           <p className="font-semibold text-[#1A1A1A] text-sm mb-1">Belum ada pengeluaran yang tercatat!</p>
           <p className="text-xs text-[#8FA4C8] mb-4">Catat transaksi pertamamu biar kita tahu kamu paling boros di mana</p>
-          <Link to={createPageUrl("Transactions")} className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors">
+          <Link to={createPageUrl("Transactions")} className="px-4 py-2 bg-[#F97316] text-white text-xs font-semibold rounded-xl hover:bg-[#EA580C] transition-colors">
             Catat Transaksi
           </Link>
         </div>
@@ -99,7 +99,7 @@ export default function CategoryBreakdownChart({ transactions, loading, periodSu
         <span className="text-4xl mb-3">💰</span>
         <p className="font-semibold text-[#1A1A1A] text-sm mb-1">Belum ada pemasukan yang tercatat!</p>
         <p className="text-xs text-[#8FA4C8] mb-4">Catat income pertamamu yuk</p>
-        <Link to={createPageUrl("Transactions")} className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-semibold rounded-xl hover:bg-[#e55f00] transition-colors">
+        <Link to={createPageUrl("Transactions")} className="px-4 py-2 bg-[#F97316] text-white text-xs font-semibold rounded-xl hover:bg-[#EA580C] transition-colors">
           Catat Pemasukan
         </Link>
       </div>
@@ -120,7 +120,7 @@ export default function CategoryBreakdownChart({ transactions, loading, periodSu
             onClick={() => setActiveTab("expense")}
             className={`px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 ${
               activeTab === "expense"
-                ? "bg-[#FF6A00] text-white shadow-sm"
+                ? "bg-[#F97316] text-white shadow-sm"
                 : "text-[#8FA4C8]"
             }`}
           >
@@ -180,7 +180,7 @@ export default function CategoryBreakdownChart({ transactions, loading, periodSu
               {activeData.length > INITIAL_VISIBLE && (
                 <button
                   onClick={() => setShowAll(!showAll)}
-                  className="w-full text-center text-xs text-[#FF6A00] font-medium pt-1 hover:opacity-75 transition-opacity"
+                  className="w-full text-center text-xs text-[#F97316] font-medium pt-1 hover:opacity-75 transition-opacity"
                 >
                   {showAll ? "Sembunyikan ▲" : `Lihat ${activeData.length - INITIAL_VISIBLE} kategori lainnya ▼`}
                 </button>

@@ -39,7 +39,7 @@ export default function MoodPicker({ userName, onSelect, loading }) {
             transition={{ delay: i * 0.07 }}
             onClick={() => !loading && onSelect(m)}
             disabled={loading}
-            className="flex flex-col items-center gap-2 bg-white dark:bg-[#1A1E25] border-2 border-[#F2F4F7] dark:border-[#2D2D2D] rounded-2xl px-3 py-4 hover:border-[#FF6A00] hover:bg-[#FF6A00]/5 transition-all disabled:opacity-50 tap-highlight-fix"
+            className="flex flex-col items-center gap-2 bg-white dark:bg-[#1A1E25] border-2 border-[#F2F4F7] dark:border-[#2D2D2D] rounded-2xl px-3 py-4 hover:border-[#F97316] hover:bg-[#F97316]/5 transition-all disabled:opacity-50 tap-highlight-fix"
           >
             <span className="text-3xl">{m.emoji}</span>
             <span className="text-xs font-bold text-[#1A1A1A] dark:text-white leading-tight">{m.label}</span>

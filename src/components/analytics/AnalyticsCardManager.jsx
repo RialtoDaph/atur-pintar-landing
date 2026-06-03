@@ -66,7 +66,7 @@ export default function AnalyticsCardManager({ cards, onSave, onClose }) {
                             {...provided.draggableProps}
                             className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
                               snapshot.isDragging
-                                ? "shadow-lg border-[#FF6A00] bg-[#FF6A00]/5"
+                                ? "shadow-lg border-[#F97316] bg-[#F97316]/5"
                                 : card.visible
                                 ? "border-[#E2E8F0] bg-white"
                                 : "border-[#E2E8F0] bg-[#F8FAFC] opacity-60"

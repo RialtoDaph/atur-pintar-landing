@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
-const PALETTE = ["#FF6A00","#4F7CFF","#00C9A7","#FF6B6B","#9B59B6","#E91E8C","#F5A623","#1ABC9C","#27AE60","#3498DB","#E67E22","#2C3E50"];
+const PALETTE = ["#F97316","#4F7CFF","#00C9A7","#FF6B6B","#9B59B6","#E91E8C","#F5A623","#1ABC9C","#27AE60","#3498DB","#E67E22","#2C3E50"];
 const EMOJIS = ["📦","🏠","🍔","🚗","❤️","🎬","🛍️","📱","💼","💻","✈️","🎓","🐾","🧴","🎁","⚡","🍕","☕","🏋️","🎮"];
 
 const DEFAULT_CATEGORIES = [
@@ -24,7 +24,7 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
   useLockBodyScroll();
   const { t } = useAppSettings();
   const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({ name: "", emoji: "📦", color: "#FF6A00", type: "expense", parent_category_key: "" });
+  const [form, setForm] = useState({ name: "", emoji: "📦", color: "#F97316", type: "expense", parent_category_key: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -43,7 +43,7 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
     const data = { ...form };
     if (!data.parent_category_key) delete data.parent_category_key;
     await base44.entities.CustomCategory.create(data);
-    setForm({ name: "", emoji: "📦", color: "#FF6A00", type: "expense", parent_category_key: "" });
+    setForm({ name: "", emoji: "📦", color: "#F97316", type: "expense", parent_category_key: "" });
     await load();
     onUpdated();
     setSaving(false);
@@ -93,12 +93,12 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
               placeholder={t('category_name')}
               value={form.name}
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              className="flex-1 border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
+              className="flex-1 border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
             />
             <select
               value={form.type}
               onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-              className="border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
+              className="border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
             >
               <option value="expense">{t('expense')}</option>
               <option value="income">{t('income')}</option>
@@ -112,7 +112,7 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
             <select
               value={form.parent_category_key}
               onChange={e => setForm(f => ({ ...f, parent_category_key: e.target.value }))}
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-white tap-highlight-fix"
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
             >
               <option value="">— {t('main_category')} —</option>
               <optgroup label={t('default_categories')}>

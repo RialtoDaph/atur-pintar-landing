@@ -74,7 +74,7 @@ export default function AddSavingsModal({ goal, onClose, onSave }) {
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8]">Rp</span>
               <input type="text" inputMode="numeric" placeholder="0"
-                className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+                className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
                 value={fmtAmt(amount)}
                 onChange={e => setAmount(parseAmt(e.target.value))} />
             </div>
@@ -88,7 +88,7 @@ export default function AddSavingsModal({ goal, onClose, onSave }) {
                 {accounts.map(acc => (
                   <button key={acc.id} onClick={() => setAccountId(acc.id)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
-                      accountId === acc.id ? "bg-[#FF6A00] text-white border-[#FF6A00]" : "bg-[#F2F4F7] text-[#4A5568] border-transparent"
+                      accountId === acc.id ? "bg-[#F97316] text-white border-[#F97316]" : "bg-[#F2F4F7] text-[#4A5568] border-transparent"
                     }`}>
                     {acc.icon || "💳"} {acc.name}
                     <span className={accountId === acc.id ? "text-white/80" : "text-[#8FA4C8]"}>
@@ -102,12 +102,12 @@ export default function AddSavingsModal({ goal, onClose, onSave }) {
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tanggal</label>
             <input type="date" value={date} onChange={e => setDate(e.target.value)}
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]" />
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]" />
           </div>
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Catatan</label>
             <input type="text" value={note} onChange={e => setNote(e.target.value)}
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]" />
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]" />
           </div>
         </div>
 

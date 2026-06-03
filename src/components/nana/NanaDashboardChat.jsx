@@ -138,7 +138,7 @@ function NanaDashboardChatInner() {
     <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 4px 24px rgba(255,106,0,0.18), 0 1px 4px rgba(255,106,0,0.08)' }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E2E8F0]">
-        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-[#FF6A00]/50">
+        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-[#F97316]/50">
           <img
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
             alt="Nana"
@@ -148,7 +148,7 @@ function NanaDashboardChatInner() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <p className="text-[#0A0A0A] font-bold text-sm">Nana AI</p>
-            <Sparkles className="w-3 h-3 text-[#FF6A00]" />
+            <Sparkles className="w-3 h-3 text-[#F97316]" />
           </div>
           <p className="text-[#8FA4C8] text-[10px]">Asisten Keuangan Pribadi</p>
 
@@ -172,7 +172,7 @@ function NanaDashboardChatInner() {
       <div className="h-64 overflow-y-auto px-3 py-3 space-y-3 bg-white">
         {loading ? (
           <div className="flex justify-center pt-10">
-            <div className="w-5 h-5 border-2 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-[#F97316] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : visibleMessages.length === 0 ? (
           <div className="flex flex-col gap-2 pt-2">
@@ -219,7 +219,7 @@ function NanaDashboardChatInner() {
             <p className="text-[10px] text-[#8FA4C8] font-medium">💬 Mulai dari sini</p>
             {quickPrompts.map((s) => (
               <button key={s} onClick={() => setInput(s)}
-                className="w-full text-left text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#1A1A1A] hover:border-[#FF6A00]/50 hover:bg-[#FF6A00]/5 transition-colors">
+                className="w-full text-left text-xs bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3 py-2 text-[#1A1A1A] hover:border-[#F97316]/50 hover:bg-[#F97316]/5 transition-colors">
                 {s}
               </button>
             ))}
@@ -234,7 +234,7 @@ function NanaDashboardChatInner() {
               )}
               <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-xs ${
                 msg.role === "user"
-                  ? "bg-[#FF6A00] text-white"
+                  ? "bg-[#F97316] text-white"
                   : "bg-[#F2F4F7] border border-[#E2E8F0] text-[#1A1A1A]"
               }`}>
                 {msg.role === "assistant" ? (() => {
@@ -281,7 +281,7 @@ function NanaDashboardChatInner() {
       <div className="px-3 py-2.5 border-t border-[#E2E8F0]">
         {nanaLimitReached ? (
           <p className="text-xs text-[#8FA4C8] text-center py-1">
-            Batas {FREE_NANA_LIMIT} chat/bulan tercapai. <Link to="/Subscription" className="text-[#FF6A00] font-semibold underline">Upgrade</Link>
+            Batas {FREE_NANA_LIMIT} chat/bulan tercapai. <Link to="/Subscription" className="text-[#F97316] font-semibold underline">Upgrade</Link>
           </p>
         ) : (
           <div className="flex gap-2 bg-[#F2F4F7] rounded-xl border border-[#E2E8F0] px-3 py-1.5">
@@ -296,7 +296,7 @@ function NanaDashboardChatInner() {
             <button
               onClick={sendMessage}
               disabled={!input.trim() || sending}
-              className="w-7 h-7 rounded-full bg-[#FF6A00] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end tap-highlight-fix"
+              className="w-7 h-7 rounded-full bg-[#F97316] flex items-center justify-center flex-shrink-0 disabled:opacity-40 hover:bg-[#e05e00] transition-colors self-end tap-highlight-fix"
             >
               <Send className="w-3 h-3 text-white" />
             </button>

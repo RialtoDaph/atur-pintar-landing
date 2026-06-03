@@ -105,13 +105,13 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
       <div className="flex flex-col items-center gap-2">
         <div className="relative">
           {form.photo_url ? (
-            <img src={form.photo_url} alt="Foto Profil" className="w-20 h-20 rounded-full object-cover border-2 border-[#FF6A00]" />
+            <img src={form.photo_url} alt="Foto Profil" className="w-20 h-20 rounded-full object-cover border-2 border-[#F97316]" />
           ) : (
-            <div className="w-20 h-20 rounded-full bg-[#FF6A00] flex items-center justify-center text-white font-bold text-3xl">
+            <div className="w-20 h-20 rounded-full bg-[#F97316] flex items-center justify-center text-white font-bold text-3xl">
               {initials}
             </div>
           )}
-          <label className="absolute bottom-0 right-0 bg-[#FF6A00] rounded-full p-1.5 cursor-pointer hover:bg-[#e55d00] transition-colors">
+          <label className="absolute bottom-0 right-0 bg-[#F97316] rounded-full p-1.5 cursor-pointer hover:bg-[#e55d00] transition-colors">
             <Camera className="w-3.5 h-3.5 text-white" />
             <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
           </label>
@@ -125,7 +125,7 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
         <div>
           <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-wide mb-1 block">Nama Lengkap</label>
           <input
-            className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+            className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
             value={form.full_name}
             onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
             placeholder="Nama lengkap kamu"
@@ -147,7 +147,7 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-wide mb-1 block">WhatsApp</label>
             <input
               type="tel"
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
               value={form.whatsapp}
               onChange={(e) => setForm((f) => ({ ...f, whatsapp: e.target.value }))}
               placeholder="08xxxxxxxxxx"
@@ -156,7 +156,7 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-wide mb-1 block">Kota</label>
             <input
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
               value={form.city}
               onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
               placeholder="Kota kamu"
@@ -168,7 +168,7 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-wide mb-1 block">Pekerjaan</label>
             <input
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
               value={form.job}
               onChange={(e) => setForm((f) => ({ ...f, job: e.target.value }))}
               placeholder="Pekerjaan kamu"
@@ -178,7 +178,7 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-wide mb-1 block">Tanggal Lahir</label>
             <input
               type="date"
-              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
               value={form.date_of_birth}
               onChange={(e) => setForm((f) => ({ ...f, date_of_birth: e.target.value }))}
             />
@@ -192,7 +192,7 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
             <input
               type="text"
               inputMode="numeric"
-              className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full pl-8 pr-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
               value={form.monthly_salary}
               onChange={(e) => handleSalaryChange(e.target.value)}
               placeholder="5.000.000"
@@ -204,7 +204,7 @@ export default function EditProfileForm({ user, onSaved, onCancel }) {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="w-full bg-[#FF6A00] text-white font-semibold py-3 rounded-xl hover:bg-[#e55d00] transition-colors flex items-center justify-center gap-2 disabled:opacity-60 tap-highlight-fix"
+        className="w-full bg-[#F97316] text-white font-semibold py-3 rounded-xl hover:bg-[#e55d00] transition-colors flex items-center justify-center gap-2 disabled:opacity-60 tap-highlight-fix"
       >
         <Save className="w-4 h-4" />
         {saving ? "Menyimpan..." : "Simpan Perubahan"}

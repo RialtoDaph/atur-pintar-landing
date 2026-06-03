@@ -68,7 +68,7 @@ export default function SubscriptionDetector({ user }) {
           </div>
           <button
             onClick={() => setAddingNew(true)}
-            className="flex items-center gap-1 text-xs text-[#FF6A00] font-semibold bg-orange-50 px-2.5 py-1.5 rounded-lg hover:bg-orange-100 transition-colors tap-highlight-fix"
+            className="flex items-center gap-1 text-xs text-[#F97316] font-semibold bg-orange-50 px-2.5 py-1.5 rounded-lg hover:bg-orange-100 transition-colors tap-highlight-fix"
           >
             <Plus className="w-3 h-3" />
             Tambah
@@ -96,7 +96,7 @@ export default function SubscriptionDetector({ user }) {
                   <span className="text-xs font-bold text-[#1A1A1A]">{formatCurrency(tx.amount)}</span>
                   <button
                     onClick={() => setEditingId(tx.id)}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-[#8FA4C8] hover:text-[#FF6A00] transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1 text-[#8FA4C8] hover:text-[#F97316] transition-all"
                   >
                     <Pencil className="w-3.5 h-3.5" />
                   </button>

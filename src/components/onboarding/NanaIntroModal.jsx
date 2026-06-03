@@ -13,7 +13,7 @@ export default function NanaIntroModal({ onClose }) {
           </div>
 
           {/* Nana avatar */}
-          <div className="w-24 h-24 rounded-[40px] bg-black border-2 border-[#FF6A00] overflow-hidden mx-auto mb-4">
+          <div className="w-24 h-24 rounded-[40px] bg-black border-2 border-[#F97316] overflow-hidden mx-auto mb-4">
             <img
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png"
               alt="Nana AI"
@@ -22,12 +22,12 @@ export default function NanaIntroModal({ onClose }) {
           </div>
 
           <div className="flex items-center justify-center gap-1.5 mb-2">
-            <Sparkles className="w-4 h-4 text-[#FF6A00]" />
+            <Sparkles className="w-4 h-4 text-[#F97316]" />
             <h2 className="text-xl font-bold text-[#1A1A1A]">Kenalan sama Nana!</h2>
           </div>
 
           <p className="text-sm text-[#4A5568] leading-relaxed mb-5">
-            Halo! Aku <span className="font-semibold text-[#FF6A00]">Nana</span>, asisten keuangan pribadimu berbasis AI. 🎉
+            Halo! Aku <span className="font-semibold text-[#F97316]">Nana</span>, asisten keuangan pribadimu berbasis AI. 🎉
           </p>
 
           <div className="space-y-3 text-left mb-6">
@@ -50,7 +50,7 @@ export default function NanaIntroModal({ onClose }) {
 
           <button
             onClick={onClose}
-            className="w-full py-3.5 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors"
+            className="w-full py-3.5 rounded-xl bg-[#F97316] text-white text-sm font-bold hover:bg-[#e05e00] transition-colors"
           >
             Siap, ayo mulai! 🚀
           </button>

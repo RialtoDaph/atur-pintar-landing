@@ -157,18 +157,18 @@ Total: ${upcomingList.length} pengingat aktif${urgentItems.length > 0 ? ", " + u
             <div className="flex items-start justify-between px-4 pt-4 pb-3 border-b border-[#F2F4F7]">
               <div className="flex items-start gap-3">
                 {/* Nana Avatar */}
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FF6A00] to-[#FF9A3C] flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#F97316] to-[#FF9A3C] flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm">
                   N
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#FF6A00]">Nana AI</p>
+                  <p className="text-xs font-bold text-[#F97316]">Nana AI</p>
                   {nanaMessage ? (
                     <p className="text-xs text-[#1A1A1A] leading-relaxed mt-0.5 max-w-[200px]">{nanaMessage}</p>
                   ) : (
                     <div className="flex items-center gap-1 mt-1">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF6A00] animate-bounce" style={{ animationDelay: "300ms" }} />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F97316] animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F97316] animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F97316] animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
                   )}
                 </div>
@@ -210,7 +210,7 @@ Total: ${upcomingList.length} pengingat aktif${urgentItems.length > 0 ? ", " + u
               <Link
                 to={createPageUrl("Reminders")}
                 onClick={dismissAll}
-                className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5 hover:underline"
+                className="text-xs text-[#F97316] font-semibold flex items-center gap-0.5 hover:underline"
               >
                 Lihat semua pengingat <ChevronRight className="w-3 h-3" />
               </Link>

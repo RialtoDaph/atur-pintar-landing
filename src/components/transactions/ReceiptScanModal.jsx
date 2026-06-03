@@ -304,10 +304,10 @@ Jika gambar buram atau bukan struk, isi merchant_name = "" dan total_amount = 0.
             {step === "reviewing" && extracted && (
               <div>
                 {/* Result banner — matches AddTransactionModal pattern */}
-                <div className="mb-4 bg-[#FFF5EB] border border-[#FF6A00]/20 rounded-2xl p-4">
+                <div className="mb-4 bg-[#FFF5EB] border border-[#F97316]/20 rounded-2xl p-4">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <Sparkles className="w-3.5 h-3.5 text-[#FF6A00]" />
-                    <span className="text-xs font-bold text-[#FF6A00]">Struk terbaca</span>
+                    <Sparkles className="w-3.5 h-3.5 text-[#F97316]" />
+                    <span className="text-xs font-bold text-[#F97316]">Struk terbaca</span>
                   </div>
                   <div className="flex justify-between items-start gap-3">
                     {extracted.image_url && (
@@ -315,7 +315,7 @@ Jika gambar buram atau bukan struk, isi merchant_name = "" dan total_amount = 0.
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-[#1A1A1A] truncate">{extracted.merchant_name || "Tanpa nama"}</p>
-                      <p className="text-base font-bold text-[#FF6A00]">Rp{(extracted.total_amount || 0).toLocaleString("id-ID")}</p>
+                      <p className="text-base font-bold text-[#F97316]">Rp{(extracted.total_amount || 0).toLocaleString("id-ID")}</p>
                     </div>
                   </div>
                 </div>
@@ -354,7 +354,7 @@ Jika gambar buram atau bukan struk, isi merchant_name = "" dan total_amount = 0.
                               backgroundColor: active ? "#FFF7ED" : "#F8FAFC",
                               color: active ? "#EA580C" : "#4A5568"
                             }}>
-                            <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#FF6A00"} size="w-5 h-5" />
+                            <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#F97316"} size="w-5 h-5" />
                             {acc.name}
                           </button>
                         );

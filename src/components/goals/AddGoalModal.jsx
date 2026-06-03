@@ -117,7 +117,7 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Misal: Beli Motor"
-                className="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm placeholder:text-[#8FA4C8] focus:outline-none focus:border-[#FF6A00] transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm placeholder:text-[#8FA4C8] focus:outline-none focus:border-[#F97316] transition-colors"
                 autoFocus
               />
             </div>
@@ -136,7 +136,7 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
                 value={targetAmount}
                 onChange={(e) => setTargetAmount(formatNumber(e.target.value))}
                 placeholder="0"
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm placeholder:text-[#8FA4C8] focus:outline-none focus:border-[#FF6A00] transition-colors"
+                className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm placeholder:text-[#8FA4C8] focus:outline-none focus:border-[#F97316] transition-colors"
               />
             </div>
           </div>
@@ -152,7 +152,7 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
                   type="date"
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm focus:outline-none focus:border-[#FF6A00] transition-colors"
+                  className="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm focus:outline-none focus:border-[#F97316] transition-colors"
                 />
               </div>
 
@@ -169,7 +169,7 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
                       onClick={() => setIcon(ic)}
                       className={`h-12 rounded-xl flex items-center justify-center text-xl transition-all tap-highlight-fix ${
                         icon === ic
-                          ? "bg-[#FF6A00]/10 border-2 border-[#FF6A00]"
+                          ? "bg-[#F97316]/10 border-2 border-[#F97316]"
                           : "bg-[#F8FAFC] border border-[#E2E8F0] hover:bg-[#F2F4F7]"
                       }`}
                     >
@@ -210,7 +210,7 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Tambah catatan..."
                   rows={3}
-                  className="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm placeholder:text-[#8FA4C8] focus:outline-none focus:border-[#FF6A00] transition-colors resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-[#1A1A1A] text-sm placeholder:text-[#8FA4C8] focus:outline-none focus:border-[#F97316] transition-colors resize-none"
                 />
               </div>
             </>
@@ -222,7 +222,7 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
           <button
             onClick={handleSubmit}
             disabled={!canSave}
-            className="w-full py-3.5 rounded-xl bg-[#FF6A00] text-white text-sm font-bold hover:bg-[#EA580C] disabled:bg-[#E2E8F0] disabled:text-[#8FA4C8] disabled:cursor-not-allowed transition-colors tap-highlight-fix"
+            className="w-full py-3.5 rounded-xl bg-[#F97316] text-white text-sm font-bold hover:bg-[#EA580C] disabled:bg-[#E2E8F0] disabled:text-[#8FA4C8] disabled:cursor-not-allowed transition-colors tap-highlight-fix"
           >
             {saving ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Buat Tujuan"}
           </button>

@@ -92,7 +92,7 @@ export default function CashflowForecast({ transactions, loading, user }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-[#FF6A00]" />
+          <Calendar className="w-4 h-4 text-[#F97316]" />
           <span className="text-sm font-bold text-[#0A0A0A]">Proyeksi Cash Flow</span>
         </div>
         <span className="text-xs text-[#8FA4C8]">{daysLeft} hari lagi</span>
@@ -101,11 +101,11 @@ export default function CashflowForecast({ transactions, loading, user }) {
       {/* Month progress */}
       <div className="mb-3">
         <div className="h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
-          <div className="h-full rounded-full bg-[#FF6A00] transition-all" style={{ width: `${progressPct}%` }} />
+          <div className="h-full rounded-full bg-[#F97316] transition-all" style={{ width: `${progressPct}%` }} />
         </div>
         <div className="flex justify-between mt-1">
           <span className="text-[10px] text-[#8FA4C8]">Awal bulan</span>
-          <span className="text-[10px] text-[#FF6A00] font-medium">{progressPct}%</span>
+          <span className="text-[10px] text-[#F97316] font-medium">{progressPct}%</span>
           <span className="text-[10px] text-[#8FA4C8]">Akhir bulan</span>
         </div>
       </div>

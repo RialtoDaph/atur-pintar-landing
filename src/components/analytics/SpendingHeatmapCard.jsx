@@ -50,8 +50,8 @@ export default function SpendingHeatmapCard({ transactions = [], embedded = fals
   const getColor = (amount) => {
     if (!amount || maxAmount === 0) return "#F2F4F7";
     const intensity = amount / maxAmount;
-    if (intensity > 0.75) return "#FF6A00";
-    if (intensity > 0.5) return "#FF9A3C";
+    if (intensity > 0.75) return "#F97316";
+    if (intensity > 0.5) return "#FB923C";
     if (intensity > 0.25) return "#FFC785";
     return "#FFE4CC";
   };
@@ -138,7 +138,7 @@ export default function SpendingHeatmapCard({ transactions = [], embedded = fals
               key={day}
               onClick={() => setSelectedDay(selected ? null : day)}
               className={`aspect-square rounded-lg flex flex-col items-center justify-center transition-all tap-highlight-fix ${
-                selected ? "ring-2 ring-[#FF6A00] scale-105" : ""
+                selected ? "ring-2 ring-[#F97316] scale-105" : ""
               } ${today ? "ring-2 ring-[#1A1A1A]" : ""}`}
               style={{ background: getColor(amount), color: getTextColor(amount) }}
             >
@@ -164,7 +164,7 @@ export default function SpendingHeatmapCard({ transactions = [], embedded = fals
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#F2F4F7]">
         <span className="text-[10px] text-[#8FA4C8]">Hemat</span>
         <div className="flex gap-1">
-          {["#F2F4F7", "#FFE4CC", "#FFC785", "#FF9A3C", "#FF6A00"].map((c) => (
+          {["#F2F4F7", "#FFE4CC", "#FFC785", "#FB923C", "#F97316"].map((c) => (
             <div key={c} className="w-3 h-3 rounded" style={{ background: c }} />
           ))}
         </div>

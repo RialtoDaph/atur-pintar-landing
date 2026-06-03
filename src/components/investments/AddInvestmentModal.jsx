@@ -48,7 +48,7 @@ export default function AddInvestmentModal({ onClose, onSave }) {
     }
   }
 
-  const inputCls = "w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]";
+  const inputCls = "w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]";
   const labelCls = "text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block";
 
   return (
@@ -110,7 +110,7 @@ export default function AddInvestmentModal({ onClose, onSave }) {
                 {lang === "en" ? "Wallet / Platform" : "Dompet / Platform"} <span className="text-[#FF6B6B] normal-case">*</span>
               </label>
               {accounts.length > 0 && !form.account_id && (
-                <span className="text-[10px] font-semibold text-[#FF6A00] uppercase tracking-wider">
+                <span className="text-[10px] font-semibold text-[#F97316] uppercase tracking-wider">
                   {lang === "en" ? "Required" : "Wajib pilih"}
                 </span>
               )}
@@ -122,7 +122,7 @@ export default function AddInvestmentModal({ onClose, onSave }) {
                 </p>
                 <button
                   onClick={() => navigate("/Accounts")}
-                  className="text-xs font-semibold text-[#FF6A00] hover:text-[#e05e00] underline"
+                  className="text-xs font-semibold text-[#F97316] hover:text-[#e05e00] underline"
                 >
                   {lang === "en" ? "Go to Accounts" : "Buka Rekening"}
                 </button>
@@ -136,7 +136,7 @@ export default function AddInvestmentModal({ onClose, onSave }) {
                       key={acc.id}
                       type="button"
                       onClick={() => setForm(f => ({ ...f, account_id: acc.id }))}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${selected ? "border-[#FF6A00] bg-[#FF6A00] text-white" : "border-[#E2E8F0] bg-white text-[#1A1A1A] hover:border-[#FF6A00]/50"}`}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${selected ? "border-[#F97316] bg-[#F97316] text-white" : "border-[#E2E8F0] bg-white text-[#1A1A1A] hover:border-[#F97316]/50"}`}
                     >
                       <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                         {acc.logo_url
@@ -179,7 +179,7 @@ export default function AddInvestmentModal({ onClose, onSave }) {
         <button
           onClick={handleSave}
           disabled={saving || !form.name.trim() || !form.account_id}
-          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
+          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00] transition-colors"
         >
           {saving ? "Menyimpan..." : (lang === "en" ? "Add Investment" : "Tambah Investasi")}
         </button>

@@ -37,7 +37,7 @@ export default function ChangePasswordModal({ onClose }) {
       <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
-            <Lock className="w-5 h-5 text-[#FF6A00]" />
+            <Lock className="w-5 h-5 text-[#F97316]" />
             <h2 className="text-base font-bold text-[#1A1A1A]">Ganti Password</h2>
           </div>
           <button onClick={onClose} className="text-[#9B9B9B] hover:text-[#1A1A1A] tap-highlight-fix">
@@ -51,7 +51,7 @@ export default function ChangePasswordModal({ onClose }) {
             <div className="relative">
               <input
                 type={showNew ? "text" : "password"}
-                className="w-full px-4 py-3 pr-10 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+                className="w-full px-4 py-3 pr-10 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
                 placeholder="Minimal 8 karakter"
                 value={form.newPassword}
                 onChange={e => setForm(f => ({ ...f, newPassword: e.target.value }))}
@@ -70,7 +70,7 @@ export default function ChangePasswordModal({ onClose }) {
             <div className="relative">
               <input
                 type={showConfirm ? "text" : "password"}
-                className="w-full px-4 py-3 pr-10 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#FF6A00] bg-[#F8FAFC]"
+                className="w-full px-4 py-3 pr-10 rounded-xl border border-[#E2E8F0] text-sm text-[#1A1A1A] focus:outline-none focus:border-[#F97316] bg-[#F8FAFC]"
                 placeholder="Ulangi password baru"
                 value={form.confirmPassword}
                 onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
@@ -91,7 +91,7 @@ export default function ChangePasswordModal({ onClose }) {
         <button
           onClick={handleSave}
           disabled={saving || !form.newPassword || !form.confirmPassword}
-          className="w-full mt-5 py-3 rounded-xl font-bold text-sm text-white bg-[#FF6A00] hover:bg-[#e05e00] disabled:opacity-40 transition-colors flex items-center justify-center gap-2 tap-highlight-fix">
+          className="w-full mt-5 py-3 rounded-xl font-bold text-sm text-white bg-[#F97316] hover:bg-[#e05e00] disabled:opacity-40 transition-colors flex items-center justify-center gap-2 tap-highlight-fix">
           {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</> : "Simpan Password"}
         </button>
       </div>

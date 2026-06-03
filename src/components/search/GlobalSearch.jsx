@@ -104,7 +104,7 @@ export default function GlobalSearch({ onClose }) {
         <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
           {loading && (
             <div className="flex items-center justify-center py-10">
-              <div className="w-6 h-6 rounded-full border-2 border-[#FF6A00] border-t-transparent animate-spin" />
+              <div className="w-6 h-6 rounded-full border-2 border-[#F97316] border-t-transparent animate-spin" />
             </div>
           )}
 

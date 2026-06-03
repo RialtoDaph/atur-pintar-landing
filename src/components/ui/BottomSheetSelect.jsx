@@ -29,7 +29,7 @@ export default function BottomSheetSelect({ isOpen, onClose, title, options, onS
                 }}
                 className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${
                   selectedValue === option.key
-                    ? "border-[#FF6A00] bg-[#FF6A00]/10"
+                    ? "border-[#F97316] bg-[#F97316]/10"
                     : "border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#CBD5E0]"
                 }`}
               >

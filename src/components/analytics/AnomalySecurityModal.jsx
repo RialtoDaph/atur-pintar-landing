@@ -52,7 +52,7 @@ export default function AnomalySecurityModal({ anomaly, transactions, onClose, o
         </div>
 
         <div className="px-5 py-5 space-y-4">
-          <div className="bg-[#FFF5F0] rounded-xl p-4 border border-[#FF6A00]/20">
+          <div className="bg-[#FFF5F0] rounded-xl p-4 border border-[#F97316]/20">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xl">{anomaly.emoji}</span>
               <p className="text-sm font-bold text-[#1A1A1A]">{anomaly.label}</p>
@@ -60,7 +60,7 @@ export default function AnomalySecurityModal({ anomaly, transactions, onClose, o
             <p className="text-xs text-[#8FA4C8]">
               Pengeluaran bulan ini <span className="font-semibold text-[#FF6B6B]">{formatCurrency(anomaly.current)}</span>
               {!anomaly.isNew && (
-                <> — naik <span className="font-semibold text-[#FF6A00]">{anomaly.pctIncrease}%</span> dari rata-rata.</>
+                <> — naik <span className="font-semibold text-[#F97316]">{anomaly.pctIncrease}%</span> dari rata-rata.</>
               )}
             </p>
           </div>

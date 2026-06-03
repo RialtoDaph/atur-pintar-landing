@@ -58,10 +58,10 @@ export default function AlertsDrawerAlertsTab({ adminNotifs, alerts, onReload, o
         <div className="space-y-2">
           <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-widest px-1">Dari Admin ({adminNotifs.length})</p>
           {adminNotifs.map(n => (
-            <div key={n.id} className="bg-white rounded-2xl p-3 shadow-sm ring-2 ring-[#FF6A00]/20">
+            <div key={n.id} className="bg-white rounded-2xl p-3 shadow-sm ring-2 ring-[#F97316]/20">
               <div className="flex items-start gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
-                  <Bell className="w-4 h-4 text-[#FF6A00]" />
+                  <Bell className="w-4 h-4 text-[#F97316]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
@@ -122,7 +122,7 @@ export default function AlertsDrawerAlertsTab({ adminNotifs, alerts, onReload, o
                 key={alert.id}
                 onClick={() => { markRead(alert); onAlertClick(alert); }}
                 className={`bg-white rounded-2xl p-3 shadow-sm border ${
-                  unread ? "border-[#FF6A00]/30 ring-1 ring-[#FF6A00]/10" : "border-transparent"
+                  unread ? "border-[#F97316]/30 ring-1 ring-[#F97316]/10" : "border-transparent"
                 } ${alert.action_url ? "cursor-pointer hover:bg-[#F8FAFC] transition-colors" : ""}`}
               >
                 <div className="flex items-start gap-2.5">
@@ -158,7 +158,7 @@ export default function AlertsDrawerAlertsTab({ adminNotifs, alerts, onReload, o
                       )}
                     </div>
                   </div>
-                  {unread && <span className="w-2 h-2 rounded-full bg-[#FF6A00] flex-shrink-0 mt-1.5" />}
+                  {unread && <span className="w-2 h-2 rounded-full bg-[#F97316] flex-shrink-0 mt-1.5" />}
                 </div>
               </div>
             );

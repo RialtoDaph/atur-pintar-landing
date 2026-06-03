@@ -57,7 +57,7 @@ export default function AdminNotificationPanel({ user, onClose }) {
 
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="w-6 h-6 border-3 border-[#FF6A00] border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-3 border-[#F97316] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : notifications.length === 0 ? (
           <p className="text-center text-[#8FA4C8] py-8">Tidak ada notifikasi</p>
@@ -72,7 +72,7 @@ export default function AdminNotificationPanel({ user, onClose }) {
                   className={`w-full text-left p-4 rounded-xl border transition-colors ${
                     isRead
                       ? 'bg-[#F8FAFC] border-[#E2E8F0] text-[#8FA4C8]'
-                      : 'bg-white border-[#FF6A00] text-[#1A1A1A]'
+                      : 'bg-white border-[#F97316] text-[#1A1A1A]'
                   }`}
                 >
                   <p className="font-semibold">{notif.title}</p>

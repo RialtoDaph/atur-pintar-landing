@@ -7,7 +7,7 @@ function AchievementInner({ achievement, onClose }) {
   useLockBodyScroll();
   useEffect(() => {
     if (!achievement) return;
-    confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 }, colors: ["#FF6A00", "#FFD700", "#FFF"] });
+    confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 }, colors: ["#F97316", "#FFD700", "#FFF"] });
     const t = setTimeout(onClose, 5000);
     return () => clearTimeout(t);
   }, [achievement]);
@@ -39,7 +39,7 @@ function AchievementInner({ achievement, onClose }) {
         </motion.div>
 
         <div className="text-center">
-          <p className="text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-1">Achievement Unlocked! 🏆</p>
+          <p className="text-xs font-bold text-[#F97316] uppercase tracking-widest mb-1">Achievement Unlocked! 🏆</p>
           <h2 className="text-xl font-black text-[#1A1A1A]">{achievement.name}</h2>
           <p className="text-sm text-[#8FA4C8] mt-1">{achievement.desc}</p>
         </div>
@@ -47,7 +47,7 @@ function AchievementInner({ achievement, onClose }) {
         <div className="w-full h-px bg-[#F2F4F7]" />
 
         <button onClick={onClose}
-          className="w-full py-3 rounded-2xl bg-[#FF6A00] text-white font-bold text-sm hover:bg-[#e05e00] transition-colors">
+          className="w-full py-3 rounded-2xl bg-[#F97316] text-white font-bold text-sm hover:bg-[#EA580C] transition-colors">
           Keren! 💪
         </button>
       </motion.div>

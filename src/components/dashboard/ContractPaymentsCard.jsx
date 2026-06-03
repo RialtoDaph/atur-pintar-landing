@@ -193,13 +193,13 @@ function Section({ label, items, isIncome, onMarkDone, onEdit, onDelete, formatC
     <div className="border-t border-[#F2F4F7]">
       <div className="flex items-center justify-between px-4 py-2">
         <p className="text-[10px] font-bold text-[#8FA4C8] uppercase tracking-wide">{label}</p>
-        <button onClick={onAdd} className="flex items-center gap-0.5 text-[10px] font-semibold text-[#FF6A00] tap-highlight-fix">
+        <button onClick={onAdd} className="flex items-center gap-0.5 text-[10px] font-semibold text-[#F97316] tap-highlight-fix">
           <Plus className="w-3 h-3" /> Tambah
         </button>
       </div>
 
       {items.length === 0 ? (
-        <button onClick={onAdd} className="mx-3 mb-2.5 w-[calc(100%-1.5rem)] flex items-center justify-center gap-1 py-2 rounded-xl border-2 border-dashed border-[#E2E8F0] text-[10px] text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
+        <button onClick={onAdd} className="mx-3 mb-2.5 w-[calc(100%-1.5rem)] flex items-center justify-center gap-1 py-2 rounded-xl border-2 border-dashed border-[#E2E8F0] text-[10px] text-[#8FA4C8] hover:border-[#F97316] hover:text-[#F97316] transition-colors tap-highlight-fix">
           <Plus className="w-3 h-3" />
           {isIncome ? "Tambah gaji/pendapatan rutin" : "Tambah tagihan/cicilan rutin"}
         </button>

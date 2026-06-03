@@ -72,7 +72,7 @@ export default function AnomalyDetector({ transactions, allCategoriesConfig = {}
         className="w-full flex items-center justify-between px-3.5 py-3 tap-highlight-fix"
       >
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#FF6A00] to-[#FF9A3C] flex items-center justify-center flex-shrink-0">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#F97316] to-[#FB923C] flex items-center justify-center flex-shrink-0">
             <AlertTriangle className="w-3.5 h-3.5 text-white" />
           </div>
           <div className="text-left">
@@ -91,7 +91,7 @@ export default function AnomalyDetector({ transactions, allCategoriesConfig = {}
               <div key={i} className={`flex flex-col gap-2 p-2.5 rounded-xl border ${
                 fb === 'not_mine' ? 'bg-red-50 border-red-200' :
                 fb === 'mine' ? 'bg-green-50 border-green-200' :
-                'bg-[#FFF5F0] border-[#FF6A00]/20'
+                'bg-[#FFF5F0] border-[#F97316]/20'
               }`}>
                 {/* Row 1: emoji + info + badge */}
                 <div className="flex items-center gap-2">
@@ -100,8 +100,8 @@ export default function AnomalyDetector({ transactions, allCategoriesConfig = {}
                     <div className="flex items-center justify-between mb-0.5">
                       <p className="text-xs font-bold text-[#1A1A1A] truncate">{item.label}</p>
                       <div className="flex items-center gap-0.5 ml-1 flex-shrink-0">
-                        <TrendingUp className="w-3 h-3 text-[#FF6A00]" />
-                        <span className="text-[10px] font-bold text-[#FF6A00]">
+                        <TrendingUp className="w-3 h-3 text-[#F97316]" />
+                        <span className="text-[10px] font-bold text-[#F97316]">
                           {item.isNew ? "Baru!" : `+${item.pctIncrease}%`}
                         </span>
                       </div>
@@ -117,7 +117,7 @@ export default function AnomalyDetector({ transactions, allCategoriesConfig = {}
                     </div>
                     <div className="mt-1.5 h-1 bg-[#F2F4F7] rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-[#FF6A00] transition-all"
+                        className="h-full rounded-full bg-[#F97316] transition-all"
                         style={{ width: item.isNew ? "100%" : `${Math.min((item.current / (item.average * 2)) * 100, 100)}%` }}
                       />
                     </div>

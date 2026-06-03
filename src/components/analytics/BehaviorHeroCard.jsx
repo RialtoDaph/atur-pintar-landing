@@ -156,7 +156,7 @@ export default function BehaviorHeroCard({ transactions = [], allCategoriesConfi
   }, [transactions, allCategoriesConfig, formatShortNumber, filterPeriod, customDateRange]);
 
   return (
-    <div className="bg-gradient-to-br from-[#FF6A00] to-[#FF9A3C] rounded-2xl shadow-sm p-5 sm:p-6 text-white relative overflow-hidden">
+    <div className="bg-gradient-to-br from-[#F97316] to-[#FB923C] rounded-2xl shadow-sm p-5 sm:p-6 text-white relative overflow-hidden">
       {/* Decorative blob */}
       <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
       <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-white/5 rounded-full blur-3xl" />

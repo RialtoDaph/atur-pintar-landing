@@ -86,7 +86,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
            <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-2 block">Jenis</label>
            <button
              onClick={() => setShowTypeSelect(true)}
-             className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] text-left transition-colors hover:border-[#CBD5E0] tap-highlight-fix flex items-center justify-between"
+             className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] text-left transition-colors hover:border-[#CBD5E0] tap-highlight-fix flex items-center justify-between"
            >
              <span>{TYPES.find(t => t.key === form.type)?.emoji} {TYPES.find(t => t.key === form.type)?.label}</span>
              <span className="text-[#8FA4C8]">›</span>
@@ -97,7 +97,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
         <div className="mb-4">
           <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Nama</label>
           <input
-            className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+            className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
             placeholder="e.g. PLN, Cicilan Motor, Netflix..."
             value={form.title}
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
@@ -111,7 +111,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8FA4C8] font-medium text-sm">Rp</span>
             <input
               type="number"
-              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+              className="w-full border border-[#E2E8F0] rounded-xl pl-10 pr-4 py-3 text-lg font-bold text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
               placeholder="0"
               value={form.amount}
               onChange={e => setForm(f => ({ ...f, amount: e.target.value }))}
@@ -124,7 +124,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
           <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Tanggal Jatuh Tempo (tiap bulan)</label>
           <button
             onClick={() => setShowDaySelect(true)}
-            className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC] text-left transition-colors hover:border-[#CBD5E0] tap-highlight-fix flex items-center justify-between"
+            className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] text-left transition-colors hover:border-[#CBD5E0] tap-highlight-fix flex items-center justify-between"
           >
             <span>Tanggal {form.due_day}</span>
             <span className="text-[#8FA4C8]">›</span>
@@ -138,7 +138,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
             {ICONS.map(ic => (
               <button key={ic} onClick={() => setForm(f => ({ ...f, icon: f.icon === ic ? "" : ic }))}
                 className={`w-9 h-9 rounded-xl text-lg flex items-center justify-center border transition-all ${
-                  form.icon === ic ? "border-[#FF6A00] bg-[#FF6A00]/10" : "border-[#E2E8F0]"
+                  form.icon === ic ? "border-[#F97316] bg-[#F97316]/10" : "border-[#E2E8F0]"
                 }`}>
                 {ic}
               </button>
@@ -150,7 +150,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
         <div className="mb-4">
           <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Catatan (opsional)</label>
           <input
-            className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]"
+            className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
             placeholder="e.g. Auto-debet BCA..."
             value={form.notes}
             onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
@@ -167,7 +167,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
             <button
               type="button"
               onClick={() => setForm(f => ({ ...f, create_recurring_tx: !f.create_recurring_tx }))}
-              className={`w-12 h-6 rounded-full transition-colors flex-shrink-0 relative ${form.create_recurring_tx ? "bg-[#FF6A00]" : "bg-[#E2E8F0]"}`}
+              className={`w-12 h-6 rounded-full transition-colors flex-shrink-0 relative ${form.create_recurring_tx ? "bg-[#F97316]" : "bg-[#E2E8F0]"}`}
             >
               <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.create_recurring_tx ? "translate-x-6" : "translate-x-0.5"}`} />
             </button>
@@ -175,7 +175,7 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
         )}
 
         <button onClick={handleSave} disabled={saving || !form.title || !form.due_day}
-          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] hover:bg-[#e05e00] disabled:opacity-40 transition-colors tap-highlight-fix">
+          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] hover:bg-[#e05e00] disabled:opacity-40 transition-colors tap-highlight-fix">
           {saving ? "Menyimpan..." : reminder ? "Simpan Perubahan" : "Tambah Pengingat"}
         </button>
         </div>

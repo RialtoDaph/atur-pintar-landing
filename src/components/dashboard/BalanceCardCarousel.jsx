@@ -160,7 +160,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
         <div key={a.id} className="flex-shrink-0 flex items-center gap-1.5 bg-white/8 rounded-lg px-2.5 h-10 w-[128px]">
                 <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
                   {a.logo_url ?
-            <AccountAvatar logoUrl={a.logo_url} name={a.name} color={a.color || "#FF6A00"} size="h-5 w-5" /> :
+            <AccountAvatar logoUrl={a.logo_url} name={a.name} color={a.color || "#F97316"} size="h-5 w-5" /> :
             <span className="text-xs leading-none">{a.icon || "💳"}</span>
             }
                 </div>
@@ -174,7 +174,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
             {accounts.length === 0 &&
         <button
           onClick={() => navigate("/Accounts")}
-          className="flex-shrink-0 flex items-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
+          className="flex-shrink-0 flex items-center gap-1.5 bg-[#F97316]/20 border border-[#F97316]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
           
                 + Tambah Rekening
               </button>
@@ -207,7 +207,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
           {investments.length === 0 ? (
             <button
               onClick={(e) => { e.stopPropagation(); navigate("/Investments"); }}
-              className="w-full flex items-center justify-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
+              className="w-full flex items-center justify-center gap-1.5 bg-[#F97316]/20 border border-[#F97316]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
               + Mulai Investasi
             </button>
           ) : (
@@ -261,7 +261,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
           {debts.length === 0 ? (
             <button
               onClick={(e) => { e.stopPropagation(); navigate("/Debts"); }}
-              className="w-full flex items-center justify-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
+              className="w-full flex items-center justify-center gap-1.5 bg-[#F97316]/20 border border-[#F97316]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
               + Catat Utang
             </button>
           ) : (
@@ -326,7 +326,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
             {sharedWallets.length === 0 &&
         <button
           onClick={(e) => { e.stopPropagation(); navigate("/SharedFinance"); }}
-          className="flex-shrink-0 flex items-center gap-1.5 bg-[#FF6A00]/20 border border-[#FF6A00]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
+          className="flex-shrink-0 flex items-center gap-1.5 bg-[#F97316]/20 border border-[#F97316]/30 rounded-lg px-3 h-10 text-[#FF9A50] text-xs font-semibold">
           
                 + Buat Dompet Bersama
               </button>
@@ -363,7 +363,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
         
         {/* Subtle orange glow top-right */}
         <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-10 pointer-events-none"
-        style={{ background: 'radial-gradient(circle, #FF6A00 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(circle, #F97316 0%, transparent 70%)' }} />
 
         {/* Content */}
         {slides[currentSlide].content}
@@ -376,7 +376,7 @@ export default function BalanceCardCarousel({ income, expense, savings, accounts
           key={idx}
           onClick={() => setCurrentSlide(idx)}
           className={`rounded-full transition-all duration-200 ${
-          idx === currentSlide ? "w-5 h-1.5 bg-[#FF6A00]" : "w-1.5 h-1.5 bg-white/25 sm:bg-black/20 dark:sm:bg-white/25"}`
+          idx === currentSlide ? "w-5 h-1.5 bg-[#F97316]" : "w-1.5 h-1.5 bg-white/25 sm:bg-black/20 dark:sm:bg-white/25"}`
           } />
 
         )}

@@ -46,8 +46,8 @@ export default function ReminderAlertWidget({ user }) {
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#FF6A00]/10 flex items-center justify-center">
-            <Bell className="w-3.5 h-3.5 text-[#FF6A00]" />
+          <div className="w-7 h-7 rounded-lg bg-[#F97316]/10 flex items-center justify-center">
+            <Bell className="w-3.5 h-3.5 text-[#F97316]" />
           </div>
           <p className="text-sm font-bold text-[#0A0A0A]">Tagihan Jatuh Tempo</p>
         </div>

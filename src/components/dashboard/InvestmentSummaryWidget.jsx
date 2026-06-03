@@ -79,7 +79,7 @@ export default function InvestmentSummaryWidget({ user }) {
             </span>
           )}
         </div>
-        <Link to={createPageUrl("Investments")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
+        <Link to={createPageUrl("Investments")} className="text-xs text-[#F97316] font-semibold flex items-center gap-0.5">
           Lihat semua <ChevronRight className="w-3 h-3" />
         </Link>
       </div>

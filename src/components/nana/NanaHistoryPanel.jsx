@@ -34,11 +34,11 @@ export default function NanaHistoryPanel({ conversations, activeId, onSelect, on
                   onClick={() => onSelect(c)}
                   className={`w-full text-left flex items-start gap-3 px-3 py-2.5 rounded-xl mb-1 transition-colors tap-highlight-fix ${
                     isActive
-                      ? "bg-[#FF6A00]/10 border border-[#FF6A00]/30"
+                      ? "bg-[#F97316]/10 border border-[#F97316]/30"
                       : "hover:bg-[#F2F4F7] dark:hover:bg-[#2D2D2D] border border-transparent"
                   }`}
                 >
-                  <MessageSquare className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isActive ? "text-[#FF6A00]" : "text-[#8FA4C8]"}`} />
+                  <MessageSquare className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isActive ? "text-[#F97316]" : "text-[#8FA4C8]"}`} />
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-semibold text-[#1A1A1A] dark:text-white truncate">
                       {c.metadata?.name || "Obrolan"}

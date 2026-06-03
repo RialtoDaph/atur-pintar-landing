@@ -25,7 +25,7 @@ export default function AdminLayout({ children, currentPage }) {
       {/* Logo */}
       <div className="px-5 py-6 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#FF6A00] rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-[#F97316] rounded-lg flex items-center justify-center">
             <Shield className="w-4 h-4 text-white" />
           </div>
           <div>
@@ -46,7 +46,7 @@ export default function AdminLayout({ children, currentPage }) {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors group ${
                 active
-                  ? "bg-[#FF6A00] text-white"
+                  ? "bg-[#F97316] text-white"
                   : "text-[#888] hover:text-white hover:bg-white/10"
               }`}
             >
@@ -101,7 +101,7 @@ export default function AdminLayout({ children, currentPage }) {
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-[#FF6A00] rounded-lg flex items-center justify-center">
+            <div className="w-6 h-6 bg-[#F97316] rounded-lg flex items-center justify-center">
               <Shield className="w-3.5 h-3.5 text-white" />
             </div>
             <p className="text-white text-sm font-bold">Admin Panel</p>

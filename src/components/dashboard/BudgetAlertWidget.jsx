@@ -71,7 +71,7 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
           {!hasAlert && <CheckCircle className="w-4 h-4 text-[#00C9A7]" />}
           <h2 className="font-bold text-[#0A0A0A] text-sm">{t('budget_alert_title')}</h2>
         </div>
-        <Link to={createPageUrl("Budget")} className="text-xs text-[#FF6A00] font-semibold flex items-center gap-0.5">
+        <Link to={createPageUrl("Budget")} className="text-xs text-[#F97316] font-semibold flex items-center gap-0.5">
           Lihat semua <ChevronRight className="w-3 h-3" />
         </Link>
       </div>
@@ -110,7 +110,7 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
                     </Pie>
                   </PieChart>
                 </ResponsiveContainer>
-                <span className={`absolute inset-0 flex items-center justify-center text-base font-bold ${isOver ? "text-[#FF6A00]" : ""}`}>
+                <span className={`absolute inset-0 flex items-center justify-center text-base font-bold ${isOver ? "text-[#F97316]" : ""}`}>
                   {isOver ? "!" : cat.emoji}
                 </span>
               </div>

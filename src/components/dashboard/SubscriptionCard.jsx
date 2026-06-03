@@ -34,23 +34,23 @@ function AddSubscriptionModal({ onClose, onSave }) {
         <form onSubmit={handleSubmit} className="space-y-2.5">
           <div className="flex gap-2">
             <input type="text" value={form.icon} onChange={(e) => set("icon", e.target.value)}
-              className="w-12 border border-[#E2E8F0] rounded-xl px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]" />
+              className="w-12 border border-[#E2E8F0] rounded-xl px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]" />
             <input type="text" placeholder="Nama layanan" value={form.name} onChange={(e) => set("name", e.target.value)} required
-              className="flex-1 border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]" />
+              className="flex-1 border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]" />
           </div>
           <input type="number" placeholder="Jumlah tagihan" value={form.amount} onChange={(e) => set("amount", e.target.value)} required
-            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]" />
+            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]" />
           <select value={form.billing_cycle} onChange={(e) => set("billing_cycle", e.target.value)}
-            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]">
+            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]">
             <option value="monthly">Bulanan</option>
             <option value="quarterly">Triwulanan</option>
             <option value="yearly">Tahunan</option>
           </select>
           <input type="date" value={form.next_due_date} onChange={(e) => set("next_due_date", e.target.value)} required
-            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]" />
+            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]" />
           <div className="flex gap-2 pt-1">
             <button type="button" onClick={onClose} className="flex-1 py-2 rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8]">Batal</button>
-            <button type="submit" disabled={saving} className="flex-1 py-2 rounded-xl bg-[#FF6A00] text-white text-sm font-bold disabled:opacity-60">
+            <button type="submit" disabled={saving} className="flex-1 py-2 rounded-xl bg-[#F97316] text-white text-sm font-bold disabled:opacity-60">
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
@@ -94,14 +94,14 @@ function EditSubscriptionModal({ sub, onClose, onSave, onDelete }) {
           <div className="flex gap-2">
             <div className="relative">
               <button type="button" onClick={() => setShowIconPicker(p => !p)}
-                className="w-12 h-[38px] border border-[#E2E8F0] rounded-xl text-base flex items-center justify-center hover:border-[#FF6A00] transition-colors tap-highlight-fix">
+                className="w-12 h-[38px] border border-[#E2E8F0] rounded-xl text-base flex items-center justify-center hover:border-[#F97316] transition-colors tap-highlight-fix">
                 {form.icon}
               </button>
               {showIconPicker && (
                 <div className="absolute top-full left-0 mt-1 bg-white border border-[#E2E8F0] rounded-xl shadow-lg p-2 grid grid-cols-5 gap-1 z-20 w-44">
                   {SUBSCRIPTION_ICONS.map(emoji => (
                     <button key={emoji} type="button" onClick={() => { set("icon", emoji); setShowIconPicker(false); }}
-                      className={`w-7 h-7 rounded-lg flex items-center justify-center text-base hover:bg-[#F2F4F7] tap-highlight-fix ${form.icon === emoji ? "bg-[#FF6A00]/10" : ""}`}>
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center text-base hover:bg-[#F2F4F7] tap-highlight-fix ${form.icon === emoji ? "bg-[#F97316]/10" : ""}`}>
                       {emoji}
                     </button>
                   ))}
@@ -109,21 +109,21 @@ function EditSubscriptionModal({ sub, onClose, onSave, onDelete }) {
               )}
             </div>
             <input type="text" placeholder="Nama layanan" value={form.name} onChange={(e) => set("name", e.target.value)} required
-              className="flex-1 border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]" />
+              className="flex-1 border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]" />
           </div>
           <input type="number" placeholder="Jumlah tagihan" value={form.amount} onChange={(e) => set("amount", e.target.value)} required
-            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]" />
+            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]" />
           <select value={form.billing_cycle} onChange={(e) => set("billing_cycle", e.target.value)}
-            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]">
+            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]">
             <option value="monthly">Bulanan</option>
             <option value="quarterly">Triwulanan</option>
             <option value="yearly">Tahunan</option>
           </select>
           <input type="date" value={form.next_due_date} onChange={(e) => set("next_due_date", e.target.value)} required
-            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/30 focus:border-[#FF6A00]" />
+            className="w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]/30 focus:border-[#F97316]" />
           <div className="flex gap-2 pt-1">
             <button type="button" onClick={onClose} className="flex-1 py-2 rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8]">Batal</button>
-            <button type="submit" disabled={saving} className="flex-1 py-2 rounded-xl bg-[#FF6A00] text-white text-sm font-bold disabled:opacity-60">
+            <button type="submit" disabled={saving} className="flex-1 py-2 rounded-xl bg-[#F97316] text-white text-sm font-bold disabled:opacity-60">
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
@@ -210,8 +210,8 @@ export default function SubscriptionCard({ user }) {
     <>
       <div data-tour="subscription-detector-card" className="bg-white rounded-2xl shadow-sm overflow-hidden">
         <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center gap-3 px-4 py-3 tap-highlight-fix">
-          <div className="w-8 h-8 rounded-lg bg-[#FF6A00]/10 flex items-center justify-center flex-shrink-0">
-            <CreditCard className="w-3.5 h-3.5 text-[#FF6A00]" />
+          <div className="w-8 h-8 rounded-lg bg-[#F97316]/10 flex items-center justify-center flex-shrink-0">
+            <CreditCard className="w-3.5 h-3.5 text-[#F97316]" />
           </div>
           <div className="flex-1 text-left min-w-0">
             <p className="text-xs font-bold text-[#1A1A1A]">Langganan</p>
@@ -220,7 +220,7 @@ export default function SubscriptionCard({ user }) {
             </p>
           </div>
           {soonCount > 0 && (
-            <div className="flex items-center gap-1 bg-[#FF6A00]/10 text-[#FF6A00] text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0">
+            <div className="flex items-center gap-1 bg-[#F97316]/10 text-[#F97316] text-[9px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0">
               <Bell className="w-2.5 h-2.5" />{soonCount} segera
             </div>
           )}
@@ -235,7 +235,7 @@ export default function SubscriptionCard({ user }) {
               </div>
             ) : subs.length === 0 ? (
               <div className="px-3 py-3">
-                <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-3 rounded-xl border-2 border-dashed border-[#E2E8F0] text-xs text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
+                <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-3 rounded-xl border-2 border-dashed border-[#E2E8F0] text-xs text-[#8FA4C8] hover:border-[#F97316] hover:text-[#F97316] transition-colors tap-highlight-fix">
                   <Plus className="w-3.5 h-3.5" /> Tambah langganan pertama
                 </button>
               </div>
@@ -257,13 +257,13 @@ export default function SubscriptionCard({ user }) {
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold text-[#1A1A1A] truncate">{sub.name}</p>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[11px] font-bold text-[#FF6A00]">
+                            <span className="text-[11px] font-bold text-[#F97316]">
                               {formatCurrency(sub.amount)}
                               <span className="font-normal text-[#8FA4C8]">{CYCLE_LABEL[sub.billing_cycle]}</span>
                             </span>
                             <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
                               isOverdue ? "bg-[#FF6B6B]/10 text-[#FF6B6B]" :
-                              isSoon ? "bg-[#FF6A00]/10 text-[#FF6A00]" :
+                              isSoon ? "bg-[#F97316]/10 text-[#F97316]" :
                               "bg-[#F2F4F7] text-[#8FA4C8]"
                             }`}>
                               {isOverdue ? `${Math.abs(days)} hari lalu` : days === 0 ? "Hari ini!" : `${days} hari lagi`}
@@ -298,7 +298,7 @@ export default function SubscriptionCard({ user }) {
                   ))}
                 </div>
                 <div className="px-3 py-2.5 border-t border-[#F2F4F7]">
-                  <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-dashed border-[#E2E8F0] text-[10px] text-[#8FA4C8] hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors tap-highlight-fix">
+                  <button onClick={() => setShowAdd(true)} className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-dashed border-[#E2E8F0] text-[10px] text-[#8FA4C8] hover:border-[#F97316] hover:text-[#F97316] transition-colors tap-highlight-fix">
                     <Plus className="w-3 h-3" /> Tambah Langganan
                   </button>
                 </div>

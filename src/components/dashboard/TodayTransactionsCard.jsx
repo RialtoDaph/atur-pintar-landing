@@ -71,7 +71,7 @@ export default function TodayTransactionsCard({ transactions, allCategories }) {
 
       <button
         onClick={() => navigate("/Transactions")}
-        className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-[#FF6A00] hover:bg-[#F2F4F7] rounded-lg transition-colors"
+        className="w-full mt-4 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-[#F97316] hover:bg-[#F2F4F7] rounded-lg transition-colors"
       >
         Lihat Semua <ChevronRight className="w-4 h-4" />
       </button>

@@ -91,8 +91,8 @@ Format jawaban: singkat, padat, gunakan bullet points. Maksimal 200 kata.`;
     setLoading(false);
   }
 
-  const headerIconBg = hasInsights ? "bg-[#FF6A00]/10" : "bg-[#00C9A7]/10";
-  const headerIconColor = hasInsights ? "text-[#FF6A00]" : "text-[#00C9A7]";
+  const headerIconBg = hasInsights ? "bg-[#F97316]/10" : "bg-[#00C9A7]/10";
+  const headerIconColor = hasInsights ? "text-[#F97316]" : "text-[#00C9A7]";
   const headerTitle = hasInsights
     ? (lang === "id" ? "Rekomendasi Penghematan Nana AI" : "Nana AI Savings Tips")
     : (lang === "id" ? "💡 Analisis Pengeluaran Nana AI" : "💡 Nana AI Spending Analysis");
@@ -117,7 +117,7 @@ Format jawaban: singkat, padat, gunakan bullet points. Maksimal 200 kata.`;
           <p className="text-xs text-[#8FA4C8]">{headerSub}</p>
         </div>
         <div className="flex items-center gap-2">
-          {loading && <Loader2 className="w-4 h-4 text-[#FF6A00] animate-spin" />}
+          {loading && <Loader2 className="w-4 h-4 text-[#F97316] animate-spin" />}
           {expanded ? <ChevronUp className="w-4 h-4 text-[#8FA4C8]" /> : <ChevronDown className="w-4 h-4 text-[#8FA4C8]" />}
         </div>
       </button>
@@ -138,7 +138,7 @@ Format jawaban: singkat, padat, gunakan bullet points. Maksimal 200 kata.`;
         <div className="px-4 pb-4 border-t border-[#F2F4F7] pt-3">
           {loading ? (
             <div className="flex items-center gap-2 text-sm text-[#8FA4C8]">
-              <Loader2 className="w-4 h-4 animate-spin text-[#FF6A00]" />
+              <Loader2 className="w-4 h-4 animate-spin text-[#F97316]" />
               <span>{lang === "id" ? "Nana sedang menganalisis pola pengeluaranmu..." : "Nana is analyzing your spending pattern..."}</span>
             </div>
           ) : recommendation ? (
@@ -147,8 +147,8 @@ Format jawaban: singkat, padat, gunakan bullet points. Maksimal 200 kata.`;
                 <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
                   <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69a82e8090f60786b869983c/7708b64f5_generated_image.png" alt="Nana" className="w-full h-full object-cover" />
                 </div>
-                <span className="text-xs font-semibold text-[#FF6A00]">Nana AI</span>
-                <button onClick={() => { setRecommendation(null); getRecommendation(); }} className="ml-auto text-[10px] text-[#8FA4C8] hover:text-[#FF6A00] transition-colors">↻ Refresh</button>
+                <span className="text-xs font-semibold text-[#F97316]">Nana AI</span>
+                <button onClick={() => { setRecommendation(null); getRecommendation(); }} className="ml-auto text-[10px] text-[#8FA4C8] hover:text-[#F97316] transition-colors">↻ Refresh</button>
               </div>
               <ReactMarkdown className="prose prose-sm max-w-none text-[#1A1A1A] [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:my-2 [&>li]:mb-1 [&>strong]:font-semibold text-sm leading-relaxed">
                 {recommendation}

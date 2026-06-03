@@ -129,7 +129,7 @@ export default function ChallengeSection({ user, gamificationProfile, onProfileU
         <h3 className="text-sm font-bold text-[#1A1A1A]">Challenge Aktif 🎯</h3>
         <button
           onClick={() => setShowPicker(true)}
-          className="flex items-center gap-1.5 text-xs font-bold text-[#FF6B35] bg-[#FF6B35]/10 px-3 py-1.5 rounded-full hover:bg-[#FF6B35]/20 transition-colors"
+          className="flex items-center gap-1.5 text-xs font-bold text-[#F97316] bg-[#F97316]/10 px-3 py-1.5 rounded-full hover:bg-[#F97316]/20 transition-colors"
         >
           <Plus className="w-3.5 h-3.5" /> Mulai Baru
         </button>
@@ -159,14 +159,14 @@ export default function ChallengeSection({ user, gamificationProfile, onProfileU
                 </div>
                 <div className="h-2 bg-[#F2F4F7] rounded-full overflow-hidden mb-2">
                   <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#FFD700]"
+                    className="h-full rounded-full bg-gradient-to-r from-[#F97316] to-[#FFD700]"
                     animate={{ width: `${c.progress || 0}%` }}
                     transition={{ duration: 0.5 }}
                   />
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] text-[#8FA4C8]">Sisa {daysLeft(c)} hari</span>
-                  <span className="text-[11px] font-bold text-[#FF6B35]">+{c.xp_reward} XP</span>
+                  <span className="text-[11px] font-bold text-[#F97316]">+{c.xp_reward} XP</span>
                 </div>
               </div>
               {/* 100% — claim reward */}
@@ -232,13 +232,13 @@ export default function ChallengeSection({ user, gamificationProfile, onProfileU
                   <button
                     key={t.challenge_key}
                     onClick={() => startChallenge(t)}
-                    className="w-full flex items-center gap-3 p-3 rounded-2xl border border-[#E2E8F0] hover:border-[#FF6B35]/40 hover:bg-[#FFF7ED] transition-all text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-2xl border border-[#E2E8F0] hover:border-[#F97316]/40 hover:bg-[#FFF7ED] transition-all text-left"
                   >
                     <span className="text-2xl flex-shrink-0">{t.icon}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-[#1A1A1A]">{t.title}</p>
                       <p className="text-xs text-[#8FA4C8] leading-relaxed mt-0.5">{t.description}</p>
-                      <p className="text-xs font-bold text-[#FF6B35] mt-1">{t.duration_days} hari · +{t.xp_reward} XP</p>
+                      <p className="text-xs font-bold text-[#F97316] mt-1">{t.duration_days} hari · +{t.xp_reward} XP</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-[#CBD5E0] flex-shrink-0" />
                   </button>
@@ -265,12 +265,12 @@ export default function ChallengeSection({ user, gamificationProfile, onProfileU
               className="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl"
             >
               <div className="text-5xl mb-3">🎉</div>
-              <p className="text-xs font-black text-[#FF6B35] uppercase tracking-widest mb-1">Challenge Selesai!</p>
+              <p className="text-xs font-black text-[#F97316] uppercase tracking-widest mb-1">Challenge Selesai!</p>
               <h2 className="text-lg font-bold text-[#1A1A1A] mb-2">{completionModal.title}</h2>
               <p className="text-[#4A5568] text-sm mb-6">+{completionModal.xp_reward} XP earned!</p>
               <button
                 onClick={() => claimReward(completionModal)}
-                className="w-full py-3.5 rounded-2xl bg-[#FF6B35] text-white font-bold text-sm shadow-lg shadow-[#FF6B35]/30"
+                className="w-full py-3.5 rounded-2xl bg-[#F97316] text-white font-bold text-sm shadow-lg shadow-[#F97316]/30"
               >
                 Ambil Reward →
               </button>

@@ -67,14 +67,14 @@ function AccountPickerInner({ onClose, onConfirm, title, amount }) {
                 const isSelected = selected === acc.id;
                 return (
                   <button key={acc.id} onClick={() => setSelected(acc.id)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${isSelected ? "border-[#FF6A00] bg-[#FFF5EB]" : "border-[#E2E8F0] hover:border-[#CBD5E0]"}`}>
-                    <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#FF6A00"} size="w-10 h-10" />
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left ${isSelected ? "border-[#F97316] bg-[#FFF5EB]" : "border-[#E2E8F0] hover:border-[#CBD5E0]"}`}>
+                    <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#F97316"} size="w-10 h-10" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-[#1A1A1A]">{acc.name}</p>
                       <p className="text-xs text-[#8FA4C8]">{formatIDR(acc.balance || 0)}</p>
                     </div>
                     {insufficient && <span className="text-[10px] text-red-500 font-semibold flex-shrink-0">saldo kurang</span>}
-                    {isSelected && <CheckCircle className="w-4 h-4 text-[#FF6A00] flex-shrink-0" />}
+                    {isSelected && <CheckCircle className="w-4 h-4 text-[#F97316] flex-shrink-0" />}
                   </button>
                 );
               })}
@@ -84,7 +84,7 @@ function AccountPickerInner({ onClose, onConfirm, title, amount }) {
             <div className="flex gap-2">
               <button onClick={onClose} className="flex-1 py-3 rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8]">Batal</button>
               <button onClick={handleConfirm} disabled={!selected}
-                className="flex-1 py-3 rounded-xl bg-[#FF6A00] text-white text-sm font-bold disabled:opacity-40">Konfirmasi</button>
+                className="flex-1 py-3 rounded-xl bg-[#F97316] text-white text-sm font-bold disabled:opacity-40">Konfirmasi</button>
             </div>
           </>
         )}

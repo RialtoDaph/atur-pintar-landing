@@ -147,7 +147,7 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
             <p className="text-sm font-bold text-[#1A1A1A] leading-tight">Semua mission selesai!</p>
             <p className="text-[11px] text-[#8FA4C8] leading-tight mt-0.5">Balik lagi besok untuk mission baru</p>
           </div>
-          <span className="text-xs font-bold text-[#FF6B35] flex-shrink-0">+{totalXP} XP</span>
+          <span className="text-xs font-bold text-[#F97316] flex-shrink-0">+{totalXP} XP</span>
         </div>
       )}
 
@@ -164,13 +164,13 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
               <button
                 key={m.id}
                 onClick={() => handleComplete(m)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-[#E2E8F0] bg-white hover:border-[#FF6B35]/40 active:scale-98 transition-all"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-[#E2E8F0] bg-white hover:border-[#F97316]/40 active:scale-98 transition-all"
               >
                 <span className="text-xl flex-shrink-0">{m.icon}</span>
                 <span className="flex-1 text-sm font-medium text-left text-[#1A1A1A]">
                   {m.title}
                 </span>
-                <span className="text-xs font-bold text-[#FF6B35] flex-shrink-0">+{m.xp_reward} XP</span>
+                <span className="text-xs font-bold text-[#F97316] flex-shrink-0">+{m.xp_reward} XP</span>
                 <div className="w-5 h-5 rounded-full border-2 border-[#CBD5E0] flex items-center justify-center flex-shrink-0">
                 </div>
               </button>
@@ -186,12 +186,12 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
       >
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-bold text-[#1A1A1A]">⚡ Level {lvl.level} — {lvl.name}</p>
-          <span className="text-xs font-bold text-[#FF6B35]">{xp.toLocaleString("id-ID")} XP</span>
+          <span className="text-xs font-bold text-[#F97316]">{xp.toLocaleString("id-ID")} XP</span>
         </div>
         <div className="h-2.5 bg-[#F2F4F7] rounded-full overflow-hidden mb-1.5">
           <motion.div
             className="h-full rounded-full"
-            style={{ background: "linear-gradient(90deg, #FF6B35, #FFD700)" }}
+            style={{ background: "linear-gradient(90deg, #F97316, #FFD700)" }}
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 0.6, ease: "easeOut" }}
@@ -202,7 +202,7 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
             {(nextLvl.min - xp).toLocaleString("id-ID")} XP lagi untuk Level {nextLvl.level} — {nextLvl.name}
           </p>
         ) : (
-          <p className="text-xs text-[#FF6B35] font-semibold">Level Maksimal tercapai! 🏆</p>
+          <p className="text-xs text-[#F97316] font-semibold">Level Maksimal tercapai! 🏆</p>
         )}
       </Link>
 
@@ -222,12 +222,12 @@ export default function DailyMissionsCard({ user, gamificationProfile, onProfile
               className="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl"
             >
               <div className="text-5xl mb-3">⬆️</div>
-              <p className="text-xs font-bold text-[#FF6B35] uppercase tracking-widest mb-1">Level Up!</p>
+              <p className="text-xs font-bold text-[#F97316] uppercase tracking-widest mb-1">Level Up!</p>
               <h2 className="text-2xl font-bold text-[#1A1A1A] mb-1">Level {showLevelUp.level}</h2>
               <p className="text-[#4A5568] text-sm mb-6">{showLevelUp.name} 🎉</p>
               <button
                 onClick={() => setShowLevelUp(null)}
-                className="w-full py-3.5 rounded-2xl bg-[#FF6B35] text-white font-bold text-sm shadow-lg shadow-[#FF6B35]/30"
+                className="w-full py-3.5 rounded-2xl bg-[#F97316] text-white font-bold text-sm shadow-lg shadow-[#F97316]/30"
               >
                 Keren! →
               </button>

@@ -108,7 +108,7 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
         <button
           onClick={handleConfirm}
           disabled={saving || !parseAmount(amount)}
-          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00] transition-colors tap-highlight-fix flex items-center justify-center gap-2"
+          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00] transition-colors tap-highlight-fix flex items-center justify-center gap-2"
         >
           <CreditCard className="w-4 h-4" />
           {saving ? "Menyimpan..." : "Catat Pembayaran"}

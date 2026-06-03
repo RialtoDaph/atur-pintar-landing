@@ -92,7 +92,7 @@ export default function BudgetChartSection({ budgets, spendingByCategory, getCat
                 {onEdit && (
                   <button
                     onClick={() => onEdit(item)}
-                    className="text-[#CBD5E0] hover:text-[#FF6A00] transition-colors p-0.5"
+                    className="text-[#CBD5E0] hover:text-[#F97316] transition-colors p-0.5"
                     aria-label="Edit budget"
                   >
                     <Pencil className="w-3.5 h-3.5" />

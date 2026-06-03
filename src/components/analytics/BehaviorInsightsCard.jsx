@@ -171,7 +171,7 @@ export default function BehaviorInsightsCard({ transactions = [], filterPeriod =
                       <div className="w-9 h-9 rounded-xl bg-[#F2F4F7] flex items-center justify-center text-base">
                         {m.emoji}
                       </div>
-                      <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${idx === 0 ? "bg-[#FF6A00] text-white" : "bg-white text-[#8FA4C8] border border-[#E2E8F0]"}`}>
+                      <span className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold ${idx === 0 ? "bg-[#F97316] text-white" : "bg-white text-[#8FA4C8] border border-[#E2E8F0]"}`}>
                         {idx + 1}
                       </span>
                     </div>

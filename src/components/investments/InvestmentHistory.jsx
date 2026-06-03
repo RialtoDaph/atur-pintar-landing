@@ -66,7 +66,7 @@ export default function InvestmentHistory({ investmentId, formatCurrency }) {
   }
 
   const dateLocale = lang === 'en' ? 'en-US' : 'id-ID';
-  const inputCls = "w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#FF6A00] bg-[#F8FAFC]";
+  const inputCls = "w-full border border-[#E2E8F0] rounded-xl px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]";
 
   return (
     <div>
@@ -79,7 +79,7 @@ export default function InvestmentHistory({ investmentId, formatCurrency }) {
         </h3>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-1 text-xs text-[#FF6A00] font-semibold hover:text-[#e05e00]"
+          className="flex items-center gap-1 text-xs text-[#F97316] font-semibold hover:text-[#e05e00]"
         >
           <Plus className="w-3.5 h-3.5" />
           {lang === 'en' ? 'Add' : 'Tambah'}
@@ -128,7 +128,7 @@ export default function InvestmentHistory({ investmentId, formatCurrency }) {
               {lang === 'en' ? 'Cancel' : 'Batal'}
             </button>
             <button onClick={handleAddTx} disabled={saving || !form.transaction_date}
-              className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-[#FF6A00] disabled:opacity-40 hover:bg-[#e05e00]">
+              className="flex-1 py-2 rounded-xl text-sm font-semibold text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00]">
               {saving ? '...' : lang === 'en' ? 'Save' : 'Simpan'}
             </button>
           </div>
