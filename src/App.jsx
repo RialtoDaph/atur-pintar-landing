@@ -117,7 +117,7 @@ const AuthenticatedApp = () => {
           <Dashboard />
         </LayoutWrapper>
       } />
-      {Object.entries(Pages).filter(([path]) => path !== 'Dashboard' && path !== 'LandingPage' && path !== 'Subscription' && path !== 'AdminSubscriptions' && path !== 'ProfileSettings' && path !== 'Reminders' && path !== 'Alerts' && path !== 'Notifications' && path !== 'Accounts' && path !== 'SharedFinance' && path !== 'AdminUsers' && path !== 'AdminLogs' && path !== 'AdminNotifications' && path !== 'AdminCategories' && path !== 'AdminDashboard').map(([path, Page]) => (
+      {Object.entries(Pages).filter(([path]) => !['Dashboard', 'LandingPage', 'Reminders'].includes(path)).map(([path, Page]) => (
         <Route
           key={path}
           path={`/${path}`}
