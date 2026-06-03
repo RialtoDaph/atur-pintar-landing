@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { ArrowRight, CheckCircle, Mail, Instagram, Twitter, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -156,6 +156,7 @@ const QUICK_QUESTIONS = [
 
 
 function NanaChatDemo() {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
   { role: "nana", text: "Halo! Aku Nana, asisten keuangan kamu 👋 Tanya apa saja soal keuangan, nabung, investasi, hutang, atau apapun yang lagi bikin pusing." }]
   );
@@ -272,7 +273,7 @@ function NanaChatDemo() {
             {/* Input */}
             <div className="px-3 pb-3 border-t border-white/8 pt-2">
               {done ?
-              <button onClick={() => base44.auth.redirectToLogin()} className="w-full py-3 bg-[#F97316] rounded-xl text-white text-sm font-bold hover:bg-[#e05e00] transition-colors">
+              <button onClick={() => navigate("/register")} className="w-full py-3 bg-[#F97316] rounded-xl text-white text-sm font-bold hover:bg-[#e05e00] transition-colors">
                   Mulai Gratis Sekarang →
                 </button> :
               <div className="flex gap-2">
@@ -496,6 +497,7 @@ function LazyYouTube({ src }) {
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const navigate = useNavigate();
   const pricingRef = useRef(null);
   const howRef = useRef(null);
 
@@ -583,7 +585,7 @@ export default function LandingPage() {
           <button onClick={() => pricingRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Harga</button>
           <Link to="/About" className="text-xs text-white/50 hover:text-white transition-colors">Tentang</Link>
         </div>
-        <button onClick={() => base44.auth.redirectToLogin()} className="text-xs font-bold bg-[#F97316] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
+        <button onClick={() => navigate("/login")} className="text-xs font-bold bg-[#F97316] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
           Masuk / Daftar
         </button>
       </nav>
@@ -617,7 +619,7 @@ export default function LandingPage() {
           <Reveal delay={240}>
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-center sm:justify-start mb-8">
               <button
-                onClick={() => base44.auth.redirectToLogin()}
+                onClick={() => navigate("/register")}
                 className="group flex items-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95 w-full sm:w-auto justify-center">
                 
                 Mulai Gratis Sekarang
@@ -731,7 +733,7 @@ export default function LandingPage() {
                 XP nambah tiap catat, jaga streak & dengerin Nana.<br />
                 <span className="text-white/65 font-semibold">Karena konsistensi harusnya ada rewardnya.</span>
               </p>
-              <button onClick={() => base44.auth.redirectToLogin()} className="flex-shrink-0 flex items-center gap-1.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
+              <button onClick={() => navigate("/register")} className="flex-shrink-0 flex items-center gap-1.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
                 Mulai Gratis →
               </button>
             </div>
@@ -784,7 +786,7 @@ export default function LandingPage() {
                       </div>
                   )}
                   </div>
-                  <button onClick={() => base44.auth.redirectToLogin()} className="w-full py-3 rounded-xl border border-[#F97316]/50 text-[#F97316] font-bold text-sm hover:bg-[#F97316]/10 transition-colors">
+                  <button onClick={() => navigate("/register")} className="w-full py-3 rounded-xl border border-[#F97316]/50 text-[#F97316] font-bold text-sm hover:bg-[#F97316]/10 transition-colors">
                     Mulai Gratis →
                   </button>
                 </div>
@@ -804,7 +806,7 @@ export default function LandingPage() {
                       </div>
                   )}
                   </div>
-                  <button onClick={() => base44.auth.redirectToLogin()} className="w-full py-3 rounded-xl bg-white text-[#F97316] font-bold text-sm hover:bg-white/90 transition-colors">
+                  <button onClick={() => navigate("/register")} className="w-full py-3 rounded-xl bg-white text-[#F97316] font-bold text-sm hover:bg-white/90 transition-colors">
                     Upgrade ke Plus →
                   </button>
                 </div>
@@ -832,7 +834,7 @@ export default function LandingPage() {
             </Reveal>
             <Reveal delay={180}>
               <div className="flex justify-center">
-                <button onClick={() => base44.auth.redirectToLogin()} className="group flex items-center justify-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
+                <button onClick={() => navigate("/register")} className="group flex items-center justify-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
                   Mulai Gratis Sekarang →
                 </button>
               </div>
@@ -859,7 +861,7 @@ export default function LandingPage() {
               <div className="space-y-2">
                 <div><Link to="/PrivacyPolicy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Privacy Policy</Link></div>
                 <div><Link to="/TermsOfService" className="text-white/30 hover:text-white/70 text-xs transition-colors">Terms of Service</Link></div>
-                <div><button onClick={() => base44.auth.redirectToLogin()} className="text-white/30 hover:text-white/70 text-xs transition-colors">Hubungi Kami</button></div>
+                <div><a href="mailto:admin@aturpintar.id" className="text-white/30 hover:text-white/70 text-xs transition-colors">Hubungi Kami</a></div>
               </div>
             </div>
             <div>
