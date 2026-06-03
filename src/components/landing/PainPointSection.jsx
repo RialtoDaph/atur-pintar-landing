@@ -1,9 +1,9 @@
 import Reveal from "./Reveal";
 
 const PAIN_POINTS = [
-  { emoji: "😮‍💨", text: "Tiap awal bulan niat nabung.\nTiap akhir bulan bingung duitnya ke mana." },
-  { emoji: "📱", text: "Udah download 5 aplikasi keuangan.\nSemuanya dibuka sekali, terus lupa." },
-  { emoji: "😬", text: "Ngerti teorinya sih.\nTapi eksekusinya... nanti deh." }
+  { emoji: "😮‍💨", title: "Niat besar, eksekusi tipis", text: "Tiap awal bulan niat nabung.\nTiap akhir bulan bingung duitnya ke mana." },
+  { emoji: "📱", title: "5 apps, semuanya mati", text: "Download aplikasi keuangan.\nDibuka sekali, terus lupa selamanya." },
+  { emoji: "😬", title: "Tau teori, malas praktek", text: "Udah baca 50-30-20.\nTapi nyatet aja masih males." }
 ];
 
 export default function PainPointSection() {
@@ -16,9 +16,10 @@ export default function PainPointSection() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {PAIN_POINTS.map((c, i) => (
             <Reveal key={i} delay={i * 80}>
-              <div className="card-d rounded-2xl p-6 text-center h-full flex flex-col items-center gap-4">
+              <div className="card-d rounded-2xl p-6 text-center h-full flex flex-col items-center gap-3">
                 <span className="text-4xl">{c.emoji}</span>
-                <p className="text-white/70 text-sm leading-relaxed whitespace-pre-line">{c.text}</p>
+                <p className="text-white font-bold text-sm">{c.title}</p>
+                <p className="text-white/55 text-xs leading-relaxed whitespace-pre-line">{c.text}</p>
               </div>
             </Reveal>
           ))}
