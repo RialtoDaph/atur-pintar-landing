@@ -10,7 +10,7 @@ import NanaIntroModal from "@/components/onboarding/NanaIntroModal";
 import SampleDataBanner, { hasSampleData } from "@/components/onboarding/SampleDataManager";
 import BalanceCardCarousel from "@/components/dashboard/BalanceCardCarousel";
 import TodayTransactionsCard from "@/components/dashboard/TodayTransactionsCard";
-import SubscriptionExpiredBanner from "@/components/dashboard/SubscriptionExpiredBanner.jsx";
+import SubscriptionExpiredBanner from "@/components/dashboard/SubscriptionExpiredBanner";
 import { syncAccountBalance } from "@/components/utils/accountSync";
 import { saveTransactionWithSync } from "@/components/utils/saveTransaction";
 
