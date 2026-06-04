@@ -45,6 +45,11 @@
       "format": "date",
       "description": "Tanggal disetujui"
     },
+    "expires_at": {
+      "type": "string",
+      "format": "date",
+      "description": "Tanggal kedaluwarsa langganan premium (akhir periode aktif)"
+    },
     "midtrans_order_id": {
       "type": "string",
       "description": "Order ID Midtrans"
