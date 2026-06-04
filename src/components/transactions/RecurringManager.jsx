@@ -24,47 +24,57 @@ export async function processRecurringTransactions(userEmail) {
   for (const tx of all) {
     if (!tx.recurring_interval) continue;
 
-    // First-ever generation: if tx.date is already in the past (or today) and
-    // recurring_last_generated belum pernah ada, child pertama = tx.date itu sendiri.
-    // Kalau sudah pernah generate, lanjut dari interval setelah recurring_last_generated.
-    const firstRun = !tx.recurring_last_generated;
-    const lastGen = tx.recurring_last_generated || tx.date;
-    let nextDate = firstRun ? tx.date : addInterval(lastGen, tx.recurring_interval);
+    // Expected next child date = parent.date + 1 interval (NEVER the parent's own date —
+    // that's the parent transaction itself, generating it as a child would duplicate it).
+    // Subsequent runs walk forward from recurring_last_generated.
+    const baseDate = tx.recurring_last_generated || tx.date;
+    let expectedNextDate = addInterval(baseDate, tx.recurring_interval);
 
-    // Only auto-generate for dates BEFORE today (not today itself)
-    // Today's transaction must be manually recorded via "Tandai Selesai"
-    if (nextDate < today) {
-      let current = nextDate;
-      let latestGenerated = lastGen;
-      const toCreate = [];
+    // Only generate when TODAY has reached/passed the expected next occurrence.
+    if (expectedNextDate > today) continue;
 
-      while (current < today) {
+    // Fetch all existing children once to dedupe against expected dates.
+    const existingChildren = await base44.entities.Transaction.filter({
+      recurring_parent_id: tx.id,
+    });
+    const existingDates = new Set((existingChildren || []).map((c) => c.date));
+
+    const toCreate = [];
+    let current = expectedNextDate;
+    let anyCreated = false;
+
+    // Catch up: generate one child per missed occurrence, up to and including today.
+    while (current <= today) {
+      if (!existingDates.has(current)) {
         toCreate.push({
           amount: tx.amount,
           type: tx.type,
           category: tx.category,
           note: tx.note,
           date: current,
+          is_recurring: false,
           is_recurring_child: true,
           recurring_parent_id: tx.id,
           ...(tx.account_id ? { account_id: tx.account_id } : {}),
         });
-        latestGenerated = current;
-        current = addInterval(current, tx.recurring_interval);
+        existingDates.add(current);
+        anyCreated = true;
       }
+      current = addInterval(current, tx.recurring_interval);
+    }
 
-      // Serial: create children first, then mark parent as processed.
-      // If create succeeds but update fails, next run will detect duplicates via recurring_last_generated
-      // being stale — but at least we won't lose the children. The reverse (update first) would orphan them.
+    if (toCreate.length > 0) {
       await base44.entities.Transaction.bulkCreate(toCreate);
-      await base44.entities.Transaction.update(tx.id, {
-        recurring_last_generated: latestGenerated,
-      });
-      // Recalculate account balance ONCE from source of truth (idempotent, accurate).
-      // Avoids drift from sequential incremental syncAccountBalance calls.
-      if (tx.account_id) {
-        await recalculateAccountBalance(tx.account_id);
-      }
+    }
+
+    // Per spec: mark parent processed with today's date (not the child's date).
+    await base44.entities.Transaction.update(tx.id, {
+      recurring_last_generated: today,
+    });
+
+    if (anyCreated && tx.account_id) {
+      // Recalculate balance ONCE from source of truth (idempotent, accurate).
+      await recalculateAccountBalance(tx.account_id);
     }
   }
 }
