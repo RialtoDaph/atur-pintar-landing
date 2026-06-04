@@ -11,16 +11,27 @@ export default function LeaderboardTab({ currentUser }) {
   const [myRank, setMyRank] = useState(-1);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function load() {
       setLoading(true);
       // Backend aggregates across all users via service role (frontend RLS only returns own data)
       const resp = await base44.functions.invoke("getLeaderboard", {}).catch(() => ({ data: { entries: [], myRank: -1 } }));
+      if (cancelled) return;
       const data = resp?.data || {};
       setEntries(data.entries || []);
       setMyRank(typeof data.myRank === "number" ? data.myRank : -1);
       setLoading(false);
     }
     load();
+
+    // Refresh leaderboard right after user attacks the boss (keeps tab in sync with compact view)
+    const handleBossAttacked = () => load();
+    window.addEventListener("boss-attacked", handleBossAttacked);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("boss-attacked", handleBossAttacked);
+    };
   }, []);
 
   if (loading) {
