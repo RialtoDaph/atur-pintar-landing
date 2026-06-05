@@ -22,10 +22,9 @@ function formatDateHeader(dateStr) {
 }
 
 function resolveCategory(tx, categories, goals = []) {
-  // Savings tx linked to a goal → use the goal's own icon + name as the badge
-  if (tx.type === "savings" && tx.goal_id) {
-    const g = goals.find(x => x.id === tx.goal_id);
-    if (g) return { emoji: g.icon || "🐷", label: g.name || "Tabungan", color: "#3B82F6" };
+  // Savings tx → always show "Tabungan" as the category badge (goal name appears as title via tx.note)
+  if (tx.type === "savings") {
+    return { emoji: "🐷", label: "Tabungan", color: "#3B82F6" };
   }
   const cat = categories.find(c => c.id === tx.category || c.name?.toLowerCase() === tx.category?.toLowerCase());
   if (cat) return { emoji: cat.emoji, label: cat.name, color: cat.color };
@@ -58,7 +57,7 @@ function resolveCategory(tx, categories, goals = []) {
   return { emoji: "📦", label: tx.category || "Lainnya", color: "#95A5A6" };
 }
 
-function SwipeItem({ tx, cat, accountName, formatCurrency, onTap, onDelete }) {
+function SwipeItem({ tx, cat, accountName, goalName, formatCurrency, onTap, onDelete }) {
   const [swipeX, setSwipeX] = useState(0);
   const startX = useRef(null);
   const startY = useRef(null);
@@ -123,7 +122,7 @@ function SwipeItem({ tx, cat, accountName, formatCurrency, onTap, onDelete }) {
         </div>
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-[#1A1A1A] truncate">{tx.note || cat?.label || "-"}</p>
+          <p className="text-sm font-semibold text-[#1A1A1A] truncate">{tx.note || goalName || cat?.label || "-"}</p>
           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
             {cat && (
               <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full" style={{ backgroundColor: (cat.color || "#888") + "20", color: cat.color || "#888" }}>
@@ -240,12 +239,14 @@ export default function TxRiwayatTab({ transactions, categories, accounts, goals
                 {group.items.map(tx => {
                   const cat = resolveCategory(tx, categories, goals);
                   const acc = accounts.find(a => a.id === tx.account_id);
+                  const goal = tx.type === "savings" && tx.goal_id ? goals.find(g => g.id === tx.goal_id) : null;
                   return (
                     <SwipeItem
                       key={tx.id}
                       tx={tx}
                       cat={cat}
                       accountName={acc?.name}
+                      goalName={goal?.name}
                       formatCurrency={formatCurrency}
                       onTap={setSelectedTx}
                       onDelete={handleDelete}
