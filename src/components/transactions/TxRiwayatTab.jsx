@@ -22,8 +22,12 @@ function formatDateHeader(dateStr) {
 }
 
 function resolveCategory(tx, categories, goals = []) {
-  // Savings tx → always show "Tabungan" as the category badge (goal name appears as title via tx.note)
+  // Savings tx → label stays "Tabungan", but use the goal's icon when linked
   if (tx.type === "savings") {
+    if (tx.goal_id) {
+      const g = goals.find(x => x.id === tx.goal_id);
+      if (g) return { emoji: g.icon || "🐷", label: "Tabungan", color: "#3B82F6" };
+    }
     return { emoji: "🐷", label: "Tabungan", color: "#3B82F6" };
   }
   const cat = categories.find(c => c.id === tx.category || c.name?.toLowerCase() === tx.category?.toLowerCase());
