@@ -8,15 +8,21 @@ import { Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import AppleIcon from "@/components/AppleIcon";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!agreed) {
+      setError("Kamu harus menyetujui Kebijakan Privasi & Ketentuan Layanan");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
@@ -30,10 +36,18 @@ export default function Login() {
   };
 
   const handleGoogle = () => {
+    if (!agreed) {
+      setError("Kamu harus menyetujui Kebijakan Privasi & Ketentuan Layanan");
+      return;
+    }
     base44.auth.loginWithProvider("google", "/");
   };
 
   const handleApple = () => {
+    if (!agreed) {
+      setError("Kamu harus menyetujui Kebijakan Privasi & Ketentuan Layanan");
+      return;
+    }
     base44.auth.loginWithProvider("apple", "/");
   };
 
@@ -122,7 +136,26 @@ export default function Login() {
             />
           </div>
         </div>
-        <Button type="submit" className="w-full h-12 font-bold bg-[#F97316] hover:bg-[#e05e00] text-white" disabled={loading}>
+        <div className="flex items-start gap-2.5 pt-1">
+          <Checkbox
+            id="agree-terms"
+            checked={agreed}
+            onCheckedChange={(v) => setAgreed(v === true)}
+            className="mt-0.5 border-white/30 data-[state=checked]:bg-[#F97316] data-[state=checked]:border-[#F97316]"
+          />
+          <Label htmlFor="agree-terms" className="text-xs text-white/60 leading-relaxed font-normal cursor-pointer">
+            Saya setuju dengan{" "}
+            <Link to="/PrivacyPolicy" target="_blank" className="text-[#F97316] hover:underline">
+              Kebijakan Privasi
+            </Link>{" "}
+            dan{" "}
+            <Link to="/TermsOfService" target="_blank" className="text-[#F97316] hover:underline">
+              Ketentuan Layanan
+            </Link>
+          </Label>
+        </div>
+
+        <Button type="submit" className="w-full h-12 font-bold bg-[#F97316] hover:bg-[#e05e00] text-white disabled:opacity-50" disabled={loading || !agreed}>
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
