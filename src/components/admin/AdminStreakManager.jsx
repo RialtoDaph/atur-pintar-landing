@@ -106,10 +106,10 @@ export default function AdminStreakManager({ onActionComplete }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
+    <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm">
       <div className="mb-6">
-        <h2 className="text-lg font-bold text-[#1A1A1A] mb-1">Manajemen Streak User</h2>
-        <p className="text-sm text-[#8FA4C8]">Kelola dan reset daily/longest streak pengguna</p>
+        <h2 className="text-base sm:text-lg font-bold text-[#1A1A1A] mb-1">Manajemen Streak User</h2>
+        <p className="text-xs sm:text-sm text-[#8FA4C8]">Kelola dan reset daily/longest streak pengguna</p>
       </div>
 
       {/* Messages */}
@@ -157,17 +157,75 @@ export default function AdminStreakManager({ onActionComplete }) {
         </button>
       </div>
 
-      {/* Users Table */}
-      <div className="overflow-x-auto">
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-3 border-[#F97316] border-t-transparent rounded-full animate-spin" />
+      {/* Users — Mobile cards */}
+      {loading ? (
+        <div className="flex items-center justify-center py-8">
+          <div className="w-6 h-6 border-3 border-[#F97316] border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : users.length === 0 ? (
+        <div className="text-center py-8 text-[#8FA4C8] text-sm">
+          Tidak ada user dengan GamificationProfile
+        </div>
+      ) : (
+        <>
+          <div className="sm:hidden space-y-2">
+            {users.map(user => (
+              <div key={user.email} className="p-3 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-[#1A1A1A] truncate">{user.email}</p>
+                    {user.profiles.length > 1 && (
+                      <span className="inline-block mt-1 px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded-full">
+                        {user.profiles.length} duplikat
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => resetStreakForUser(user.email)}
+                      className="p-1.5 bg-orange-50 rounded-lg text-[#F97316]"
+                      title="Reset Streak"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5" />
+                    </button>
+                    {user.profiles.length > 1 && (
+                      <button
+                        onClick={() => deleteDuplicates(user.email)}
+                        className="p-1.5 bg-red-50 rounded-lg text-red-600"
+                        title="Hapus Duplikat"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div>
+                    <p className="text-[10px] text-[#8FA4C8]">Daily</p>
+                    <p className="text-sm font-bold text-[#1A1A1A]">{user.daily_streak}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#8FA4C8]">Best</p>
+                    <p className="text-sm font-bold text-[#1A1A1A]">{user.longest_streak}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#8FA4C8]">Lvl</p>
+                    <p className="text-sm font-bold text-[#1A1A1A]">{user.level}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#8FA4C8]">XP</p>
+                    <p className="text-sm font-bold text-[#1A1A1A]">{user.total_points}</p>
+                  </div>
+                </div>
+                {user.last_activity_date && (
+                  <p className="text-[10px] text-[#8FA4C8] mt-2">Aktif terakhir: {new Date(user.last_activity_date).toLocaleDateString("id-ID")}</p>
+                )}
+              </div>
+            ))}
           </div>
-        ) : users.length === 0 ? (
-          <div className="text-center py-8 text-[#8FA4C8] text-sm">
-            Tidak ada user dengan GamificationProfile
-          </div>
-        ) : (
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#E2E8F0]">
@@ -224,8 +282,9 @@ export default function AdminStreakManager({ onActionComplete }) {
               ))}
             </tbody>
           </table>
-        )}
-      </div>
+          </div>
+        </>
+      )}
 
       <p className="text-xs text-[#8FA4C8] mt-4">
         Total: {users.length} user dengan GamificationProfile

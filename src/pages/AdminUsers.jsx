@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { CheckCircle2, XCircle, Clock, AlertCircle, RefreshCw, UserX, Shield } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, RefreshCw, UserX, Shield } from "lucide-react";
 import PendingPaymentMobileCard from "@/components/admin/PendingPaymentMobileCard";
 import UserMobileCard from "@/components/admin/UserMobileCard";
 
@@ -163,9 +163,10 @@ export default function AdminUsers() {
     if (filter === "premium") return u.subscription_plan && u.subscription_plan !== "free" && u.subscription_status === "active";
     if (filter === "free") return !u.subscription_plan || u.subscription_plan === "free" || u.subscription_status !== "active";
     if (filter === "inactive") {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      return new Date(u.updated_date || u.created_date) < thirtyDaysAgo;
+      // Match the "Inactive" stats card which uses 14 days
+      const fourteenDaysAgoFilter = new Date();
+      fourteenDaysAgoFilter.setDate(fourteenDaysAgoFilter.getDate() - 14);
+      return new Date(u.updated_date || u.created_date) < fourteenDaysAgoFilter;
     }
     if (filter === "no_onboarding") return !u.onboarding_completed;
     return true;

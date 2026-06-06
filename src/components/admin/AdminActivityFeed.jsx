@@ -83,7 +83,10 @@ export default function AdminActivityFeed() {
 
   useEffect(() => {
     if (!autoRefresh) return;
-    const t = setInterval(load, 30000);
+    // Pause polling when tab is hidden to save credits & bandwidth
+    const t = setInterval(() => {
+      if (!document.hidden) load();
+    }, 30000);
     return () => clearInterval(t);
   }, [autoRefresh, load]);
 

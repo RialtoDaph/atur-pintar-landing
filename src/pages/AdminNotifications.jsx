@@ -103,7 +103,9 @@ export default function AdminNotifications() {
       maintenance: { title: "🔧 Pemeliharaan Sistem", message: "Atur Pintar akan melakukan pemeliharaan sistem. Kami akan offline selama beberapa jam. Terima kasih atas kesabaran Anda." }
     };
     if (templates[template]) {
-      setForm({ ...form, ...templates[template] });
+      // Reset target_type/email so a template doesn't accidentally carry over a previous specific recipient
+      setForm({ target_type: "all", target_email: "", ...templates[template] });
+      setShowForm(true);
     }
   };
 

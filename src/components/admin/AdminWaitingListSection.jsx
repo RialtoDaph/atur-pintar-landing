@@ -47,7 +47,7 @@ export default function AdminWaitingListSection() {
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase();
     filtered = filtered.filter(w => 
-      (w.nama || "").toLowerCase().includes(q) || (w.email || "").toLowerCase().includes(q)
+      (w.name || "").toLowerCase().includes(q) || (w.email || "").toLowerCase().includes(q)
     );
   }
 
@@ -61,8 +61,8 @@ export default function AdminWaitingListSection() {
   // Top cities
   const cityMap = {};
   list.forEach(w => {
-    if (w.kota) {
-      cityMap[w.kota] = (cityMap[w.kota] || 0) + 1;
+    if (w.city) {
+      cityMap[w.city] = (cityMap[w.city] || 0) + 1;
     }
   });
   const topCities = Object.entries(cityMap)
@@ -99,7 +99,7 @@ export default function AdminWaitingListSection() {
     setLoading(true);
     try {
       const testRecords = list.filter(w => {
-        const name = (w.nama || "").toLowerCase();
+        const name = (w.name || "").toLowerCase();
         const email = (w.email || "").toLowerCase();
         return (
           name.includes("test") ||
@@ -135,14 +135,14 @@ export default function AdminWaitingListSection() {
     const headers = ["Tanggal", "Nama", "Email", "WhatsApp", "Kota", "Pekerjaan", "Cara Mencatat", "Minat Early Access", "Masalah Finansial", "Sudah Diinvite"];
     const rows = list.map(w => [
       format(new Date(w.created_date), "dd/MM/yyyy"),
-      w.nama || "",
+      w.name || "",
       w.email || "",
       w.whatsapp || "",
-      w.kota || "",
-      w.pekerjaan || "",
-      w.cara_mencatat_sekarang || "",
+      w.city || "",
+      w.job || "",
+      w.current_finance_tracking_method || "",
       w.early_access_interest || "",
-      w.masalah_finansial || "",
+      w.biggest_money_problem || "",
       w.invited ? "Ya" : "Tidak",
     ]);
 
@@ -269,7 +269,7 @@ export default function AdminWaitingListSection() {
               filtered.map(w => (
                 <tr key={w.id} className="border-b border-[#F2F4F7] hover:bg-[#F8FAFC]">
                   <td className="px-3 py-2 text-[#4A5568]">{format(new Date(w.created_date), "dd/MM/yy")}</td>
-                  <td className="px-3 py-2 font-medium text-[#1A1A1A]">{w.nama || "-"}</td>
+                  <td className="px-3 py-2 font-medium text-[#1A1A1A]">{w.name || "-"}</td>
                   <td className="px-3 py-2 text-[#4A5568] text-xs truncate max-w-[120px]">{w.email || "-"}</td>
                   <td className="px-3 py-2">
                     <button
@@ -281,9 +281,9 @@ export default function AdminWaitingListSection() {
                       <span className="hidden sm:inline">Copy</span>
                     </button>
                   </td>
-                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.kota || "-"}</td>
-                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.pekerjaan || "-"}</td>
-                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.cara_mencatat_sekarang || "-"}</td>
+                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.city || "-"}</td>
+                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.job || "-"}</td>
+                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.current_finance_tracking_method || "-"}</td>
                   <td className="px-3 py-2">
                     {w.early_access_interest && (
                       <span className={`px-2 py-1 rounded text-xs font-medium ${INTEREST_BADGES[w.early_access_interest]?.bg} ${INTEREST_BADGES[w.early_access_interest]?.text}`}>
@@ -291,7 +291,7 @@ export default function AdminWaitingListSection() {
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.masalah_finansial || "-"}</td>
+                  <td className="px-3 py-2 text-[#4A5568] text-xs">{w.biggest_money_problem || "-"}</td>
                   <td className="px-3 py-2">
                     {w.invited ? (
                       <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">Sudah</span>

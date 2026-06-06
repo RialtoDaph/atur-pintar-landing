@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { CreditCard, Users, CheckCircle2, XCircle, RefreshCw, Clock, Eye } from "lucide-react";
+import { CreditCard, Users, CheckCircle2, XCircle, RefreshCw, Clock, Eye, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 import PaymentMobileCard from "@/components/admin/PaymentMobileCard";
 
 export default function AdminSubscriptions() {
   const [user, setUser] = useState(null);
   const [payments, setPayments] = useState([]);
   const [users, setUsers] = useState([]);
+  const [appConfig, setAppConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
   const [viewProof, setViewProof] = useState(null);
+  const [approveConfirm, setApproveConfirm] = useState(null); // payment with mismatched amount
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -22,16 +25,24 @@ export default function AdminSubscriptions() {
 
   async function loadData() {
     setLoading(true);
-    const [paymentsRes, usersRes] = await Promise.all([
+    const [paymentsRes, usersRes, configRes] = await Promise.all([
       base44.entities.SubscriptionPayment.list("-created_date", 100),
       base44.functions.invoke("adminGetUsers", {}),
+      base44.entities.AppConfig.list().catch(() => []),
     ]);
     setPayments(paymentsRes);
     setUsers(usersRes.data?.users || []);
+    setAppConfig(configRes?.[0] || null);
     setLoading(false);
   }
 
-  async function handleApprove(payment) {
+  function getExpectedAmount(plan) {
+    if (plan === "premium_yearly") return appConfig?.premium_price_yearly ?? 399900;
+    if (plan === "premium_monthly") return appConfig?.premium_price_monthly ?? 49000;
+    return 0;
+  }
+
+  async function executeApprove(payment) {
     setProcessingId(payment.id);
     try {
       const endDate = new Date();
@@ -52,10 +63,25 @@ export default function AdminSubscriptions() {
         status: "approved",
         approved_at: new Date().toISOString().split("T")[0],
       });
+      toast.success("Pembayaran disetujui");
     } finally {
       setProcessingId(null);
+      setApproveConfirm(null);
       loadData();
     }
+  }
+
+  async function handleApprove(payment) {
+    // Validate amount matches expected plan price (tolerate ±5% to allow for fee/rounding)
+    const expected = getExpectedAmount(payment.plan);
+    const paid = Number(payment.amount) || 0;
+    const tolerance = expected * 0.05;
+    if (Math.abs(paid - expected) > tolerance) {
+      // Show confirm dialog with amount mismatch warning
+      setApproveConfirm({ payment, expected, paid });
+      return;
+    }
+    await executeApprove(payment);
   }
 
   async function handleReject(payment) {
@@ -271,6 +297,31 @@ export default function AdminSubscriptions() {
             <button onClick={() => setViewProof(null)} className="absolute top-3 right-3 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white">
               <XCircle className="w-5 h-5" />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Amount Mismatch Confirmation */}
+      {approveConfirm && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+            <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              <h3 className="font-bold text-[#1A1A1A]">Nominal Tidak Sesuai</h3>
+            </div>
+            <div className="px-6 py-4 space-y-2 text-sm">
+              <p className="text-[#4A5568]">Bukti pembayaran tidak sesuai harga paket:</p>
+              <div className="bg-[#F8FAFC] rounded-lg p-3 space-y-1">
+                <div className="flex justify-between"><span className="text-[#8FA4C8]">User bayar:</span><span className="font-bold text-[#1A1A1A]">Rp {approveConfirm.paid.toLocaleString("id-ID")}</span></div>
+                <div className="flex justify-between"><span className="text-[#8FA4C8]">Harga paket:</span><span className="font-bold text-[#1A1A1A]">Rp {approveConfirm.expected.toLocaleString("id-ID")}</span></div>
+                <div className="flex justify-between border-t border-[#E2E8F0] pt-1 mt-1"><span className="text-[#8FA4C8]">Selisih:</span><span className={`font-bold ${approveConfirm.paid < approveConfirm.expected ? "text-red-600" : "text-green-600"}`}>Rp {Math.abs(approveConfirm.paid - approveConfirm.expected).toLocaleString("id-ID")}</span></div>
+              </div>
+              <p className="text-xs text-amber-600">Tetap setujui hanya jika sudah verifikasi manual.</p>
+            </div>
+            <div className="px-6 py-4 border-t border-[#E2E8F0] flex gap-2">
+              <button onClick={() => setApproveConfirm(null)} className="flex-1 px-4 py-2 bg-[#F2F4F7] text-[#1A1A1A] font-medium rounded-lg hover:bg-[#E2E8F0]">Batal</button>
+              <button onClick={() => executeApprove(approveConfirm.payment)} className="flex-1 px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600">Tetap Setujui</button>
+            </div>
           </div>
         </div>
       )}

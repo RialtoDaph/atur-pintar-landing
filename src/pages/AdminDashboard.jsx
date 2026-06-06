@@ -30,16 +30,21 @@ export default function AdminDashboard() {
   async function loadStats() {
     setLoading(true);
     try {
-      // Fetch all data in parallel
-      // Note: Transaction.list() runs under user RLS so it only returns the admin's own transactions —
-      // we use it as a best-effort sample for "active users" since cross-user transaction counts require a backend function.
-      const [allUsers, allTransactions, pendingPayments, approvedPayments, allAlerts] = await Promise.all([
+      // Fetch data — use adminGetDashboardStats backend function for accurate cross-user activeUsers
+      // (Transaction.list() is RLS-scoped to admin only and cannot count other users' activity)
+      const [allUsers, pendingPayments, approvedPayments, allAlerts, appConfigRes, statsRes] = await Promise.all([
         base44.entities.User.list(),
-        base44.entities.Transaction.list("-created_date", 1000).catch(() => []),
         base44.entities.SubscriptionPayment.filter({ status: "pending" }),
         base44.entities.SubscriptionPayment.filter({ status: "approved" }),
-        base44.entities.Alert.list()
+        base44.entities.Alert.list(),
+        base44.entities.AppConfig.list().catch(() => []),
+        base44.functions.invoke("adminGetDashboardStats", {}).catch(() => ({ data: null })),
       ]);
+
+      const appConfig = appConfigRes?.[0] || {};
+      const priceMonthly = appConfig.premium_price_monthly || 49000;
+      const priceYearly = appConfig.premium_price_yearly || 399900;
+      const serverStats = statsRes?.data || {};
 
       // Calculate metrics
       const totalUsers = allUsers.length;
@@ -47,28 +52,21 @@ export default function AdminDashboard() {
       const premiumYearly = allUsers.filter(u => u.subscription_plan === "premium_yearly" && u.subscription_status === "active");
       const premiumUsers = allUsers.filter(u => u.subscription_plan && u.subscription_plan !== "free" && u.subscription_status === "active").length;
       const thisMonth = new Date().toISOString().slice(0, 7);
-      const newUsersThisMonth = allUsers.filter(u => u.created_date?.startsWith(thisMonth)).length;
-      
+
       // Pending payments older than 3 days
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       const oldPendingCount = pendingPayments.filter(p => new Date(p.created_date) < threeDaysAgo).length;
 
-      // Current month revenue (approved payments in this month) — dynamic so it doesn't get stuck on a hardcoded date
+      // Current month revenue (approved payments in this month)
       const currentMonthPayments = approvedPayments.filter(p => {
         const date = p.approved_at || p.created_date;
         return date?.startsWith(thisMonth);
       });
       const monthlyRevenue = currentMonthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
-      // Active users (transactions in last 30 days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const activeUsers = new Set(
-        allTransactions
-          .filter(t => new Date(t.created_date) > thirtyDaysAgo)
-          .map(t => t.created_by)
-      ).size;
+      // Active users — from backend (accurate, cross-user); fallback to 0 if function fails
+      const activeUsers = serverStats.activeUsersMonthly ?? 0;
 
       // Onboarding completion rate
       const completedOnboarding = allUsers.filter(u => u.onboarding_completed).length;
@@ -76,7 +74,7 @@ export default function AdminDashboard() {
       const notOnboarded = allUsers.filter(u => !u.onboarding_completed);
       setNotOnboardedList(notOnboarded);
       
-      // New users this month (April 2026)
+      // New users this month
       const newThisMonth = allUsers.filter(u => u.created_date?.startsWith(thisMonth)).length;
 
       // Generate monthly chart data (last 6 months)
@@ -92,9 +90,9 @@ export default function AdminDashboard() {
         });
       }
 
-      // MRR calculation
-      const mrrMonthly = premiumMonthly.length * 49000;
-      const mrrYearly = premiumYearly.length * 40833;
+      // MRR calculation — pakai harga dari AppConfig (dinamis)
+      const mrrMonthly = premiumMonthly.length * priceMonthly;
+      const mrrYearly = premiumYearly.length * Math.round(priceYearly / 12);
       const totalMRR = mrrMonthly + mrrYearly;
 
       // Churn (expired subscriptions this month)
@@ -122,6 +120,7 @@ export default function AdminDashboard() {
         conversionRate: totalUsers > 0 ? Math.round((premiumUsers / totalUsers) * 100) : 0,
         churnCount: expiredUsers,
         activeUsers,
+        activeUsersDaily: serverStats.activeUsersDaily ?? 0,
         onboardingRate,
         completedOnboarding,
         expiringUsers,

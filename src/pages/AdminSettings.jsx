@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Save, Plus, X } from "lucide-react";
 import { toast } from "sonner";
+// Note: Danger Zone (hardcoded simulation data cleanup) removed — IDs were one-time dev artifacts.
 
 const FEATURE_FLAGS = [
   { key: "feature_split_bill", label: "Split Bill", desc: "Aktifkan fitur Split Bill & IOU antar teman" },
@@ -36,8 +37,6 @@ export default function AdminSettings() {
     settings_unlocked: false,
     admin_alert_email: "",
   });
-  const [deletingSimData, setDeletingSimData] = useState(false);
-
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
@@ -155,33 +154,6 @@ export default function AdminSettings() {
       console.error(e);
       setErrorMsg("Gagal menghapus admin: " + e.message);
     }
-  }
-
-  async function deleteSimulationData() {
-    if (!window.confirm("⚠️ YAKIN? Ini akan menghapus data simulasi. Tindakan ini TIDAK BISA DIBATALKAN.")) return;
-    setDeletingSimData(true);
-    try {
-      const investmentIds = ["69d6ac16b817fa58e538e224", "69d6ac16b817fa58e538e225", "69d6ac16b817fa58e538e226"];
-      const alertIds = ["69d6ac61427fef70824fe32a", "69d6ac61427fef70824fe32b", "69d6ac61427fef70824fe32c"];
-      const notifIds = ["69d6abc60171dac7dd9eb414", "69d6c10da1db39cbb506cb59"];
-
-      let deleted = 0;
-      for (const id of [...investmentIds, ...alertIds, ...notifIds]) {
-        try {
-          if (investmentIds.includes(id)) await base44.entities.Investment.delete(id);
-          else if (alertIds.includes(id)) await base44.entities.Alert.delete(id);
-          else await base44.entities.AdminNotification.delete(id);
-          deleted++;
-        } catch (_) {}
-      }
-
-      setSuccessMsg(`✓ Berhasil menghapus ${deleted} record simulasi`);
-      setTimeout(() => setSuccessMsg(""), 3000);
-    } catch (e) {
-      console.error(e);
-      setErrorMsg("Gagal menghapus data simulasi: " + e.message);
-    }
-    setDeletingSimData(false);
   }
 
   if (loading) return (
@@ -325,16 +297,6 @@ export default function AdminSettings() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Danger Zone */}
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-red-200">
-          <h2 className="text-base sm:text-lg font-bold text-red-600 mb-4">⚠️ Danger Zone</h2>
-          <button onClick={deleteSimulationData} disabled={deletingSimData}
-            className="w-full px-4 py-3 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 disabled:opacity-60">
-            {deletingSimData ? "Menghapus..." : "🗑️ Hapus Sisa Data Simulasi"}
-          </button>
-          <p className="text-xs text-red-600 mt-2">Menghapus semua investment, alert, dan notifikasi simulasi. Tidak bisa dibatalkan.</p>
         </div>
 
         {/* Add Admin Modal */}
