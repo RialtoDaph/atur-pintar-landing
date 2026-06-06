@@ -81,8 +81,8 @@ export default function FeedbackReportPanel({ user, onClose }) {
       <div className="px-4 pt-4 pb-3 border-b border-[#F2F4F7] flex-shrink-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-lg">💬</span>
-          <h2 className="text-sm font-bold text-[#1A1A1A]">Beta Feedback</h2>
-          <span className="text-[8px] font-bold text-[#F97316] bg-[#F97316]/15 border border-[#F97316]/30 rounded px-1 py-0.5 leading-none uppercase tracking-wider">Beta</span>
+          <h2 className="text-sm font-bold text-[#1A1A1A]">Report</h2>
+          <span className="text-[8px] font-bold text-[#F97316] bg-[#F97316]/15 border border-[#F97316]/30 rounded px-1 py-0.5 leading-none uppercase tracking-wider">Report</span>
         </div>
         <p className="text-[11px] text-[#8FA4C8]">Lapor masalah & cek statusnya.</p>
 
