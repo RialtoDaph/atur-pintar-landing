@@ -6,13 +6,13 @@ export default function AuthLayout({ title, subtitle, footer, children }) {
     <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A] text-white px-4 py-10">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link to="/LandingPage" className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
+          <Link to="/LandingPage" className="inline-flex items-center gap-3 mb-6 hover:opacity-80 transition-opacity">
             <img
               src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png"
               alt="Logo Atur Pintar"
-              className="w-9 h-9"
+              className="w-14 h-14"
             />
-            <span className="font-black text-white text-lg tracking-tight">Atur Pintar</span>
+            <span className="font-black text-white text-2xl tracking-tight">Atur Pintar</span>
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">{title}</h1>
           {subtitle && <p className="text-white/50 text-sm mt-2">{subtitle}</p>}
