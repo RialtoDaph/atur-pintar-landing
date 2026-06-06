@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
-import AdminLayout from "@/components/admin/AdminLayout";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { MessageSquare, Bug, Lightbulb, Heart, MessageCircle, Clock, Eye, CheckCircle2, XCircle, RefreshCw, X, Send, Trash2 } from "lucide-react";
+import AdminPageShell from "@/components/admin/AdminPageShell";
+import { MessageSquare, Bug, Lightbulb, Heart, MessageCircle, Clock, Eye, CheckCircle2, XCircle, X, Send, Trash2 } from "lucide-react";
 
 const TYPE_META = {
   bug: { label: "Bug", icon: Bug, color: "text-red-500", bg: "bg-red-50" },
@@ -76,18 +75,13 @@ export default function AdminFeedback() {
   }
 
   return (
-    <AdminLayout currentPage="AdminFeedback">
-      <div className="p-4 sm:p-8">
-        <AdminPageHeader
-          title="Feedback Report"
-          subtitle="Kelola laporan dari user"
-          action={
-            <button onClick={load} className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
-              <RefreshCw className="w-4 h-4" />
-            </button>
-          }
-        />
-
+    <AdminPageShell
+      currentPage="AdminFeedback"
+      title="Feedback Report"
+      subtitle="Kelola laporan dari user"
+      onRefresh={load}
+      refreshing={loading}
+    >
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <StatCard label="Total" value={counts.total} icon={MessageSquare} color="text-[#F97316]" />
@@ -156,8 +150,7 @@ export default function AdminFeedback() {
             </div>
           </div>
         )}
-      </div>
-    </AdminLayout>
+    </AdminPageShell>
   );
 }
 
