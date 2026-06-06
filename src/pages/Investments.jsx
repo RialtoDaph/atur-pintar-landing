@@ -32,12 +32,23 @@ export default function InvestmentsPage() {
   async function loadData() {
     setLoading(true);
     try {
+      const safeFilter = async (entity, retries = 1) => {
+        try {
+          return await entity.filter({ created_by: user.email }, "-created_date");
+        } catch (e) {
+          if (retries > 0 && /rate limit/i.test(e?.message || "")) {
+            await new Promise(r => setTimeout(r, 1200));
+            return safeFilter(entity, retries - 1);
+          }
+          return [];
+        }
+      };
       const [inv, txs, accs] = await Promise.all([
-        base44.entities.Investment.filter({ created_by: user.email }, "-created_date"),
-        base44.entities.InvestmentTransaction.filter({ created_by: user.email }).catch(() => []),
-        base44.entities.Account.filter({ created_by: user.email }).catch(() => []),
+        safeFilter(base44.entities.Investment),
+        safeFilter(base44.entities.InvestmentTransaction),
+        safeFilter(base44.entities.Account),
       ]);
-      setInvestments(inv);
+      setInvestments(inv || []);
       setTransactions(txs || []);
       setAccounts(accs || []);
     } finally {
