@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { useState } from "react";
 import {
   LayoutDashboard, Users, ArrowLeftRight, Tag, Sparkles,
   CreditCard, Bell, ScrollText, AlertTriangle, ChevronRight, Shield, Menu, X, Settings, Wallet, MessageSquare
@@ -9,43 +8,18 @@ import {
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
-  { label: "Users", icon: Users, page: "AdminUsers", badgeKey: "pendingUsers" },
+  { label: "Users", icon: Users, page: "AdminUsers" },
   { label: "Categories", icon: Tag, page: "AdminCategories" },
   { label: "Default Rekening", icon: Wallet, page: "AdminDefaultAccounts" },
-  { label: "Subscriptions", icon: CreditCard, page: "AdminSubscriptions", badgeKey: "pendingPayments" },
+  { label: "Subscriptions", icon: CreditCard, page: "AdminSubscriptions" },
   { label: "Notifications", icon: Bell, page: "AdminNotifications" },
-  { label: "Feedback", icon: MessageSquare, page: "AdminFeedback", badgeKey: "openFeedback" },
+  { label: "Feedback", icon: MessageSquare, page: "AdminFeedback" },
   { label: "Settings", icon: Settings, page: "AdminSettings" },
   { label: "System Logs", icon: ScrollText, page: "AdminLogs" },
 ];
 
 export default function AdminLayout({ children, currentPage }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [badges, setBadges] = useState({ pendingPayments: 0, openFeedback: 0, pendingUsers: 0 });
-
-  useEffect(() => {
-    let cancelled = false;
-    async function loadBadges() {
-      try {
-        const [pendingPay, openFb] = await Promise.all([
-          base44.entities.SubscriptionPayment.filter({ status: "pending" }).catch(() => []),
-          base44.entities.FeedbackReport.filter({ status: "open" }).catch(() => []),
-        ]);
-        if (cancelled) return;
-        setBadges({
-          pendingPayments: pendingPay.length,
-          openFeedback: openFb.length,
-          pendingUsers: 0,
-        });
-      } catch {}
-    }
-    loadBadges();
-    // Refresh every 60s but pause when tab hidden
-    const timer = setInterval(() => {
-      if (!document.hidden) loadBadges();
-    }, 60000);
-    return () => { cancelled = true; clearInterval(timer); };
-  }, []);
 
   const SidebarContent = () => (
     <>
@@ -66,7 +40,6 @@ export default function AdminLayout({ children, currentPage }) {
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
           const active = currentPage === item.page;
-          const badgeCount = item.badgeKey ? badges[item.badgeKey] : 0;
           return (
             <Link
               key={item.page}
@@ -80,14 +53,7 @@ export default function AdminLayout({ children, currentPage }) {
             >
               <item.icon className="w-4 h-4 flex-shrink-0" />
               <span className="flex-1">{item.label}</span>
-              {badgeCount > 0 && (
-                <span className={`text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1.5 flex items-center justify-center ${
-                  active ? "bg-white text-[#F97316]" : "bg-[#EF4444] text-white"
-                }`}>
-                  {badgeCount > 99 ? "99+" : badgeCount}
-                </span>
-              )}
-              {active && badgeCount === 0 && <ChevronRight className="w-3 h-3 opacity-70" />}
+              {active && <ChevronRight className="w-3 h-3 opacity-70" />}
             </Link>
           );
         })}
@@ -131,14 +97,9 @@ export default function AdminLayout({ children, currentPage }) {
         <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="relative w-9 h-9 flex items-center justify-center bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
+            className="w-9 h-9 flex items-center justify-center bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
           >
             <Menu className="w-5 h-5" />
-            {(badges.pendingPayments + badges.openFeedback) > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#EF4444] text-white text-[9px] font-bold flex items-center justify-center">
-                {(badges.pendingPayments + badges.openFeedback) > 9 ? "9+" : (badges.pendingPayments + badges.openFeedback)}
-              </span>
-            )}
           </button>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-[#F97316] rounded-lg flex items-center justify-center">
