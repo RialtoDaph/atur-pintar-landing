@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import AdminStatBar from "@/components/admin/AdminStatBar";
 import InboxActionCard from "@/components/admin/InboxActionCard";
-import { CreditCard, MessageSquare, UserX, Clock, CheckCircle2, BarChart3, RefreshCw } from "lucide-react";
+import { CreditCard, MessageSquare, UserX, Clock, CheckCircle2, BarChart3 } from "lucide-react";
 
 /**
  * AdminInbox — new default admin landing page.
@@ -50,20 +50,9 @@ export default function AdminInbox() {
   };
 
   useEffect(() => {
-    base44.auth.me().then((u) => {
-      setUser(u);
-      if (u?.role === "admin") load();
-      else setLoading(false);
-    }).catch(() => setLoading(false));
+    base44.auth.me().then((u) => setUser(u)).catch(() => {});
+    load();
   }, []);
-
-  if (user && user.role !== "admin") {
-    return (
-      <AdminLayout currentPage="AdminInbox">
-        <div className="p-10 text-center text-red-500 font-semibold">Akses Ditolak</div>
-      </AdminLayout>
-    );
-  }
 
   // Build action items sorted by priority
   const actions = [];
@@ -113,22 +102,13 @@ export default function AdminInbox() {
   }
 
   return (
-    <AdminLayout currentPage="AdminInbox">
-      <div className="p-4 sm:p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Inbox Admin</h1>
-            <p className="text-sm text-[#8FA4C8] mt-0.5">Yang perlu kamu kerjakan hari ini</p>
-          </div>
-          <button
-            onClick={load}
-            className="flex items-center gap-2 px-3 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium text-[#1A1A1A] hover:bg-[#F8FAFC] transition-colors shadow-sm"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          </button>
-        </div>
-
+    <AdminPageShell
+      currentPage="AdminInbox"
+      title="Inbox Admin"
+      subtitle="Yang perlu kamu kerjakan hari ini"
+      onRefresh={load}
+      refreshing={loading}
+    >
         {/* Sticky Stat Bar */}
         <AdminStatBar />
 
@@ -171,7 +151,6 @@ export default function AdminInbox() {
             </div>
           </button>
         </div>
-      </div>
-    </AdminLayout>
+    </AdminPageShell>
   );
 }
