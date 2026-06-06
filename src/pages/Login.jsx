@@ -53,7 +53,7 @@ export default function Login() {
 
   return (
     <AuthLayout
-      title="Selamat datang kembali"
+      title="Hallo Pintarians!"
       subtitle="Masuk ke akun kamu"
       footer={
         <>
