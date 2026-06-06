@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Bug, Lightbulb, Heart, MessageCircle, Clock, CheckCircle2, XCircle, Eye, Send, Inbox } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const TYPE_OPTIONS = [
   { value: "bug", label: "Bug", icon: Bug, color: "text-red-500", bg: "bg-red-50", border: "border-red-200" },
@@ -22,6 +23,7 @@ const STATUS_MAP = {
  * but stripped chrome (no backdrop, no close button — parent owns those).
  */
 export default function FeedbackReportPanel({ user, onClose }) {
+  useLockBodyScroll();
   const [tab, setTab] = useState("report");
   const [type, setType] = useState("bug");
   const [title, setTitle] = useState("");
