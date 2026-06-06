@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Copy, Mail, MessageCircle, Download, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import WaitingListMobileCard from "@/components/admin/WaitingListMobileCard";
 
 const INTEREST_BADGES = {
   "Ya": { bg: "bg-green-100", text: "text-green-700", label: "Ya" },
@@ -242,8 +243,30 @@ export default function AdminWaitingListSection() {
         </select>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
+      {/* Mobile: card list */}
+      <div className="sm:hidden space-y-2">
+        {loading ? (
+          <p className="text-center py-8 text-[#8FA4C8] text-sm">Loading...</p>
+        ) : filtered.length === 0 ? (
+          <p className="text-center py-8 text-[#8FA4C8] text-sm">Tidak ada data</p>
+        ) : (
+          filtered.map(w => (
+            <WaitingListMobileCard
+              key={w.id}
+              item={w}
+              inviting={!!inviting[w.id]}
+              deleting={!!deleting[w.id]}
+              onInvite={handleSendInvite}
+              onDelete={(id) => setConfirmDelete(id)}
+              onCopy={copyToClipboard}
+              formatWhatsApp={formatWhatsApp}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
