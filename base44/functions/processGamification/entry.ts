@@ -113,13 +113,10 @@ Deno.serve(async (req) => {
     }
 
     // ── 2. Streak update ──────────────────────────────────────────────────────
-    // Streak naik untuk setiap aktivitas user yang relevan:
-    // catat transaksi, selesaikan misi harian, atau buka aplikasi.
-    // Trigger lain (goal, budget, nana, dll) tetap menambah XP tapi tidak menyentuh streak.
+    // Streak HANYA naik saat user catat transaksi.
+    // Buka app / misi / trigger lain tetap menambah XP tapi tidak menyentuh streak.
     const ACTIVITY_TRIGGERS = new Set([
       "transaction_created",
-      "mission_completed",
-      "app_opened",
     ]);
     const isActivity = ACTIVITY_TRIGGERS.has(trigger);
 
