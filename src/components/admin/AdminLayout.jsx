@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard, Users, ArrowLeftRight, Tag, Sparkles,
   CreditCard, Bell, ScrollText, AlertTriangle, ChevronRight, Shield, Menu, X, Settings, Wallet, MessageSquare
 } from "lucide-react";
+import AdminBottomNav from "./AdminBottomNav";
+import AdminDensityToggle from "./AdminDensityToggle";
+import AdminCompactStyles from "./AdminCompactStyles";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, page: "AdminDashboard" },
@@ -20,6 +24,28 @@ const NAV_ITEMS = [
 
 export default function AdminLayout({ children, currentPage }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingPaymentCount, setPendingPaymentCount] = useState(0);
+  const [openFeedbackCount, setOpenFeedbackCount] = useState(0);
+
+  // Fetch badge counts (pending payments + open feedback) — refresh every 60s, pause when tab hidden
+  useEffect(() => {
+    let mounted = true;
+    const loadCounts = async () => {
+      if (document.hidden) return;
+      try {
+        const [payments, feedbacks] = await Promise.all([
+          base44.entities.SubscriptionPayment.filter({ status: "pending" }).catch(() => []),
+          base44.entities.FeedbackReport.filter({ status: "open" }).catch(() => []),
+        ]);
+        if (!mounted) return;
+        setPendingPaymentCount(payments?.length || 0);
+        setOpenFeedbackCount(feedbacks?.length || 0);
+      } catch {}
+    };
+    loadCounts();
+    const interval = setInterval(loadCounts, 60000);
+    return () => { mounted = false; clearInterval(interval); };
+  }, []);
 
   const SidebarContent = () => (
     <>
@@ -97,9 +123,12 @@ export default function AdminLayout({ children, currentPage }) {
         <div className="flex items-center justify-between px-4 py-3">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="w-9 h-9 flex items-center justify-center bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
+            className="relative w-9 h-9 flex items-center justify-center bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"
           >
             <Menu className="w-5 h-5" />
+            {(pendingPaymentCount + openFeedbackCount) > 0 && (
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#EF4444] border-2 border-[#0A0A0A]" />
+            )}
           </button>
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-[#F97316] rounded-lg flex items-center justify-center">
@@ -107,14 +136,25 @@ export default function AdminLayout({ children, currentPage }) {
             </div>
             <p className="text-white text-sm font-bold">Admin Panel</p>
           </div>
-          <div className="w-9" />
+          <AdminDensityToggle />
         </div>
       </div>
 
+      {/* Compact mode CSS (only active when html.admin-compact) */}
+      <AdminCompactStyles />
+
       {/* Content */}
-      <div className="sm:ml-56 flex-1 min-h-screen overflow-x-hidden pt-14 sm:pt-0">
+      <div className="sm:ml-56 flex-1 min-h-screen overflow-x-hidden pt-14 sm:pt-0 admin-area" style={{ paddingBottom: "calc(64px + env(safe-area-inset-bottom, 0px))" }}>
         {children}
       </div>
+
+      {/* Mobile Bottom Nav */}
+      <AdminBottomNav
+        currentPage={currentPage}
+        onOpenMore={() => setSidebarOpen(true)}
+        pendingPaymentCount={pendingPaymentCount}
+        openFeedbackCount={openFeedbackCount}
+      />
     </div>
   );
 }
