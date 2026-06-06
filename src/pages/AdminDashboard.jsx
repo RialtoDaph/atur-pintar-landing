@@ -1,23 +1,19 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
-import AdminStatCard from "@/components/admin/AdminStatCard";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStatBar from "@/components/admin/AdminStatBar";
+import RevenueSnapshot from "@/components/admin/RevenueSnapshot";
+import CollapsibleSection from "@/components/admin/CollapsibleSection";
 import AdminStreakManager from "@/components/admin/AdminStreakManager";
-import { Users, TrendingUp, DollarSign, Clock, AlertTriangle, RefreshCw, CheckCircle2, UserX, Send, X } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { useNavigate } from "react-router-dom";
 import AdminWaitingListSection from "@/components/admin/AdminWaitingListSection";
+import { RefreshCw } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function AdminDashboard() {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [monthlyChartData, setMonthlyChartData] = useState([]);
-  const [notOnboardedModal, setNotOnboardedModal] = useState(false);
-  const [notOnboardedList, setNotOnboardedList] = useState([]);
-  const [sendingReminder, setSendingReminder] = useState({});
 
   useEffect(() => {
     base44.auth.me().then(u => {
@@ -30,54 +26,34 @@ export default function AdminDashboard() {
   async function loadStats() {
     setLoading(true);
     try {
-      // Fetch data — use adminGetDashboardStats backend function for accurate cross-user activeUsers
-      // (Transaction.list() is RLS-scoped to admin only and cannot count other users' activity)
-      const [allUsers, pendingPayments, approvedPayments, allAlerts, appConfigRes, statsRes] = await Promise.all([
+      const [allUsers, approvedPayments, appConfigRes] = await Promise.all([
         base44.entities.User.list(),
-        base44.entities.SubscriptionPayment.filter({ status: "pending" }),
         base44.entities.SubscriptionPayment.filter({ status: "approved" }),
-        base44.entities.Alert.list(),
         base44.entities.AppConfig.list().catch(() => []),
-        base44.functions.invoke("adminGetDashboardStats", {}).catch(() => ({ data: null })),
       ]);
 
       const appConfig = appConfigRes?.[0] || {};
       const priceMonthly = appConfig.premium_price_monthly || 49000;
       const priceYearly = appConfig.premium_price_yearly || 399900;
-      const serverStats = statsRes?.data || {};
 
-      // Calculate metrics
       const totalUsers = allUsers.length;
       const premiumMonthly = allUsers.filter(u => u.subscription_plan === "premium_monthly" && u.subscription_status === "active");
       const premiumYearly = allUsers.filter(u => u.subscription_plan === "premium_yearly" && u.subscription_status === "active");
-      const premiumUsers = allUsers.filter(u => u.subscription_plan && u.subscription_plan !== "free" && u.subscription_status === "active").length;
+      const premiumUsers = premiumMonthly.length + premiumYearly.length;
       const thisMonth = new Date().toISOString().slice(0, 7);
 
-      // Pending payments older than 3 days
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      const oldPendingCount = pendingPayments.filter(p => new Date(p.created_date) < threeDaysAgo).length;
-
-      // Current month revenue (approved payments in this month)
+      // Current month revenue
       const currentMonthPayments = approvedPayments.filter(p => {
         const date = p.approved_at || p.created_date;
         return date?.startsWith(thisMonth);
       });
       const monthlyRevenue = currentMonthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
-      // Active users — from backend (accurate, cross-user); fallback to 0 if function fails
-      const activeUsers = serverStats.activeUsersMonthly ?? 0;
-
-      // Onboarding completion rate
+      // Onboarding
       const completedOnboarding = allUsers.filter(u => u.onboarding_completed).length;
       const onboardingRate = totalUsers > 0 ? Math.round((completedOnboarding / totalUsers) * 100) : 0;
-      const notOnboarded = allUsers.filter(u => !u.onboarding_completed);
-      setNotOnboardedList(notOnboarded);
-      
-      // New users this month
-      const newThisMonth = allUsers.filter(u => u.created_date?.startsWith(thisMonth)).length;
 
-      // Generate monthly chart data (last 6 months)
+      // Chart data
       const chartData = [];
       for (let i = 5; i >= 0; i--) {
         const d = new Date();
@@ -90,41 +66,19 @@ export default function AdminDashboard() {
         });
       }
 
-      // MRR calculation — pakai harga dari AppConfig (dinamis)
-      const mrrMonthly = premiumMonthly.length * priceMonthly;
-      const mrrYearly = premiumYearly.length * Math.round(priceYearly / 12);
-      const totalMRR = mrrMonthly + mrrYearly;
-
-      // Churn (expired subscriptions this month)
+      // MRR & churn
+      const mrr = premiumMonthly.length * priceMonthly + premiumYearly.length * Math.round(priceYearly / 12);
       const expiredUsers = allUsers.filter(u => u.subscription_status === "expired" && u.updated_date?.startsWith(thisMonth)).length;
-
-      // Alert for pending & expiring
-      const sixDaysFromNow = new Date();
-      sixDaysFromNow.setDate(sixDaysFromNow.getDate() + 7);
-      const expiringUsers = allUsers.filter(u => {
-        if (!u.subscription_end_date || u.subscription_status !== "active") return false;
-        const endDate = new Date(u.subscription_end_date);
-        return endDate <= sixDaysFromNow && endDate > new Date();
-      }).length;
 
       setStats({
         totalUsers,
         premiumUsers,
-        freeUsers: totalUsers - premiumUsers,
-        newUsersThisMonth: newThisMonth,
-        notOnboardedCount: notOnboarded.length,
-        pendingPaymentCount: pendingPayments.length,
-        oldPendingCount,
         monthlyRevenue: Math.round(monthlyRevenue),
-        totalMRR: Math.round(totalMRR),
+        totalMRR: Math.round(mrr),
         conversionRate: totalUsers > 0 ? Math.round((premiumUsers / totalUsers) * 100) : 0,
         churnCount: expiredUsers,
-        activeUsers,
-        activeUsersDaily: serverStats.activeUsersDaily ?? 0,
         onboardingRate,
         completedOnboarding,
-        expiringUsers,
-        alertCount: allAlerts.filter(a => a.status === "unread").length
       });
       setMonthlyChartData(chartData);
     } catch (error) {
@@ -147,184 +101,68 @@ export default function AdminDashboard() {
     </AdminLayout>
   );
 
-  const fmt = (n) => n?.toLocaleString("id-ID") ?? "-";
-
   return (
     <AdminLayout currentPage="AdminDashboard">
       <div className="p-4 sm:p-8">
-        <div className="flex items-center justify-between mb-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Admin Dashboard</h1>
-            <p className="text-sm text-[#8FA4C8] mt-0.5">Overview sistem Atur Pintar</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Statistik</h1>
+            <p className="text-sm text-[#8FA4C8] mt-0.5">Analytics & insight platform</p>
           </div>
           <button
             onClick={loadStats}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium text-[#1A1A1A] hover:bg-[#F8FAFC] transition-colors shadow-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium text-[#1A1A1A] hover:bg-[#F8FAFC] transition-colors shadow-sm"
           >
             <RefreshCw className="w-4 h-4" />
-            <span className="hidden sm:inline">Refresh</span>
           </button>
         </div>
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-          <AdminStatCard icon={Users} label="Total Pengguna" value={fmt(stats?.totalUsers)} color="orange" />
-          <AdminStatCard icon={TrendingUp} label="Premium Users" value={fmt(stats?.premiumUsers)} sub={`${stats?.newUsersThisMonth ?? 0} baru bulan ini`} color="blue" />
-          <AdminStatCard icon={DollarSign} label="Revenue (Bulan)" value={`Rp ${fmt(stats?.monthlyRevenue)}`} color="green" />
-          <AdminStatCard icon={Clock} label="Aktif (30 hari)" value={fmt(stats?.activeUsers)} sub={`${stats?.onboardingRate ?? 0}% selesai onboarding`} color="purple" />
+        {/* Sticky Stat Bar — reuse from Inbox */}
+        <AdminStatBar />
+
+        <div className="mt-4 space-y-4">
+          {/* Revenue Snapshot — replaces 3 separate MRR/Conversion cards */}
+          <RevenueSnapshot
+            mrr={stats?.totalMRR}
+            premiumUsers={stats?.premiumUsers}
+            totalUsers={stats?.totalUsers}
+            conversionRate={stats?.conversionRate}
+            churnCount={stats?.churnCount}
+          />
+
+          {/* Growth Chart — moved up */}
+          {monthlyChartData.length > 0 && (
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-semibold text-[#1A1A1A]">Pertumbuhan User (6 bulan)</p>
+                <p className="text-xs text-[#8FA4C8]">{stats?.onboardingRate}% onboarded</p>
+              </div>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={monthlyChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Bar dataKey="newUsers" fill="#F97316" radius={[4, 4, 0, 0]} name="New Users" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          {/* Heavy sections — collapsed by default on mobile */}
+          <CollapsibleSection title="Waiting List" subtitle="Manajemen sign-up early access">
+            <div className="p-4">
+              <AdminWaitingListSection />
+            </div>
+          </CollapsibleSection>
+
+          <CollapsibleSection title="Streak Manager" subtitle="Kelola streak & gamifikasi user">
+            <div className="p-4">
+              <AdminStreakManager onActionComplete={loadStats} />
+            </div>
+          </CollapsibleSection>
         </div>
-
-        {/* Pending Payment Alert */}
-        {stats?.pendingPaymentCount > 0 && (
-          <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold text-orange-900">⚠️ Ada {stats.pendingPaymentCount} pembayaran menunggu persetujuan</p>
-                <p className="text-sm text-orange-700 mt-1">Segera review di halaman AdminUsers</p>
-              </div>
-            </div>
-            <button onClick={() => navigate('/AdminUsers')} className="px-4 py-2 bg-orange-600 text-white text-sm font-bold rounded-lg hover:bg-orange-700 flex-shrink-0">
-              Review →
-            </button>
-          </div>
-        )}
-
-        {/* Expiring Subscription Alert */}
-        {stats?.expiringUsers > 0 && (
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-yellow-900">⏰ {stats.expiringUsers} langganan akan berakhir dalam 7 hari</p>
-              <p className="text-sm text-yellow-700 mt-1">Pertimbangkan untuk mengingatkan user</p>
-            </div>
-          </div>
-        )}
-
-        {/* All OK Status */}
-        {stats?.pendingPaymentCount === 0 && stats?.expiringUsers === 0 && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-green-900">✓ Semua langganan & pembayaran dalam kondisi baik</p>
-            </div>
-          </div>
-        )}
-
-        {/* MRR & Conversion Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
-            <p className="text-xs text-[#8FA4C8] font-medium mb-2">MRR (Monthly Recurring Revenue)</p>
-            <p className="text-3xl font-bold text-[#F97316]">Rp {fmt(stats?.totalMRR)}</p>
-            <p className="text-xs text-[#8FA4C8] mt-2">From {stats?.premiumUsers} premium users</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
-            <p className="text-xs text-[#8FA4C8] font-medium mb-2">Premium Conversion</p>
-            <p className="text-3xl font-bold text-[#F97316]">{stats?.conversionRate}%</p>
-            <p className="text-xs text-[#8FA4C8] mt-2">{stats?.premiumUsers}/{stats?.totalUsers} users</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
-            <p className="text-xs text-[#8FA4C8] font-medium mb-2">Pending Payments</p>
-            <p className="text-3xl font-bold text-[#F97316]">{stats?.pendingPaymentCount || 0}</p>
-            <p className="text-xs text-[#8FA4C8] mt-2">{stats?.pendingPaymentCount === 0 ? "✓ Aman" : "Perlu review"}</p>
-          </div>
-          </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
-            <p className="text-xs text-[#8FA4C8] font-medium mb-2">Onboarding Completion</p>
-            <p className="text-3xl font-bold text-[#F97316]">{stats?.onboardingRate}%</p>
-            <p className="text-xs text-[#8FA4C8] mt-2">{stats?.completedOnboarding}/{stats?.totalUsers} users</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0]">
-            <p className="text-xs text-[#8FA4C8] font-medium mb-2">Premium Rate</p>
-            <p className="text-3xl font-bold text-[#F97316]">{stats?.totalUsers > 0 ? Math.round((stats?.premiumUsers / stats?.totalUsers) * 100) : 0}%</p>
-            <p className="text-xs text-[#8FA4C8] mt-2">{stats?.premiumUsers}/{stats?.totalUsers} users</p>
-          </div>
-        </div>
-
-        {/* Chart */}
-        {monthlyChartData.length > 0 && (
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-[#E2E8F0] mb-6">
-            <p className="text-sm font-semibold text-[#1A1A1A] mb-4">New Users (Last 6 Months)</p>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={monthlyChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="newUsers" fill="#F97316" radius={[4, 4, 0, 0]} name="New Users" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-
-        {/* Not Onboarded Widget */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-[#E2E8F0] mb-6 cursor-pointer hover:border-[#F97316]/40 transition-colors" onClick={() => setNotOnboardedModal(true)}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                <UserX className="w-5 h-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-[#1A1A1A]">User Belum Selesai Onboarding</p>
-                <p className="text-xs text-[#8FA4C8]">Klik untuk lihat daftar dan kirim reminder</p>
-              </div>
-            </div>
-            <p className="text-2xl font-bold text-amber-600">{stats?.notOnboardedCount ?? 0}</p>
-          </div>
-        </div>
-
-        {/* Waiting List Section */}
-        <div className="mt-6">
-          <AdminWaitingListSection />
-        </div>
-
-        {/* Streak Manager */}
-         <div className="mt-6">
-           <AdminStreakManager onActionComplete={loadStats} />
-         </div>
-
-        {/* Not Onboarded Modal */}
-        {notOnboardedModal && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] flex flex-col shadow-2xl">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-[#F2F4F7]">
-                <h3 className="font-bold text-[#1A1A1A]">User Belum Onboarding ({notOnboardedList.length})</h3>
-                <button onClick={() => setNotOnboardedModal(false)} className="p-1 hover:bg-[#F2F4F7] rounded"><X className="w-4 h-4" /></button>
-              </div>
-              <div className="overflow-y-auto flex-1 px-6 py-4 space-y-2">
-                {notOnboardedList.length === 0 && <p className="text-sm text-[#8FA4C8] text-center py-6">Semua user sudah selesai onboarding! 🎉</p>}
-                {notOnboardedList.map(u => (
-                  <div key={u.id} className="flex items-center justify-between p-3 bg-[#F8FAFC] rounded-xl">
-                    <div>
-                      <p className="text-sm font-semibold text-[#1A1A1A]">{u.full_name || u.email}</p>
-                      <p className="text-xs text-[#8FA4C8]">{u.email}</p>
-                      <p className="text-xs text-[#8FA4C8]">Daftar: {u.created_date ? new Date(u.created_date).toLocaleDateString('id-ID') : '-'}</p>
-                    </div>
-                    <button
-                       disabled={sendingReminder[u.id]}
-                       onClick={async () => {
-                         setSendingReminder(prev => ({ ...prev, [u.id]: true }));
-                         await base44.entities.AdminNotification.create({
-                           title: '👋 Selesaikan setup akunmu!',
-                           message: 'Hei! Kamu belum selesai proses onboarding Atur Pintar. Yuk buka app dan selesaikan setup untuk mulai kelola keuanganmu.',
-                           target_type: 'specific',
-                           target_email: u.email
-                         });
-                         setSendingReminder(prev => ({ ...prev, [u.id]: false }));
-                       }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F97316] text-white text-xs font-bold rounded-lg hover:bg-[#e05e00] disabled:opacity-50 transition-colors flex-shrink-0">
-                      {sendingReminder[u.id] ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send className="w-3 h-3" />}
-                      Kirim Reminder
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </AdminLayout>
   );
