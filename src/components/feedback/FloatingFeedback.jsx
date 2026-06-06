@@ -1,11 +1,11 @@
 import { useState } from "react";
-import FeedbackModal from "@/components/settings/FeedbackModal";
+import FeedbackReportModal from "@/components/feedback/FeedbackReportModal";
 
 /**
  * Floating Beta Feedback launcher — bottom-right, sits ABOVE BossBattleFloating.
- * Mobile: above the bottom nav + above boss icon (110px + 56px breathing).
- * Desktop: pinned bottom-right above boss icon.
- * Reuses existing FeedbackModal (no business logic change).
+ * Symmetric with Boss icon (same text-5xl size, aligned vertically).
+ * Mobile: bottom = 174px (boss 110px + 64px offset)
+ * Desktop: bottom = 88px (boss 24px + 64px offset)
  */
 export default function FloatingFeedback({ user }) {
   const [open, setOpen] = useState(false);
@@ -14,13 +14,9 @@ export default function FloatingFeedback({ user }) {
 
   return (
     <>
-      {/* Floating trigger — chat bubble emoji, SAMA UKURAN dgn Boss (text-5xl ~48px).
-          Disusun simetris di atas Boss icon dengan offset 64px (icon size + 16 gap).
-          Mobile: boss bottom = 110px → feedback = 174px
-          Desktop: boss bottom = 24px → feedback = 88px */}
       <button
         onClick={() => setOpen(true)}
-        aria-label="Kasih feedback beta"
+        aria-label="Beta feedback & lapor masalah"
         className="fixed z-[70] right-4 sm:right-6 flex items-center justify-center active:scale-90 transition-transform sm:bottom-[88px]"
         style={{
           bottom: "calc(174px + env(safe-area-inset-bottom, 0px))",
@@ -34,7 +30,7 @@ export default function FloatingFeedback({ user }) {
         </span>
       </button>
 
-      {open && <FeedbackModal user={user} onClose={() => setOpen(false)} />}
+      {open && <FeedbackReportModal user={user} onClose={() => setOpen(false)} />}
     </>
   );
 }
