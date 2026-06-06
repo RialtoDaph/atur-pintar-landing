@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import FeedbackReportPanel from "@/components/feedback/FeedbackReportPanel";
+import { base44 } from "@/api/base44Client";
 
 /**
  * Floating Beta Feedback — FAB pattern (same as BossBattleFloating).
@@ -11,6 +12,31 @@ import FeedbackReportPanel from "@/components/feedback/FeedbackReportPanel";
  */
 export default function FloatingFeedback({ user }) {
   const [open, setOpen] = useState(false);
+  const [hasUnreadResponse, setHasUnreadResponse] = useState(false);
+
+  // Check if user has feedback reports with admin response yet unread
+  useEffect(() => {
+    if (!user?.email) return;
+    const lastSeenKey = `feedback_response_seen_${user.email}`;
+    const lastSeen = localStorage.getItem(lastSeenKey) || "1970-01-01T00:00:00Z";
+
+    base44.entities.FeedbackReport.filter({ created_by: user.email })
+      .then((reports) => {
+        const unread = (reports || []).some(
+          (r) => r.admin_response && r.admin_response.trim() && new Date(r.updated_date) > new Date(lastSeen)
+        );
+        setHasUnreadResponse(unread);
+      })
+      .catch(() => {});
+  }, [user?.email, open]);
+
+  const handleOpen = () => {
+    setOpen(true);
+    if (user?.email) {
+      localStorage.setItem(`feedback_response_seen_${user.email}`, new Date().toISOString());
+      setHasUnreadResponse(false);
+    }
+  };
 
   if (!user?.onboarding_completed) return null;
   if (typeof window !== "undefined" && window.location.pathname !== "/Dashboard") return null;
@@ -19,8 +45,8 @@ export default function FloatingFeedback({ user }) {
     <>
       {!open && (
         <button
-          onClick={() => setOpen(true)}
-          aria-label="Beta feedback & lapor masalah"
+          onClick={handleOpen}
+          aria-label={hasUnreadResponse ? "Balasan baru dari admin tersedia" : "Beta feedback & lapor masalah"}
           className="fixed z-[70] right-4 sm:right-6 flex items-center justify-center active:scale-90 transition-transform sm:bottom-[88px]"
           style={{
             bottom: "calc(174px + env(safe-area-inset-bottom, 0px))",
@@ -31,6 +57,9 @@ export default function FloatingFeedback({ user }) {
             <span className="absolute -top-1 -right-1 text-[8px] font-bold text-white bg-[#F97316] rounded px-1 py-0.5 leading-none uppercase tracking-wider shadow-md">
               Report
             </span>
+            {hasUnreadResponse && (
+              <span className="absolute -bottom-0.5 -left-0.5 w-3.5 h-3.5 rounded-full bg-[#EF4444] border-2 border-white shadow-md animate-pulse" aria-hidden="true" />
+            )}
           </span>
         </button>
       )}
