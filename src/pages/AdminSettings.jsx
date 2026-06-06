@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import { Save, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 // Note: Danger Zone (hardcoded simulation data cleanup) removed — IDs were one-time dev artifacts.
@@ -38,11 +38,8 @@ export default function AdminSettings() {
     admin_alert_email: "",
   });
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-      if (u?.role === "admin") loadData();
-      else setLoading(false);
-    });
+    base44.auth.me().then(u => setUser(u)).catch(() => {});
+    loadData();
   }, []);
 
   async function loadData() {
@@ -156,25 +153,16 @@ export default function AdminSettings() {
     }
   }
 
-  if (loading) return (
-    <AdminLayout currentPage="AdminSettings">
-      <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
-      </div>
-    </AdminLayout>
-  );
-
-  if (user?.role !== "admin") return (
-    <AdminLayout currentPage="AdminSettings">
-      <div className="p-10 text-center text-red-500 font-semibold">Akses Ditolak</div>
-    </AdminLayout>
-  );
-
   return (
-    <AdminLayout currentPage="AdminSettings">
-      <div className="p-4 sm:p-8 space-y-5 sm:space-y-6 max-w-3xl">
-        <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Pengaturan Admin</h1>
-
+    <AdminPageShell
+      currentPage="AdminSettings"
+      title="Pengaturan Admin"
+      subtitle="Konfigurasi global aplikasi"
+      onRefresh={loadData}
+      refreshing={loading}
+      loading={loading && !appConfig}
+    >
+      <div className="space-y-5 sm:space-y-6 max-w-3xl">
         {successMsg && (
           <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">{successMsg}</div>
         )}
@@ -323,6 +311,6 @@ export default function AdminSettings() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </AdminPageShell>
   );
 }

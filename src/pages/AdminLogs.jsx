@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import AdminLayout from "@/components/admin/AdminLayout";
-import { ScrollText, RefreshCw, Search, LogIn, Activity, AlertCircle, Filter, ShieldAlert, Calendar, X } from "lucide-react";
+import AdminPageShell from "@/components/admin/AdminPageShell";
+import { ScrollText, Search, LogIn, Activity, AlertCircle, Filter, ShieldAlert, Calendar, X } from "lucide-react";
 import LogMobileCard from "@/components/admin/LogMobileCard";
 
 const LOG_TYPE_CONFIG = {
@@ -32,11 +32,8 @@ export default function AdminLogs() {
   const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-      if (u?.role === "admin") loadLogs();
-      else setLoading(false);
-    });
+    base44.auth.me().then(u => setUser(u)).catch(() => {});
+    loadLogs();
   }, []);
 
   async function loadLogs(type = "all") {
@@ -107,33 +104,20 @@ export default function AdminLogs() {
     hour: "2-digit", minute: "2-digit", second: "2-digit"
   }) : "-";
 
-  if (loading) return (
-    <AdminLayout currentPage="AdminLogs">
-      <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
-      </div>
-    </AdminLayout>
-  );
-
   return (
-    <AdminLayout currentPage="AdminLogs">
-      <div className="p-4 sm:p-8">
-        <div className="flex items-center justify-between mb-6 gap-2 flex-wrap">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">System Logs</h1>
-            <p className="text-xs sm:text-sm text-[#8FA4C8] mt-0.5 sm:mt-1">Login, activity, & error logs</p>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={clearOldLogs} disabled={clearing} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-red-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-red-700 disabled:opacity-60 shadow-sm">
-              🗑️ <span className="hidden sm:inline">Clear Old</span>
-            </button>
-            <button onClick={() => loadLogs(filterType)} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs sm:text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
-              <RefreshCw className="w-4 h-4" />
-              <span className="hidden sm:inline">Refresh</span>
-            </button>
-          </div>
-        </div>
-
+    <AdminPageShell
+      currentPage="AdminLogs"
+      title="System Logs"
+      subtitle="Login, activity, & error logs"
+      onRefresh={() => loadLogs(filterType)}
+      refreshing={loading}
+      loading={loading && logs.length === 0}
+      action={
+        <button onClick={clearOldLogs} disabled={clearing} className="flex items-center gap-1.5 px-3 py-2 bg-red-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-red-700 disabled:opacity-60 shadow-sm">
+          🗑️ <span className="hidden sm:inline">Clear Old</span>
+        </button>
+      }
+    >
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm">
@@ -321,7 +305,6 @@ export default function AdminLogs() {
             </div>
           </div>
         )}
-      </div>
-    </AdminLayout>
+    </AdminPageShell>
   );
 }

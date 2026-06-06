@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import AdminLayout from "@/components/admin/AdminLayout";
-import { Plus, Pencil, Trash2, Check, X, Eye, EyeOff, ChevronDown, ChevronRight, FolderOpen, Folder } from "lucide-react";
+import AdminPageShell from "@/components/admin/AdminPageShell";
+import { Plus, Pencil, Trash2, Check, X, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
 const COLORS = [
@@ -149,34 +149,24 @@ export default function AdminCategories() {
     both: "bg-blue-50 text-blue-600" 
   };
 
-  if (loading) return (
-    <AdminLayout currentPage="AdminCategories">
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
-      </div>
-    </AdminLayout>
-  );
-
   return (
-    <AdminLayout currentPage="AdminCategories">
-      <div className="p-4 sm:p-6 max-w-3xl mx-auto">
-
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 gap-2">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Kelola Kategori</h1>
-            <p className="text-xs sm:text-sm text-[#8FA4C8] mt-0.5 sm:mt-1">
-              {categories.filter(c => !c.is_subcategory).length} induk · {categories.filter(c => c.is_subcategory).length} sub
-            </p>
-          </div>
-          <button
-            onClick={() => openAddForm()}
-            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#F97316] text-white rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#EA580C] shadow-sm transition-colors flex-shrink-0"
-          >
-            <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Tambah Kategori</span><span className="sm:hidden">Tambah</span>
-          </button>
-        </div>
-
+    <AdminPageShell
+      currentPage="AdminCategories"
+      title="Kelola Kategori"
+      subtitle={`${categories.filter(c => !c.is_subcategory).length} induk · ${categories.filter(c => c.is_subcategory).length} sub`}
+      onRefresh={loadCategories}
+      refreshing={loading}
+      loading={loading && categories.length === 0}
+      action={
+        <button
+          onClick={() => openAddForm()}
+          className="flex items-center gap-1.5 px-3 py-2 bg-[#F97316] text-white rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#EA580C] shadow-sm transition-colors flex-shrink-0"
+        >
+          <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Tambah</span>
+        </button>
+      }
+    >
+      <div className="max-w-3xl mx-auto">
         {/* Filter tabs */}
         <div className="flex gap-1 bg-[#F2F4F7] p-1 rounded-xl mb-5 w-fit">
           {[["all","Semua"],["expense","Pengeluaran"],["income","Pemasukan"]].map(([val, label]) => (
@@ -486,6 +476,6 @@ export default function AdminCategories() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </AdminPageShell>
   );
 }

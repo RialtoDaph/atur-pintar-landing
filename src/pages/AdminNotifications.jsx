@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import AdminActivityFeed from "@/components/admin/AdminActivityFeed";
-import { Bell, Send, Users, User, Trash2, RefreshCw, Plus, X } from "lucide-react";
+import { Bell, Send, Users, User, Trash2, Plus, X } from "lucide-react";
 
 export default function AdminNotifications() {
   const [user, setUser] = useState(null);
@@ -17,11 +17,8 @@ export default function AdminNotifications() {
   const [showReengagement, setShowReengagement] = useState(false);
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      setUser(u);
-      if (u?.role === "admin") loadData();
-      else setLoading(false);
-    });
+    base44.auth.me().then(u => setUser(u)).catch(() => {});
+    loadData();
   }, []);
 
   async function loadData() {
@@ -156,37 +153,27 @@ export default function AdminNotifications() {
 
   const formatDate = (d) => d ? new Date(d).toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
 
-  if (loading) return (
-    <AdminLayout currentPage="AdminNotifications">
-      <div className="flex items-center justify-center h-screen">
-        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
-      </div>
-    </AdminLayout>
-  );
-
   return (
-    <AdminLayout currentPage="AdminNotifications">
-      <div className="p-4 sm:p-8">
-        <div className="flex items-start sm:items-center justify-between mb-6 gap-2 flex-wrap">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Notifikasi</h1>
-            <p className="text-xs sm:text-sm text-[#8FA4C8] mt-0.5 sm:mt-1">Kirim pengumuman ke user</p>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
-              <RefreshCw className="w-4 h-4" />
-            </button>
-            <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#F97316] text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-[#EA580C] shadow-sm">
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Kirim Notifikasi</span><span className="sm:hidden">Kirim</span>
-            </button>
-            <button onClick={() => setShowReengagement(!showReengagement)} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-blue-700 shadow-sm">
-              <Send className="w-4 h-4" />
-              <span className="hidden sm:inline">Re-engagement</span><span className="sm:hidden">Re-eng</span> ({inactiveUsers.length})
-            </button>
-          </div>
-        </div>
-
+    <AdminPageShell
+      currentPage="AdminNotifications"
+      title="Notifikasi"
+      subtitle="Kirim pengumuman ke user"
+      onRefresh={loadData}
+      refreshing={loading}
+      loading={loading && notifications.length === 0}
+      action={
+        <>
+          <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-3 py-2 bg-[#F97316] text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-[#EA580C] shadow-sm">
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Kirim</span>
+          </button>
+          <button onClick={() => setShowReengagement(!showReengagement)} className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-blue-700 shadow-sm">
+            <Send className="w-4 h-4" />
+            <span className="hidden sm:inline">Re-eng</span> ({inactiveUsers.length})
+          </button>
+        </>
+      }
+    >
         {/* Real-time Activity Feed */}
         <div className="mb-6">
           <AdminActivityFeed />
@@ -368,7 +355,6 @@ export default function AdminNotifications() {
             </div>
           </div>
         )}
-      </div>
-    </AdminLayout>
+    </AdminPageShell>
   );
 }

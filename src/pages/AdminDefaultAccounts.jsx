@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import { Plus, Pencil, Check, X, Eye, EyeOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -92,30 +92,22 @@ export default function AdminDefaultAccounts() {
 
   const filtered = items.filter(i => i.type === activeTab);
 
-  if (loading) return (
-    <AdminLayout currentPage="AdminDefaultAccounts">
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-[#F97316] border-t-transparent rounded-full animate-spin" />
-      </div>
-    </AdminLayout>
-  );
-
   return (
-    <AdminLayout currentPage="AdminDefaultAccounts">
-      <div className="p-4 max-w-2xl mx-auto">
-
-        {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h1 className="text-xl font-bold text-[#1A1A1A]">Default Rekening</h1>
-            <p className="text-xs text-[#8FA4C8] mt-0.5">Pilihan rekening yang muncul saat user tambah akun</p>
-          </div>
-          <button onClick={openAdd}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-semibold hover:bg-[#EA580C] transition-colors">
-            <Plus className="w-4 h-4" /> Tambah
-          </button>
-        </div>
-
+    <AdminPageShell
+      currentPage="AdminDefaultAccounts"
+      title="Default Rekening"
+      subtitle="Pilihan rekening yang muncul saat user tambah akun"
+      onRefresh={load}
+      refreshing={loading}
+      loading={loading && items.length === 0}
+      action={
+        <button onClick={openAdd}
+          className="flex items-center gap-1.5 px-3 py-2 bg-[#F97316] text-white rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#EA580C] transition-colors">
+          <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Tambah</span>
+        </button>
+      }
+    >
+      <div className="max-w-2xl mx-auto">
         {/* Type tabs */}
         <div className="flex gap-1 bg-[#F2F4F7] p-1 rounded-xl mb-4">
           {TYPES.map(t => (
@@ -306,6 +298,6 @@ export default function AdminDefaultAccounts() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </AdminPageShell>
   );
 }
