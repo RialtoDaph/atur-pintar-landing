@@ -164,26 +164,24 @@ export default function AdminNotifications() {
 
   return (
     <AdminLayout currentPage="AdminNotifications">
-      <div className="p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">Notification System</h1>
-            <p className="text-sm text-[#8FA4C8] mt-1">Kirim pengumuman ke semua atau user tertentu</p>
+      <div className="p-4 sm:p-8">
+        <div className="flex items-start sm:items-center justify-between mb-6 gap-2 flex-wrap">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Notifikasi</h1>
+            <p className="text-xs sm:text-sm text-[#8FA4C8] mt-0.5 sm:mt-1">Kirim pengumuman ke user</p>
           </div>
-          <div className="flex gap-3">
-            <button onClick={loadData} className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
+          <div className="flex gap-2 flex-wrap">
+            <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
               <RefreshCw className="w-4 h-4" />
             </button>
-            <div className="flex gap-3">
-              <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-medium hover:bg-[#EA580C] shadow-sm">
-                <Plus className="w-4 h-4" />
-                Kirim Notifikasi
-              </button>
-              <button onClick={() => setShowReengagement(!showReengagement)} className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 shadow-sm">
-                <Send className="w-4 h-4" />
-                Re-engagement ({inactiveUsers.length})
-              </button>
-            </div>
+            <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#F97316] text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-[#EA580C] shadow-sm">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Kirim Notifikasi</span><span className="sm:hidden">Kirim</span>
+            </button>
+            <button onClick={() => setShowReengagement(!showReengagement)} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-blue-700 shadow-sm">
+              <Send className="w-4 h-4" />
+              <span className="hidden sm:inline">Re-engagement</span><span className="sm:hidden">Re-eng</span> ({inactiveUsers.length})
+            </button>
           </div>
         </div>
 
@@ -193,7 +191,7 @@ export default function AdminNotifications() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-1"><Bell className="w-4 h-4 text-[#F97316]" /><p className="text-xs text-[#8FA4C8]">Total Notifikasi</p></div>
             <p className="text-2xl font-bold text-[#1A1A1A]">{notifications.length}</p>

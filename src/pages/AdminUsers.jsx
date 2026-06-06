@@ -3,6 +3,8 @@ import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { CheckCircle2, XCircle, Clock, AlertCircle, RefreshCw, UserX, Shield } from "lucide-react";
+import PendingPaymentMobileCard from "@/components/admin/PendingPaymentMobileCard";
+import UserMobileCard from "@/components/admin/UserMobileCard";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -291,7 +293,21 @@ export default function AdminUsers() {
         {pendingPayments.length > 0 && (
           <div className="mb-8 bg-white rounded-xl p-6 shadow-sm border border-[#E2E8F0]">
             <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">Pending Payments ({pendingPayments.length})</h2>
-            <div className="overflow-x-auto">
+
+            {/* Mobile: card list */}
+            <div className="sm:hidden space-y-2">
+              {pendingPayments.map(p => (
+                <PendingPaymentMobileCard
+                  key={p.id}
+                  payment={p}
+                  onApprove={approvePayment}
+                  onReject={rejectPayment}
+                />
+              ))}
+            </div>
+
+            {/* Desktop: original table */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[#E2E8F0]">
@@ -340,14 +356,14 @@ export default function AdminUsers() {
 
         {/* Users Table */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E2E8F0]">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-[#1A1A1A]">Users ({filteredUsers.length})</h2>
-            <div className="flex gap-2">
-               <button onClick={exportCSV} className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
-                📥 Export CSV
+          <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+            <h2 className="text-base sm:text-lg font-bold text-[#1A1A1A]">Users ({filteredUsers.length})</h2>
+            <div className="flex gap-2 flex-wrap">
+               <button onClick={exportCSV} className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-green-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-green-700 transition-colors">
+                📥 <span className="hidden sm:inline">Export CSV</span><span className="sm:hidden">CSV</span>
               </button>
-              <button onClick={cleanupSampleData} disabled={cleaningUp} className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50">
-                {cleaningUp ? "🗑️ Cleaning..." : "🗑️ Cleanup"}
+              <button onClick={cleanupSampleData} disabled={cleaningUp} className="flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-red-600 text-white rounded-lg text-xs sm:text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50">
+                {cleaningUp ? "🗑️" : <>🗑️ <span className="hidden sm:inline">Cleanup</span></>}
               </button>
               <button onClick={loadData} className="p-2 hover:bg-[#F8FAFC] rounded-lg transition-colors">
                 <RefreshCw className="w-4 h-4 text-[#F97316]" />
@@ -370,7 +386,24 @@ export default function AdminUsers() {
             ))}
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile: card list */}
+          <div className="sm:hidden space-y-2">
+            {filteredUsers.map(u => (
+              <UserMobileCard
+                key={u.id}
+                u={u}
+                currentUserEmail={user?.email}
+                onRoleClick={(target) => setRoleChangeModal({ user: target, newRole: target.role === 'admin' ? 'user' : 'admin' })}
+                onToggleDisabled={toggleUserDisabled}
+              />
+            ))}
+            {filteredUsers.length === 0 && (
+              <p className="text-center text-sm text-[#8FA4C8] py-8">Tidak ada user.</p>
+            )}
+          </div>
+
+          {/* Desktop: original table */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#E2E8F0]">

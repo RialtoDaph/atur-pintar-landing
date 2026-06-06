@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { ScrollText, RefreshCw, Search, LogIn, Activity, AlertCircle, Filter, ShieldAlert, Calendar, X } from "lucide-react";
+import LogMobileCard from "@/components/admin/LogMobileCard";
 
 const LOG_TYPE_CONFIG = {
   login: { label: "Login", icon: LogIn, color: "blue" },
@@ -116,25 +117,25 @@ export default function AdminLogs() {
 
   return (
     <AdminLayout currentPage="AdminLogs">
-      <div className="p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">System Logs</h1>
-            <p className="text-sm text-[#8FA4C8] mt-1">Login logs, activity logs, dan error logs</p>
+      <div className="p-4 sm:p-8">
+        <div className="flex items-center justify-between mb-6 gap-2 flex-wrap">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">System Logs</h1>
+            <p className="text-xs sm:text-sm text-[#8FA4C8] mt-0.5 sm:mt-1">Login, activity, & error logs</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={clearOldLogs} disabled={clearing} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700 disabled:opacity-60 shadow-sm">
-              🗑️ Clear Old
+            <button onClick={clearOldLogs} disabled={clearing} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-red-600 text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-red-700 disabled:opacity-60 shadow-sm">
+              🗑️ <span className="hidden sm:inline">Clear Old</span>
             </button>
-            <button onClick={() => loadLogs(filterType)} className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
+            <button onClick={() => loadLogs(filterType)} className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-xs sm:text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
               <RefreshCw className="w-4 h-4" />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-1"><ScrollText className="w-4 h-4 text-[#F97316]" /><p className="text-xs text-[#8FA4C8]">Total Logs</p></div>
             <p className="text-2xl font-bold text-[#1A1A1A]">{logs.length}</p>
@@ -225,8 +226,16 @@ export default function AdminLogs() {
           )}
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        {/* Mobile: cards */}
+        <div className="sm:hidden space-y-2 mb-4">
+          {paginated.map(l => <LogMobileCard key={l.id} log={l} />)}
+          {paginated.length === 0 && (
+            <p className="text-center text-sm text-[#8FA4C8] py-8">Tidak ada log ditemukan</p>
+          )}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden sm:block bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -284,35 +293,34 @@ export default function AdminLogs() {
           {paginated.length === 0 && (
             <div className="py-12 text-center text-sm text-[#8FA4C8]">Tidak ada log ditemukan</div>
           )}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="px-5 py-4 border-t border-[#F2F4F7] flex items-center justify-between">
-              <p className="text-xs text-[#8FA4C8]">
-                Menampilkan {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} dari {filtered.length}
-              </p>
-              <div className="flex gap-1">
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                  className="px-3 py-1.5 rounded-lg border border-[#E2E8F0] text-sm hover:bg-[#F8FAFC] disabled:opacity-40">Prev</button>
-                {(() => {
-                  // Show a 5-page window centered around the current page so all pages are reachable
-                  const windowSize = 5;
-                  let start = Math.max(1, page - Math.floor(windowSize / 2));
-                  const end = Math.min(totalPages, start + windowSize - 1);
-                  start = Math.max(1, end - windowSize + 1);
-                  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-                })().map(n => (
-                  <button key={n} onClick={() => setPage(n)}
-                    className={`px-3 py-1.5 rounded-lg border text-sm ${page === n ? "bg-[#F97316] text-white border-[#F97316]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
-                    {n}
-                  </button>
-                ))}
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                  className="px-3 py-1.5 rounded-lg border border-[#E2E8F0] text-sm hover:bg-[#F8FAFC] disabled:opacity-40">Next</button>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Pagination (mobile + desktop) */}
+        {totalPages > 1 && (
+          <div className="mt-3 sm:mt-4 bg-white rounded-2xl px-3 sm:px-5 py-3 sm:py-4 shadow-sm flex items-center justify-between flex-wrap gap-2">
+            <p className="text-[11px] sm:text-xs text-[#8FA4C8]">
+              {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} dari {filtered.length}
+            </p>
+            <div className="flex gap-1">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E2E8F0] text-xs sm:text-sm hover:bg-[#F8FAFC] disabled:opacity-40">Prev</button>
+              {(() => {
+                const windowSize = 5;
+                let start = Math.max(1, page - Math.floor(windowSize / 2));
+                const end = Math.min(totalPages, start + windowSize - 1);
+                start = Math.max(1, end - windowSize + 1);
+                return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+              })().map(n => (
+                <button key={n} onClick={() => setPage(n)}
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg border text-xs sm:text-sm ${page === n ? "bg-[#F97316] text-white border-[#F97316]" : "border-[#E2E8F0] hover:bg-[#F8FAFC]"}`}>
+                  {n}
+                </button>
+              ))}
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                className="px-2.5 sm:px-3 py-1.5 rounded-lg border border-[#E2E8F0] text-xs sm:text-sm hover:bg-[#F8FAFC] disabled:opacity-40">Next</button>
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

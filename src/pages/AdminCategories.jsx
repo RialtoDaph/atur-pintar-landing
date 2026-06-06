@@ -159,21 +159,21 @@ export default function AdminCategories() {
 
   return (
     <AdminLayout currentPage="AdminCategories">
-      <div className="p-6 max-w-3xl mx-auto">
+      <div className="p-4 sm:p-6 max-w-3xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">Kelola Kategori</h1>
-            <p className="text-sm text-[#8FA4C8] mt-1">
-              {categories.filter(c => !c.is_subcategory).length} induk · {categories.filter(c => c.is_subcategory).length} subkategori · Berlaku untuk semua user
+        <div className="flex items-center justify-between mb-6 gap-2">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Kelola Kategori</h1>
+            <p className="text-xs sm:text-sm text-[#8FA4C8] mt-0.5 sm:mt-1">
+              {categories.filter(c => !c.is_subcategory).length} induk · {categories.filter(c => c.is_subcategory).length} sub
             </p>
           </div>
           <button
             onClick={() => openAddForm()}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#F97316] text-white rounded-xl text-sm font-semibold hover:bg-[#EA580C] shadow-sm transition-colors"
+            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#F97316] text-white rounded-xl text-xs sm:text-sm font-semibold hover:bg-[#EA580C] shadow-sm transition-colors flex-shrink-0"
           >
-            <Plus className="w-4 h-4" /> Tambah Kategori
+            <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Tambah Kategori</span><span className="sm:hidden">Tambah</span>
           </button>
         </div>
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { CreditCard, Users, CheckCircle2, XCircle, RefreshCw, Clock, Eye } from "lucide-react";
+import PaymentMobileCard from "@/components/admin/PaymentMobileCard";
 
 export default function AdminSubscriptions() {
   const [user, setUser] = useState(null);
@@ -90,15 +91,15 @@ export default function AdminSubscriptions() {
 
   return (
     <AdminLayout currentPage="AdminSubscriptions">
-      <div className="p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">Subscription Panel</h1>
-            <p className="text-sm text-[#8FA4C8] mt-1">Kelola langganan & konfirmasi pembayaran</p>
+      <div className="p-4 sm:p-8">
+        <div className="flex items-center justify-between mb-6 gap-2">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">Subscription Panel</h1>
+            <p className="text-xs sm:text-sm text-[#8FA4C8] mt-0.5 sm:mt-1">Kelola langganan & konfirmasi pembayaran</p>
           </div>
-          <button onClick={loadData} className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium hover:bg-[#F8FAFC] shadow-sm">
+          <button onClick={loadData} className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm font-medium hover:bg-[#F8FAFC] shadow-sm flex-shrink-0">
             <RefreshCw className="w-4 h-4" />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </button>
         </div>
 
@@ -126,7 +127,24 @@ export default function AdminSubscriptions() {
         {pending.length > 0 && (
           <div className="mb-6">
             <p className="text-sm font-bold text-[#1A1A1A] mb-3">⏳ Menunggu Konfirmasi ({pending.length})</p>
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+
+            {/* Mobile: cards */}
+            <div className="sm:hidden space-y-2">
+              {pending.map(p => (
+                <PaymentMobileCard
+                  key={p.id}
+                  payment={p}
+                  actions
+                  processingId={processingId}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                  onViewProof={setViewProof}
+                />
+              ))}
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden sm:block bg-white rounded-2xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -188,7 +206,19 @@ export default function AdminSubscriptions() {
         {/* All Payments History */}
         <div>
           <p className="text-sm font-bold text-[#1A1A1A] mb-3">Riwayat Pembayaran</p>
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+
+          {/* Mobile: cards */}
+          <div className="sm:hidden space-y-2">
+            {payments.map(p => (
+              <PaymentMobileCard key={p.id} payment={p} />
+            ))}
+            {payments.length === 0 && (
+              <p className="text-center text-sm text-[#8FA4C8] py-8">Belum ada riwayat pembayaran</p>
+            )}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
