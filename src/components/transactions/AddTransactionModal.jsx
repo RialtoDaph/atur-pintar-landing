@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { X, Camera, Loader2, Scissors, Upload, Sparkles, History, ChevronDown } from "lucide-react";
 import { updateStreak, completeMission } from "@/hooks/useGamificationActions";
+import { haptic } from "@/hooks/useHaptic";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
@@ -651,14 +652,14 @@ function CatChip({ cat, selected, typeColor, isFav, onSelect, onFavToggle, onLon
       <button
         onMouseDown={startPress} onMouseUp={endPress} onMouseLeave={endPress}
         onTouchStart={startPress} onTouchEnd={endPress}
-        onClick={onSelect}
+        onClick={() => { haptic.light(); onSelect(); }}
         className="flex items-center gap-1 pl-2.5 pr-1.5 py-1.5 text-[11px] font-semibold"
         style={{ color: selected ? typeColor : "#4A5568" }}>
         <span>{cat.emoji}</span>{cat.name}
       </button>
       {onFavToggle && (
         <button
-          onClick={e => { e.stopPropagation(); onFavToggle(); }}
+          onClick={e => { e.stopPropagation(); haptic.medium(); onFavToggle(); }}
           className="pr-2 py-1.5 text-[11px] leading-none active:scale-90 transition-transform"
         >
           <span style={{ color: isFav ? "#FBBF24" : "#CBD5E0" }}>★</span>

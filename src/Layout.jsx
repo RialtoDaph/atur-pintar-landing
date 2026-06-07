@@ -211,28 +211,51 @@ function LayoutInner({ children, currentPageName }) {
     }
   };
 
+  // Mobile bottom-nav tabs whose scroll position we preserve across switches
+  const STACK_TABS = ["Dashboard", "Nana", "Analytics", "Transactions"];
+
+  // Save scroll position BEFORE navigating away from a stack tab
+  const saveCurrentScroll = () => {
+    if (STACK_TABS.includes(currentPageName)) {
+      const y = mainContentRef.current?.scrollTop ?? window.scrollY ?? 0;
+      scrollPositions.current[currentPageName] = y;
+    }
+  };
+
   // Handle tab clicks - navigate with React Router for soft navigation
   const handleTabClick = (tabName) => {
     const targetPage = tabHistory.current[tabName];
     if (currentPageName === targetPage) {
       // Already on this tab — scroll to top like native apps (smooth, both container & window)
       haptic.light();
+      // Clear saved scroll for this tab so re-entry doesn't restore old position
+      scrollPositions.current[tabName] = 0;
       if (mainContentRef.current) {
         mainContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
+      haptic.light();
+      // Save current tab's scroll before leaving
+      saveCurrentScroll();
       // Navigate to tab using React Router for better history preservation
       navigate(createPageUrl(tabName));
     }
   };
 
-  // Scroll-to-top setiap pindah halaman (fix: page baru muncul di bawah karena scroll position lama nyangkut)
+  // Restore scroll position when entering a stack tab; scroll to top for all other pages
   useEffect(() => {
-    window.scrollTo(0, 0);
-    if (mainContentRef.current) {
-      mainContentRef.current.scrollTop = 0;
-    }
+    const saved = scrollPositions.current[currentPageName];
+    const isStackTab = STACK_TABS.includes(currentPageName);
+    const targetY = isStackTab && typeof saved === "number" ? saved : 0;
+
+    // Use rAF to ensure DOM is painted before restoring scroll
+    requestAnimationFrame(() => {
+      if (mainContentRef.current) {
+        mainContentRef.current.scrollTop = targetY;
+      }
+      window.scrollTo(0, targetY);
+    });
   }, [currentPageName]);
 
   return (
