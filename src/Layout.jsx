@@ -14,6 +14,7 @@ import { saveTransactionWithSync } from "@/components/utils/saveTransaction";
 import { AppSettingsProvider, useAppSettings } from "@/components/utils/AppSettingsContext";
 import GlobalSearch from "@/components/search/GlobalSearch";
 import DashboardTopTabs from "@/components/dashboard/DashboardTopTabs";
+import PullToRefresh from "@/components/utils/PullToRefresh";
 import { AnimatePresence, motion } from "framer-motion";
 function LayoutInner({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -214,10 +215,12 @@ function LayoutInner({ children, currentPageName }) {
   const handleTabClick = (tabName) => {
     const targetPage = tabHistory.current[tabName];
     if (currentPageName === targetPage) {
-      // Already on this tab, scroll to top
+      // Already on this tab — scroll to top like native apps (smooth, both container & window)
+      haptic.light();
       if (mainContentRef.current) {
         mainContentRef.current.scrollTo({ top: 0, behavior: "smooth" });
       }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       // Navigate to tab using React Router for better history preservation
       navigate(createPageUrl(tabName));
@@ -382,18 +385,22 @@ function LayoutInner({ children, currentPageName }) {
             <DashboardTopTabs />
           </div>
         )}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPageName}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="sm:max-w-6xl sm:mx-auto">
-            
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <PullToRefresh onRefresh={() => {
+          window.dispatchEvent(new CustomEvent("refresh-dashboard"));
+          return new Promise(resolve => setTimeout(resolve, 600));
+        }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentPageName}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="sm:max-w-6xl sm:mx-auto">
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </PullToRefresh>
       </div>
 
       {/* Mobile bottom nav — hidden on sm+ (tablet/desktop uses sidebar), and hidden on Nana page */}

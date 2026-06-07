@@ -8,6 +8,31 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Prevent accidental text selection on taps for buttons, nav, icons.
+   Inputs/textareas/[contenteditable] keep default selection (re-enabled below). */
+button,
+a,
+nav,
+nav *,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+svg {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea,
+[contenteditable="true"],
+[contenteditable=""] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* ===== DARK MODE GLOBAL ===== */
 html.dark body { background-color: #0F1114; color: #F0F2F5; }
 html.dark .min-h-screen { background-color: #0F1114 !important; }

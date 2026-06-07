@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, CreditCard } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
+import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 
 export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }) {
   useLockBodyScroll();
@@ -11,6 +12,13 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [accountId, setAccountId] = useState(accounts.find(a => a.is_default)?.id || accounts[0]?.id || "");
   const [saving, setSaving] = useState(false);
+  const [showAccountSheet, setShowAccountSheet] = useState(false);
+
+  const selectedAccount = accounts.find(a => a.id === accountId);
+  const accountOptions = [
+    { key: "", label: "Tanpa rekening", emoji: "—" },
+    ...accounts.map(a => ({ key: a.id, label: a.name, emoji: a.icon || "💳" })),
+  ];
 
   function formatInput(val) {
     const num = val.replace(/\D/g, "");
@@ -73,16 +81,14 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
           {accounts.length > 0 && (
             <div>
               <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">Dari Rekening</label>
-              <select
-                value={accountId}
-                onChange={e => setAccountId(e.target.value)}
-                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] tap-highlight-fix"
+              <button
+                type="button"
+                onClick={() => setShowAccountSheet(true)}
+                className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] tap-highlight-fix flex items-center justify-between text-left"
               >
-                <option value="">-- Tanpa rekening --</option>
-                {accounts.map(acc => (
-                  <option key={acc.id} value={acc.id}>{acc.icon || ""} {acc.name}</option>
-                ))}
-              </select>
+                <span>{selectedAccount ? `${selectedAccount.icon || "💳"} ${selectedAccount.name}` : "Tanpa rekening"}</span>
+                <span className="text-[#8FA4C8]">›</span>
+              </button>
             </div>
           )}
           <div>
@@ -114,6 +120,15 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
           {saving ? "Menyimpan..." : "Catat Pembayaran"}
         </button>
       </div>
+
+      <BottomSheetSelect
+        isOpen={showAccountSheet}
+        onClose={() => setShowAccountSheet(false)}
+        title="Pilih Rekening"
+        options={accountOptions}
+        onSelect={(id) => setAccountId(id)}
+        selectedValue={accountId}
+      />
     </div>
   );
 }

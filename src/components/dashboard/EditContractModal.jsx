@@ -4,6 +4,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import DateInput from "@/components/utils/DateInput";
 import { parseRupiah } from "@/components/utils/parseRupiah";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
+import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 
 const EXPENSE_CATS = [
   { key: "housing", emoji: "🏠", label: "Rumah" },
@@ -29,6 +30,13 @@ export default function EditContractModal({ contract, onClose, onSave }) {
   const { t, settings } = useAppSettings();
   const [data, setData] = useState(contract || { type: contract?.type || "expense" });
   const [saving, setSaving] = useState(false);
+  const [showIntervalSheet, setShowIntervalSheet] = useState(false);
+  const [showDaySheet, setShowDaySheet] = useState(false);
+
+  const INTERVAL_LABELS = { daily: "Harian", weekly: "Mingguan", monthly: "Bulanan", yearly: "Tahunan" };
+  const intervalOptions = INTERVALS.map(i => ({ key: i, label: INTERVAL_LABELS[i] }));
+  const dayOptions = Array.from({ length: 31 }, (_, i) => ({ key: String(i + 1), label: `Tanggal ${i + 1}` }));
+  const currentDay = data.date ? new Date(data.date + 'T12:00:00').getDate() : 1;
 
   const sep = settings?.thousand_separator || ".";
 
@@ -147,33 +155,27 @@ export default function EditContractModal({ contract, onClose, onSave }) {
 
           <div>
             <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Interval</label>
-            <select
-              value={data.recurring_interval || "monthly"}
-              onChange={(e) => setData({ ...data, recurring_interval: e.target.value })}
-              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] capitalize bg-white text-black">
-
-              {INTERVALS.map((i) =>
-              <option key={i} value={i} className="capitalize">
-                  {i}
-                </option>
-              )}
-            </select>
+            <button
+              type="button"
+              onClick={() => setShowIntervalSheet(true)}
+              className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-white text-black text-left flex items-center justify-between"
+            >
+              <span>{INTERVAL_LABELS[data.recurring_interval || "monthly"]}</span>
+              <span className="text-[#8FA4C8]">›</span>
+            </button>
           </div>
 
           {(data.recurring_interval === "monthly" || data.recurring_interval === "yearly") && (
             <div>
               <label className="block text-xs font-semibold text-[#1A1A1A] mb-2">Tiap tanggal</label>
-              <select
-                value={data.date ? new Date(data.date + 'T12:00:00').getDate() : 1}
-                onChange={(e) => {
-                  const day = parseInt(e.target.value);
-                  const d = new Date();
-                  d.setDate(day);
-                  setData({ ...data, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}` });
-                }}
-                className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-white text-black">
-                {Array.from({length:31},(_,i)=>i+1).map(d=><option key={d} value={d}>Tanggal {d}</option>)}
-              </select>
+              <button
+                type="button"
+                onClick={() => setShowDaySheet(true)}
+                className="w-full border border-[#E2E8F0] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#F97316] bg-white text-black text-left flex items-center justify-between"
+              >
+                <span>Tanggal {currentDay}</span>
+                <span className="text-[#8FA4C8]">›</span>
+              </button>
             </div>
           )}
 
@@ -194,6 +196,29 @@ export default function EditContractModal({ contract, onClose, onSave }) {
           </div>
         </div>
       </div>
+
+      <BottomSheetSelect
+        isOpen={showIntervalSheet}
+        onClose={() => setShowIntervalSheet(false)}
+        title="Pilih Interval"
+        options={intervalOptions}
+        onSelect={(key) => setData({ ...data, recurring_interval: key })}
+        selectedValue={data.recurring_interval || "monthly"}
+      />
+
+      <BottomSheetSelect
+        isOpen={showDaySheet}
+        onClose={() => setShowDaySheet(false)}
+        title="Pilih Tanggal"
+        options={dayOptions}
+        onSelect={(key) => {
+          const day = parseInt(key);
+          const d = new Date();
+          d.setDate(day);
+          setData({ ...data, date: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}` });
+        }}
+        selectedValue={String(currentDay)}
+      />
     </div>);
 
 }

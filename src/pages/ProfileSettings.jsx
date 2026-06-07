@@ -353,10 +353,23 @@ export default function ProfileSettings() {
             <LogOut className="w-5 h-5" />
             <span className="font-medium text-sm">{t('settings_logout')}</span>
           </button>
+        </div>
+
+        {/* ── Danger Zone ─────────────────────────────────── */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-red-100">
+          <div className="px-5 pt-4 pb-2 flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
+            <p className="text-xs font-bold text-red-500 uppercase tracking-widest">Danger Zone</p>
+          </div>
           <button onClick={() => setShowDeleteConfirm(true)}
-            className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-[#FFF5F5] transition-colors border-t border-[#F2F4F7] text-[#FF6B6B]">
-            <Trash2 className="w-5 h-5" />
-            <span className="font-medium text-sm">Hapus Akun Selamanya</span>
+            className="w-full flex items-start gap-3 px-5 py-4 hover:bg-red-50 transition-colors border-t border-[#F2F4F7] text-left">
+            <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+              <Trash2 className="w-4 h-4 text-red-500" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-sm text-red-600">Hapus Akun Selamanya</p>
+              <p className="text-xs text-[#8FA4C8] mt-0.5">Semua data kamu (transaksi, rekening, goal, dll) akan dihapus permanen dan tidak bisa dikembalikan.</p>
+            </div>
           </button>
         </div>
 
