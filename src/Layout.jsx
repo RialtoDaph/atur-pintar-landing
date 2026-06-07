@@ -435,13 +435,13 @@ function LayoutInner({ children, currentPageName }) {
       </div>
       )}
 
-      {/* Mobile FAB - center-bottom, toggles Plus↔X (X when modal open) */}
+      {/* Mobile FAB - center-bottom, z-[85] sits above bottom nav (z-60) but BELOW modal backdrop (z-90) */}
       {!isNestedPage && currentPageName !== "Nana" &&
       <button
         onClick={handleFabClick}
         data-tour="add-transaction-btn"
         aria-label={showAddTransaction ? "Tutup form transaksi" : "Catat transaksi baru"}
-        className="fixed left-1/2 -translate-x-1/2 z-[80] flex items-center justify-center rounded-full active:scale-95 transition-all duration-200 tap-highlight-fix select-none sm:hidden"
+        className="fixed left-1/2 -translate-x-1/2 z-[85] flex items-center justify-center rounded-full active:scale-95 transition-all duration-200 tap-highlight-fix select-none sm:hidden"
         style={{
           width: 56, height: 56,
           bottom: 'calc(32px + env(safe-area-inset-bottom, 0px))',

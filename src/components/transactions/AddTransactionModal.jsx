@@ -333,11 +333,12 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
   return (
     <>
-      {/* Backdrop — translucent so FAB at z-80 stays visible above */}
-      <div className="fixed inset-0 z-40 bg-black/40 sm:backdrop-blur-sm" onClick={onClose} />
+      {/* Backdrop — z-[90] sits above bottom nav (z-60) but below FAB (z-80)?
+          We bumped FAB to z-[85] in Layout. Backdrop z-[90] covers nav; dialog z-[100] is above FAB. */}
+      <div className="fixed inset-0 z-[90] bg-black/40 sm:backdrop-blur-sm" onClick={onClose} />
       {/* Mobile: floating popup positioned just above the FAB. Desktop: centered modal */}
       <div
-        className="fixed z-40 pointer-events-none flex justify-center sm:inset-0 sm:items-center"
+        className="fixed z-[100] pointer-events-none flex justify-center sm:inset-0 sm:items-center"
         style={{
           left: 0,
           right: 0,
@@ -616,7 +617,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
 
       {/* Low balance confirm */}
       {lowBalanceConfirm && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl p-5 max-w-sm w-full shadow-2xl">
             <p className="text-sm font-bold text-[#1A1A1A] mb-2">⚠️ Saldo Tidak Cukup</p>
             <p className="text-xs text-[#8FA4C8] mb-4">
