@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 import { base44 } from "@/api/base44Client";
 import TxDetailSheet from "./TxDetailSheet";
 import EditTransactionModal from "./EditTransactionModal";
@@ -114,8 +115,11 @@ export default function TxRiwayatTab({ transactions, categories, accounts, goals
   const [subTab, setSubTab] = useState("all");
   const [selectedTx, setSelectedTx] = useState(null);
   const [editingTx, setEditingTx] = useState(null);
+  // Optimistic: tx IDs currently hidden pending the 5s undo window
+  const [pendingDeleteIds, setPendingDeleteIds] = useState(new Set());
 
   const filtered = transactions.filter(tx => {
+    if (pendingDeleteIds.has(tx.id)) return false;
     if (subTab === "income") return tx.type === "income";
     if (subTab === "expense") return tx.type === "expense";
     return true;
@@ -129,17 +133,57 @@ export default function TxRiwayatTab({ transactions, categories, accounts, goals
     groups[groups.length - 1].items.push(tx);
   });
 
-  async function handleDelete(tx) {
-    await base44.entities.Transaction.update(tx.id, { is_deleted: true });
-    // Reverse account balance impact (only for non-recurring templates)
-    if (tx.account_id && !tx.is_recurring) {
-      await syncAccountBalance(tx.account_id, tx.amount, tx.type, -1);
-    }
-    // If this was a savings tx linked to a goal, recalc goal current_amount (sum decreases)
-    if (tx.type === "savings" && tx.goal_id) {
-      await recalcGoalAmount(tx.goal_id);
-    }
-    onRefresh();
+  // Optimistic delete with 5s Undo window.
+  // The transaction disappears from the list instantly. If user taps "Urungkan"
+  // within 5s, we cancel. Otherwise we run the real delete + side effects.
+  function handleDelete(tx) {
+    // Hide immediately
+    setPendingDeleteIds(prev => {
+      const next = new Set(prev);
+      next.add(tx.id);
+      return next;
+    });
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      if (cancelled) return;
+      try {
+        await base44.entities.Transaction.update(tx.id, { is_deleted: true });
+        if (tx.account_id && !tx.is_recurring) {
+          await syncAccountBalance(tx.account_id, tx.amount, tx.type, -1);
+        }
+        if (tx.type === "savings" && tx.goal_id) {
+          await recalcGoalAmount(tx.goal_id);
+        }
+        onRefresh();
+      } catch {
+        // Rollback: restore the row and tell the user
+        setPendingDeleteIds(prev => {
+          const next = new Set(prev);
+          next.delete(tx.id);
+          return next;
+        });
+        toast.error("Gagal menghapus transaksi. Coba lagi.", {
+          action: { label: "Coba lagi", onClick: () => handleDelete(tx) },
+        });
+      }
+    }, 5000);
+
+    toast("Transaksi dihapus", {
+      action: {
+        label: "Urungkan",
+        onClick: () => {
+          cancelled = true;
+          clearTimeout(timer);
+          setPendingDeleteIds(prev => {
+            const next = new Set(prev);
+            next.delete(tx.id);
+            return next;
+          });
+        },
+      },
+      duration: 5000,
+    });
   }
 
   async function handleSaveEdit(id, data) {

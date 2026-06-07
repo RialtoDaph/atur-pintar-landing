@@ -165,12 +165,42 @@ export default function Goals() {
     navigate(createPageUrl("Goals"));
   }
 
-  async function handleDeleteFromList(id) {
+  // Optimistic delete with 5s Undo. Hide instantly, unlink + delete after window.
+  function handleDeleteFromList(id) {
     setDeleteConfirmGoal(null);
-    const txs = await base44.entities.Transaction.filter({ goal_id: id });
-    await Promise.all(txs.map(tx => base44.entities.Transaction.update(tx.id, { goal_id: null })));
-    await base44.entities.SavingsGoal.delete(id);
-    loadData();
+    const snapshot = goals;
+    const target = goals.find(g => g.id === id);
+    // Optimistic: remove from UI immediately
+    setGoals(prev => prev.filter(g => g.id !== id));
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      if (cancelled) return;
+      try {
+        const txs = await base44.entities.Transaction.filter({ goal_id: id });
+        await Promise.all(txs.map(tx => base44.entities.Transaction.update(tx.id, { goal_id: null })));
+        await base44.entities.SavingsGoal.delete(id);
+        loadData();
+      } catch {
+        // Rollback
+        setGoals(snapshot);
+        toast.error("Gagal menghapus goal. Coba lagi.", {
+          action: { label: "Coba lagi", onClick: () => handleDeleteFromList(id) },
+        });
+      }
+    }, 5000);
+
+    toast(`Goal "${target?.name || ""}" dihapus`, {
+      action: {
+        label: "Urungkan",
+        onClick: () => {
+          cancelled = true;
+          clearTimeout(timer);
+          setGoals(snapshot);
+        },
+      },
+      duration: 5000,
+    });
   }
 
   async function handleAddGoal(data) {

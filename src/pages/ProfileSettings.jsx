@@ -9,7 +9,7 @@ import EditProfileForm from "@/components/profile/EditProfileForm";
 import AddAccountBottomSheet from "@/components/profile/AddAccountBottomSheet";
 import EditAccountModal from "@/components/profile/EditAccountModal";
 import AccountAvatar from "@/components/ui/AccountAvatar";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import DeleteAccountConfirmDialog from "@/components/profile/DeleteAccountConfirmDialog";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -434,20 +434,12 @@ export default function ProfileSettings() {
         </div>
       )}
 
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogTitle>Hapus Akun Selamanya?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Tindakan ini tidak dapat dibatalkan. Semua data akun Anda akan dihapus secara permanen.
-          </AlertDialogDescription>
-          <div className="flex gap-2 justify-end">
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteAccount} disabled={deleting} className="bg-[#FF6B6B] hover:bg-[#FF5252]">
-              {deleting ? "Menghapus..." : "Hapus Akun"}
-            </AlertDialogAction>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteAccountConfirmDialog
+        open={showDeleteConfirm}
+        loading={deleting}
+        onCancel={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteAccount}
+      />
     </div>
   );
 }

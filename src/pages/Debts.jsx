@@ -152,18 +152,47 @@ export default function DebtsPage() {
     loadData();
   }
 
-  async function handleDelete(id) {
-    // Unlink past-payment transactions, but DELETE recurring templates (prevent orphan auto-generation)
-    const linked = await base44.entities.Transaction.filter({ debt_id: id });
-    await Promise.all((linked || []).map(tx => {
-      if (tx.is_recurring && !tx.is_recurring_child) {
-        return base44.entities.Transaction.delete(tx.id);
-      }
-      return base44.entities.Transaction.update(tx.id, { debt_id: null });
-    }));
-    await base44.entities.Debt.delete(id);
+  // Optimistic delete with 5s Undo. Hide instantly, unlink/delete after window.
+  function handleDelete(id) {
     setDeleteConfirm(null);
-    loadData();
+    const snapshot = debts;
+    const target = debts.find(d => d.id === id);
+    // Optimistic: remove from UI immediately
+    setDebts(prev => prev.filter(d => d.id !== id));
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      if (cancelled) return;
+      try {
+        const linked = await base44.entities.Transaction.filter({ debt_id: id });
+        await Promise.all((linked || []).map(tx => {
+          if (tx.is_recurring && !tx.is_recurring_child) {
+            return base44.entities.Transaction.delete(tx.id);
+          }
+          return base44.entities.Transaction.update(tx.id, { debt_id: null });
+        }));
+        await base44.entities.Debt.delete(id);
+        loadData();
+      } catch {
+        // Rollback
+        setDebts(snapshot);
+        toast.error("Gagal menghapus utang. Coba lagi.", {
+          action: { label: "Coba lagi", onClick: () => handleDelete(id) },
+        });
+      }
+    }, 5000);
+
+    toast(`Utang "${target?.name || ""}" dihapus`, {
+      action: {
+        label: "Urungkan",
+        onClick: () => {
+          cancelled = true;
+          clearTimeout(timer);
+          setDebts(snapshot);
+        },
+      },
+      duration: 5000,
+    });
   }
 
   const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
