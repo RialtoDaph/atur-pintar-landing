@@ -7,6 +7,8 @@ import AccountAvatar from "@/components/ui/AccountAvatar";
 import ManageCategoriesModal from "./ManageCategoriesModal";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
+import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
+import { ChevronDown } from "lucide-react";
 
 const DEFAULT_CATEGORIES = {
   expense: [
@@ -50,6 +52,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
   const [subCatPopup, setSubCatPopup] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [accountError, setAccountError] = useState("");
+  const [showGoalSheet, setShowGoalSheet] = useState(false);
 
   useEffect(() => {
     loadCustomCats();
@@ -275,14 +278,14 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                                 }`}
                               >
                                 <span className="text-lg sm:text-xl">{c.emoji}</span>
-                                <span className="text-[9px] sm:text-[10px] font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
+                                <span className="text-xs font-medium text-[#4A5568] text-center leading-tight">{c.label}</span>
                                 {subCatsByParent[c.key]?.length > 0 && (
-                                  <span className="absolute top-1 right-1 w-3 h-3 bg-[#F97316] rounded-full flex items-center justify-center">
-                                    <span className="text-white text-[7px] font-bold">▾</span>
+                                  <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-[#F97316] rounded-full flex items-center justify-center">
+                                    <span className="text-white text-[9px] font-bold leading-none">▾</span>
                                   </span>
                                 )}
                                 {subCatsByParent[c.key]?.some(s => s.key === form.category) && (
-                                  <span className="text-[8px] text-[#F97316] font-semibold truncate w-full text-center">
+                                  <span className="text-[11px] text-[#F97316] font-semibold truncate w-full text-center">
                                     {subCatsByParent[c.key].find(s => s.key === form.category)?.emoji}{" "}
                                     {subCatsByParent[c.key].find(s => s.key === form.category)?.label}
                                   </span>
@@ -327,16 +330,21 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
             {goals && goals.length > 0 && (
               <div>
                 <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('link_to_goal')}</label>
-                <select
-                  value={form.goal_id || ""}
-                  onChange={(e) => setForm({ ...form, goal_id: e.target.value })}
-                  className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC]"
+                <button
+                  type="button"
+                  onClick={() => setShowGoalSheet(true)}
+                  className="w-full border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-[#F8FAFC] text-left flex items-center justify-between"
                 >
-                  <option value="">{t('no_goal')}</option>
-                  {goals.map(goal => (
-                    <option key={goal.id} value={goal.id}>{goal.icon} {goal.name}</option>
-                  ))}
-                </select>
+                  <span className="truncate">
+                    {form.goal_id
+                      ? (() => {
+                          const g = goals.find(g => g.id === form.goal_id);
+                          return g ? `${g.icon || "🎯"} ${g.name}` : t('no_goal');
+                        })()
+                      : t('no_goal')}
+                  </span>
+                  <ChevronDown className="w-4 h-4 text-[#8FA4C8] flex-shrink-0 ml-2" />
+                </button>
               </div>
             )}
           </div>
@@ -355,6 +363,18 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
           onUpdated={() => base44.entities.CustomCategory.list("-created_date").then(setCustomCats)}
         />
       )}
+
+      <BottomSheetSelect
+        isOpen={showGoalSheet}
+        onClose={() => setShowGoalSheet(false)}
+        title={t('link_to_goal')}
+        options={[
+          { key: "", label: t('no_goal'), emoji: "🚫" },
+          ...goals.map(g => ({ key: g.id, label: g.name, emoji: g.icon || "🎯" }))
+        ]}
+        onSelect={(key) => setForm({ ...form, goal_id: key })}
+        selectedValue={form.goal_id || ""}
+      />
 
       {/* Sub-category popup */}
       {subCatPopup && (
@@ -383,7 +403,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                   className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] hover:border-[#F97316] hover:bg-[#F97316]/5 transition-all"
                 >
                   <span className="text-2xl">{sub.emoji}</span>
-                  <span className="text-[10px] font-semibold text-[#4A5568] text-center leading-tight">{sub.label}</span>
+                  <span className="text-xs font-semibold text-[#4A5568] text-center leading-tight">{sub.label}</span>
                 </button>
               ))}
             </div>

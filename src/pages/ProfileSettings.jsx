@@ -182,7 +182,7 @@ export default function ProfileSettings() {
             {completion < 100 && (
               <div className="px-5 pt-4 pb-3">
                 <div className="flex items-center gap-2">
-                  <p className="text-[11px] font-medium text-[#8FA4C8]">Kelengkapan Profil</p>
+                  <p className="text-xs font-medium text-[#8FA4C8]">Kelengkapan Profil</p>
                   <div className="flex-1 h-1.5 bg-[#F2F4F7] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
@@ -192,7 +192,7 @@ export default function ProfileSettings() {
                       }}
                     />
                   </div>
-                  <p className="text-[11px] font-bold text-[#F97316]">{completion}%</p>
+                  <p className="text-xs font-bold text-[#F97316]">{completion}%</p>
                 </div>
               </div>
             )}
@@ -254,7 +254,7 @@ export default function ProfileSettings() {
                 const groupAccounts = accounts.filter(a => (a.type || "").toLowerCase() === group.key);
                 return (
                   <div key={group.key}>
-                    <p className="text-[9px] font-bold text-[#8FA4C8] uppercase tracking-widest mb-1.5">{group.label}</p>
+                    <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-1.5">{group.label}</p>
                     <div className="flex gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: "none" }}>
                       {groupAccounts.map(acc => (
                         <button key={acc.id}
@@ -263,8 +263,8 @@ export default function ProfileSettings() {
                           style={{ maxWidth: 140 }}>
                           <AccountAvatar logoUrl={acc.logo_url} name={acc.name} color={acc.color || "#F97316"} />
                           <div className="min-w-0">
-                            <p className="text-[11px] font-semibold text-[#1A1A1A] truncate leading-tight">{acc.name}</p>
-                            <p className="text-[10px] font-bold truncate" style={{ color: (acc.balance || 0) < 0 ? "#EF4444" : "#27AE60" }}>
+                            <p className="text-xs font-semibold text-[#1A1A1A] truncate leading-tight">{acc.name}</p>
+                            <p className="text-xs font-bold truncate" style={{ color: (acc.balance || 0) < 0 ? "#EF4444" : "#27AE60" }}>
                               {formatRupiah(acc.balance)}
                             </p>
                           </div>
@@ -274,7 +274,7 @@ export default function ProfileSettings() {
                         onClick={() => { setBottomSheetType(group.key === "investasi" ? "investasi" : group.key); setShowAddBottomSheet(true); }}
                         className="flex-shrink-0 border border-dashed border-[#E2E8F0] rounded-xl px-3 py-2 flex items-center gap-1.5 hover:border-[#F97316] hover:bg-[#FFF7ED] transition-all">
                         <Plus className="w-3.5 h-3.5 text-[#8FA4C8]" />
-                        <p className="text-[10px] font-medium text-[#8FA4C8] whitespace-nowrap">Tambah</p>
+                        <p className="text-xs font-medium text-[#8FA4C8] whitespace-nowrap">Tambah</p>
                       </button>
                     </div>
                   </div>
