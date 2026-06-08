@@ -88,24 +88,25 @@ export default function BudgetPage() {
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
     })();
 
-    // Retry helper for rate-limited entity calls
-    const withRetry = async (fn, retries = 1) => {
+    // Retry helper with exponential backoff for rate-limited entity calls
+    const withRetry = async (fn, attempt = 0) => {
       try { return await fn(); }
       catch (e) {
-        if (retries > 0 && /rate limit/i.test(e?.message || "")) {
-          await new Promise(r => setTimeout(r, 1500));
-          return withRetry(fn, retries - 1);
+        const isRateLimit = /rate limit/i.test(e?.message || "");
+        if (isRateLimit && attempt < 3) {
+          const delay = 1500 * Math.pow(2, attempt); // 1.5s, 3s, 6s
+          await new Promise(r => setTimeout(r, delay));
+          return withRetry(fn, attempt + 1);
         }
         throw e;
       }
     };
 
     try {
-      const [bRaw, txAll, g] = await withRetry(() => Promise.all([
-        base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }, 'created_date'),
-        base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
-        base44.entities.SavingsGoal.filter({ created_by: user.email, status: "active" }),
-      ]));
+      // Sequential calls to avoid burst that triggers rate limits
+      const bRaw = await withRetry(() => base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }, 'created_date'));
+      const txAll = await withRetry(() => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300));
+      const g = await withRetry(() => base44.entities.SavingsGoal.filter({ created_by: user.email, status: "active" }));
 
       // Dedup budgets: for each (category+month), keep only the OLDEST record
       const seenCats = new Set();
