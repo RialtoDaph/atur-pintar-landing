@@ -282,7 +282,11 @@ function NanaInner() {
     setConversations(prev => [conv, ...prev]);
   }
 
-  const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
+  // 🎁 Free access window — semua user dapat unlimited Nana chat sampai tanggal ini
+  const FREE_ACCESS_UNTIL_NANA = "2026-08-08";
+  const todayStrNana = new Date().toISOString().slice(0, 10);
+  const inFreeWindowNana = todayStrNana <= FREE_ACCESS_UNTIL_NANA;
+  const isPremium = inFreeWindowNana || user?.role === "admin" || user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
   const currentMonth = new Date().toISOString().slice(0, 7);
   const msgCount = user?.nana_message_month === currentMonth ? (user?.nana_message_count || 0) : 0;
   const isLimitReached = !isPremium && msgCount >= FREE_MSG_LIMIT;

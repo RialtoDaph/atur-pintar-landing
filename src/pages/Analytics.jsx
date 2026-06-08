@@ -245,7 +245,11 @@ export default function Analytics() {
     };
   }, [filterPeriod, customDateRange]);
 
-  const isPremium = user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
+  // 🎁 Free access window — semua user dapat akses Analitik penuh sampai tanggal ini
+  const FREE_ACCESS_UNTIL = "2026-08-08";
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const inFreeWindow = todayStr <= FREE_ACCESS_UNTIL;
+  const isPremium = inFreeWindow || user?.role === "admin" || user?.subscription_plan === "premium_monthly" || user?.subscription_plan === "premium_yearly";
 
   // PERF: trendData + summary in one memo. BUG FIX: clamp negative monthDiff.
   const { trendData, totalIncome, periodExpenses, savingsRate, netCashflow } = useMemo(() => {
