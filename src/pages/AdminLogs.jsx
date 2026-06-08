@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminPageShell from "@/components/admin/AdminPageShell";
-import { ScrollText, Search, LogIn, Activity, AlertCircle, Filter, ShieldAlert, Calendar, X } from "lucide-react";
+import { ScrollText, Search, LogIn, Activity, AlertCircle, Filter, ShieldAlert, Calendar, X, ChevronDown } from "lucide-react";
 import LogMobileCard from "@/components/admin/LogMobileCard";
+import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 
 const LOG_TYPE_CONFIG = {
   login: { label: "Login", icon: LogIn, color: "blue" },
@@ -30,6 +31,22 @@ export default function AdminLogs() {
   const [page, setPage] = useState(1);
   const PER_PAGE = 30;
   const [clearing, setClearing] = useState(false);
+  const [showTypeSheet, setShowTypeSheet] = useState(false);
+  const [showSeveritySheet, setShowSeveritySheet] = useState(false);
+
+  const TYPE_OPTIONS = [
+    { key: "all", label: "Semua Tipe" },
+    { key: "login", label: "Login", emoji: "🔑" },
+    { key: "activity", label: "Activity", emoji: "📊" },
+    { key: "error", label: "Error", emoji: "⚠️" },
+    { key: "sensitive_access", label: "Akses Sensitif", emoji: "🛡️" },
+  ];
+  const SEVERITY_OPTIONS = [
+    { key: "all", label: "Semua Severity" },
+    { key: "info", label: "Info", emoji: "ℹ️" },
+    { key: "warning", label: "Warning", emoji: "⚠️" },
+    { key: "error", label: "Error", emoji: "🔴" },
+  ];
 
   useEffect(() => {
     base44.auth.me().then(u => setUser(u)).catch(() => {});
@@ -162,21 +179,16 @@ export default function AdminLogs() {
               <input type="text" placeholder="Cari action, detail..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#E2E8F0] text-sm focus:outline-none focus:ring-2 focus:ring-[#F97316]" />
             </div>
-            <select value={filterType} onChange={e => { setFilterType(e.target.value); setPage(1); }}
-              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]">
-              <option value="all">Semua Tipe</option>
-              <option value="login">Login</option>
-              <option value="activity">Activity</option>
-              <option value="error">Error</option>
-              <option value="sensitive_access">Akses Sensitif</option>
-            </select>
-            <select value={filterSeverity} onChange={e => { setFilterSeverity(e.target.value); setPage(1); }}
-              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]">
-              <option value="all">Semua Severity</option>
-              <option value="info">Info</option>
-              <option value="warning">Warning</option>
-              <option value="error">Error</option>
-            </select>
+            <button type="button" onClick={() => setShowTypeSheet(true)}
+              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316] flex items-center gap-2 text-left">
+              <span>{TYPE_OPTIONS.find(o => o.key === filterType)?.label || "Semua Tipe"}</span>
+              <ChevronDown className="w-4 h-4 text-[#8FA4C8]" />
+            </button>
+            <button type="button" onClick={() => setShowSeveritySheet(true)}
+              className="px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316] flex items-center gap-2 text-left">
+              <span>{SEVERITY_OPTIONS.find(o => o.key === filterSeverity)?.label || "Semua Severity"}</span>
+              <ChevronDown className="w-4 h-4 text-[#8FA4C8]" />
+            </button>
           </div>
           {/* Row 2: User filter + Date range */}
           <div className="flex gap-3 flex-wrap items-center">
@@ -305,6 +317,24 @@ export default function AdminLogs() {
             </div>
           </div>
         )}
+
+        <BottomSheetSelect
+          isOpen={showTypeSheet}
+          onClose={() => setShowTypeSheet(false)}
+          title="Filter Tipe Log"
+          options={TYPE_OPTIONS}
+          onSelect={(key) => { setFilterType(key); setPage(1); }}
+          selectedValue={filterType}
+        />
+
+        <BottomSheetSelect
+          isOpen={showSeveritySheet}
+          onClose={() => setShowSeveritySheet(false)}
+          title="Filter Severity"
+          options={SEVERITY_OPTIONS}
+          onSelect={(key) => { setFilterSeverity(key); setPage(1); }}
+          selectedValue={filterSeverity}
+        />
     </AdminPageShell>
   );
 }

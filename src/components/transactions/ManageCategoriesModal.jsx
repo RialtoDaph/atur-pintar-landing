@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, ChevronDown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
+import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 
 const PALETTE = ["#F97316","#4F7CFF","#00C9A7","#FF6B6B","#9B59B6","#E91E8C","#F5A623","#1ABC9C","#27AE60","#3498DB","#E67E22","#2C3E50"];
 const EMOJIS = ["📦","🏠","🍔","🚗","❤️","🎬","🛍️","📱","💼","💻","✈️","🎓","🐾","🧴","🎁","⚡","🍕","☕","🏋️","🎮"];
@@ -27,6 +28,8 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
   const [form, setForm] = useState({ name: "", emoji: "📦", color: "#F97316", type: "expense", parent_category_key: "" });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showTypeSheet, setShowTypeSheet] = useState(false);
+  const [showParentSheet, setShowParentSheet] = useState(false);
 
   useEffect(() => { load(); }, []);
 
@@ -95,39 +98,36 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
               onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
               className="flex-1 border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
             />
-            <select
-              value={form.type}
-              onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-              className="border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
+            <button
+              type="button"
+              onClick={() => setShowTypeSheet(true)}
+              className="border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix flex items-center justify-between gap-2 min-w-[120px]"
             >
-              <option value="expense">{t('expense')}</option>
-              <option value="income">{t('income')}</option>
-              <option value="both">{t('both')}</option>
-            </select>
+              <span>{form.type === "expense" ? t('expense') : form.type === "income" ? t('income') : t('both')}</span>
+              <ChevronDown className="w-4 h-4 text-[#8FA4C8] flex-shrink-0" />
+            </button>
           </div>
 
           {/* Parent category picker */}
           <div className="mb-3">
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">{t('sub_category_optional')}</label>
-            <select
-              value={form.parent_category_key}
-              onChange={e => setForm(f => ({ ...f, parent_category_key: e.target.value }))}
-              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix"
+            <button
+              type="button"
+              onClick={() => setShowParentSheet(true)}
+              className="w-full border border-[#E2E8F0] rounded-xl px-4 py-3 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#F97316] bg-white tap-highlight-fix flex items-center justify-between gap-2 text-left"
             >
-              <option value="">— {t('main_category')} —</option>
-              <optgroup label={t('default_categories')}>
-                {DEFAULT_CATEGORIES.map(c => (
-                  <option key={c.key} value={c.key}>{c.label}</option>
-                ))}
-              </optgroup>
-              {categories.filter(c => !c.parent_category_key).length > 0 && (
-                <optgroup label={t('custom_categories')}>
-                  {categories.filter(c => !c.parent_category_key).map(c => (
-                    <option key={c.id} value={`custom_${c.id}`}>{c.emoji} {c.name}</option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
+              <span className="truncate">
+                {(() => {
+                  if (!form.parent_category_key) return `— ${t('main_category')} —`;
+                  const def = DEFAULT_CATEGORIES.find(c => c.key === form.parent_category_key);
+                  if (def) return def.label;
+                  const customId = form.parent_category_key.startsWith("custom_") ? form.parent_category_key.slice(7) : null;
+                  const custom = customId ? categories.find(c => c.id === customId) : null;
+                  return custom ? `${custom.emoji} ${custom.name}` : `— ${t('main_category')} —`;
+                })()}
+              </span>
+              <ChevronDown className="w-4 h-4 text-[#8FA4C8] flex-shrink-0" />
+            </button>
           </div>
 
           <button onClick={handleAdd} disabled={saving || !form.name.trim()}
@@ -201,6 +201,36 @@ export default function ManageCategoriesModal({ onClose, onUpdated }) {
           </div>
         )}
       </div>
+
+      <BottomSheetSelect
+        isOpen={showTypeSheet}
+        onClose={() => setShowTypeSheet(false)}
+        title={t('type') || "Tipe"}
+        options={[
+          { key: "expense", label: t('expense'), emoji: "💸" },
+          { key: "income", label: t('income'), emoji: "💰" },
+          { key: "both", label: t('both'), emoji: "↔️" },
+        ]}
+        onSelect={(key) => setForm(f => ({ ...f, type: key }))}
+        selectedValue={form.type}
+      />
+
+      <BottomSheetSelect
+        isOpen={showParentSheet}
+        onClose={() => setShowParentSheet(false)}
+        title={t('sub_category_optional') || "Kategori Induk"}
+        options={[
+          { key: "__none__", label: `— ${t('main_category')} —` },
+          ...DEFAULT_CATEGORIES.map(c => ({ key: c.key, label: c.label })),
+          ...categories.filter(c => !c.parent_category_key).map(c => ({
+            key: `custom_${c.id}`,
+            emoji: c.emoji,
+            label: c.name,
+          })),
+        ]}
+        onSelect={(key) => setForm(f => ({ ...f, parent_category_key: key === "__none__" ? "" : key }))}
+        selectedValue={form.parent_category_key || "__none__"}
+      />
     </div>
   );
 }

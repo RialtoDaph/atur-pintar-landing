@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import AdminPageShell from "@/components/admin/AdminPageShell";
 import AdminActivityFeed from "@/components/admin/AdminActivityFeed";
-import { Bell, Send, Users, User, Trash2, Plus, X } from "lucide-react";
+import { Bell, Send, Users, User, Trash2, Plus, X, ChevronDown } from "lucide-react";
+import BottomSheetSelect from "@/components/ui/BottomSheetSelect";
 
 export default function AdminNotifications() {
   const [user, setUser] = useState(null);
@@ -15,6 +16,7 @@ export default function AdminNotifications() {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [inactiveUsers, setInactiveUsers] = useState([]);
   const [showReengagement, setShowReengagement] = useState(false);
+  const [showUserSheet, setShowUserSheet] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(u => setUser(u)).catch(() => {});
@@ -304,13 +306,18 @@ export default function AdminNotifications() {
                 {form.target_type === "specific" && (
                   <div>
                     <label className="text-xs font-medium text-[#8FA4C8] mb-1.5 block">Email User</label>
-                    <select value={form.target_email} onChange={e => setForm(p => ({ ...p, target_email: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316]">
-                      <option value="">Pilih user...</option>
-                      {allUsers.map(u => (
-                        <option key={u.id} value={u.email}>{u.full_name} ({u.email})</option>
-                      ))}
-                    </select>
+                    <button type="button" onClick={() => setShowUserSheet(true)}
+                      className="w-full px-3 py-2.5 rounded-xl border border-[#E2E8F0] text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#F97316] flex items-center justify-between gap-2 text-left">
+                      <span className={form.target_email ? "text-[#1A1A1A] truncate" : "text-[#8FA4C8]"}>
+                        {form.target_email
+                          ? (() => {
+                              const u = allUsers.find(x => x.email === form.target_email);
+                              return u ? `${u.full_name} (${u.email})` : form.target_email;
+                            })()
+                          : "Pilih user..."}
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-[#8FA4C8] flex-shrink-0" />
+                    </button>
                   </div>
                 )}
 
@@ -341,6 +348,19 @@ export default function AdminNotifications() {
             </div>
           </div>
         )}
+
+        <BottomSheetSelect
+          isOpen={showUserSheet}
+          onClose={() => setShowUserSheet(false)}
+          title="Pilih User"
+          options={allUsers.map(u => ({
+            key: u.email,
+            label: u.full_name || u.email,
+            description: u.email,
+          }))}
+          onSelect={(key) => setForm(p => ({ ...p, target_email: key }))}
+          selectedValue={form.target_email}
+        />
 
         {/* Delete confirm */}
         {deleteConfirm && (
