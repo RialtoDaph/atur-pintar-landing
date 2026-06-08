@@ -51,6 +51,18 @@ export default function BudgetPage() {
     debounceRef.current = setTimeout(() => loadData(), 1500);
   }, []);
 
+  // Load static refs (categories) once per user — they almost never change
+  useEffect(() => {
+    if (!user?.email) return;
+    Promise.all([
+      base44.entities.CustomCategory.list("-created_date").catch(() => []),
+      base44.entities.GlobalCategory.filter({ is_active: true }, "sort_order").catch(() => []),
+    ]).then(([cats, globalCats]) => {
+      setCustomCategories(cats || []);
+      setGlobalCategories(globalCats || []);
+    });
+  }, [user?.email]);
+
   useEffect(() => {
     if (user) loadData();
   }, [user, currentMonth]);
@@ -76,14 +88,24 @@ export default function BudgetPage() {
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
     })();
 
+    // Retry helper for rate-limited entity calls
+    const withRetry = async (fn, retries = 1) => {
+      try { return await fn(); }
+      catch (e) {
+        if (retries > 0 && /rate limit/i.test(e?.message || "")) {
+          await new Promise(r => setTimeout(r, 1500));
+          return withRetry(fn, retries - 1);
+        }
+        throw e;
+      }
+    };
+
     try {
-      const [bRaw, txAll, cats, g, globalCats] = await Promise.all([
+      const [bRaw, txAll, g] = await withRetry(() => Promise.all([
         base44.entities.Budget.filter({ month: currentMonth, created_by: user.email }, 'created_date'),
         base44.entities.Transaction.filter({ created_by: user.email }, "-date", 300),
-        base44.entities.CustomCategory.list("-created_date"),
         base44.entities.SavingsGoal.filter({ created_by: user.email, status: "active" }),
-        base44.entities.GlobalCategory.filter({ is_active: true }, "sort_order"),
-      ]);
+      ]));
 
       // Dedup budgets: for each (category+month), keep only the OLDEST record
       const seenCats = new Set();
@@ -102,9 +124,7 @@ export default function BudgetPage() {
       setBudgets(b);
       setTransactions(monthTx);
       setTransactions3M(prev3Tx);
-      setCustomCategories(cats);
       setGoals(g);
-      setGlobalCategories(globalCats || []);
 
       // Mark "cek_budget" daily mission as complete (current month view only)
       if (monthOffset === 0 && user?.email) {
