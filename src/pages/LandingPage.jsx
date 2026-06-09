@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import useLandingAnalytics from "@/components/landing/useLandingAnalytics";
 import BrushBackground from "@/components/landing/BrushBackground";
 import ScrollProgress from "@/components/landing/ScrollProgress";
 import LandingNav from "@/components/landing/LandingNav";
@@ -20,6 +21,7 @@ import LandingFooter from "@/components/landing/LandingFooter";
 export default function LandingPage() {
   const pricingRef = useRef(null);
   const howRef = useRef(null);
+  const { trackCta } = useLandingAnalytics();
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -40,9 +42,9 @@ export default function LandingPage() {
 
       <ScrollProgress />
 
-      <LandingNav howRef={howRef} pricingRef={pricingRef} />
+      <LandingNav howRef={howRef} pricingRef={pricingRef} onCtaClick={() => trackCta("nav")} />
 
-      <HeroSection onScrollToNewsletter={scrollToNewsletter} />
+      <HeroSection onScrollToNewsletter={scrollToNewsletter} onCtaClick={() => trackCta("hero")} />
       <PainPointSection />
       <FeaturesSection ref={howRef} />
       <HowItWorksSection />
@@ -53,7 +55,7 @@ export default function LandingPage() {
       <PricingSection ref={pricingRef} />
       <FaqSection />
       <NewsletterSection />
-      <FinalCtaSection />
+      <FinalCtaSection onCtaClick={() => trackCta("final_cta")} />
       <LandingFooter />
     </div>
   );

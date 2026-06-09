@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 
-export default function LandingNav({ howRef, pricingRef }) {
+export default function LandingNav({ howRef, pricingRef, onCtaClick }) {
   const navigate = useNavigate();
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex items-center px-5 sm:px-12 lg:px-20 py-3 bg-[#0A0A0A]/95 border-b border-white/5">
@@ -13,7 +13,7 @@ export default function LandingNav({ howRef, pricingRef }) {
         <button onClick={() => pricingRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Harga</button>
         <Link to="/About" className="text-xs text-white/50 hover:text-white transition-colors">Tentang</Link>
       </div>
-      <button onClick={() => navigate("/login")} className="text-xs font-bold bg-[#F97316] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
+      <button onClick={() => { onCtaClick?.(); navigate("/login"); }} className="text-xs font-bold bg-[#F97316] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
         Masuk / Daftar
       </button>
     </nav>

@@ -6,6 +6,7 @@ import RevenueSnapshot from "@/components/admin/RevenueSnapshot";
 import CollapsibleSection from "@/components/admin/CollapsibleSection";
 import AdminStreakManager from "@/components/admin/AdminStreakManager";
 import AdminWaitingListSection from "@/components/admin/AdminWaitingListSection";
+import LandingAnalyticsCard from "@/components/admin/LandingAnalyticsCard";
 import { RefreshCw } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -151,6 +152,10 @@ export default function AdminDashboard() {
           )}
 
           {/* Heavy sections — collapsed by default on mobile */}
+          <CollapsibleSection title="Landing Page Analytics" subtitle="Pengunjung, klik CTA & konversi">
+            <LandingAnalyticsCard />
+          </CollapsibleSection>
+
           <CollapsibleSection title="Waiting List" subtitle="Manajemen sign-up early access">
             <div className="p-4">
               <AdminWaitingListSection />
