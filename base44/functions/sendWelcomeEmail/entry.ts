@@ -160,6 +160,28 @@ Deno.serve(async (req) => {
       html: emailBody,
     });
 
+    // Notifikasi ke admin: user baru terdaftar
+    const adminBody = `
+      <div style="font-family:Inter,Arial,sans-serif;background:#F2F4F7;padding:32px;">
+        <div style="max-width:520px;margin:0 auto;background:#fff;border-radius:16px;padding:28px;box-shadow:0 4px 16px rgba(0,0,0,0.06);">
+          <p style="margin:0 0 4px;font-size:12px;color:#FF6A00;font-weight:700;letter-spacing:1px;text-transform:uppercase;">User Baru</p>
+          <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:#0A0A0A;">Ada user baru daftar 🎉</p>
+          <table style="width:100%;font-size:14px;color:#1A1A1A;">
+            <tr><td style="padding:6px 0;color:#64748B;width:90px;">Nama</td><td style="padding:6px 0;font-weight:600;">${userName}</td></tr>
+            <tr><td style="padding:6px 0;color:#64748B;">Email</td><td style="padding:6px 0;font-weight:600;">${userEmail}</td></tr>
+            <tr><td style="padding:6px 0;color:#64748B;">Waktu</td><td style="padding:6px 0;">${new Date().toISOString()}</td></tr>
+          </table>
+        </div>
+      </div>
+    `;
+
+    await resend.emails.send({
+      from: 'Atur Pintar <admin@aturpintar.id>',
+      to: 'aturpintar21@gmail.com',
+      subject: `🎉 User baru: ${userName} (${userEmail})`,
+      html: adminBody,
+    }).catch((e) => console.error('Admin notify failed:', e?.message));
+
     return Response.json({ success: true, message: `Welcome email sent to ${userEmail}` });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
