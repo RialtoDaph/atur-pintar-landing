@@ -194,9 +194,9 @@ export default function AddReminderModal({ reminder, onClose, onSave }) {
         isOpen={showDaySelect}
         onClose={() => setShowDaySelect(false)}
         title="Tanggal Jatuh Tempo"
-        options={Array.from({ length: 28 }, (_, i) => ({
+        options={Array.from({ length: 31 }, (_, i) => ({
         key: String(i + 1),
-        label: `Tanggal ${i + 1}`,
+        label: i + 1 > 28 ? `Tanggal ${i + 1} (atau akhir bulan)` : `Tanggal ${i + 1}`,
         }))}
         onSelect={(day) => setForm(f => ({ ...f, due_day: day }))}
         selectedValue={form.due_day}

@@ -96,25 +96,31 @@ Total: ${upcomingList.length} pengingat aktif${urgentItems.length > 0 ? ", " + u
           const message = await base44.integrations.Core.InvokeLLM({ prompt });
           setNanaMessage(message);
         } catch (e) {
+          console.error("[ReminderPopup] Nana LLM call failed:", e?.message || e);
           setNanaMessage("Ada beberapa tagihan yang perlu kamu perhatikan nih! 🔔");
         }
 
         // Push browser notifications for urgent ones (≤ 3 days) — guard for unsupported browsers (iOS in-app, etc.)
         if ("Notification" in window) {
-          const alreadyAsked = localStorage.getItem(PUSH_ASKED_KEY);
-          if (!alreadyAsked && Notification.permission === "default") {
-            localStorage.setItem(PUSH_ASKED_KEY, "true");
-            const granted = await requestPushPermission();
-            if (granted) {
-              upcomingList.filter(r => r.daysLeft <= 3).forEach(r => {
-                sendBrowserNotification(r, r.daysLeft, formatCurrency);
-              });
-            }
-          } else if (Notification.permission === "granted") {
+          if (Notification.permission === "granted") {
+            // Already granted — send notifications
             upcomingList.filter(r => r.daysLeft <= 3).forEach(r => {
               sendBrowserNotification(r, r.daysLeft, formatCurrency);
             });
+          } else if (Notification.permission === "default") {
+            // Not asked yet — request once per session, not per visit (avoid spam)
+            const alreadyAsked = sessionStorage.getItem(PUSH_ASKED_KEY);
+            if (!alreadyAsked) {
+              sessionStorage.setItem(PUSH_ASKED_KEY, "true");
+              const granted = await requestPushPermission();
+              if (granted) {
+                upcomingList.filter(r => r.daysLeft <= 3).forEach(r => {
+                  sendBrowserNotification(r, r.daysLeft, formatCurrency);
+                });
+              }
+            }
           }
+          // If permission === "denied" → silently skip, popup in-app still works
         }
       }
     } catch (e) {}
