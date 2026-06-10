@@ -54,9 +54,11 @@ export default function BudgetPage() {
   // Load static refs (categories) once per user — they almost never change
   useEffect(() => {
     if (!user?.email) return;
+    // Load ALL categories (including inactive) so budgets referencing deactivated
+    // categories still display their name instead of a raw ID.
     Promise.all([
       base44.entities.CustomCategory.list("-created_date").catch(() => []),
-      base44.entities.GlobalCategory.filter({ is_active: true }, "sort_order").catch(() => []),
+      base44.entities.GlobalCategory.list("sort_order").catch(() => []),
     ]).then(([cats, globalCats]) => {
       setCustomCategories(cats || []);
       setGlobalCategories(globalCats || []);
@@ -181,7 +183,9 @@ export default function BudgetPage() {
   });
 
   function getCategoryMeta(key) {
-    return categoryMap[key] || { label: key, emoji: "📦", color: "#95A5A6" };
+    if (categoryMap[key]) return categoryMap[key];
+    // Fallback for orphaned budgets (category was deleted): show friendly label, not raw ID.
+    return { label: "Kategori dihapus", emoji: "📦", color: "#95A5A6" };
   }
 
   // Aggregate spending by category key (GlobalCategory.id or custom_<id>)
