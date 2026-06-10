@@ -54,20 +54,11 @@
     "provider": {
       "type": "string",
       "enum": [
-        "midtrans",
         "xendit",
         "manual"
       ],
       "default": "xendit",
       "description": "Payment gateway yang dipakai"
-    },
-    "midtrans_order_id": {
-      "type": "string",
-      "description": "Order ID Midtrans (legacy)"
-    },
-    "midtrans_snap_token": {
-      "type": "string",
-      "description": "Snap Token dari Midtrans (legacy)"
     },
     "xendit_external_id": {
       "type": "string",
