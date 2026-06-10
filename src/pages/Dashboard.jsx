@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from "react";
-import PullToRefresh from "@/components/utils/PullToRefresh";
 
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -203,9 +202,10 @@ export default function Dashboard() {
     staleTime: 10 * 60 * 1000,
   });
 
-  // Balance card only needs transaction totals — don't gate it on goals/budgets loading
-  const balanceLoading = txLoading;
-  const loading = goalsLoading || txLoading || budgetsLoading;
+  // Balance card only needs transaction totals — don't gate it on goals/budgets loading.
+  // Include `!user` so widgets render skeleton instead of flashing "Rp 0" before user is fetched.
+  const balanceLoading = !user || txLoading;
+  const loading = !user || goalsLoading || txLoading || budgetsLoading;
 
   async function loadData() {
     await Promise.all([
@@ -231,7 +231,7 @@ export default function Dashboard() {
   }, [transactions, todayStr]);
 
   return (
-    <PullToRefresh onRefresh={loadData}>
+    <>
       <div className="min-h-screen bg-[#F2F4F7] pb-8">
         {user && <RecurringManager userEmail={user.email} />}
 
@@ -407,6 +407,6 @@ export default function Dashboard() {
           />
         )}
       </div>
-    </PullToRefresh>
+    </>
   );
 }
