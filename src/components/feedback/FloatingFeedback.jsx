@@ -38,7 +38,10 @@ export default function FloatingFeedback({ user }) {
     }
   };
 
-  if (!user?.onboarding_completed) return null;
+  // Tombol Report hanya muncul di Dashboard, tapi konsisten untuk semua user
+  // (gak gating onboarding_completed lagi supaya user baru juga bisa report bug sejak awal).
+  if (!user) return null;
+  if (typeof window !== "undefined" && window.location.pathname !== "/Dashboard") return null;
 
   return (
     <>
