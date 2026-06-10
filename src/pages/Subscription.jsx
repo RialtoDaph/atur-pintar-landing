@@ -46,51 +46,45 @@ export default function Subscription() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Load Midtrans Snap script
+  // After Xendit redirect-back, refetch user once to pick up webhook-applied premium status.
   useEffect(() => {
-    if (document.querySelector('script[src*="snap.midtrans.com"]')) return;
-    const script = document.createElement("script");
-    script.src = "https://app.midtrans.com/snap/snap.js";
-    script.setAttribute("data-client-key", "Mid-client-DbRxTJwt9Fuh-xM6");
-    document.head.appendChild(script);
+    const params = new URLSearchParams(window.location.search);
+    const paid = params.get("paid");
+    if (paid === "1") {
+      base44.auth.me().then((u) => {
+        setUser(u);
+        if (u?.subscription_status === "active") {
+          setSuccessPlan(u.subscription_plan || "premium_monthly");
+        } else {
+          // Webhook belum masuk — tampilkan pending
+          setSuccessPlan("pending");
+        }
+        // Bersihkan query param tanpa reload
+        window.history.replaceState({}, "", window.location.pathname);
+      }).catch(() => {});
+    }
   }, []);
 
   async function handleBuy(planKey) {
     setPaymentError(null);
     setLoadingSnap(true);
     try {
-      const res = await base44.functions.invoke("createMidtransTransaction", { plan: planKey });
-      const { token } = res.data;
-      setLoadingSnap(false);
-
-      window.snap.pay(token, {
-        onSuccess: async (result) => {
-          setOrderId(result?.order_id || null);
-          // Immediately activate subscription client-side, webhook will confirm
-          const endDate = new Date();
-          if (planKey === "premium_monthly") endDate.setMonth(endDate.getMonth() + 1);
-          else endDate.setFullYear(endDate.getFullYear() + 1);
-          const endDateStr = endDate.toISOString().split("T")[0];
-          await base44.auth.updateMe({
-            subscription_status: "active",
-            subscription_plan: planKey,
-            subscription_end_date: endDateStr,
-          });
-          setUser(u => ({ ...u, subscription_status: "active", subscription_plan: planKey, subscription_end_date: endDateStr }));
-          setSuccessPlan(planKey);
-        },
-        onPending: async () => {
-          await base44.auth.updateMe({ subscription_status: "pending", subscription_plan: planKey });
-          setUser(u => ({ ...u, subscription_status: "pending", subscription_plan: planKey }));
-          setSuccessPlan("pending");
-        },
-        onError: () => {
-          setPaymentError("Pembayaran gagal. Silakan coba lagi.");
-        },
-        onClose: () => {
-          // User closed without paying — do nothing
-        },
+      const returnUrl = `${window.location.origin}${window.location.pathname}?paid=1`;
+      const failUrl = `${window.location.origin}${window.location.pathname}?paid=0`;
+      const res = await base44.functions.invoke("createXenditInvoice", {
+        plan: planKey,
+        success_redirect_url: returnUrl,
+        failure_redirect_url: failUrl,
       });
+      const { invoice_url, external_id } = res.data || {};
+      setOrderId(external_id || null);
+      if (!invoice_url) {
+        setLoadingSnap(false);
+        setPaymentError("Gagal membuat invoice. Coba lagi.");
+        return;
+      }
+      // Redirect ke halaman pembayaran Xendit
+      window.location.href = invoice_url;
     } catch (e) {
       setLoadingSnap(false);
       setPaymentError("Terjadi kesalahan. Coba lagi.");
@@ -240,7 +234,7 @@ export default function Subscription() {
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest mb-3">Cara Berlangganan</p>
           <ol className="space-y-2">
-            {["Pilih paket Premium yang kamu inginkan.", "Klik 'Bayar Sekarang' dan selesaikan pembayaran via Midtrans.", "Langganan aktif otomatis setelah pembayaran dikonfirmasi."].map((step, i) => (
+            {["Pilih paket Premium yang kamu inginkan.", "Klik 'Bayar Sekarang' lalu pilih metode bayar (QRIS, VA bank, e-wallet, atau kartu) di halaman Xendit.", "Langganan aktif otomatis setelah pembayaran dikonfirmasi."].map((step, i) => (
               <li key={i} className="flex items-start gap-3 text-sm text-[#1A1A1A]">
                 <span className="w-5 h-5 rounded-full bg-[#F97316] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
                 {step}
