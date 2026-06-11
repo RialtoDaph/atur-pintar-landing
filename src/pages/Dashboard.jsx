@@ -374,6 +374,8 @@ export default function Dashboard() {
             try {
               const fresh = await base44.auth.me();
               setUser(fresh);
+              // Notify App.jsx so it can trigger TourGuide in the same session
+              window.dispatchEvent(new CustomEvent("onboarding-completed"));
             } catch {}
             loadData();
           }} />

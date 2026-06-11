@@ -74,12 +74,23 @@ const AuthenticatedApp = () => {
         setMaintenanceMode(true);
       }
     }).catch(() => {});
-    base44.auth.me().then(u => {
-      setCurrentUser(u);
-      if (u?.onboarding_completed && !u?.tour_completed) {
-        setTimeout(() => setShowTour(true), 1800);
-      }
-    }).catch(() => {});
+
+    const checkUserForTour = () => {
+      base44.auth.me().then(u => {
+        setCurrentUser(u);
+        if (u?.onboarding_completed && !u?.tour_completed) {
+          setTimeout(() => setShowTour(true), 1800);
+        }
+      }).catch(() => {});
+    };
+
+    checkUserForTour();
+
+    // Re-check after onboarding completes in the same session
+    // (Dashboard dispatches this event after refetching the user)
+    const onOnboardingDone = () => checkUserForTour();
+    window.addEventListener("onboarding-completed", onOnboardingDone);
+    return () => window.removeEventListener("onboarding-completed", onOnboardingDone);
   }, []);
 
   // Show loading spinner while checking app public settings or auth
