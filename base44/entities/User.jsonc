@@ -30,6 +30,50 @@
     "monthly_salary": {
       "type": "number",
       "description": "Pendapatan bulanan dalam IDR"
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Apakah user sudah menyelesaikan questionnaire onboarding awal"
+    },
+    "tour_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Apakah user sudah menyelesaikan/menutup tur produk awal"
+    },
+    "persona_type": {
+      "type": "string",
+      "description": "Tipe persona keuangan user dari hasil quiz onboarding (mis. spender, saver, investor)"
+    },
+    "primary_goal": {
+      "type": "string",
+      "description": "Tujuan utama user di app, hasil pilihan onboarding"
+    },
+    "subscription_status": {
+      "type": "string",
+      "enum": [
+        "free",
+        "active",
+        "expired",
+        "pending"
+      ],
+      "default": "free",
+      "description": "Status langganan user"
+    },
+    "subscription_plan": {
+      "type": "string",
+      "enum": [
+        "free",
+        "premium_monthly",
+        "premium_yearly"
+      ],
+      "default": "free",
+      "description": "Paket langganan aktif"
+    },
+    "subscription_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Tanggal akhir periode langganan aktif"
     }
   },
   "required": []

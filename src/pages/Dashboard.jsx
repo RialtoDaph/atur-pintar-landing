@@ -45,7 +45,7 @@ export default function Dashboard() {
   useEffect(() => {
     base44.auth.me().then(u => {
       setUser(u);
-      if (!u?.onboarding_completed && !localStorage.getItem("onboarding_done")) {
+      if (!u?.onboarding_completed) {
         setShowOnboarding(true);
       }
       // Subscription expiry check is now handled in Layout (runs once per session for all pages)
