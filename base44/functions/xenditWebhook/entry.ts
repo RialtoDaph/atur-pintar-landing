@@ -37,8 +37,9 @@ Deno.serve(async (req) => {
     }
 
     if (payments.length === 0) {
-      console.error('Invoice not found:', invoice_id, external_id);
-      return Response.json({ message: 'Invoice not found' }, { status: 404 });
+      // Return 200 so Xendit marks webhook as healthy (covers test payloads & unrelated invoices)
+      console.warn('Invoice not found (test webhook or stale invoice):', invoice_id, external_id);
+      return Response.json({ message: 'Invoice not found, acknowledged', invoice_id, external_id });
     }
 
     const payment = payments[0];
