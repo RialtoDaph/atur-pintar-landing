@@ -122,6 +122,7 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* ── Public marketing/legal pages ── */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/LandingPage" element={<LandingPage />} />
       <Route path="/PrivacyPolicy" element={<PrivacyPolicy />} />
       <Route path="/TermsOfService" element={<TermsOfService />} />
@@ -131,7 +132,6 @@ const AuthenticatedApp = () => {
 
       {/* ── Gated app routes ── */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-        <Route path="/" element={<Navigate to="/Dashboard" replace />} />
         <Route path="/Dashboard" element={
           <LayoutWrapper currentPageName="Dashboard">
             <Dashboard />
