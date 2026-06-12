@@ -4,16 +4,19 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Verify Xendit callback token (from header)
-    const callbackToken = req.headers.get('x-callback-token') || req.headers.get('X-Callback-Token');
-    const expectedToken = Deno.env.get('XENDIT_WEBHOOK_TOKEN');
+    // Verify Xendit callback token (from header) — trim to avoid invisible whitespace issues
+    const rawCallback = req.headers.get('x-callback-token') || req.headers.get('X-Callback-Token') || '';
+    const rawExpected = Deno.env.get('XENDIT_WEBHOOK_TOKEN') || '';
+    const callbackToken = rawCallback.trim();
+    const expectedToken = rawExpected.trim();
 
     if (!expectedToken) {
       console.error('XENDIT_WEBHOOK_TOKEN not set');
       return Response.json({ error: 'Server misconfigured' }, { status: 500 });
     }
     if (!callbackToken || callbackToken !== expectedToken) {
-      console.error('Invalid Xendit callback token');
+      const tail = (s) => s ? s.slice(-6) : '(empty)';
+      console.error(`Invalid Xendit callback token. received_tail=${tail(callbackToken)} len=${callbackToken.length} | expected_tail=${tail(expectedToken)} len=${expectedToken.length}`);
       return Response.json({ error: 'Invalid token' }, { status: 403 });
     }
 
