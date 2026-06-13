@@ -164,10 +164,12 @@ Deno.serve(async (req) => {
     }
 
     if (isActivity) {
-      if (!last) {
-        // First-ever activity
+      if (!last || currentStreak === 0) {
+        // First-ever activity, atau recovery dari streak yang sudah reset.
+        // last bisa berupa tanggal lama / hari ini (legacy state) — apa pun itu,
+        // transaksi pertama setelah streak hilang harus mulai ulang dari 1.
         newStreak = 1;
-        streakChanged = true;
+        streakChanged = currentStreak !== 1;
       } else if (last === today) {
         // Same day — no change. Idempotent.
       } else if (last === yesterday) {
