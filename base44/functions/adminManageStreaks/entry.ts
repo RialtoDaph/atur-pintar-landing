@@ -25,14 +25,22 @@ Deno.serve(async (req) => {
         details,
       }).catch((e) => console.error('adminManageStreaks: audit log failed:', e));
 
+    // Full streak reset — also clears freeze state so the user starts clean
+    // (otherwise: streak=0 but masih punya freeze + last_used menyebabkan
+    // widget snowflake nyangkut, dan freeze gak match dengan streak yang nol).
+    const fullStreakReset = {
+      daily_streak: 0,
+      last_activity_date: null,
+      streak_freezes_available: 1,
+      streak_freeze_last_regen: null,
+      streak_freeze_last_used: null,
+    };
+
     if (action === 'resetUser') {
       const profiles = await base44.asServiceRole.entities.GamificationProfile.filter({ created_by: email });
       await Promise.all(
         profiles.map(p =>
-          base44.asServiceRole.entities.GamificationProfile.update(p.id, {
-            daily_streak: 0,
-            last_activity_date: null
-          })
+          base44.asServiceRole.entities.GamificationProfile.update(p.id, fullStreakReset)
         )
       );
       await auditLog('admin_streak_reset_user', `Reset streak for ${email}`, 'warning');
@@ -43,10 +51,7 @@ Deno.serve(async (req) => {
       const allProfiles = await base44.asServiceRole.entities.GamificationProfile.list();
       await Promise.all(
         allProfiles.map(p =>
-          base44.asServiceRole.entities.GamificationProfile.update(p.id, {
-            daily_streak: 0,
-            last_activity_date: null
-          })
+          base44.asServiceRole.entities.GamificationProfile.update(p.id, fullStreakReset)
         )
       );
       await auditLog('admin_streak_reset_all', `Reset all streaks (${allProfiles.length} profiles)`, 'warning');

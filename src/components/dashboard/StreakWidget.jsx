@@ -6,7 +6,6 @@ import { LEVELS, getLevelFromXP } from "@/hooks/useGamification";
 import StreakCelebrationPopup from "./StreakCelebrationPopup";
 import AchievementPopup from "./AchievementPopup";
 import LevelUpModal from "@/components/gamification/LevelUpModal";
-import { format } from "date-fns";
 
 export default function StreakWidget({
   profile,
@@ -24,10 +23,10 @@ export default function StreakWidget({
   const progressToNext = nextLevel
     ? Math.min(100, ((safeProfile.total_points - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100)
     : 100;
-  const isActiveToday = safeProfile.last_activity_date === format(new Date(), "yyyy-MM-dd");
-  // WIB date — match backend (processGamification / dailyGamificationCheck) so we detect
-  // a freeze-protected day even when the user's browser timezone differs from WIB.
+  // WIB date — match backend (processGamification / dailyGamificationCheck) so users
+  // outside Indonesia don't see "Catat hari ini!" when backend already records them active.
   const wibTodayStr = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const isActiveToday = safeProfile.last_activity_date === wibTodayStr;
   const freezeProtecting = !isActiveToday && safeProfile.streak_freeze_last_used === wibTodayStr && (safeProfile.daily_streak || 0) > 0;
   // Treat freeze-protected day as "active" for visual state (orange theme, real streak count).
   const showActive = isActiveToday || freezeProtecting;

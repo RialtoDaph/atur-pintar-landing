@@ -30,8 +30,13 @@ function daysBetween(a, b) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (user?.role !== 'admin') {
+    // Allow scheduler (no user context) AND admin manual triggers.
+    // Reject only logged-in non-admin users hitting the endpoint directly.
+    // All writes go through base44.asServiceRole and only touch gamification
+    // profiles — no user data is returned, so scheduler invocation is safe.
+    let user = null;
+    try { user = await base44.auth.me(); } catch { /* scheduler — no auth */ }
+    if (user && user.role !== 'admin') {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
