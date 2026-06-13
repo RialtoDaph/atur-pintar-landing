@@ -4,35 +4,42 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import AppleIcon from "@/components/AppleIcon";
-import { Checkbox } from "@/components/ui/checkbox";
 import ConsentModal from "@/components/auth/ConsentModal";
 import InAppBrowserBanner from "@/components/auth/InAppBrowserBanner";
+
+// Safely resolve the post-login redirect target.
+// Only allow same-origin internal paths (must start with "/" and not "//")
+// to prevent open-redirect attacks via ?next=https://evil.com
+const getSafeNext = () => {
+  try {
+    const next = new URLSearchParams(window.location.search).get("next");
+    if (next && next.startsWith("/") && !next.startsWith("//")) return next;
+  } catch {}
+  return "/";
+};
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [consentProvider, setConsentProvider] = useState(null); // "google" | "apple" | null
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!agreed) {
-      setError("Kamu harus menyetujui Kebijakan Privasi & Ketentuan Layanan");
-      return;
-    }
     setError("");
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(email, password);
-      window.location.href = "/";
+      window.location.href = getSafeNext();
     } catch (err) {
-      setError(err.message || "Email atau kata sandi tidak valid");
+      // Generic message — never leak whether email exists vs wrong password (prevents email enumeration)
+      setError("Email atau kata sandi tidak valid");
     } finally {
       setLoading(false);
     }
@@ -41,7 +48,7 @@ export default function Login() {
   const handleSocialConfirm = () => {
     const provider = consentProvider;
     setConsentProvider(null);
-    if (provider) base44.auth.loginWithProvider(provider, "/");
+    if (provider) base44.auth.loginWithProvider(provider, getSafeNext());
   };
 
   return (
@@ -65,7 +72,7 @@ export default function Login() {
             <Input
               id="email"
               type="email"
-              autoComplete="email"
+              autoComplete="username"
               autoFocus
               placeholder="kamu@email.com"
               value={email}
@@ -86,36 +93,26 @@ export default function Login() {
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" aria-hidden="true" />
             <Input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:ring-2 focus-visible:ring-[#F97316] focus-visible:ring-offset-0"
+              className="pl-10 pr-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:ring-2 focus-visible:ring-[#F97316] focus-visible:ring-offset-0"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
         </div>
-        <div className="flex items-start gap-2.5 pt-1">
-          <Checkbox
-            id="agree-terms"
-            checked={agreed}
-            onCheckedChange={(v) => setAgreed(v === true)}
-            className="mt-0.5 border-white/30 data-[state=checked]:bg-[#F97316] data-[state=checked]:border-[#F97316]"
-          />
-          <Label htmlFor="agree-terms" className="text-xs text-white/60 leading-relaxed font-normal cursor-pointer">
-            Saya setuju dengan{" "}
-            <Link to="/PrivacyPolicy" target="_blank" rel="noopener noreferrer" className="text-[#F97316] hover:underline">
-              Kebijakan Privasi
-            </Link>{" "}
-            dan{" "}
-            <Link to="/TermsOfService" target="_blank" rel="noopener noreferrer" className="text-[#F97316] hover:underline">
-              Ketentuan Layanan
-            </Link>
-          </Label>
-        </div>
 
-        <Button type="submit" className="w-full h-12 font-bold bg-[#F97316] hover:bg-[#e05e00] text-white disabled:opacity-50" disabled={loading || !agreed}>
+        <Button type="submit" className="w-full h-12 font-bold bg-[#F97316] hover:bg-[#e05e00] text-white disabled:opacity-50" disabled={loading}>
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -160,6 +157,17 @@ export default function Login() {
         <AppleIcon className="w-5 h-5 mr-2" />
         Lanjut dengan Apple
       </Button>
+
+      <p className="text-center text-xs text-white/40 mt-5 leading-relaxed">
+        Dengan masuk, kamu menyetujui{" "}
+        <Link to="/PrivacyPolicy" target="_blank" rel="noopener noreferrer" className="text-[#F97316] hover:underline">
+          Kebijakan Privasi
+        </Link>{" "}
+        &{" "}
+        <Link to="/TermsOfService" target="_blank" rel="noopener noreferrer" className="text-[#F97316] hover:underline">
+          Ketentuan Layanan
+        </Link>
+      </p>
 
       <ConsentModal
         open={!!consentProvider}
