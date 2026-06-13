@@ -10,6 +10,7 @@ import GoogleIcon from "@/components/GoogleIcon";
 import AppleIcon from "@/components/AppleIcon";
 import { Checkbox } from "@/components/ui/checkbox";
 import ConsentModal from "@/components/auth/ConsentModal";
+import InAppBrowserBanner from "@/components/auth/InAppBrowserBanner";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -56,32 +57,7 @@ export default function Login() {
         </>
       }
     >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-semibold mb-3 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
-        onClick={() => setConsentProvider("google")}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Lanjut dengan Google
-      </Button>
-
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-semibold mb-6 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
-        onClick={() => setConsentProvider("apple")}
-      >
-        <AppleIcon className="w-5 h-5 mr-2" />
-        Lanjut dengan Apple
-      </Button>
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/10" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-[#1B1B1B] px-3 text-white/40">atau</span>
-        </div>
-      </div>
+      <InAppBrowserBanner />
 
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
@@ -158,6 +134,33 @@ export default function Login() {
           )}
         </Button>
       </form>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-[#1B1B1B] px-3 text-white/40">atau</span>
+        </div>
+      </div>
+
+      <Button
+        variant="outline"
+        className="w-full h-12 text-sm font-semibold mb-3 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+        onClick={() => setConsentProvider("google")}
+      >
+        <GoogleIcon className="w-5 h-5 mr-2" />
+        Lanjut dengan Google
+      </Button>
+
+      <Button
+        variant="outline"
+        className="w-full h-12 text-sm font-semibold bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+        onClick={() => setConsentProvider("apple")}
+      >
+        <AppleIcon className="w-5 h-5 mr-2" />
+        Lanjut dengan Apple
+      </Button>
 
       <ConsentModal
         open={!!consentProvider}

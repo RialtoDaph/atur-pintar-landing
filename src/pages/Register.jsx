@@ -13,6 +13,8 @@ import { toast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link as RouterLink } from "react-router-dom";
 import ConsentModal from "@/components/auth/ConsentModal";
+import InAppBrowserBanner from "@/components/auth/InAppBrowserBanner";
+import { Sparkles } from "lucide-react";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -138,7 +140,7 @@ export default function Register() {
   return (
     <AuthLayout
       title="Buat akun kamu"
-      subtitle="Daftar gratis untuk mulai"
+      subtitle="Gratis selamanya · Tanpa kartu kredit"
       footer={
         <>
           Sudah punya akun?{" "}
@@ -148,31 +150,13 @@ export default function Register() {
         </>
       }
     >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-semibold mb-3 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
-        onClick={() => setConsentProvider("google")}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Lanjut dengan Google
-      </Button>
+      <InAppBrowserBanner />
 
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-semibold mb-6 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
-        onClick={() => setConsentProvider("apple")}
-      >
-        <AppleIcon className="w-5 h-5 mr-2" />
-        Lanjut dengan Apple
-      </Button>
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/10" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-[#1B1B1B] px-3 text-white/40">atau</span>
-        </div>
+      <div className="mb-5 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F97316]/10 border border-[#F97316]/20">
+        <Sparkles className="w-3.5 h-3.5 text-[#F97316] flex-shrink-0" />
+        <p className="text-xs text-white/80 leading-snug">
+          Catat duit, naik level, dibantu AI Nana — semua gratis.
+        </p>
       </div>
 
       {error && (
@@ -261,6 +245,33 @@ export default function Register() {
           )}
         </Button>
       </form>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-white/10" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-[#1B1B1B] px-3 text-white/40">atau</span>
+        </div>
+      </div>
+
+      <Button
+        variant="outline"
+        className="w-full h-12 text-sm font-semibold mb-3 bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+        onClick={() => setConsentProvider("google")}
+      >
+        <GoogleIcon className="w-5 h-5 mr-2" />
+        Lanjut dengan Google
+      </Button>
+
+      <Button
+        variant="outline"
+        className="w-full h-12 text-sm font-semibold bg-white/5 border-white/10 text-white hover:bg-white/10 hover:text-white"
+        onClick={() => setConsentProvider("apple")}
+      >
+        <AppleIcon className="w-5 h-5 mr-2" />
+        Lanjut dengan Apple
+      </Button>
 
       <ConsentModal
         open={!!consentProvider}
