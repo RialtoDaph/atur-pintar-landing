@@ -141,14 +141,6 @@ export default function Register() {
     <AuthLayout
       title="Buat akun kamu"
       subtitle="Gratis selamanya · Tanpa kartu kredit"
-      footer={
-        <>
-          Sudah punya akun?{" "}
-          <Link to="/login" className="text-[#F97316] font-semibold hover:underline">
-            Masuk di sini
-          </Link>
-        </>
-      }
     >
       <InAppBrowserBanner />
 
@@ -244,6 +236,13 @@ export default function Register() {
             "Daftar Sekarang"
           )}
         </Button>
+
+        <p className="text-center text-sm text-white/60">
+          Sudah punya akun?{" "}
+          <Link to="/login" className="text-[#F97316] font-semibold hover:underline">
+            Masuk di sini
+          </Link>
+        </p>
       </form>
 
       <div className="relative my-6">
