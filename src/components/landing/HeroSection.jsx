@@ -12,7 +12,7 @@ export default function HeroSection({ onScrollToNewsletter, onCtaClick }) {
         <Reveal>
           <div className="inline-flex items-center gap-2 bg-[#F97316]/10 border border-[#F97316]/25 rounded-full px-4 py-1.5 mb-7">
             <Sparkles className="w-3 h-3 text-[#F97316]" />
-            <span className="text-[11px] text-[#F97316] font-bold uppercase tracking-wide">Early Access · AI-Powered</span>
+            <span className="text-[11px] text-[#F97316] font-bold uppercase tracking-wide">Early Access</span>
           </div>
         </Reveal>
 
