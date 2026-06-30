@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import RefundRequestForm from "@/components/refund/RefundRequestForm";
 
 export default function RefundPolicy() {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ export default function RefundPolicy() {
               <li>Alasan permintaan refund</li>
               <li>Bukti pembayaran (screenshot/PDF)</li>
             </ul>
+            <RefundRequestForm />
           </section>
 
           <section>
