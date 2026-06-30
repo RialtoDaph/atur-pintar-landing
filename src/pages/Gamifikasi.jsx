@@ -197,6 +197,11 @@ export default function Gamifikasi() {
                     <p className="text-[10px] text-[#8FA4C8] mt-0.5">
                       Senin, {resetDateStr} (WIB) · jatah freeze kembali ke 3
                     </p>
+                    {gamificationProfile?.streak_freeze_week_start && (
+                      <p className="text-[10px] text-[#8FA4C8] mt-1.5" data-testid="freeze-week-start">
+                        <span className="font-semibold text-[#1A1A1A]">Minggu freeze aktif:</span> mulai {gamificationProfile.streak_freeze_week_start}
+                      </p>
+                    )}
                   </div>
                 );
               })()}
