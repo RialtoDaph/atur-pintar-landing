@@ -38,9 +38,10 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6 max-h-[90vh] overflow-y-auto overscroll-contain">
-        <div className="flex items-center justify-between mb-5">
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-sm shadow-2xl flex flex-col" style={{ maxHeight: "min(92dvh, calc(100dvh - 2rem))" }}>
+        {/* Header — sticky */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#F2F4F7] flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#FF6B6B]/10 flex items-center justify-center text-xl">
               {debt?.icon || "💳"}
@@ -55,6 +56,8 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
           </button>
         </div>
 
+        {/* Scrollable body */}
+        <div className="px-6 py-5 overflow-y-auto overscroll-contain flex-1">
         <div className="bg-[#F8FAFC] rounded-2xl p-4 mb-5">
           <div className="flex justify-between text-xs text-[#8FA4C8] mb-1">
             <span>Sisa Utang</span>
@@ -111,14 +114,19 @@ export default function PayDebtModal({ debt, accounts = [], onClose, onConfirm }
           </div>
         </div>
 
-        <button
-          onClick={handleConfirm}
-          disabled={saving || !parseAmount(amount)}
-          className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00] transition-colors tap-highlight-fix flex items-center justify-center gap-2"
-        >
-          <CreditCard className="w-4 h-4" />
-          {saving ? "Menyimpan..." : "Catat Pembayaran"}
-        </button>
+        </div>
+
+        {/* Sticky footer — always visible */}
+        <div className="px-6 py-4 border-t border-[#F2F4F7] flex-shrink-0" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+          <button
+            onClick={handleConfirm}
+            disabled={saving || !parseAmount(amount)}
+            className="w-full py-3.5 rounded-xl font-bold text-sm text-white bg-[#F97316] disabled:opacity-40 hover:bg-[#e05e00] transition-colors tap-highlight-fix flex items-center justify-center gap-2"
+          >
+            <CreditCard className="w-4 h-4" />
+            {saving ? "Menyimpan..." : "Catat Pembayaran"}
+          </button>
+        </div>
       </div>
 
       <BottomSheetSelect

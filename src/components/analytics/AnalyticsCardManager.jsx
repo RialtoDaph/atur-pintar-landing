@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, GripVertical, Eye, EyeOff } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 // Sync dengan card yang benar-benar dirender di pages/Analytics
 const ALL_CARDS = [
@@ -12,6 +13,7 @@ const ALL_CARDS = [
 ];
 
 export default function AnalyticsCardManager({ cards, onSave, onClose }) {
+  useLockBodyScroll();
   const [localCards, setLocalCards] = useState(() => {
     if (cards && cards.length > 0) return cards;
     return ALL_CARDS.map(c => ({ id: c.id, visible: true }));
@@ -37,8 +39,8 @@ export default function AnalyticsCardManager({ cards, onSave, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl flex flex-col" style={{ maxHeight: "min(90dvh, calc(100dvh - 6rem))" }}>
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm sm:p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-sm shadow-2xl flex flex-col" style={{ maxHeight: "min(92dvh, calc(100dvh - 2rem))" }}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#F2F4F7]">
           <div>
@@ -50,8 +52,8 @@ export default function AnalyticsCardManager({ cards, onSave, onClose }) {
           </button>
         </div>
 
-        {/* Drag List */}
-        <div className="px-4 py-3 max-h-[60vh] overflow-y-auto">
+        {/* Drag List — scrollable */}
+        <div className="px-4 py-3 overflow-y-auto overscroll-contain flex-1">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="analytics-cards">
               {(provided) => (
@@ -104,8 +106,8 @@ export default function AnalyticsCardManager({ cards, onSave, onClose }) {
           </DragDropContext>
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#F2F4F7] flex gap-3">
+        {/* Footer — sticky */}
+        <div className="px-6 py-4 border-t border-[#F2F4F7] flex gap-3 flex-shrink-0" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
           <button
             onClick={onClose}
             className="flex-1 py-3 rounded-xl border border-[#E2E8F0] text-sm font-semibold text-[#8FA4C8] hover:border-[#CBD5E0] transition-colors"

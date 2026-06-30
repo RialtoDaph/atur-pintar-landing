@@ -165,9 +165,10 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
 
   return (
     <>
-      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-        <div role="dialog" aria-modal="true" className="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 overflow-y-auto overscroll-contain" style={{ maxHeight: "min(90dvh, calc(100dvh - 6rem))" }}>
-          <div className="flex items-center justify-between mb-4">
+      <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+        <div role="dialog" aria-modal="true" className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md shadow-2xl flex flex-col" style={{ maxHeight: "min(92dvh, calc(100dvh - 2rem))" }}>
+          {/* Header — sticky */}
+          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#F2F4F7] flex-shrink-0">
              <h2 className="text-lg font-bold text-[#1A1A1A]">{t('edit_transaction')}</h2>
              <div className="flex items-center gap-2">
                <button onClick={() => setShowManage(true)} className="text-[#9B9B9B] hover:text-[#1A1A1A]" title={t('manage_categories')}>
@@ -178,6 +179,9 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
                </button>
              </div>
            </div>
+
+          {/* Scrollable body */}
+          <div className="px-6 py-5 overflow-y-auto overscroll-contain flex-1">
 
           {/* Type tabs */}
           <div className="flex bg-[#F2F4F7] rounded-xl p-1 mb-4">
@@ -349,11 +353,16 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
             )}
           </div>
 
-          <button onClick={handleSave} disabled={saving || !form.amount || !form.category || (!isSavings && !form.account_id)}
-            className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
-            style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
-            {saving ? t('saving') : t('save_changes')}
-          </button>
+          </div>
+
+          {/* Sticky footer — always visible */}
+          <div className="px-6 py-4 border-t border-[#F2F4F7] flex-shrink-0" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+            <button onClick={handleSave} disabled={saving || !form.amount || !form.category || (!isSavings && !form.account_id)}
+              className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
+              style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
+              {saving ? t('saving') : t('save_changes')}
+            </button>
+          </div>
         </div>
       </div>
 
