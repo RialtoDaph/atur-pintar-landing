@@ -478,7 +478,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[11px] text-[#8FA4C8]">kategori</p>
-                <p className="text-[10px] text-[#8FA4C8]">★ = tambah/hapus favorit</p>
+                <p className="text-[10px] text-[#8FA4C8]">klik ★ untuk favoritkan</p>
               </div>
               {/* Sub-tabs */}
               <div className="flex border border-[#E2E8F0] rounded-lg overflow-hidden mb-2">
@@ -491,7 +491,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
               </div>
               {favTab === "fav" && (
                 favCats.length === 0 ? (
-                  <p className="text-[11px] text-[#8FA4C8] text-center py-3">Belum ada favorit. Buka tab Semua, tekan lama chip untuk bintangi.</p>
+                  <p className="text-[11px] text-[#8FA4C8] text-center py-3">Belum ada favorit. Buka tab Semua, lalu klik bintang ★ di kategori untuk favoritkan.</p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5">
                     {favCats.map(cat => <CatChip key={cat.id} cat={cat} selected={category === cat.id} typeColor={typeColor} isFav={favIds.includes(cat.id)} onSelect={() => setCategory(category === cat.id ? "" : cat.id)} onFavToggle={() => updateFavorites(cat.id)} />)}

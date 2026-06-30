@@ -21,9 +21,11 @@ const CURRENCIES = [
 ];
 
 const CURRENCY_MAP = {
-  IDR: { symbol: "Rp" },
-  USD: { symbol: "$" },
-  EUR: { symbol: "€" },
+  // IDR & EUR: dot ribuan, koma desimal (format Indo & Eropa)
+  IDR: { symbol: "Rp", decimal_separator: ",", thousand_separator: "." },
+  EUR: { symbol: "€", decimal_separator: ",", thousand_separator: "." },
+  // USD: koma ribuan, titik desimal (format US)
+  USD: { symbol: "$", decimal_separator: ".", thousand_separator: "," },
 };
 
 export default function Settings() {
@@ -51,7 +53,13 @@ export default function Settings() {
   async function selectCurrency(code) {
     setCurrency(code);
     const cur = CURRENCY_MAP[code];
-    await updateSettings({ ...settings, currency: code, currency_symbol: cur.symbol });
+    await updateSettings({
+      ...settings,
+      currency: code,
+      currency_symbol: cur.symbol,
+      decimal_separator: cur.decimal_separator,
+      thousand_separator: cur.thousand_separator,
+    });
   }
 
   async function selectLanguage(code) {
@@ -146,7 +154,15 @@ export default function Settings() {
             )}
 
             {!settings?.settings_unlocked && (
-              <p className="text-xs text-[#8FA4C8]">Bahasa dan mata uang ditetapkan saat setup awal. Hubungi admin untuk mengubah.</p>
+              <div className="space-y-2">
+                <p className="text-xs text-[#8FA4C8]">Bahasa dan mata uang dikunci secara default. Buka kunci untuk mengubah (mis. ke Euro untuk yang tinggal di Eropa).</p>
+                <button
+                  onClick={() => updateSettings({ ...settings, settings_unlocked: true })}
+                  className="w-full py-2.5 rounded-xl bg-[#F97316] text-white text-xs font-bold hover:bg-[#EA580C] transition-colors"
+                >
+                  🔓 Buka Kunci Bahasa & Mata Uang
+                </button>
+              </div>
             )}
           </div>
         </div>
