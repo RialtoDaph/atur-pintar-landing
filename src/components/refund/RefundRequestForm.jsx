@@ -31,8 +31,21 @@ export default function RefundRequestForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.full_name || !form.account_email || !form.invoice_id || !form.payment_date || !form.reason) {
-      setError("Mohon lengkapi semua field wajib.");
+    const missing = [];
+    if (!form.full_name) missing.push("Nama lengkap");
+    if (!form.account_email) missing.push("Email akun");
+    if (!form.invoice_id) missing.push("Invoice/Transaction ID");
+    if (!form.payment_date) missing.push("Tanggal pembayaran");
+    if (!form.reason) missing.push("Alasan refund");
+    if (missing.length > 0) {
+      setError(`Mohon lengkapi: ${missing.join(", ")}.`);
+      // Scroll to first empty required field so tester/user sees what's missing
+      const firstKey = !form.full_name ? "full_name"
+        : !form.account_email ? "account_email"
+        : !form.invoice_id ? "invoice_id"
+        : !form.payment_date ? "payment_date"
+        : "reason";
+      document.querySelector(`[data-refund-field="${firstKey}"]`)?.focus();
       return;
     }
     setError("");
@@ -94,31 +107,32 @@ export default function RefundRequestForm() {
   return (
     <form onSubmit={handleSubmit} className="mt-4 bg-white/[0.04] border border-white/10 rounded-2xl p-4 sm:p-5 space-y-3">
       <p className="text-white font-bold text-sm mb-1">📝 Form Permintaan Refund</p>
-      <p className="text-white/50 text-xs mb-3">Lebih cepat dari email — langsung masuk ke sistem admin kami.</p>
+      <p className="text-white/50 text-xs mb-2">Lebih cepat dari email — langsung masuk ke sistem admin kami.</p>
+      <p className="text-[11px] text-[#FF6A00]/90 mb-3">⚠️ Semua field bertanda <span className="font-bold">*</span> wajib diisi sebelum submit.</p>
 
       <div>
         <label className={labelCls}>Nama lengkap *</label>
-        <input type="text" className={inputCls} value={form.full_name} onChange={handleChange("full_name")} placeholder="Nama sesuai akun" />
+        <input data-refund-field="full_name" type="text" required className={inputCls} value={form.full_name} onChange={handleChange("full_name")} placeholder="Nama sesuai akun" />
       </div>
 
       <div>
         <label className={labelCls}>Email akun *</label>
-        <input type="email" className={inputCls} value={form.account_email} onChange={handleChange("account_email")} placeholder="email@contoh.com" />
+        <input data-refund-field="account_email" type="email" required className={inputCls} value={form.account_email} onChange={handleChange("account_email")} placeholder="email@contoh.com" />
       </div>
 
       <div>
         <label className={labelCls}>Invoice / Transaction ID *</label>
-        <input type="text" className={inputCls} value={form.invoice_id} onChange={handleChange("invoice_id")} placeholder="Contoh: XEN-INV-12345" />
+        <input data-refund-field="invoice_id" type="text" required className={inputCls} value={form.invoice_id} onChange={handleChange("invoice_id")} placeholder="Contoh: XEN-INV-12345" />
       </div>
 
       <div>
         <label className={labelCls}>Tanggal pembayaran *</label>
-        <input type="date" className={inputCls} value={form.payment_date} onChange={handleChange("payment_date")} />
+        <input data-refund-field="payment_date" type="date" required className={inputCls} value={form.payment_date} onChange={handleChange("payment_date")} />
       </div>
 
       <div>
         <label className={labelCls}>Alasan refund *</label>
-        <textarea className={`${inputCls} min-h-[80px] resize-none`} value={form.reason} onChange={handleChange("reason")} placeholder="Jelaskan kenapa kamu minta refund..." />
+        <textarea data-refund-field="reason" required className={`${inputCls} min-h-[80px] resize-none`} value={form.reason} onChange={handleChange("reason")} placeholder="Jelaskan kenapa kamu minta refund..." />
       </div>
 
       <div>
