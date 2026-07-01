@@ -199,7 +199,7 @@ export default function BudgetPage() {
   function getCategoryMeta(key) {
     if (categoryMap[key]) return categoryMap[key];
     // Fallback for orphaned budgets (category was deleted): show friendly label, not raw ID.
-    return { label: "Kategori dihapus", emoji: "📦", color: "#95A5A6" };
+    return { label: "Kategori dihapus", emoji: "📦", color: "#95A5A6", isOrphan: true };
   }
 
   // Build alias map (name ↔ id) + children-of-parent map.

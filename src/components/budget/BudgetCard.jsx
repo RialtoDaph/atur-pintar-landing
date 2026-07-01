@@ -31,8 +31,11 @@ export default function BudgetCard({ budget, categoryMeta, spent, onEdit, onDele
             {categoryMeta.emoji}
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <p className="font-semibold text-[#1A1A1A]">{categoryMeta.label}</p>
+              {categoryMeta.isOrphan && (
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#F2F4F7] text-[#8FA4C8] uppercase tracking-wider">Bisa dihapus</span>
+              )}
               {(isOver || isCritical) && (
                 <AlertTriangle className="w-3.5 h-3.5" style={{ color: isOver ? "#FF6B6B" : "#F5A623" }} />
               )}
@@ -40,6 +43,9 @@ export default function BudgetCard({ budget, categoryMeta, spent, onEdit, onDele
             <p className="text-xs text-[#8FA4C8]">
               {formatCurrency(spent)} / {formatCurrency(budget.amount)}
             </p>
+            {categoryMeta.isOrphan && (
+              <p className="text-[10px] text-[#8FA4C8] mt-0.5 italic">Kategori asli sudah dihapus dari sistem</p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
