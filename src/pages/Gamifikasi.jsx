@@ -178,13 +178,16 @@ export default function Gamifikasi() {
 
             {/* Weekly Reset Card — dedicated, prominent indicator */}
             {(() => {
-              // Compute next Monday (WIB) — when freeze quota refreshes to 3.
+              // Compute next Monday (WIB, Asia/Jakarta UTC+7) — when freeze quota refreshes to 3.
+              // Use a WIB-shifted Date and format with the same timezone to avoid the
+              // browser's local timezone shifting the displayed day (e.g. Berlin renders
+              // Monday 00:00 WIB as Sunday evening → wrong weekday label).
               const nowWIB = new Date(Date.now() + 7 * 60 * 60 * 1000);
               const wibDay = nowWIB.getUTCDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-              const daysUntilMonday = wibDay === 1 ? 7 : (8 - wibDay) % 7 || 7;
+              const daysUntilMonday = wibDay === 1 ? 7 : (8 - wibDay + 7) % 7;
               const nextResetWIB = new Date(nowWIB);
               nextResetWIB.setUTCDate(nowWIB.getUTCDate() + daysUntilMonday);
-              const resetDateStr = nextResetWIB.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
+              const resetDateStr = nextResetWIB.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
               const label = daysUntilMonday === 1 ? "besok" : `${daysUntilMonday} hari lagi`;
               const progressPct = ((7 - daysUntilMonday) / 7) * 100;
               return (
