@@ -39,6 +39,7 @@ export async function syncAccountBalance(accountId, amount, type, direction = 1)
   const account = accounts[0];
   if (!account) return;
 
+  // income adds to balance; expense AND savings both subtract (savings = money moved out to a goal)
   const delta = type === "income" ? amount : -amount;
   const newBalance = (account.balance || 0) + delta * direction;
   await base44.entities.Account.update(accountId, { balance: newBalance });

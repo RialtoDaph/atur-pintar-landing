@@ -26,7 +26,7 @@ export default function Accounts() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteInfo, setDeleteInfo] = useState(null);
   const [deleting, setDeleting] = useState(false);
-  const [syncing, setSyncing] = useState(false);
+  const [syncing, setSyncing] = useState(null);
   const [showAddBottomSheet, setShowAddBottomSheet] = useState(false);
   const [bottomSheetType, setBottomSheetType] = useState("bank");
 

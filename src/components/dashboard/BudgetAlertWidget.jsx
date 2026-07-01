@@ -45,13 +45,6 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
     if (!key) return "other";
     return aliasMap[key] || aliasMap[String(key).toLowerCase()] || key;
   };
-  const spentFor = (budgetCategory) => {
-    const id = canonical(budgetCategory);
-    let total = spendingByCategory[id] || 0;
-    const childIds = childrenByParent[id] || [];
-    childIds.forEach(cid => { total += spendingByCategory[cid] || 0; });
-    return total;
-  };
 
   // Calculate spending per category for this month
   const now = new Date();
@@ -65,6 +58,15 @@ export default function BudgetAlertWidget({ transactions = [], loading = false, 
     const key = canonical(tx.category);
     spendingByCategory[key] = (spendingByCategory[key] || 0) + tx.amount;
   });
+
+  // Defined AFTER spendingByCategory so the closure captures a real map (not undefined).
+  const spentFor = (budgetCategory) => {
+    const id = canonical(budgetCategory);
+    let total = spendingByCategory[id] || 0;
+    const childIds = childrenByParent[id] || [];
+    childIds.forEach(cid => { total += spendingByCategory[cid] || 0; });
+    return total;
+  };
 
   // Filter budgets to current month only (fixes duplicate category bug)
   const currentMonthBudgets = budgets.filter(b => b.month === currentMonth);

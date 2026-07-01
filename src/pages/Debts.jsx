@@ -46,8 +46,12 @@ export default function DebtsPage() {
 
   useEffect(() => {
     if (!user?.email) return;
-    const unsub = base44.entities.Debt.subscribe(() => loadData());
-    return unsub;
+    let timer;
+    const unsub = base44.entities.Debt.subscribe(() => {
+      clearTimeout(timer);
+      timer = setTimeout(() => loadData(), 800);
+    });
+    return () => { clearTimeout(timer); unsub(); };
   }, [user?.email]);
 
   async function loadData() {
@@ -73,9 +77,12 @@ export default function DebtsPage() {
     const debt = debts.find(d => d.id === paymentModal);
     if (!debt) return;
 
-    const newRemaining = Math.max(debt.remaining_amount - amount, 0);
+    const currentRemaining = debt.remaining_amount || 0;
+    const newRemaining = Math.max(currentRemaining - amount, 0);
     const newStatus = newRemaining <= 0 ? "paid" : "active";
 
+    // Snapshot for rollback on error
+    const snapshot = debts;
     setDebts(prev => prev.map(d => d.id === debt.id ? { ...d, remaining_amount: newRemaining, status: newStatus } : d));
     try {
       const categoryId = await resolveDebtCategoryId();
@@ -90,22 +97,20 @@ export default function DebtsPage() {
       };
       // Create transaction first; chain account-sync explicitly so failures surface in catch
       const createdTx = await base44.entities.Transaction.create(txData);
-      await base44.entities.Debt.update(debt.id, {
-        remaining_amount: newRemaining,
-        status: newStatus,
+      // Delegate all downstream sync (account balance AND debt remaining_amount) to the backend function.
+      // Doing debt.update() manually here PLUS syncTransactionChanges caused double-decrement
+      // on remaining_amount for every payment.
+      await base44.functions.invoke("syncTransactionChanges", {
+        action: "create",
+        transaction: { ...txData, id: createdTx?.id },
       });
-      if (accountId) {
-        await base44.functions.invoke("syncTransactionChanges", {
-          action: "create",
-          transaction: { ...txData, id: createdTx?.id },
-        }).catch(() => {});
-      }
       setPaymentModal(null);
       toast.success(`Pembayaran cicilan ${debt.name} berhasil dicatat!`);
       if (newStatus === "paid") {
         toast.success(`🎉 ${debt.name} telah lunas!`);
       }
     } catch (error) {
+      setDebts(snapshot);
       toast.error("Gagal mencatat pembayaran. Coba lagi.");
       loadData();
     }

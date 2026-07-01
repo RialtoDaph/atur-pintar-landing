@@ -104,11 +104,25 @@ export default function Analytics() {
 
   const enabled = !!user?.email;
 
+  // Fetch only the last 13 months of transactions server-side.
+  // The 12-month filter is the max analytics view; +1 month gives us prev-period delta.
+  const analyticsStartDate = useMemo(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 13);
+    d.setDate(1);
+    return d.toISOString().split("T")[0];
+  }, []);
+
   const { data: rawTransactions = [], isLoading: txLoading } = useQuery({
-    queryKey: ["transactions_analytics", user?.email],
-    queryFn: () => base44.entities.Transaction.filter({ created_by: user.email }, "-date", 2000),
+    queryKey: ["transactions_analytics", user?.email, analyticsStartDate],
+    queryFn: () => base44.entities.Transaction.filter(
+      { created_by: user.email, date: { $gte: analyticsStartDate } },
+      "-date",
+      2000
+    ),
     enabled,
-    staleTime: 0,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const { data: goals = [], isLoading: goalsLoading } = useQuery({

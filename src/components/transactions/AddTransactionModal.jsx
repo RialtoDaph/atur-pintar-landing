@@ -327,6 +327,7 @@ export default function AddTransactionModal({ goals = [], onClose, onSave, initi
   }
 
   async function handleSplitConfirm({ splitMode, participants, shares }) {
+    if (!receiptData) { setShowSplitBill(false); return; }
     setShowSplitBill(false);
     setSaving(true);
     try {
