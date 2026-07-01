@@ -39,6 +39,10 @@ export default function Subscription() {
   const [orderId, setOrderId] = useState(null);
   // Plan the user is trying to checkout — opens the disclaimer confirmation modal
   const [pendingCheckoutPlan, setPendingCheckoutPlan] = useState(null);
+  // Inline legal-consent checkbox. Must be ticked before any "Bayar Sekarang"
+  // button can be pressed — guarantees the disclaimer is visible on-page even
+  // if the modal is skipped or a checkout flow is automated.
+  const [legalAccepted, setLegalAccepted] = useState(false);
 
   const monthlyPrice = config?.premium_price_monthly || 49000;
   const yearlyPrice = config?.premium_price_yearly || 399900;
@@ -221,8 +225,9 @@ export default function Subscription() {
                   ) : (
                     <button
                       onClick={() => setPendingCheckoutPlan(plan)}
-                      disabled={loadingSnap}
-                      className={`w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2 ${
+                      disabled={loadingSnap || !legalAccepted}
+                      title={!legalAccepted ? "Centang persetujuan syarat & ketentuan di bawah dulu" : undefined}
+                      className={`w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                         plan.key === "premium_monthly" ? "bg-[#F97316] hover:bg-[#e05e00]" : "bg-purple-500 hover:bg-purple-600"
                       }`}
                     >
@@ -252,17 +257,45 @@ export default function Subscription() {
           </ol>
         </div>
 
-        {/* Legal disclaimer */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 flex items-start gap-3">
-          <ShieldCheck className="w-4 h-4 text-[#8FA4C8] flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-[#8FA4C8] leading-relaxed">
-            Dengan melanjutkan pembayaran, kamu menyetujui{" "}
-            <Link to="/TermsOfService" className="text-[#F97316] hover:underline font-medium">Syarat & Ketentuan</Link>,{" "}
-            <Link to="/RefundPolicy" className="text-[#F97316] hover:underline font-medium">Kebijakan Refund</Link>, dan{" "}
-            <Link to="/CancellationPolicy" className="text-[#F97316] hover:underline font-medium">Pembatalan Langganan</Link>{" "}
-            Atur Pintar. Pembayaran diproses oleh Xendit (PT Xendit Investasi Indonesia), payment gateway berlisensi Bank Indonesia.
-          </p>
-        </div>
+        {/* Legal disclaimer + inline consent — must be ticked to enable checkout buttons.
+            Kept on-page (not just inside the modal) so the disclaimer is guaranteed to be
+            visible before any payment can be initiated, even for automated flows. */}
+        {!isPremium && !isPending && (
+          <div className="bg-white rounded-2xl shadow-sm border-2 border-[#F97316]/30 p-4 sm:p-5">
+            <div className="flex items-start gap-3 mb-3">
+              <ShieldCheck className="w-5 h-5 text-[#F97316] flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold text-[#1A1A1A] mb-1">Disclaimer Legal Sebelum Pembayaran</p>
+                <p className="text-xs text-[#4A5568] leading-relaxed">
+                  Dengan melanjutkan, kamu setuju bahwa: (1) langganan Premium diperpanjang manual & bisa dibatalkan kapan saja;
+                  (2) refund tunduk pada Kebijakan Refund Atur Pintar; (3) pembayaran diproses oleh Xendit
+                  (PT Xendit Investasi Indonesia), payment gateway berlisensi Bank Indonesia, dan diterima oleh PT Rideff Vreka Tech.
+                </p>
+              </div>
+            </div>
+            <label className="flex items-start gap-3 cursor-pointer select-none bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3 hover:bg-[#F2F4F7] transition-colors">
+              <input
+                type="checkbox"
+                checked={legalAccepted}
+                onChange={(e) => setLegalAccepted(e.target.checked)}
+                aria-label="Saya menyetujui syarat, kebijakan refund, dan pembatalan langganan"
+                className="w-4 h-4 mt-0.5 accent-[#F97316] flex-shrink-0"
+              />
+              <span className="text-xs text-[#1A1A1A] leading-relaxed">
+                Saya sudah membaca dan menyetujui{" "}
+                <Link to="/TermsOfService" target="_blank" rel="noopener" className="text-[#F97316] hover:underline font-semibold">Syarat & Ketentuan</Link>,{" "}
+                <Link to="/RefundPolicy" target="_blank" rel="noopener" className="text-[#F97316] hover:underline font-semibold">Kebijakan Refund</Link>, dan{" "}
+                <Link to="/CancellationPolicy" target="_blank" rel="noopener" className="text-[#F97316] hover:underline font-semibold">Kebijakan Pembatalan Langganan</Link>{" "}
+                Atur Pintar.
+              </span>
+            </label>
+            {!legalAccepted && (
+              <p className="text-[11px] text-[#F97316] font-semibold mt-2 ml-1">
+                Centang persetujuan di atas untuk mengaktifkan tombol "Bayar Sekarang".
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Checkout Disclaimer Modal — must be acknowledged before redirect to Xendit */}
