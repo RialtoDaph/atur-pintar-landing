@@ -15,14 +15,20 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
   const [customCategories, setCustomCategories] = useState([]);
   const [error, setError] = useState(null);
   const [openParent, setOpenParent] = useState(null);
+  const [loadingCats, setLoadingCats] = useState(true);
 
   useEffect(() => {
-    base44.entities.GlobalCategory.filter({ is_active: true }, "sort_order").then(cats => {
-      setGlobalCategories((cats || []).filter(c => c.type === 'expense' || c.type === 'both'));
-    }).catch(() => {});
-    base44.entities.CustomCategory.list().then(cats => {
-      setCustomCategories((cats || []).filter(c => c.type === 'expense' || c.type === 'both' || !c.type));
-    }).catch(() => {});
+    let cancelled = false;
+    Promise.all([
+      base44.entities.GlobalCategory.filter({ is_active: true }, "sort_order").catch(() => []),
+      base44.entities.CustomCategory.list().catch(() => []),
+    ]).then(([globals, customs]) => {
+      if (cancelled) return;
+      setGlobalCategories((globals || []).filter(c => c.type === 'expense' || c.type === 'both'));
+      setCustomCategories((customs || []).filter(c => c.type === 'expense' || c.type === 'both' || !c.type));
+      setLoadingCats(false);
+    });
+    return () => { cancelled = true; };
   }, []);
 
   // Parents = is_subcategory false, sorted by sort_order
@@ -110,9 +116,26 @@ export default function AddBudgetModal({ onClose, onSave, existingCategories, ed
             {t("category")}
           </label>
           <div className="max-h-56 overflow-y-auto space-y-1 pr-0.5">
-            {parents.length === 0 && customCats.length === 0 && (
-              <p className="text-sm text-[#8FA4C8] text-center py-4">{t("budget_all_set")}</p>
-            )}
+            {(() => {
+              if (loadingCats) {
+                return <p className="text-sm text-[#8FA4C8] text-center py-4">Memuat kategori…</p>;
+              }
+              const availableParents = parents.filter(p => {
+                if (!isTaken(p.id)) return true;
+                const kids = subs.filter(s => s.parent_category === p.name && !isTaken(s.id));
+                return kids.length > 0;
+              });
+              const availableCustoms = customCats.filter(c => !isTaken(c.key));
+              const totalParents = parents.length + customCats.length;
+
+              if (totalParents === 0) {
+                return <p className="text-sm text-[#8FA4C8] text-center py-4">Belum ada kategori tersedia. Tambahkan kategori dulu di menu Transaksi.</p>;
+              }
+              if (availableParents.length === 0 && availableCustoms.length === 0) {
+                return <p className="text-sm text-[#8FA4C8] text-center py-4">{t("budget_all_set")}</p>;
+              }
+              return null;
+            })()}
             {parents.map(parent => {
               const children = subs.filter(s => s.parent_category === parent.name && !isTaken(s.id));
               const isOpen = openParent === parent.id;

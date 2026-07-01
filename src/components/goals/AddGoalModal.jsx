@@ -51,16 +51,20 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
     if (!canSave) return;
     setSaving(true);
     try {
-      await onSave({
+      // Build payload without null fields — `null` on optional date/string fields
+      // can fail silently against the entity schema and cause the goal to not persist.
+      const payload = {
         name: name.trim(),
         target_amount: parseNumber(targetAmount),
-        deadline: deadline || null,
         icon,
         color,
-        description: description.trim() || null,
         current_amount: goal?.current_amount || 0,
         status: goal?.status || "active",
-      });
+      };
+      if (deadline) payload.deadline = deadline;
+      const desc = description.trim();
+      if (desc) payload.description = desc;
+      await onSave(payload);
     } finally {
       setSaving(false);
     }
@@ -220,6 +224,7 @@ export default function AddGoalModal({ goal, onClose, onSave }) {
         {/* Footer */}
         <div className="px-5 py-4 border-t border-[#F2F4F7]" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}>
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={!canSave}
             className="w-full py-3.5 rounded-xl bg-[#F97316] text-white text-sm font-bold hover:bg-[#EA580C] disabled:bg-[#E2E8F0] disabled:text-[#8FA4C8] disabled:cursor-not-allowed transition-colors tap-highlight-fix"
