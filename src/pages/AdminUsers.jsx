@@ -28,15 +28,27 @@ export default function AdminUsers() {
 
   async function loadData() {
     setLoading(true);
+    // Fetch users and payments independently so a slow/failed payments call never
+    // blocks the users table from rendering. Previously Promise.all made a single
+    // failure stall the whole page in the loading spinner.
+    // We also narrow payments to the two statuses this page actually uses
+    // (pending banner + approve/reject actions) instead of pulling the full history.
     try {
-      const [allUsers, allPayments] = await Promise.all([
-        base44.entities.User.list(),
-        base44.entities.SubscriptionPayment.list()
-      ]);
-      setUsers(allUsers);
-      setPayments(allPayments);
+      const allUsers = await base44.entities.User.list("-created_date", 1000);
+      setUsers(allUsers || []);
     } catch (error) {
-      setErrorMsg("Error loading data: " + error.message);
+      setErrorMsg("Error loading users: " + error.message);
+    }
+    try {
+      const pendingList = await base44.entities.SubscriptionPayment.filter(
+        { status: "pending" },
+        "-created_date",
+        200
+      );
+      setPayments(pendingList || []);
+    } catch (error) {
+      // Non-fatal: users table still works without the payments banner
+      setPayments([]);
     }
     setLoading(false);
   }
