@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Check, Crown, Clock, CheckCircle2, Zap, AlertCircle, ShieldCheck } from "lucide-react";
 import { useAppConfig } from "@/components/utils/useAppConfig";
+import CheckoutDisclaimerModal from "@/components/subscription/CheckoutDisclaimerModal";
 
 const FEATURES_FREE = [
   "Catat transaksi (unlimited)",
@@ -36,6 +37,8 @@ export default function Subscription() {
   const [paymentError, setPaymentError] = useState(null);
   const [successPlan, setSuccessPlan] = useState(null);
   const [orderId, setOrderId] = useState(null);
+  // Plan the user is trying to checkout — opens the disclaimer confirmation modal
+  const [pendingCheckoutPlan, setPendingCheckoutPlan] = useState(null);
 
   const monthlyPrice = config?.premium_price_monthly || 49000;
   const yearlyPrice = config?.premium_price_yearly || 399900;
@@ -72,6 +75,8 @@ export default function Subscription() {
   async function handleBuy(planKey) {
     setPaymentError(null);
     setLoadingSnap(true);
+    // Close the disclaimer modal once we start the actual redirect
+    setPendingCheckoutPlan(null);
     try {
       const returnUrl = `${window.location.origin}${window.location.pathname}?paid=1`;
       const failUrl = `${window.location.origin}${window.location.pathname}?paid=0`;
@@ -215,13 +220,13 @@ export default function Subscription() {
                     </div>
                   ) : (
                     <button
-                      onClick={() => handleBuy(plan.key)}
+                      onClick={() => setPendingCheckoutPlan(plan)}
                       disabled={loadingSnap}
                       className={`w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2 ${
                         plan.key === "premium_monthly" ? "bg-[#F97316] hover:bg-[#e05e00]" : "bg-purple-500 hover:bg-purple-600"
                       }`}
                     >
-                      {loadingSnap ? (
+                      {loadingSnap && pendingCheckoutPlan?.key === plan.key ? (
                         <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Memuat...</>
                       ) : (
                         <><Zap className="w-4 h-4" /> Bayar Sekarang</>
@@ -259,6 +264,17 @@ export default function Subscription() {
           </p>
         </div>
       </div>
+
+      {/* Checkout Disclaimer Modal — must be acknowledged before redirect to Xendit */}
+      {pendingCheckoutPlan && (
+        <CheckoutDisclaimerModal
+          plan={pendingCheckoutPlan}
+          priceLabel={pendingCheckoutPlan.price}
+          loading={loadingSnap}
+          onClose={() => setPendingCheckoutPlan(null)}
+          onConfirm={() => handleBuy(pendingCheckoutPlan.key)}
+        />
+      )}
 
       {/* Success Modal */}
       {successPlan && successPlan !== "pending" && (
