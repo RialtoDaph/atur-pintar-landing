@@ -209,7 +209,15 @@ fbq('track', 'PageView');
 </script>
 </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Fallback shown before React mounts. React replaces this on first render. -->
+      <div style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#0A0A0A;color:#fff;font-family:system-ui,-apple-system,sans-serif;gap:16px;">
+        <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Atur Pintar" style="width:56px;height:56px;" />
+        <div style="width:28px;height:28px;border:3px solid rgba(255,255,255,0.2);border-top-color:#F97316;border-radius:50%;animation:apspin 0.8s linear infinite;"></div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.6);margin:0;">Memuat Atur Pintar…</p>
+        <style>@keyframes apspin{to{transform:rotate(360deg)}}</style>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
