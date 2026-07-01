@@ -124,17 +124,27 @@ export default function Accounts() {
           </div>
         ) : accounts.length === 0 ? (
           <>
-            <button
-              onClick={() => { setBottomSheetType("bank"); setShowAddBottomSheet(true); }}
-              className="w-full bg-[#F97316] text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 active:scale-95 transition-all duration-150"
-              style={{boxShadow: '0 4px 16px rgba(249,115,22,0.4)'}}
-            >
-              <Plus className="w-4 h-4" /> Tambah Rekening Baru
-            </button>
-            <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
+            <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
               <Wallet className="w-12 h-12 text-[#E2E8F0] mx-auto mb-3" />
               <p className="text-[#1A1A1A] font-semibold">Belum ada rekening</p>
-              <p className="text-[#8FA4C8] text-sm mt-1">Tambahkan rekening bank, e-wallet, atau cash kamu</p>
+              <p className="text-[#8FA4C8] text-sm mt-1 mb-4">Pilih tipe rekening yang mau ditambah</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { key: "bank", label: "Bank", icon: "🏦" },
+                  { key: "ewallet", label: "E-Wallet", icon: "📱" },
+                  { key: "investasi", label: "Investasi", icon: "📈" },
+                  { key: "cash", label: "Cash", icon: "💵" },
+                ].map(g => (
+                  <button
+                    key={g.key}
+                    onClick={() => { setBottomSheetType(g.key); setShowAddBottomSheet(true); }}
+                    className="border-2 border-[#E2E8F0] hover:border-[#F97316] hover:bg-[#FFF7ED] rounded-2xl p-3 flex flex-col items-center gap-1 transition-all active:scale-95"
+                  >
+                    <span className="text-2xl">{g.icon}</span>
+                    <span className="text-xs font-semibold text-[#1A1A1A]">{g.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </>
         ) : (
@@ -191,14 +201,15 @@ export default function Accounts() {
                           </div>
                         </div>
                       ))}
-                      {groupAccounts.length > 0 && (
-                        <button
-                          onClick={() => { setBottomSheetType(group.key); setShowAddBottomSheet(true); }}
-                          className="w-full border border-dashed border-[#E2E8F0] rounded-xl px-3 py-2.5 flex items-center justify-center gap-1.5 hover:border-[#F97316] hover:bg-[#FFF7ED] transition-all">
-                          <Plus className="w-3.5 h-3.5 text-[#8FA4C8]" />
-                          <p className="text-[11px] font-medium text-[#8FA4C8]">Tambah {group.label}</p>
-                        </button>
-                      )}
+                      {/* Always show the "Tambah <tipe>" button — even when this group is empty.
+                          Previously it was gated on `groupAccounts.length > 0`, so users who only
+                          had e.g. a bank account could never add an e-wallet from this page. */}
+                      <button
+                        onClick={() => { setBottomSheetType(group.key); setShowAddBottomSheet(true); }}
+                        className="w-full border border-dashed border-[#E2E8F0] rounded-xl px-3 py-2.5 flex items-center justify-center gap-1.5 hover:border-[#F97316] hover:bg-[#FFF7ED] transition-all">
+                        <Plus className="w-3.5 h-3.5 text-[#8FA4C8]" />
+                        <p className="text-[11px] font-medium text-[#8FA4C8]">Tambah {group.label}</p>
+                      </button>
                     </div>
                   </div>
                 );
