@@ -208,13 +208,26 @@ export default function Goals() {
   }
 
   async function handleAddGoal(data) {
-    if (goal?.id) {
-      await base44.entities.SavingsGoal.update(goal.id, data);
-    } else {
-      await base44.entities.SavingsGoal.create(data);
+    // Use editingGoal (from list "Edit" button) as the source of truth for edit vs create.
+    // The old `goal` var (from URL ?id=) is null in list view, but editingGoal can be set
+    // when user clicked Edit on a card — we need to route correctly in both cases.
+    const target = editingGoal?.id ? editingGoal : (goal?.id ? goal : null);
+    try {
+      if (target?.id) {
+        await base44.entities.SavingsGoal.update(target.id, data);
+        toast.success("Tujuan berhasil diperbarui");
+      } else {
+        await base44.entities.SavingsGoal.create(data);
+        toast.success("Tujuan berhasil dibuat 🎯");
+      }
+      setShowAddGoal(false);
+      setEditingGoal(null);
+      await loadData();
+    } catch (err) {
+      console.error("Gagal menyimpan tujuan:", err);
+      toast.error("Gagal menyimpan tujuan. Coba lagi.");
+      throw err;
     }
-    setShowAddGoal(false);
-    loadData();
   }
 
   async function handlePause(goal) {
@@ -498,14 +511,22 @@ export default function Goals() {
            goal={editingGoal || null}
            onClose={() => { setShowAddGoal(false); setEditingGoal(null); setRaiseTargetGoal(null); }}
            onSave={async (data) => {
-             if (raiseTargetGoal) {
-               await base44.entities.SavingsGoal.update(raiseTargetGoal.id, { target_amount: data.target_amount, status: data.current_amount < data.target_amount ? 'active' : 'completed' });
-               setRaiseTargetGoal(null);
-             } else {
-               await handleAddGoal(data);
+             try {
+               if (raiseTargetGoal) {
+                 await base44.entities.SavingsGoal.update(raiseTargetGoal.id, { target_amount: data.target_amount, status: data.current_amount < data.target_amount ? 'active' : 'completed' });
+                 toast.success("Target berhasil dinaikkan");
+                 setRaiseTargetGoal(null);
+                 setShowAddGoal(false);
+                 setEditingGoal(null);
+                 await loadData();
+               } else {
+                 // handleAddGoal already handles close + loadData + toast
+                 await handleAddGoal(data);
+               }
+             } catch (err) {
+               // Error already toasted inside handleAddGoal; re-throw so modal keeps saving=false
+               throw err;
              }
-             setShowAddGoal(false); setEditingGoal(null);
-             loadData();
            }}
          />
         )}
