@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { X, ShoppingCart, TrendingDown } from "lucide-react";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
-
-function formatRupiah(n) {
-  if (!n) return "";
-  return Number(n).toLocaleString("id-ID");
-}
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 function parseNum(str) {
   return parseInt(String(str).replace(/[^0-9]/g, ""), 10) || 0;
@@ -13,6 +9,8 @@ function parseNum(str) {
 
 export default function InvestmentTransactionModal({ investment, type, onClose, onSave }) {
   useLockBodyScroll();
+  const { settings, formatNumber, formatCurrency } = useAppSettings();
+  const currencySymbol = settings?.currency_symbol || "Rp";
   const today = new Date().toISOString().split("T")[0];
   const [amountDisplay, setAmountDisplay] = useState("");
   const [date, setDate] = useState(today);
@@ -69,17 +67,17 @@ export default function InvestmentTransactionModal({ investment, type, onClose, 
           {/* Amount */}
           <div>
             <label className="text-xs font-semibold text-[#8FA4C8] uppercase tracking-widest mb-1.5 block">
-              Nominal (Rp)
+              Nominal ({currencySymbol})
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#8FA4C8]">Rp</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#8FA4C8]">{currencySymbol}</span>
               <input
                 type="text"
                 inputMode="numeric"
                 value={amountDisplay}
                 onChange={e => {
                   const raw = e.target.value.replace(/[^0-9]/g, "");
-                  setAmountDisplay(raw === "" ? "" : Number(raw).toLocaleString("id-ID"));
+                  setAmountDisplay(raw === "" ? "" : formatNumber(Number(raw)));
                 }}
                 placeholder="0"
                 autoFocus
@@ -110,7 +108,7 @@ export default function InvestmentTransactionModal({ investment, type, onClose, 
           className="w-full py-3.5 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
           style={{ backgroundColor: color }}
         >
-          {saving ? "Menyimpan..." : `${label} ${amountDisplay ? "Rp " + amountDisplay : ""}`}
+          {saving ? "Menyimpan..." : `${label} ${amountDisplay ? formatCurrency(parseNum(amountDisplay)) : ""}`}
         </button>
         </div>
       </div>

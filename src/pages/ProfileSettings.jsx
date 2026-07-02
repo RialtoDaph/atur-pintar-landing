@@ -16,11 +16,6 @@ import { createPageUrl } from "@/utils";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
 import { toast } from "sonner";
 
-function formatRupiah(n) {
-  if (n === undefined || n === null) return "Rp 0";
-  return "Rp " + Number(n).toLocaleString("id-ID");
-}
-
 // ─── Profile completion helper ────────────────────────────────────────────────
 function calcCompletion(user) {
   if (!user) return 0;
@@ -62,7 +57,9 @@ function RiskScreen({ onBack }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ProfileSettings() {
   const [user, setUser] = useState(null);
-  const { t } = useAppSettings();
+  const { t, formatCurrency } = useAppSettings();
+  // Local wrapper so we don't have to touch every call site
+  const formatRupiah = (n) => formatCurrency(n || 0);
   const [screen, setScreen] = useState("main"); // main | risk
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);

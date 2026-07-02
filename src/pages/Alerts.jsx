@@ -44,8 +44,11 @@ const ALERT_CONFIG = {
   },
 };
 
+const LOCALE_MAP = { id: "id-ID", en: "en-US", de: "de-DE" };
+
 export default function AlertsPage() {
-  const { t } = useAppSettings();
+  const { t, settings } = useAppSettings();
+  const locale = LOCALE_MAP[settings?.language] || "id-ID";
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("unread"); // unread | all
@@ -201,7 +204,7 @@ export default function AlertsPage() {
                       )}
 
                       <p className="text-xs text-[#8FA4C8] mt-2">
-                        {new Date(alert.created_date).toLocaleDateString("id-ID", {
+                        {new Date(alert.created_date).toLocaleDateString(locale, {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",

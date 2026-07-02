@@ -4,8 +4,12 @@ import { Camera, Check, X, Loader2, Receipt } from "lucide-react";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
 
+// Map app language → BCP-47 locale for date/number formatting
+const LOCALE_MAP = { id: "id-ID", en: "en-US", de: "de-DE" };
+
 export default function ReceiptScanHistory() {
-  const { formatCurrency } = useAppSettings();
+  const { formatCurrency, settings } = useAppSettings();
+  const locale = LOCALE_MAP[settings?.language] || "id-ID";
   const [scans, setScans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -54,7 +58,7 @@ export default function ReceiptScanHistory() {
 
         {!loading && scans.map(scan => {
           const cfg = statusConfig[scan.status] || statusConfig.pending;
-          const dateStr = scan.scanned_at ? new Date(scan.scanned_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
+          const dateStr = scan.scanned_at ? new Date(scan.scanned_at).toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
           return (
             <div key={scan.id} className="bg-white rounded-2xl shadow-sm overflow-hidden">
               <div className="flex items-center gap-3 p-4">

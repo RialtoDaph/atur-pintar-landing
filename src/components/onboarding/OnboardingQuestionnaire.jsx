@@ -10,16 +10,22 @@ import PersonaReveal from "./questionnaire/PersonaReveal";
 import Screen10 from "./questionnaire/Screen10";
 import Screen11 from "./questionnaire/Screen11";
 import Screen12 from "./questionnaire/Screen12";
+import ScreenLanguage from "./questionnaire/ScreenLanguage";
+import ScreenCurrency from "./questionnaire/ScreenCurrency";
 
 // ─── Main Component ──────────────────────────────────────────────────────────
+// Language & currency are chosen ONCE here during onboarding. They are permanent
+// and cannot be changed from Settings afterwards. See AppSettings entity.
 const SCREEN = {
   WELCOME: 0,
-  QUIZ_INTRO: 1,
-  QUIZ: 2,       // 5 sub-screens via questionIndex
-  PERSONA: 3,
-  GOAL: 4,
-  INCOME: 5,
-  WELCOME_GAME: 6,
+  LANGUAGE: 1,
+  CURRENCY: 2,
+  QUIZ_INTRO: 3,
+  QUIZ: 4,        // 5 sub-screens via questionIndex
+  PERSONA: 5,
+  GOAL: 6,
+  INCOME: 7,
+  WELCOME_GAME: 8,
 };
 
 export default function OnboardingQuestionnaire({ onClose }) {
@@ -31,12 +37,14 @@ export default function OnboardingQuestionnaire({ onClose }) {
   const [primaryGoalLabel, setPrimaryGoalLabel] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [language, setLanguage] = useState("id");
+  const [currencyInfo, setCurrencyInfo] = useState(null); // {code, symbol, decimal_separator, thousand_separator}
   const isSavingRef = useRef(false);
 
   // Analytics: track funnel step (each screen change)
   useEffect(() => {
     try {
-      const screenNames = ["welcome", "quiz_intro", "quiz", "persona_reveal", "goal", "income", "welcome_game"];
+      const screenNames = ["welcome", "language", "currency", "quiz_intro", "quiz", "persona_reveal", "goal", "income", "welcome_game"];
       base44.analytics.track({
         eventName: "onboarding_step_view",
         properties: {
@@ -89,6 +97,10 @@ export default function OnboardingQuestionnaire({ onClose }) {
       } else if (s === SCREEN.INCOME) {
         setScreen(SCREEN.GOAL);
       } else if (s === SCREEN.QUIZ_INTRO) {
+        setScreen(SCREEN.CURRENCY);
+      } else if (s === SCREEN.CURRENCY) {
+        setScreen(SCREEN.LANGUAGE);
+      } else if (s === SCREEN.LANGUAGE) {
         setScreen(SCREEN.WELCOME);
       }
     };
@@ -181,6 +193,29 @@ export default function OnboardingQuestionnaire({ onClose }) {
         }));
       }
 
+      // Persist language & currency to AppSettings (one-time, permanent).
+      // We upsert: update the existing settings row if present, otherwise create one.
+      if (currencyInfo) {
+        const settingsPayload = {
+          language,
+          currency: currencyInfo.code,
+          currency_symbol: currencyInfo.symbol,
+          decimal_separator: currencyInfo.decimal_separator,
+          thousand_separator: currencyInfo.thousand_separator,
+        };
+        ops.push(
+          base44.entities.AppSettings.list().then(async (rows) => {
+            if (rows && rows.length > 0) {
+              await base44.entities.AppSettings.update(rows[0].id, settingsPayload);
+            } else {
+              await base44.entities.AppSettings.create(settingsPayload);
+            }
+            // Bust the session cache so useAppSettings picks up new values on next mount
+            try { sessionStorage.removeItem("app_settings_cache"); } catch {}
+          })
+        );
+      }
+
       await Promise.all(ops);
 
       // Analytics: track completion
@@ -209,7 +244,21 @@ export default function OnboardingQuestionnaire({ onClose }) {
     <div className="fixed inset-0 z-[100] bg-white flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         {screen === SCREEN.WELCOME && (
-          <Screen1 key="s1" onNext={() => setScreen(SCREEN.QUIZ_INTRO)} />
+          <Screen1 key="s1" onNext={() => setScreen(SCREEN.LANGUAGE)} />
+        )}
+        {screen === SCREEN.LANGUAGE && (
+          <ScreenLanguage
+            key="lang"
+            initialValue={language}
+            onNext={(code) => { setLanguage(code); setScreen(SCREEN.CURRENCY); }}
+          />
+        )}
+        {screen === SCREEN.CURRENCY && (
+          <ScreenCurrency
+            key="cur"
+            initialValue={currencyInfo?.code || "IDR"}
+            onNext={(cur) => { setCurrencyInfo(cur); setScreen(SCREEN.QUIZ_INTRO); }}
+          />
         )}
         {screen === SCREEN.QUIZ_INTRO && (
           <Screen3

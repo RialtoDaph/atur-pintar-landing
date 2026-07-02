@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Bell, Clock, CheckCircle2, Trash2, AlertTriangle, Info, TrendingUp, Target, Wallet, Calendar, X } from "lucide-react";
-import { format, isToday, addDays } from "date-fns";
-import { id } from "date-fns/locale";
+import { format } from "date-fns";
+import { id, enUS, de } from "date-fns/locale";
 import AddReminderModal from "@/components/reminders/AddReminderModal";
+import { useAppSettings } from "@/components/utils/useAppSettings";
+
+const DATE_LOCALE_MAP = { id, en: enUS, de };
 
 const ALERT_ICONS = {
   spending_spike: { icon: TrendingUp, color: "text-red-500", bg: "bg-red-50" },
@@ -17,12 +20,11 @@ const ALERT_ICONS = {
 
 const REMINDER_ICONS = { tagihan: "💳", cicilan: "🏦", tabungan: "🐷", langganan: "📱", lainnya: "📌" };
 
-function formatRupiah(n) {
-  if (!n) return "";
-  return "Rp " + Number(n).toLocaleString("id-ID");
-}
-
 export default function Notifications() {
+  const { formatCurrency, settings } = useAppSettings();
+  const dateLocale = DATE_LOCALE_MAP[settings?.language] || id;
+  // Local wrapper: empty string for zero/falsy so the amount row hides
+  const formatRupiah = (n) => (!n ? "" : formatCurrency(n));
   const [tab, setTab] = useState("reminders");
   const [reminders, setReminders] = useState([]);
   const [alerts, setAlerts] = useState([]);
@@ -227,7 +229,7 @@ export default function Notifications() {
                         <p className="text-xs text-[#8FA4C8] mt-0.5 leading-relaxed">{alert.message}</p>
                         {alert.created_date && (
                           <p className="text-[10px] text-[#8FA4C8] mt-1.5">
-                            {format(new Date(alert.created_date), "dd MMM yyyy · HH:mm", { locale: id })}
+                            {format(new Date(alert.created_date), "dd MMM yyyy · HH:mm", { locale: dateLocale })}
                           </p>
                         )}
                       </div>

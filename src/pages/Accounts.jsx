@@ -8,16 +8,15 @@ import AccountLogo from "@/components/ui/AccountLogo";
 import AddAccountBottomSheet from "@/components/profile/AddAccountBottomSheet";
 import EditAccountModal from "@/components/profile/EditAccountModal";
 import { recalculateAccountBalance } from "@/components/utils/accountSync";
-
-
-function formatRupiah(n) {
-  if (n === undefined || n === null) return "Rp 0";
-  return "Rp " + Number(n).toLocaleString("id-ID");
-}
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 // Legacy AccountModal removed — now uses EditAccountModal from @/components/profile/EditAccountModal.
 
 export default function Accounts() {
+  const { formatCurrency } = useAppSettings();
+  // Local wrapper so we don't have to touch every call site
+  const formatRupiah = (n) => formatCurrency(n || 0);
+
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
