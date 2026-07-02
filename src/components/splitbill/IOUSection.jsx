@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { CheckCircle, Trash2, HandCoins, Share2 } from "lucide-react";
-import { formatRupiah } from "@/components/utils/formatRupiah";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 
 export default function IOUSection() {
+  const { formatCurrency } = useAppSettings();
+  const formatRupiah = (n) => formatCurrency(n || 0);
   const [ious, setIous] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -78,7 +80,7 @@ export default function IOUSection() {
               <div className="flex gap-1 flex-shrink-0">
                 <button
                   onClick={() => {
-                    const text = encodeURIComponent(`Hei ${iou.debtor_name}, bagian kamu di ${iou.store_name} tanggal ${iou.date} adalah Rp ${iou.amount?.toLocaleString('id-ID')}. Thanks! - via Atur Pintar`);
+                    const text = encodeURIComponent(`Hei ${iou.debtor_name}, bagian kamu di ${iou.store_name} tanggal ${iou.date} adalah ${formatRupiah(iou.amount)}. Thanks! - via Atur Pintar`);
                     window.open(`https://wa.me/?text=${text}`, '_blank');
                   }}
                   className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600 hover:bg-green-100 transition-colors" title="Kirim ke WhatsApp">

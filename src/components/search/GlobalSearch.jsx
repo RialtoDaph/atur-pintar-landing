@@ -3,7 +3,7 @@ import { Search, X, ArrowLeftRight, Target, CreditCard, TrendingUp, PiggyBank } 
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { formatRupiah } from "@/components/utils/formatRupiah";
+import { useAppSettings } from "@/components/utils/useAppSettings";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 const CATEGORY_CONFIG = {
@@ -22,6 +22,8 @@ const CATEGORY_CONFIG = {
 
 export default function GlobalSearch({ onClose }) {
   useLockBodyScroll();
+  const { formatCurrency } = useAppSettings();
+  const formatRupiah = (n) => formatCurrency(Math.abs(n || 0));
   const [query, setQuery] = useState("");
   const [results, setResults] = useState({ transactions: [], goals: [], debts: [], investments: [] });
   const [loading, setLoading] = useState(false);

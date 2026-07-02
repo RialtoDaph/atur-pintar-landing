@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { X, Plus, Users, Equal, List, Mail } from "lucide-react";
-import { formatRupiah } from "@/components/utils/formatRupiah";
 import { base44 } from "@/api/base44Client";
 import { useAppSettings } from "@/components/utils/useAppSettings";
 import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 export default function SplitBillModal({ receiptData, onClose, onConfirm }) {
   useLockBodyScroll();
-  const { t } = useAppSettings();
+  const { t, formatCurrency } = useAppSettings();
+  const formatRupiah = (n) => formatCurrency(n || 0);
   const [participants, setParticipants] = useState([{ name: "Saya", email: "" }]);
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
