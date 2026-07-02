@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { Check, MessageSquare, ShieldCheck, MapPin, Download, Trophy } from "lucide-react";
+import { MessageSquare, ShieldCheck, MapPin, Download, Trophy } from "lucide-react";
 import ExportLaporanModal from "@/components/analytics/ExportLaporanModal";
 import IntegrationSettings from "@/components/settings/IntegrationSettings";
 import FeedbackModal from "@/components/settings/FeedbackModal";
@@ -8,32 +8,13 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
-const LANGUAGES = [
-  { code: "id", label: "Indonesia", flag: "🇮🇩" },
-  { code: "en", label: "English", flag: "🇺🇸" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
-];
-
-const CURRENCIES = [
-  { code: "IDR", label: "Rupiah", symbol: "Rp", flag: "🇮🇩" },
-  { code: "USD", label: "US Dollar", symbol: "$", flag: "🇺🇸" },
-  { code: "EUR", label: "Euro", symbol: "€", flag: "🇪🇺" },
-];
-
-const CURRENCY_MAP = {
-  // IDR & EUR: dot ribuan, koma desimal (format Indo & Eropa)
-  IDR: { symbol: "Rp", decimal_separator: ",", thousand_separator: "." },
-  EUR: { symbol: "€", decimal_separator: ",", thousand_separator: "." },
-  // USD: koma ribuan, titik desimal (format US)
-  USD: { symbol: "$", decimal_separator: ".", thousand_separator: "," },
-};
+// NOTE: Bahasa & mata uang HANYA dipilih sekali di onboarding dan tidak bisa
+// diubah lagi setelahnya. Section-nya sudah dihapus dari halaman ini.
 
 export default function Settings() {
   const [user, setUser] = useState(null);
 
-  const { settings, updateSettings, t } = useAppSettings();
-  const [currency, setCurrency] = useState("IDR");
-  const [language, setLanguage] = useState("id");
+  const { t } = useAppSettings();
   const [showFeedback, setShowFeedback] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [restartingTour, setRestartingTour] = useState(false);
@@ -42,30 +23,6 @@ export default function Settings() {
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
-
-  useEffect(() => {
-    if (settings) {
-      setCurrency(settings.currency || "IDR");
-      setLanguage(settings.language || "id");
-    }
-  }, [settings]);
-
-  async function selectCurrency(code) {
-    setCurrency(code);
-    const cur = CURRENCY_MAP[code];
-    await updateSettings({
-      ...settings,
-      currency: code,
-      currency_symbol: cur.symbol,
-      decimal_separator: cur.decimal_separator,
-      thousand_separator: cur.thousand_separator,
-    });
-  }
-
-  async function selectLanguage(code) {
-    setLanguage(code);
-    await updateSettings({ ...settings, language: code });
-  }
 
   async function handleRestartTour() {
     setRestartingTour(true);
@@ -83,89 +40,6 @@ export default function Settings() {
       </div>
 
       <div className="max-w-2xl mx-auto px-5 mt-6 space-y-4">
-
-        {/* Bahasa & Mata Uang */}
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
-          <div className="px-5 pt-4 pb-3 flex items-center justify-between">
-            <p className="text-xs font-bold text-[#8FA4C8] uppercase tracking-widest">{t('settings_language')} & {t('settings_currency')}</p>
-            {settings?.settings_unlocked ? (
-              <span className="text-[10px] font-semibold text-white bg-green-500 px-2 py-0.5 rounded-full">🔓 Terbuka</span>
-            ) : (
-              <span className="text-[10px] font-semibold text-white bg-[#F97316] px-2 py-0.5 rounded-full">🔒 Terkunci</span>
-            )}
-          </div>
-          <div className="px-5 pb-4 space-y-3">
-            {/* Language */}
-            {settings?.settings_unlocked ? (
-              <div className="flex flex-wrap gap-2">
-                {LANGUAGES.map((l) => (
-                  <button
-                    key={l.code}
-                    onClick={() => selectLanguage(l.code)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-medium ${
-                      language === l.code
-                        ? 'border-[#F97316] bg-[#F97316]/5 text-[#F97316]'
-                        : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#1A1A1A] hover:border-[#F97316]/50'
-                    }`}
-                  >
-                    <span>{l.flag}</span> {l.label}
-                    {language === l.code && <Check className="w-3.5 h-3.5" />}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                <span className="text-xl">{LANGUAGES.find((l) => l.code === language)?.flag}</span>
-                <div>
-                  <p className="text-sm font-semibold text-[#1A1A1A]">{LANGUAGES.find((l) => l.code === language)?.label}</p>
-                  <p className="text-xs text-[#8FA4C8]">{t('settings_language')}</p>
-                </div>
-                <Check className="w-4 h-4 text-[#F97316] ml-auto" />
-              </div>
-            )}
-
-            {/* Currency */}
-            {settings?.settings_unlocked ? (
-              <div className="flex flex-wrap gap-2">
-                {CURRENCIES.map((c) => (
-                  <button
-                    key={c.code}
-                    onClick={() => selectCurrency(c.code)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-medium ${
-                      currency === c.code
-                        ? 'border-[#F97316] bg-[#F97316]/5 text-[#F97316]'
-                        : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#1A1A1A] hover:border-[#F97316]/50'
-                    }`}
-                  >
-                    <span>{c.flag}</span> {c.label}
-                    {currency === c.code && <Check className="w-3.5 h-3.5" />}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
-                <span className="text-xl">{CURRENCIES.find((c) => c.code === currency)?.flag}</span>
-                <div>
-                  <p className="text-sm font-semibold text-[#1A1A1A]">{CURRENCIES.find((c) => c.code === currency)?.label}</p>
-                  <p className="text-xs text-[#8FA4C8]">{CURRENCIES.find((c) => c.code === currency)?.symbol} · {currency}</p>
-                </div>
-                <Check className="w-4 h-4 text-[#F97316] ml-auto" />
-              </div>
-            )}
-
-            {!settings?.settings_unlocked && (
-              <div className="space-y-2">
-                <p className="text-xs text-[#8FA4C8]">Bahasa dan mata uang dikunci secara default. Buka kunci untuk mengubah (mis. ke Euro untuk yang tinggal di Eropa).</p>
-                <button
-                  onClick={() => updateSettings({ ...settings, settings_unlocked: true })}
-                  className="w-full py-2.5 rounded-xl bg-[#F97316] text-white text-xs font-bold hover:bg-[#EA580C] transition-colors"
-                >
-                  🔓 Buka Kunci Bahasa & Mata Uang
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Ekspor Laporan */}
         <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#F0F2F5]">
