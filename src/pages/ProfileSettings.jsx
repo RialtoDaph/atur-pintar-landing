@@ -14,6 +14,7 @@ import { useAppSettings } from "@/components/utils/useAppSettings";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import RiskProfileAssessment from "@/components/settings/RiskProfileAssessment";
+import PushNotificationToggle from "@/components/settings/PushNotificationToggle";
 import { toast } from "sonner";
 
 // ─── Profile completion helper ────────────────────────────────────────────────
@@ -321,6 +322,9 @@ export default function ProfileSettings() {
             <ChevronRight className="w-4 h-4 text-[#8FA4C8]" />
           </Link>
         </div>
+
+        {/* ── Push Notifications ──────────────────────────── */}
+        <PushNotificationToggle />
 
         {/* ── Security ─────────────────────────────────────── */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
