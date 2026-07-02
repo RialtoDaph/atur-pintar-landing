@@ -165,8 +165,25 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
 
   return (
     <>
-      <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-        <div role="dialog" aria-modal="true" className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md shadow-2xl flex flex-col" style={{ maxHeight: "min(92dvh, calc(100dvh - 2rem))" }}>
+      {/* Backdrop */}
+      <div className="fixed inset-0 z-[190] bg-black/40 sm:backdrop-blur-sm" onClick={onClose} />
+      {/* Mobile: floating popup above the FAB. Desktop: centered modal. */}
+      <div
+        className="fixed z-[200] pointer-events-none flex justify-center sm:inset-0 sm:items-center sm:p-4"
+        style={{
+          left: 0,
+          right: 0,
+          bottom: 'calc(112px + env(safe-area-inset-bottom, 0px))',
+          top: '64px'
+        }}
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="bg-white rounded-3xl shadow-2xl flex flex-col pointer-events-auto animate-slide-up-sheet w-[calc(100%-24px)] sm:w-full sm:max-w-md"
+          style={{ maxHeight: "100%" }}
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header — sticky */}
           <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[#F2F4F7] flex-shrink-0">
              <h2 className="text-lg font-bold text-[#1A1A1A]">{t('edit_transaction')}</h2>
@@ -356,7 +373,7 @@ export default function EditTransactionModal({ transaction, goals = [], onClose,
           </div>
 
           {/* Sticky footer — always visible */}
-          <div className="px-6 py-4 border-t border-[#F2F4F7] flex-shrink-0" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
+          <div className="px-6 py-4 border-t border-[#F2F4F7] flex-shrink-0">
             <button onClick={handleSave} disabled={saving || !form.amount || !form.category || (!isSavings && !form.account_id)}
               className="w-full py-3 rounded-xl font-bold text-sm text-white disabled:opacity-40 transition-colors"
               style={{ backgroundColor: tab === "expense" ? "#FF6B6B" : "#00C9A7" }}>
