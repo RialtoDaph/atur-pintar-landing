@@ -15,31 +15,36 @@ export default function TxDetailSheet({ tx, cat, accountName, formatCurrency, on
 
   return (
     <AnimatePresence>
+      {/* Backdrop */}
       <motion.div
-        className="fixed inset-0 z-[80] flex items-end"
+        className="fixed inset-0 z-[90] bg-black/50 sm:backdrop-blur-sm"
+        onClick={onClose}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+      />
+      {/* Mobile: floating popup above the FAB. Desktop: centered modal. */}
+      <div
+        className="fixed z-[100] pointer-events-none flex justify-center sm:inset-0 sm:items-center"
+        style={{
+          left: 0,
+          right: 0,
+          bottom: 'calc(112px + env(safe-area-inset-bottom, 0px))',
+          top: '64px'
+        }}
       >
-        {/* Backdrop blur */}
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-
-        {/* Sheet */}
         <motion.div
           role="dialog"
           aria-modal="true"
-          className="relative w-full bg-[#1A1E25] rounded-t-2xl z-10 pb-8 max-h-[90dvh] overflow-y-auto overscroll-contain"
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
+          className="bg-[#1A1E25] rounded-3xl shadow-2xl overflow-y-auto overscroll-contain pointer-events-auto animate-slide-up-sheet pb-6 w-[calc(100%-24px)] sm:w-full sm:max-w-md"
+          style={{ maxHeight: "100%" }}
+          onClick={(e) => e.stopPropagation()}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
           transition={{ type: "spring", damping: 28, stiffness: 300 }}
         >
-          {/* Handle */}
-          <div className="flex justify-center pt-3 pb-1">
-            <div className="w-10 h-1 rounded-full bg-white/20" />
-          </div>
-
-          <div className="px-5 pt-3">
+          <div className="px-5 pt-5">
             {/* Icon + amount hero */}
             <div className="flex flex-col items-center py-5">
               <div
@@ -79,7 +84,7 @@ export default function TxDetailSheet({ tx, cat, accountName, formatCurrency, on
             </div>
           </div>
         </motion.div>
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 }
