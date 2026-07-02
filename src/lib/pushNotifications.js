@@ -42,12 +42,17 @@ async function registerServiceWorker() {
 
 /**
  * Subscribe current browser to push notifications.
- * Returns { ok: true, subscription } or { ok: false, reason }.
+ * Returns { ok: true, subscription } or { ok: false, reason, detail }.
  */
 export async function subscribeToPush() {
   if (!isPushSupported()) return { ok: false, reason: 'unsupported' };
 
-  const permission = await Notification.requestPermission();
+  let permission;
+  try {
+    permission = await Notification.requestPermission();
+  } catch (e) {
+    return { ok: false, reason: 'permission_error', detail: String(e?.message || e) };
+  }
   if (permission !== 'granted') return { ok: false, reason: 'denied' };
 
   // Get VAPID public key from backend
@@ -55,12 +60,19 @@ export async function subscribeToPush() {
   try {
     const res = await base44.functions.invoke('getVapidPublicKey', {});
     vapidPublicKey = res?.data?.publicKey;
-  } catch {
-    return { ok: false, reason: 'server_error' };
+  } catch (e) {
+    console.error('[Push] getVapidPublicKey failed:', e);
+    return { ok: false, reason: 'server_error', detail: String(e?.message || e) };
   }
   if (!vapidPublicKey) return { ok: false, reason: 'no_vapid_key' };
 
-  const reg = await registerServiceWorker();
+  let reg;
+  try {
+    reg = await registerServiceWorker();
+  } catch (e) {
+    console.error('[Push] Service worker registration failed:', e);
+    return { ok: false, reason: 'sw_register_failed', detail: String(e?.message || e) };
+  }
 
   // Reuse existing subscription if any
   let sub = await reg.pushManager.getSubscription();
@@ -71,7 +83,8 @@ export async function subscribeToPush() {
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
       });
     } catch (e) {
-      return { ok: false, reason: 'subscribe_failed' };
+      console.error('[Push] pushManager.subscribe failed:', e);
+      return { ok: false, reason: 'subscribe_failed', detail: String(e?.message || e) };
     }
   }
 
@@ -94,8 +107,9 @@ export async function subscribeToPush() {
         is_active: true,
       });
     }
-  } catch {
-    return { ok: false, reason: 'save_failed' };
+  } catch (e) {
+    console.error('[Push] Save subscription failed:', e);
+    return { ok: false, reason: 'save_failed', detail: String(e?.message || e) };
   }
 
   return { ok: true, subscription: sub };

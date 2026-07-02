@@ -37,13 +37,22 @@ export default function PushNotificationToggle() {
     if (res.ok) {
       setSubscribed(true);
       toast.success("Notifikasi push berhasil diaktifkan 🔔");
-    } else if (res.reason === "denied") {
-      toast.error("Kamu menolak izin notifikasi. Aktifkan lewat setelan browser.");
-    } else if (res.reason === "unsupported") {
-      toast.error("Browser kamu tidak mendukung notifikasi push.");
-    } else {
-      toast.error("Gagal mengaktifkan notifikasi. Coba lagi.");
+      return;
     }
+    // Detailed error messages so we can debug what's happening
+    const map = {
+      denied: "Kamu menolak izin notifikasi. Aktifkan lewat setelan browser.",
+      unsupported: "Browser kamu tidak mendukung notifikasi push.",
+      permission_error: "Gagal minta izin notifikasi. Coba di tab biasa (bukan incognito).",
+      server_error: "Server error saat ambil VAPID key.",
+      no_vapid_key: "VAPID key kosong di server.",
+      sw_register_failed: "Service worker gagal terdaftar.",
+      subscribe_failed: "Browser gagal subscribe ke push service. Cek console untuk detail.",
+      save_failed: "Gagal simpan subscription ke database.",
+    };
+    const label = map[res.reason] || "Gagal mengaktifkan notifikasi.";
+    toast.error(`${label}${res.detail ? ` (${res.detail.slice(0, 80)})` : ""}`, { duration: 8000 });
+    console.error("[Push] Enable failed:", res);
   }
 
   async function handleDisable() {
