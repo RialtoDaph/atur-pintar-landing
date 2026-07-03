@@ -1,0 +1,86 @@
+{
+  "name": "FeedbackReport",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "bug",
+        "suggestion",
+        "praise",
+        "other"
+      ],
+      "default": "bug",
+      "description": "Jenis laporan"
+    },
+    "title": {
+      "type": "string",
+      "description": "Judul singkat masalah/feedback"
+    },
+    "message": {
+      "type": "string",
+      "description": "Detail laporan"
+    },
+    "rating": {
+      "type": "integer",
+      "description": "Rating opsional 1-5"
+    },
+    "page": {
+      "type": "string",
+      "description": "Halaman tempat report dibuat"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_review",
+        "resolved",
+        "wont_fix"
+      ],
+      "default": "open",
+      "description": "Status penanganan oleh admin"
+    },
+    "admin_response": {
+      "type": "string",
+      "description": "Balasan admin untuk user"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Nama user pelapor"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email user pelapor"
+    }
+  },
+  "required": [
+    "message"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
