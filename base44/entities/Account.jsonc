@@ -1,0 +1,80 @@
+{
+  "name": "Account",
+  "properties": {
+    "balance": {
+      "default": 0,
+      "description": "Saldo rekening",
+      "type": "number"
+    },
+    "color": {
+      "description": "Warna kartu",
+      "type": "string"
+    },
+    "icon": {
+      "description": "Emoji icon",
+      "type": "string"
+    },
+    "institution": {
+      "description": "Nama bank/institusi",
+      "type": "string"
+    },
+    "is_default": {
+      "default": false,
+      "description": "Rekening utama",
+      "type": "boolean"
+    },
+    "logo_url": {
+      "description": "URL logo dari institusi",
+      "type": "string"
+    },
+    "name": {
+      "description": "Nama rekening (e.g., Rekening BCA, Dompet Cash, OVO)",
+      "type": "string"
+    },
+    "type": {
+      "default": "bank",
+      "description": "Tipe rekening",
+      "enum": [
+        "bank",
+        "cash",
+        "ewallet",
+        "investasi",
+        "other"
+      ],
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Deskripsi rekening (opsional)"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  },
+  "type": "object"
+}
