@@ -1,47 +1,57 @@
 {
-  "name": "InvestmentTransaction",
+  "name": "InvestmentTaxLog",
   "type": "object",
   "properties": {
     "investment_id": {
       "type": "string",
-      "description": "ID dari investasi terkait"
+      "description": "ID dari investasi"
     },
-    "type": {
+    "tax_type": {
       "type": "string",
       "enum": [
-        "buy",
-        "sell",
+        "capital_gain",
         "dividend",
-        "adjustment"
+        "interest"
       ],
-      "description": "Jenis transaksi"
+      "description": "Jenis pajak"
     },
-    "quantity": {
+    "gross_amount": {
       "type": "number",
-      "description": "Jumlah unit/lembar yang ditransaksikan"
+      "description": "Jumlah sebelum pajak"
     },
-    "price_per_unit": {
+    "tax_rate": {
       "type": "number",
-      "description": "Harga per unit pada waktu transaksi"
+      "description": "Persentase pajak"
     },
-    "total_amount": {
+    "tax_amount": {
       "type": "number",
-      "description": "Total nilai transaksi"
+      "description": "Jumlah pajak yang dipotong"
+    },
+    "net_amount": {
+      "type": "number",
+      "description": "Jumlah setelah pajak"
     },
     "transaction_date": {
       "type": "string",
       "format": "date",
-      "description": "Tanggal transaksi"
+      "description": "Tanggal transaksi pajak"
     },
-    "notes": {
+    "year": {
+      "type": "number",
+      "description": "Tahun pajak"
+    },
+    "description": {
       "type": "string",
-      "description": "Catatan transaksi"
+      "maxLength": 1000,
+      "description": "Deskripsi log pajak investasi (opsional)"
     }
   },
   "required": [
     "investment_id",
-    "type",
-    "transaction_date"
+    "tax_type",
+    "tax_amount",
+    "transaction_date",
+    "year"
   ],
   "rls": {
     "create": {
