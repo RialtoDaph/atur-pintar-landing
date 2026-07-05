@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { AuthProvider } from '@/lib/AuthContext';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import LandingPage from '@/pages/LandingPage';
+import PrivacyPolicy from '@/pages/PrivacyPolicy';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Router>
             <Routes>
               <Route path="/" element={<LandingPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Router>
