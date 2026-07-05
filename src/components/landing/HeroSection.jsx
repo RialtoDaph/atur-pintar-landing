@@ -1,10 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Reveal from "./Reveal";
 import TrustStrip from "./TrustStrip";
 
 export default function HeroSection({ onScrollToNewsletter, onCtaClick }) {
-  const navigate = useNavigate();
   return (
     <section className="pt-28 pb-24 px-5 sm:px-12 lg:px-20 relative z-10 text-center sm:text-left">
       <div className="absolute top-10 left-0 w-[600px] h-[500px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(255,106,0,0.06) 0%, transparent 70%)" }} />
@@ -34,7 +32,7 @@ export default function HeroSection({ onScrollToNewsletter, onCtaClick }) {
         <Reveal delay={240}>
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-center sm:justify-start mb-6">
             <button
-              onClick={() => { onCtaClick?.(); navigate("/register"); }}
+              onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.id/login"; }}
               className="group flex items-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95 w-full sm:w-auto justify-center">
               Mulai Gratis Sekarang
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

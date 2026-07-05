@@ -1,8 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import Reveal from "./Reveal";
 
 export default function FinalCtaSection({ onCtaClick }) {
-  const navigate = useNavigate();
   return (
     <section className="pb-0 px-5 sm:px-12 lg:px-20 relative z-10">
       <div className="relative rounded-3xl overflow-hidden py-20 px-8 sm:px-16 text-center bg-[#0A0A0A] border border-white/[0.08]">
@@ -16,7 +14,7 @@ export default function FinalCtaSection({ onCtaClick }) {
         </Reveal>
         <Reveal delay={180}>
           <div className="flex justify-center">
-            <button onClick={() => { onCtaClick?.(); navigate("/register"); }} className="group flex items-center justify-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
+            <button onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.id/login"; }} className="group flex items-center justify-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
               Mulai Gratis Sekarang →
             </button>
           </div>
