@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import Reveal from "./Reveal";
 
 const LEVELS = [
@@ -11,7 +10,6 @@ const LEVELS = [
 ];
 
 export default function GamificationSection() {
-  const navigate = useNavigate();
   return (
     <section className="pb-16 px-5 sm:px-12 lg:px-20 relative z-10">
       <div className="max-w-4xl mx-auto card-d rounded-3xl p-6 sm:p-8 overflow-hidden">
@@ -42,7 +40,7 @@ export default function GamificationSection() {
               XP nambah tiap catat, jaga streak & dengerin Nana.<br />
               <span className="text-white/65 font-semibold">Karena konsistensi harusnya ada rewardnya.</span>
             </p>
-            <button onClick={() => navigate("/register")} className="flex-shrink-0 flex items-center gap-1.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
+            <button onClick={() => { window.location.href = "https://aturpintar.my.id/login"; }} className="flex-shrink-0 flex items-center gap-1.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all whitespace-nowrap">
               Mulai Gratis →
             </button>
           </div>
