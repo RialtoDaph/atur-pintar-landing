@@ -10,7 +10,7 @@ export default function LandingNav({ howRef, onCtaClick }) {
       </div>
       <div className="hidden sm:flex items-center gap-6 ml-10">
         <button onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Fitur</button>
-        <Link to="/About" className="text-xs text-white/50 hover:text-white transition-colors">Tentang</Link>
+        <Link to="/about" className="text-xs text-white/50 hover:text-white transition-colors">Tentang</Link>
       </div>
       <button onClick={() => { onCtaClick?.(); navigate("/login"); }} className="text-xs font-bold bg-[#F97316] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
         Masuk / Daftar
