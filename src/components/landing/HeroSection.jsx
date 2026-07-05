@@ -32,7 +32,7 @@ export default function HeroSection({ onScrollToNewsletter, onCtaClick }) {
         <Reveal delay={240}>
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-center sm:justify-start mb-6">
             <button
-              onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.id/login"; }}
+              onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.my.id/login"; }}
               className="group flex items-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95 w-full sm:w-auto justify-center">
               Mulai Gratis Sekarang
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

@@ -11,7 +11,7 @@ export default function LandingNav({ howRef, onCtaClick }) {
         <button onClick={() => howRef.current?.scrollIntoView({ behavior: "smooth" })} className="text-xs text-white/50 hover:text-white transition-colors">Fitur</button>
         <Link to="/about" className="text-xs text-white/50 hover:text-white transition-colors">Tentang</Link>
       </div>
-      <button onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.id/login"; }} className="text-xs font-bold bg-[#F97316] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
+      <button onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.my.id/login"; }} className="text-xs font-bold bg-[#F97316] hover:bg-[#e05e00] text-white px-4 py-2 rounded-full transition-colors ml-auto">
         Masuk / Daftar
       </button>
     </nav>

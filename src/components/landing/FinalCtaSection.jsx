@@ -14,7 +14,7 @@ export default function FinalCtaSection({ onCtaClick }) {
         </Reveal>
         <Reveal delay={180}>
           <div className="flex justify-center">
-            <button onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.id/login"; }} className="group flex items-center justify-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
+            <button onClick={() => { onCtaClick?.(); window.location.href = "https://aturpintar.my.id/login"; }} className="group flex items-center justify-center gap-2.5 bg-[#F97316] hover:bg-[#e05e00] text-white font-bold text-base px-8 py-4 rounded-2xl transition-all glow hover:scale-105 active:scale-95">
               Mulai Gratis Sekarang →
             </button>
           </div>

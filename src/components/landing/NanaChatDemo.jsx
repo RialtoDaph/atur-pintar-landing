@@ -146,7 +146,7 @@ export default function NanaChatDemo() {
             {/* Input */}
             <div className="px-3 pb-3 border-t border-white/8 pt-2">
               {done ? (
-                <button onClick={() => { window.location.href = "https://aturpintar.id/login"; }} className="w-full py-3 bg-[#F97316] rounded-xl text-white text-sm font-bold hover:bg-[#e05e00] transition-colors">
+                <button onClick={() => { window.location.href = "https://aturpintar.my.id/login"; }} className="w-full py-3 bg-[#F97316] rounded-xl text-white text-sm font-bold hover:bg-[#e05e00] transition-colors">
                   Mulai Gratis Sekarang →
                 </button>
               ) : (
