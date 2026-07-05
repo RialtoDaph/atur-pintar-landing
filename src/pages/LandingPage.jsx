@@ -12,14 +12,12 @@ import NanaChatDemo from "@/components/landing/NanaChatDemo";
 import VideoSection from "@/components/landing/VideoSection";
 import GamificationSection from "@/components/landing/GamificationSection";
 import TestimonialSection from "@/components/landing/TestimonialSection";
-import PricingSection from "@/components/landing/PricingSection";
 import FaqSection from "@/components/landing/FaqSection";
 import NewsletterSection from "@/components/landing/NewsletterSection";
 import FinalCtaSection from "@/components/landing/FinalCtaSection";
 import LandingFooter from "@/components/landing/LandingFooter";
 
 export default function LandingPage() {
-  const pricingRef = useRef(null);
   const howRef = useRef(null);
   const { trackCta } = useLandingAnalytics();
 
@@ -42,7 +40,7 @@ export default function LandingPage() {
 
       <ScrollProgress />
 
-      <LandingNav howRef={howRef} pricingRef={pricingRef} onCtaClick={() => trackCta("nav")} />
+      <LandingNav howRef={howRef} onCtaClick={() => trackCta("nav")} />
 
       <HeroSection onScrollToNewsletter={scrollToNewsletter} onCtaClick={() => trackCta("hero")} />
       <PainPointSection />
@@ -52,7 +50,6 @@ export default function LandingPage() {
       <VideoSection />
       <GamificationSection />
       <TestimonialSection />
-      <PricingSection ref={pricingRef} />
       <FaqSection />
       <NewsletterSection />
       <FinalCtaSection onCtaClick={() => trackCta("final_cta")} />
