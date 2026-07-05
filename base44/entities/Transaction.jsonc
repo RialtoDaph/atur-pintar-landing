@@ -1,0 +1,110 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "description": "ID rekening terkait"
+    },
+    "goal_id": {
+      "type": "string",
+      "description": "ID of the savings goal (if linked)"
+    },
+    "debt_id": {
+      "type": "string",
+      "description": "ID of the debt (if this transaction is a debt payment)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount of the transaction"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense",
+        "savings"
+      ],
+      "default": "expense"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category key (default or custom_<id>)"
+    },
+    "note": {
+      "type": "string",
+      "description": "Description or merchant name"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "time": {
+      "type": "string",
+      "description": "Waktu transaksi dalam format HH:MM (24 jam)",
+      "default": null
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false
+    },
+    "recurring_interval": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly",
+        "yearly"
+      ]
+    },
+    "recurring_last_generated": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_recurring_child": {
+      "type": "boolean",
+      "default": false
+    },
+    "recurring_parent_id": {
+      "type": "string"
+    },
+    "is_deleted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Soft delete flag"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Deskripsi transaksi tambahan (opsional)"
+    }
+  },
+  "required": [
+    "amount",
+    "type",
+    "date"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
