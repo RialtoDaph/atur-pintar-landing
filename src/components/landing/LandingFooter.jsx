@@ -17,7 +17,7 @@ export default function LandingFooter() {
           <div>
             <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">Tautan</p>
             <div className="space-y-2">
-              <div><Link to="/PrivacyPolicy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Kebijakan Privasi</Link></div>
+              <div><Link to="/privacy-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Kebijakan Privasi</Link></div>
               <div><Link to="/TermsOfService" className="text-white/30 hover:text-white/70 text-xs transition-colors">Syarat & Ketentuan</Link></div>
               <div><Link to="/RefundPolicy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Kebijakan Refund</Link></div>
               <div><Link to="/CancellationPolicy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Pembatalan Langganan</Link></div>
