@@ -1,0 +1,51 @@
+{
+  "name": "CategoryLearning",
+  "type": "object",
+  "properties": {
+    "note_fragment": {
+      "type": "string",
+      "description": "Cleaned lowercase note fragment from the transaction"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category key the user assigned to this note"
+    },
+    "count": {
+      "type": "number",
+      "default": 1,
+      "description": "How many times this mapping has been confirmed"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Deskripsi pembelajaran kategori (opsional)"
+    }
+  },
+  "required": [
+    "note_fragment",
+    "category"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
