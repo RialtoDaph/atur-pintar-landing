@@ -32,13 +32,11 @@ export default function NewsletterSection() {
 
     setLoading(true);
     try {
-      const res = await base44.functions.invoke("submitWaitingList", {
-        name: form.name,
-        email: form.email,
-        source: "newsletter",
-        honeypot
+      await base44.integrations.Core.SendEmail({
+        to: "admin@aturpintar.id",
+        subject: `Newsletter Signup: ${form.name}`,
+        body: `Name: ${form.name}\nEmail: ${form.email}\nSource: newsletter`
       });
-      if (res.data?.error) throw new Error(res.data.error);
       setSuccess(true);
     } catch (err) {
       const msg = err.message || "";

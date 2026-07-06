@@ -62,14 +62,10 @@ export default function RefundRequestForm() {
         form.payment_proof_url ? `Bukti pembayaran: ${form.payment_proof_url}` : `Bukti pembayaran: (belum dilampirkan)`,
       ].join("\n");
 
-      await base44.entities.FeedbackReport.create({
-        type: "other",
-        title: `[REFUND] ${form.full_name} — Invoice ${form.invoice_id}`,
-        message,
-        page: "RefundPolicy",
-        status: "open",
-        user_name: form.full_name,
-        user_email: form.account_email,
+      await base44.integrations.Core.SendEmail({
+        to: "admin@aturpintar.id",
+        subject: `[REFUND] ${form.full_name} — Invoice ${form.invoice_id}`,
+        body: message
       });
       setSubmitted(true);
     } catch (err) {
