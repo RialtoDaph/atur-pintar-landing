@@ -4,9 +4,9 @@ import { TikTokIcon, ThreadsIcon } from "./SocialIcons";
 
 export default function LandingFooter() {
   return (
-    <footer className="border-t border-white/5 pt-10 pb-8 px-5 sm:px-12 lg:px-20 relative z-10 mt-16">
+    <footer className="border-t border-white/5 pt-6 pb-6 sm:pt-10 sm:pb-8 px-5 sm:px-12 lg:px-20 relative z-10 mt-12 sm:mt-16">
       <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6 sm:gap-8 sm:mb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <img src="https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" alt="Logo Atur Pintar" width="24" height="24" loading="lazy" className="w-6 h-6" />
@@ -16,7 +16,7 @@ export default function LandingFooter() {
           </div>
           <div>
             <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">Tautan</p>
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:block sm:space-y-2">
               <div><Link to="/privacy-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Kebijakan Privasi</Link></div>
               <div><Link to="/terms-of-service" className="text-white/30 hover:text-white/70 text-xs transition-colors">Syarat & Ketentuan</Link></div>
               <div><Link to="/refund-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Kebijakan Refund</Link></div>
@@ -43,7 +43,7 @@ export default function LandingFooter() {
               <MapPin className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
               <span className="leading-relaxed">Graha Adhiyasa Ciledug, Desa Tenjomaya, Kec. Ciledug, Kab. Cirebon, Jawa Barat, Indonesia</span>
             </div>
-            <div className="flex items-center gap-3 mt-3">
+            <div className="flex items-center gap-2 sm:gap-3 mt-3">
               <a href="https://instagram.com/aturpintar" target="_blank" rel="noopener noreferrer" aria-label="Instagram Atur Pintar" className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#F97316]/20 flex items-center justify-center text-white/40 hover:text-[#F97316] transition-colors">
                 <Instagram className="w-3.5 h-3.5" />
               </a>
@@ -59,8 +59,8 @@ export default function LandingFooter() {
             </div>
           </div>
         </div>
-        <div className="border-t border-white/5 pt-5">
-          <p className="text-white/20 text-xs text-center">© 2026 PT Rideff Vreka Tech. All rights reserved. · admin@aturpintar.id · aturpintar.id</p>
+        <div className="border-t border-white/5 pt-4 sm:pt-5">
+          <p className="text-white/20 text-[11px] sm:text-xs text-center">© 2026 PT Rideff Vreka Tech. All rights reserved. · admin@aturpintar.id · aturpintar.id</p>
         </div>
       </div>
     </footer>
