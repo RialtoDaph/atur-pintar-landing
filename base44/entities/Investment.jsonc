@@ -1,0 +1,73 @@
+{
+  "name": "Investment",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nama investasi"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "saham",
+        "reksa_dana",
+        "crypto",
+        "deposito",
+        "obligasi",
+        "emas",
+        "lainnya"
+      ],
+      "default": "reksa_dana",
+      "description": "Tipe investasi"
+    },
+    "account_id": {
+      "type": "string",
+      "description": "ID akun/platform investasi"
+    },
+    "current_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Nilai saat ini \u2014 dihitung otomatis dari transaksi beli/jual"
+    },
+    "purchase_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Tanggal mulai investasi"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Catatan tambahan"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji icon"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
