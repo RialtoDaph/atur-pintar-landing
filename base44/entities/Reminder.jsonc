@@ -1,0 +1,71 @@
+{
+  "name": "Reminder",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Judul pengingat"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "tagihan",
+        "lainnya"
+      ],
+      "default": "tagihan",
+      "description": "Jenis pengingat"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Nominal yang perlu dibayar"
+    },
+    "due_day": {
+      "type": "number",
+      "description": "Tanggal jatuh tempo tiap bulan (1-31)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Apakah pengingat aktif"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji icon"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Catatan tambahan"
+    },
+    "last_dismissed_month": {
+      "type": "string",
+      "description": "Bulan terakhir pengingat di-dismiss (YYYY-MM)"
+    }
+  },
+  "required": [
+    "title",
+    "due_day"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
