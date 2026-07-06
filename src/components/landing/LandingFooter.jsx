@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Instagram, Facebook, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Instagram, Facebook, MapPin, Clock } from "lucide-react";
 import { TikTokIcon, ThreadsIcon } from "./SocialIcons";
+import ContactFormDialog from "./ContactFormDialog";
 
 export default function LandingFooter() {
+  const [contactOpen, setContactOpen] = useState(false);
+
   return (
     <footer className="border-t border-white/5 pt-6 pb-6 sm:pt-10 sm:pb-8 px-5 sm:px-12 lg:px-20 relative z-10 mt-12 sm:mt-16">
       <div className="max-w-5xl mx-auto">
@@ -22,22 +26,18 @@ export default function LandingFooter() {
               <div><Link to="/refund-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Kebijakan Refund</Link></div>
               <div><Link to="/cancellation-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Pembatalan Langganan</Link></div>
               <div><Link to="/blog" className="text-white/30 hover:text-white/70 text-xs transition-colors">Blog</Link></div>
-              <div className="col-span-2 sm:col-span-1 pt-2 sm:pt-0 mt-1 sm:mt-0 border-t sm:border-t-0 border-white/5 sm:pt-0">
-                <p className="text-white/50 text-[10px] font-bold uppercase tracking-widest mb-1.5 sm:hidden">Hubungi Kami</p>
-                <a href="mailto:admin@aturpintar.id" className="flex items-center gap-1.5 text-white/30 hover:text-white/70 text-xs transition-colors mb-1">
-                  <Mail className="w-3 h-3 flex-shrink-0" /> admin@aturpintar.id
-                </a>
-                <a href="tel:+6287811042612" className="flex items-center gap-1.5 text-white/30 hover:text-white/70 text-xs transition-colors">
-                  <Phone className="w-3 h-3 flex-shrink-0" /> +62 878-1104-2612
-                </a>
+              <div className="col-span-2 sm:col-span-1 pt-2 sm:pt-0 mt-1 sm:mt-0 border-t sm:border-t-0 border-white/5">
+                <button onClick={() => setContactOpen(true)} className="flex items-center gap-1.5 text-white/30 hover:text-[#F97316] text-xs transition-colors mt-1">
+                  <Mail className="w-3 h-3 flex-shrink-0" /> Hubungi Kami
+                </button>
               </div>
             </div>
           </div>
           <div>
-            <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">Kontak</p>
+            <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-3">Alamat & Jam Operasional</p>
             <div className="flex items-start gap-2 text-white/30 text-xs mb-2">
               <Clock className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-              <span>Senin–Jumat, 09:00–18:00 WIB</span>
+              <span>Senin - Jumat, 09:00 - 18:00 WIB</span>
             </div>
             <div className="flex items-start gap-2 text-white/30 text-xs mb-3">
               <MapPin className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
@@ -63,6 +63,8 @@ export default function LandingFooter() {
           <p className="text-white/20 text-[11px] sm:text-xs text-center">© 2026 PT Rideff Vreka Tech. All rights reserved. · admin@aturpintar.id · aturpintar.id</p>
         </div>
       </div>
+
+      <ContactFormDialog open={contactOpen} onOpenChange={setContactOpen} />
     </footer>
   );
 }
