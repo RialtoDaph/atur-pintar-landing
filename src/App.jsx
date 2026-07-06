@@ -10,6 +10,8 @@ import TermsOfService from '@/pages/TermsOfService';
 import RefundPolicy from '@/pages/RefundPolicy';
 import CancellationPolicy from '@/pages/CancellationPolicy';
 import About from '@/pages/About';
+import Blog from '@/pages/Blog';
+import BlogPost from '@/pages/BlogPost';
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/cancellation-policy" element={<CancellationPolicy />} />
               <Route path="/about" element={<About />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Router>

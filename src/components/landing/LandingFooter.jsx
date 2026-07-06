@@ -21,6 +21,7 @@ export default function LandingFooter() {
               <div><Link to="/terms-of-service" className="text-white/30 hover:text-white/70 text-xs transition-colors">Syarat & Ketentuan</Link></div>
               <div><Link to="/refund-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Kebijakan Refund</Link></div>
               <div><Link to="/cancellation-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Pembatalan Langganan</Link></div>
+              <div><Link to="/blog" className="text-white/30 hover:text-white/70 text-xs transition-colors">Blog</Link></div>
               <div><a href="mailto:admin@aturpintar.id" className="text-white/30 hover:text-white/70 text-xs transition-colors">Hubungi Kami</a></div>
             </div>
           </div>
