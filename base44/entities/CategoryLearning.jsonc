@@ -1,38 +1,29 @@
 {
-  "name": "BossBattleContribution",
+  "name": "CategoryLearning",
   "type": "object",
   "properties": {
-    "boss_id": {
+    "note_fragment": {
       "type": "string",
-      "description": "ID BossBattle"
+      "description": "Cleaned lowercase note fragment from the transaction"
     },
-    "month": {
+    "category": {
       "type": "string",
-      "description": "YYYY-MM"
+      "description": "Category key the user assigned to this note"
     },
-    "damage_dealt": {
-      "type": "number"
-    },
-    "habits_completed": {
-      "type": "number"
-    },
-    "last_attack_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "total_damage_all_time": {
+    "count": {
       "type": "number",
-      "default": 0
+      "default": 1,
+      "description": "How many times this mapping has been confirmed"
     },
     "description": {
       "type": "string",
       "maxLength": 1000,
-      "description": "Deskripsi kontribusi (opsional)"
+      "description": "Deskripsi pembelajaran kategori (opsional)"
     }
   },
   "required": [
-    "boss_id",
-    "month"
+    "note_fragment",
+    "category"
   ],
   "rls": {
     "create": {
