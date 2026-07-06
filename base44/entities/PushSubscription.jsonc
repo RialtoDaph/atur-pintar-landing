@@ -1,0 +1,78 @@
+{
+  "name": "PushSubscription",
+  "type": "object",
+  "properties": {
+    "endpoint": {
+      "type": "string",
+      "description": "Push service endpoint URL (unique per device/browser)"
+    },
+    "p256dh": {
+      "type": "string",
+      "description": "P-256 ECDH public key (base64url)"
+    },
+    "auth": {
+      "type": "string",
+      "description": "Auth secret (base64url)"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Browser user agent for debugging / identifying device"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "False jika subscription expired atau user disable"
+    },
+    "last_used_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time a push was successfully sent to this subscription"
+    }
+  },
+  "required": [
+    "endpoint",
+    "p256dh",
+    "auth"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
