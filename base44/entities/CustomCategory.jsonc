@@ -1,0 +1,64 @@
+{
+  "name": "CustomCategory",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Category name"
+    },
+    "emoji": {
+      "type": "string",
+      "description": "Emoji icon"
+    },
+    "color": {
+      "type": "string",
+      "description": "Hex color"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "expense",
+        "income",
+        "both"
+      ],
+      "default": "expense",
+      "description": "Applicable transaction type"
+    },
+    "parent_category_key": {
+      "type": "string",
+      "description": "Parent category key (default or custom_<id>)"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Deskripsi kategori (opsional)"
+    }
+  },
+  "required": [
+    "name",
+    "emoji"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
