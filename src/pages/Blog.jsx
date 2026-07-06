@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Clock } from "lucide-react";
 import { BLOG_POSTS } from "@/data/blogPosts";
 import Reveal from "@/components/landing/Reveal";
+import useSeo from "@/hooks/useSeo";
 
 function formatDate(dateStr) {
   const d = new Date(dateStr);
@@ -12,8 +13,36 @@ function formatDate(dateStr) {
 export default function Blog() {
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "Blog Atur Pintar — Tips Keuangan & Update Produk";
   }, []);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Blog Atur Pintar",
+    "description": "Tips keuangan, tutorial, dan update produk dari Atur Pintar. Belajar ngatur duit dari cara nabung, budgeting, sampai investasi.",
+    "url": "https://aturpintar.my.id/blog",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Atur Pintar",
+      "logo": { "@type": "ImageObject", "url": "https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" }
+    },
+    "blogPost": BLOG_POSTS.map((p) => ({
+      "@type": "BlogPosting",
+      "headline": p.title,
+      "url": `https://aturpintar.my.id/blog/${p.slug}`,
+      "datePublished": p.date,
+      "description": p.seoDescription || p.excerpt
+    }))
+  };
+
+  useSeo({
+    title: "Blog Atur Pintar | Tips Keuangan & Update Produk",
+    description: "Tips keuangan, tutorial, dan update produk dari Atur Pintar. Belajar ngatur duit dari cara nabung, budgeting 50/30/20, investasi pemula, sampai fitur terbaru.",
+    keywords: ["tips keuangan", "blog keuangan", "cara nabung", "budgeting", "investasi pemula", "atur uang", "nana ai", "shared wallet"],
+    url: "https://aturpintar.my.id/blog",
+    type: "website",
+    jsonLd
+  });
 
   const [featured, ...rest] = BLOG_POSTS;
 

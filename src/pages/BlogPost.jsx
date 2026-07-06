@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { getPostBySlug, getRelatedPosts } from "@/data/blogPosts";
 import Reveal from "@/components/landing/Reveal";
+import useSeo from "@/hooks/useSeo";
 
 function formatDate(dateStr) {
   const d = new Date(dateStr);
@@ -16,10 +17,37 @@ export default function BlogPost() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (post) {
-      document.title = `${post.title} — Blog Atur Pintar`;
-    }
-  }, [slug, post]);
+  }, [slug]);
+
+  const canonicalUrl = `https://aturpintar.my.id/blog/${slug}`;
+
+  const jsonLd = post ? {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": post.seoDescription || post.excerpt,
+    "image": post.coverImage,
+    "datePublished": post.date,
+    "dateModified": post.date,
+    "author": { "@type": "Organization", "name": post.author },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Atur Pintar",
+      "logo": { "@type": "ImageObject", "url": "https://media.base44.com/images/public/69a82e8090f60786b869983c/d2e52bdf2_3.png" }
+    },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl },
+    "keywords": (post.seoKeywords || []).join(", ")
+  } : null;
+
+  useSeo({
+    title: post ? `${post.title} | Blog Atur Pintar` : "Blog Atur Pintar",
+    description: post?.seoDescription || post?.excerpt,
+    keywords: post?.seoKeywords,
+    image: post?.coverImage,
+    url: canonicalUrl,
+    type: "article",
+    jsonLd
+  });
 
   if (!post) return <Navigate to="/blog" replace />;
 

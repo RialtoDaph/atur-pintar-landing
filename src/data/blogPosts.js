@@ -8,6 +8,8 @@ export const BLOG_POSTS = [
     readTime: "5 menit baca",
     coverImage: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=1200&q=80",
     author: "Tim Atur Pintar",
+    seoDescription: "5 cara nabung untuk anak muda yang gampang dimulai: mulai dari nominal kecil, pisahkan rekening, auto-debit, metode 50/30/20, dan bikin goal spesifik. Konsisten lebih penting dari nominal besar.",
+    seoKeywords: ["cara nabung", "nabung anak muda", "tips menabung", "cara mengatur uang", "menabung konsisten", "auto debit", "metode 50 30 20", "tabungan pemula"],
     content: `Banyak orang mikir nabung itu harus gede dulu, minimal setengah juta per bulan. Padahal, kebiasaan nabung yang konsisten dengan nominal kecil jauh lebih berharga daripada nabung besar sekali lalu berhenti.
 
 Berikut 5 cara nabung yang gampang dimulai, bahkan kalau kamu masih mahasiswa atau baru kerja.
@@ -51,6 +53,8 @@ Mulai kecil, mulai sekarang. Duit kamu masa depan bakal berterima kasih.`
     readTime: "6 menit baca",
     coverImage: "https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=1200&q=80",
     author: "Tim Atur Pintar",
+    seoDescription: "Cara pakai Nana AI, asisten keuangan dari Atur Pintar yang belajar dari pola pengeluaranmu. Pelajari cara maksimalkan Nana untuk analisis budget, insight mingguan, dan deteksi subscription tersembunyi.",
+    seoKeywords: ["nana ai", "asisten keuangan", "chatbot keuangan", "ai finansial", "cara pakai nana ai", "analisis pengeluaran", "budget keuangan", "atur pintar ai"],
     content: `Nana AI adalah asisten keuangan bawaan Atur Pintar. Beda sama chatbot keuangan lain, Nana punya akses ke data transaksi kamu, jadi saran yang dia kasih beneran relevan, bukan generic advice.
 
 Berikut cara pakai Nana AI biar kamu dapet maksimal value.
@@ -95,6 +99,8 @@ Kalau kamu belum pernah coba, buka Atur Pintar dan chat Nana sekarang. Mulai den
     readTime: "4 menit baca",
     coverImage: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80",
     author: "Tim Atur Pintar",
+    seoDescription: "Budgeting 50/30/20 adalah cara paling simpel untuk bagi gaji: 50% kebutuhan, 30% keinginan, 20% tabungan. Pelajari cara implementasi aturan ini biar gak boncos setiap bulan.",
+    seoKeywords: ["budgeting 50 30 20", "cara bagi gaji", "aturan 50 30 20", "budget keuangan", "manajemen keuangan", "cara ngatur gaji", "budgeting pemula", "pencegah boncos"],
     content: `Budgeting sering bikin males karena terkesan ribet. Tapi aturan 50/30/20 bikin semuanya simpel, kamu cuma perlu bagi gaji jadi 3 porsi.
 
 ## Apa itu aturan 50/30/20?
@@ -153,6 +159,8 @@ Kalau kamu butuh bantuan tracking, Atur Pintar punya fitur budget per kategori y
     readTime: "5 menit baca",
     coverImage: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200&q=80",
     author: "Tim Atur Pintar",
+    seoDescription: "Fitur Shared Wallet Atur Pintar memungkinkan nabung bareng pasangan atau teman dalam satu dompet bersama yang transparan dan real-time. Cocok untuk liburan, dana kos, atau goal bersama.",
+    seoKeywords: ["shared wallet", "nabung bareng", "dompet bersama", "tabungan bersama pasangan", "split bill", "nabung kolektif", "fitur atur pintar", "keuangan bersama"],
     content: `Nabung bareng itu powerful. Entah buat liburan bareng teman, dana darurat keluarga, atau goal rumah sama pasangan, nabung kolektif bikin kamu lebih accountable dan motivated.
 
 Tapi selama ini, nabung bareng sering ribet: siapa catat siapa bayar berapa, trust issue soal duit, dan susah track siapa kontribusinya berapa.
@@ -211,6 +219,8 @@ Shared Wallet sudah tersedia untuk semua user Atur Pintar. Kalau kamu belum puny
     readTime: "7 menit baca",
     coverImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&q=80",
     author: "Tim Atur Pintar",
+    seoDescription: "5 kesalahan investasi pemula yang sering bikin rugi: investasi tanpa dana darurat, FOMO, nggak paham aset, lump sum, dan panic sell. Hindari sejak awal dengan panduan ini.",
+    seoKeywords: ["investasi pemula", "kesalahan investasi", "tips investasi", "dana darurat", "dollar cost averaging", "investasi aman", "reksa dana pemula", "cara mulai investasi"],
     content: `Investasi adalah salah satu cara terbaik buat masa depan finansial. Tapi banyak pemula masuk tanpa persiapan dan langsung kena kerugian yang bisa dihindari.
 
 Ini 5 kesalahan paling umum yang sering dilakukan pemula, dan cara menghindarinya.
