@@ -1,40 +1,40 @@
 {
-  "name": "MoodCheckIn",
+  "name": "ShareableCard",
   "type": "object",
   "properties": {
-    "mood": {
+    "card_type": {
       "type": "string",
       "enum": [
-        "stress",
-        "mager",
-        "happy",
-        "panik",
-        "normal"
+        "achievement",
+        "level_up",
+        "streak_milestone",
+        "persona",
+        "fhs_score"
       ],
-      "description": "Mood user hari ini"
+      "description": "Tipe shareable card"
     },
-    "mood_emoji": {
-      "type": "string",
-      "description": "Emoji mood"
+    "card_data": {
+      "type": "object",
+      "description": "Data untuk generate card (nama, level, score, persona, dll)"
     },
-    "mood_label": {
+    "generated_at": {
       "type": "string",
-      "description": "Label display mood"
+      "format": "date-time",
+      "description": "Waktu card di-generate"
     },
-    "check_in_date": {
-      "type": "string",
-      "format": "date",
-      "description": "Tanggal check-in (YYYY-MM-DD)"
+    "is_shared": {
+      "type": "boolean",
+      "default": false,
+      "description": "Apakah card sudah di-share"
     },
     "description": {
       "type": "string",
       "maxLength": 1000,
-      "description": "Deskripsi mood check-in (opsional)"
+      "description": "Deskripsi shareable card (opsional)"
     }
   },
   "required": [
-    "mood",
-    "check_in_date"
+    "card_type"
   ],
   "rls": {
     "create": {
