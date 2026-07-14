@@ -1,12 +1,8 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, Instagram, Facebook, MapPin, Clock } from "lucide-react";
 import { TikTokIcon, ThreadsIcon } from "./SocialIcons";
-import ContactFormDialog from "./ContactFormDialog";
 
 export default function LandingFooter() {
-  const [contactOpen, setContactOpen] = useState(false);
-
   return (
     <footer className="border-t border-white/5 pt-6 pb-6 sm:pt-10 sm:pb-8 px-5 sm:px-12 lg:px-20 relative z-10 mt-12 sm:mt-16">
       <div className="max-w-5xl mx-auto">
@@ -27,9 +23,9 @@ export default function LandingFooter() {
               <div><Link to="/cancellation-policy" className="text-white/30 hover:text-white/70 text-xs transition-colors">Pembatalan Langganan</Link></div>
               <div><Link to="/blog" className="text-white/30 hover:text-white/70 text-xs transition-colors">Blog</Link></div>
               <div className="col-span-2 sm:col-span-1 pt-2 sm:pt-0 mt-1 sm:mt-0 border-t sm:border-t-0 border-white/5">
-                <button onClick={() => setContactOpen(true)} className="flex items-center gap-1.5 text-white/30 hover:text-[#F97316] text-xs transition-colors mt-1">
+                <Link to="/support" className="flex items-center gap-1.5 text-white/30 hover:text-[#F97316] text-xs transition-colors mt-1">
                   <Mail className="w-3 h-3 flex-shrink-0" /> Hubungi Kami
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -64,7 +60,6 @@ export default function LandingFooter() {
         </div>
       </div>
 
-      <ContactFormDialog open={contactOpen} onOpenChange={setContactOpen} />
     </footer>
   );
 }
